@@ -1,691 +1,257 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>投資インテリジェンス・ブリーフ｜2026年6月21日（日）</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: { extend: {
-      colors: {
-        brand:{500:'#465fff',600:'#3641f5'},
-        bd:'#1f2733', card:'#171c26', base:'#0e1117',
-        up:'#22c55e', down:'#ef4444', gold:'#eab308'
-      },
-      fontFamily:{ sans:['-apple-system','Segoe UI','Noto Sans JP','Hiragino Kaku Gothic ProN','sans-serif'] }
-    }}
-  }
-</script>
+<title>朝のニュースまとめ｜2026年6月21日</title>
+<script>document.documentElement.className+=' js';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-feature-settings:"palt"}
-.tnum{font-variant-numeric:tabular-nums}
-.text-up{color:#22c55e}
-.text-down{color:#ef4444}
-summary::-webkit-details-marker{display:none}
-summary{list-style:none}
-.chev{transition:transform .2s}
-details[open] .chev{transform:rotate(180deg)}
-.bg-animated{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 18% 22%,rgba(70,95,255,.20),transparent 42%),radial-gradient(circle at 82% 28%,rgba(150,60,220,.16),transparent 42%),radial-gradient(circle at 50% 85%,rgba(20,120,200,.16),transparent 46%),#0e1117;background-size:180% 180%;animation:bgmove 22s ease-in-out infinite}
-@keyframes bgmove{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-.reveal.in{opacity:1;transform:none}
-.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(70,95,255,.18);color:#8ba4ff;border:1px solid rgba(70,95,255,.3)}
-.tag-red{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.3)}
-.tag-green{background:rgba(34,197,94,.12);color:#86efac;border-color:rgba(34,197,94,.25)}
-.tag-yellow{background:rgba(234,179,8,.12);color:#fde047;border-color:rgba(234,179,8,.25)}
-.tag-orange{background:rgba(249,115,22,.12);color:#fdba74;border-color:rgba(249,115,22,.25)}
-.tag-blue{background:rgba(59,130,246,.12);color:#93c5fd;border-color:rgba(59,130,246,.25)}
+  :root{--bg-0:#0e121b;--bg-1:#121723;--surface:#1a2130;--surface-2:#222b3c;--ink:#e9ecf4;--sub:#9aa4ba;--faint:#6d7689;--line:rgba(255,255,255,.09);--gold:#d6ab5b;--gold-ink:#e3c489;--gold-soft:rgba(214,171,91,.15);--gold-line:rgba(214,171,91,.36);--cool:#6b97ff;--cool-soft:rgba(91,140,255,.15);--teal:#3fc4c8;--up:#ff6b81;--down:#6b97ff;--chart-bg:#16203b;--chart-2:#1d2a4d;--chart-line:#2c3a63;--chart-ink:#e9edf7;--shadow:0 1px 1px rgba(0,0,0,.3),0 6px 16px -6px rgba(0,0,0,.5),0 34px 64px -32px rgba(0,0,0,.8);--shadow-sm:0 2px 12px -6px rgba(0,0,0,.6)}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--bg-1);position:relative;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;z-index:-2;background:radial-gradient(1200px 700px at 80% -10%,rgba(214,171,91,.12),transparent 58%),radial-gradient(1000px 760px at 10% 2%,rgba(91,140,255,.12),transparent 54%),linear-gradient(168deg,#0c0f17 0%,#11151f 44%,#141a27 100%)}
+  body::after{content:'';position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(360px 360px at 15% 18%,rgba(214,171,91,.16),transparent 70%),radial-gradient(420px 420px at 90% 26%,rgba(91,140,255,.16),transparent 70%),radial-gradient(360px 360px at 74% 88%,rgba(63,196,200,.12),transparent 70%);animation:drift 26s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-2.4%,2.2%,0) scale(1.06)}}
+  a{color:inherit;text-decoration:none}:focus-visible{outline:2px solid var(--cool);outline-offset:3px;border-radius:3px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  .bar{position:sticky;top:0;z-index:40;backdrop-filter:saturate(140%) blur(12px);background:linear-gradient(to bottom,rgba(14,18,27,.82),rgba(14,18,27,.55));border-bottom:1px solid rgba(255,255,255,.07)}
+  .bar .in{max-width:1080px;margin:0 auto;padding:.6rem 22px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .bar .bm{font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:1.02rem;letter-spacing:.02em}
+  .bar .bd{font-family:'Space Grotesk',sans-serif;font-size:.72rem;letter-spacing:.04em;color:var(--sub);white-space:nowrap}
+  .bar .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px var(--gold-soft);margin-right:.45rem;vertical-align:middle;animation:pulse 3.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.38}}
+  .hero{position:relative;padding:3.4rem 0 2.2rem;text-align:left}
+  .hero .glow{position:absolute;left:-6%;top:-46%;width:560px;height:560px;z-index:-1;pointer-events:none;background:radial-gradient(circle at 40% 50%,rgba(208,160,60,.30),rgba(208,160,60,.08) 42%,transparent 66%);filter:blur(8px);animation:breathe 12s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+  .eyebrow{font-family:'Space Grotesk',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.34em;color:var(--gold-ink);text-transform:uppercase}
+  .wordmark{font-family:'Shippori Mincho B1',serif;font-weight:800;letter-spacing:.015em;font-size:clamp(2.5rem,7.4vw,3.9rem);line-height:1.04;margin:.5rem 0 .1rem}
+  .issue{font-family:'Space Grotesk',sans-serif;font-size:.8rem;color:var(--sub);letter-spacing:.03em;margin-top:.55rem}
+  .issue .sep{color:var(--gold-line);margin:0 .55rem}
+  .horizon{height:2px;border:0;margin:1.5rem 0 0;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold-line) 14%,var(--gold) 50%,var(--gold-line) 86%,transparent);transform-origin:left;animation:sweep 1.1s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes sweep{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+  .panel{background:linear-gradient(180deg,#1f2738,var(--surface));border:1px solid rgba(255,255,255,.07);border-radius:20px;box-shadow:var(--shadow);padding:2.1rem 2rem;margin:1.5rem 0;position:relative}
+  .panel::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent)}
+  @media(max-width:680px){.panel{padding:1.6rem 1.25rem;border-radius:16px}}
+  .kicker{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
+  .kicker .no{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.8rem;color:var(--gold-ink);border:1px solid var(--gold-line);border-radius:999px;padding:.12rem .6rem;letter-spacing:.04em}
+  .kicker .ja{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:1.22rem;white-space:nowrap}
+  .kicker .tag{font-family:'Space Grotesk',sans-serif;font-size:.66rem;font-weight:600;letter-spacing:.22em;color:var(--faint);text-transform:uppercase}
+  .kicker .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .thesis{font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:clamp(1.45rem,4.3vw,2.25rem);line-height:1.5;letter-spacing:.01em;margin:.1rem 0 1.3rem}
+  .thesis .nb{white-space:nowrap}.thesis .hi{color:var(--gold-ink);box-shadow:inset 0 -.5em 0 var(--gold-soft)}
+  .ul-thesis{list-style:none;margin:0;padding:0;display:grid;gap:.95rem;max-width:52rem}
+  .ul-thesis li{display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start}
+  .bead{width:.7rem;height:.7rem;margin-top:.6rem;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--gold-soft)}
+  .ul-thesis p{margin:0;font-size:1.02rem}.ul-thesis b{font-weight:700;color:var(--ink)}
+  .lead{font-size:.92rem;color:var(--sub);max-width:50rem;margin:0 0 1.5rem}.lead b{color:var(--ink)}.note{color:var(--gold-ink)}
+  .scen{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}@media(max-width:760px){.scen{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,#252e41,#1b2433);border:1px solid var(--line);border-radius:16px;padding:1.5rem 1.4rem;box-shadow:var(--shadow-sm);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease}
+  .card:hover{transform:translateY(-5px);box-shadow:0 18px 42px -18px rgba(0,0,0,.7);border-color:var(--gold-line)}
+  .card h3{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:1.08rem;margin:0 0 .25rem;line-height:1.45}
+  .card .sub{font-size:.82rem;color:var(--sub);margin:0 0 1.1rem}
+  .flow{margin:0;padding:0;list-style:none}.flow li{position:relative;padding:0 0 1rem 1.7rem}.flow li:last-child{padding-bottom:0}
+  .flow li::before{content:'';position:absolute;left:.3rem;top:.45rem;width:8px;height:8px;border-radius:50%;background:var(--surface);border:2px solid var(--gold);z-index:1}
+  .flow li:not(:last-child)::after{content:'';position:absolute;left:.59rem;top:.95rem;bottom:-.05rem;width:2px;background:linear-gradient(var(--gold-line),var(--gold-soft))}
+  .flow .stg{display:block;font-family:'Space Grotesk',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.16em;color:var(--gold-ink);text-transform:uppercase;margin-bottom:.05rem}
+  .flow .txt{font-size:.91rem;line-height:1.6}.flow .txt b{font-weight:700}
+  .flow .final{margin-top:.25rem;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:12px;padding:.75rem .9rem}
+  .flow .final::after{display:none}.flow .final::before{background:var(--gold);border-color:var(--gold)}
+  .legend{font-size:.8rem;color:var(--sub);max-width:50rem;margin:0 0 1.5rem}.up{color:var(--up);font-weight:700}.down{color:var(--down);font-weight:700}
+  .tbl-shell{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:1.3rem;background:var(--surface)}
+  .mkt{width:100%;border-collapse:collapse;font-size:.92rem}
+  .mkt thead th{font-family:'Space Grotesk',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.08em;color:var(--sub);text-align:right;padding:.6rem .95rem;background:var(--surface-2);border-bottom:1px solid var(--line);text-transform:uppercase}
+  .mkt thead th:first-child{text-align:left}
+  .mkt td{padding:.72rem .95rem;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;font-family:'Space Grotesk',sans-serif}
+  .mkt td:first-child{text-align:left;font-weight:700;font-family:'Noto Sans JP',sans-serif}
+  .mkt tbody tr:hover{background:var(--cool-soft)}.mkt tr:last-child td{border-bottom:0}
+  .src-note{display:block;font-size:.62rem;font-weight:400;color:var(--faint);font-family:'Space Grotesk',sans-serif;margin-top:.1rem;letter-spacing:0}
+  .tcap{font-size:.72rem;color:var(--sub);padding:.7rem .95rem;border-top:1px solid var(--line);background:var(--surface-2)}
+  .chart{position:relative;background:linear-gradient(160deg,var(--chart-2),var(--chart-bg));border:1px solid var(--chart-line);border-radius:16px;padding:.5rem;overflow:hidden;box-shadow:0 0 0 1px rgba(47,86,207,.10),0 22px 44px -26px rgba(22,32,68,.5)}
+  .chart::before{content:'';position:absolute;top:-40%;right:-20%;width:60%;height:120%;pointer-events:none;background:radial-gradient(circle,rgba(176,133,41,.12),transparent 70%)}
+  .chart .ttl{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.02em;color:var(--chart-ink);padding:.45rem .55rem .55rem}
+  .chart .ttl::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  .chart .frame{border-radius:11px;overflow:hidden;background:var(--chart-bg)}
+  .charts2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}@media(max-width:760px){.charts2{grid-template-columns:1fr}}
+  .news{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem 2.4rem}@media(max-width:760px){.news{grid-template-columns:1fr}}
+  .col .ch{display:inline-flex;align-items:center;gap:.45rem;font-family:'Space Grotesk',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.04em;margin:0 0 .5rem;padding:.2rem .65rem;border-radius:999px}
+  .hl{display:block;padding:.7rem 0;border-bottom:1px solid var(--line);transition:padding-left .25s ease}
+  .hl:last-child{border-bottom:0}.hl:hover{padding-left:.4rem}
+  .hl h4{font-family:'Shippori Mincho B1',serif;font-weight:600;font-size:.97rem;line-height:1.5;margin:0 0 .25rem;transition:color .2s}
+  .hl:hover h4{color:var(--gold-ink)}
+  .hl .meta{font-family:'Space Grotesk',sans-serif;font-size:.72rem;color:var(--faint);letter-spacing:.01em}
+  .foot{font-size:.78rem;color:var(--sub);line-height:1.75;padding:1.6rem 0 3rem;text-align:center}
+  .foot .dsum{display:inline-block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:.9rem;box-shadow:var(--shadow-sm);text-align:left;max-width:46rem}
+  .foot .dsum b{color:var(--ink)}
+  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+  .js .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}body::after,.hero .glow,.bar .dot,.horizon{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
-<body class="bg-[#0e1117] text-gray-200 font-sans">
-<div class="bg-animated"></div>
-<div class="max-w-5xl mx-auto px-4 py-6 pb-24">
+<body>
+<div class="bar"><div class="in"><div class="bm">朝のニュースまとめ</div><div class="bd"><span class="dot"></span>2026.06.21 日</div></div></div>
+<div class="wrap">
+  <header class="hero"><div class="glow"></div><div class="eyebrow">Morning News Digest</div><h1 class="wordmark">朝のニュースまとめ</h1><div class="issue">2026年6月21日（日）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon"></header>
 
-  <!-- ===== ヘッダー ===== -->
-  <header class="flex items-end justify-between border-b border-[#1f2733] pb-4 mb-6">
-    <div>
-      <div class="text-[#465fff] font-bold tracking-widest text-xs uppercase">Morning Intelligence Brief</div>
-      <h1 class="text-2xl font-bold mt-1">朝の投資インテリジェンス・ブリーフ</h1>
-    </div>
-    <div class="text-right text-sm text-gray-400">
-      <div class="font-semibold text-gray-300">2026年6月21日（日）</div>
-      <div>松本紳汰さん向け ― 中長期投資家版</div>
-      <div class="text-[11px] mt-0.5 text-[#465fff]">三菱UFJ銀行 デジタル企画</div>
-    </div>
-  </header>
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
+    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">赤 ▲</span>・下落＝<span class="down">青 ▼</span>。米国は6月19日（Juneteenth）休場のため最終取引日は6月18日。日本最終取引日は6月19日（金）。</p>
+    <div class="tbl-shell"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
+      <tr>
+        <td>日経平均<span class="src-note">日経CNBC・WebSearch / as of 2026-06-19</span></td>
+        <td>71,250.06</td>
+        <td class="up">▲ 196.57</td>
+        <td class="up">▲ 0.28%</td>
+      </tr>
+      <tr>
+        <td>NASDAQ100<span class="src-note">Yahoo Finance・WebSearch / as of 2026-06-18（Juneteenth休場前）</span></td>
+        <td>26,517.93</td>
+        <td class="up">▲ 496.82</td>
+        <td class="up">▲ 1.91%</td>
+      </tr>
+      <tr>
+        <td>S&amp;P500<span class="src-note">Yahoo Finance・WebSearch / as of 2026-06-18（Juneteenth休場前）</span></td>
+        <td>7,500.58</td>
+        <td class="up">▲ 80.85</td>
+        <td class="up">▲ 1.08%</td>
+      </tr>
+      <tr>
+        <td>ドル円<span class="src-note">FXニュース各社・WebSearch / as of 2026-06-19</span></td>
+        <td>161.30</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>金（ゴールド）<span class="src-note">Trading Economics・WebSearch / as of 2026-06-19（単位：USD/oz）</span></td>
+        <td>$4,150</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>三菱UFJ（8306）<span class="src-note">Yahoo Finance Japan・WebSearch / as of 2026-06-19（単位：円）</span></td>
+        <td>3,278</td>
+        <td class="down">▼ 96</td>
+        <td class="down">▼ 2.85%</td>
+      </tr>
+    </tbody></table><div class="tcap">※米国はJuneteenth（6/19）休場のため前取引日6/18終値を使用。ドル円・金の前日比は取得不可のため「—」。数値はWebSearch（Yahoo Finance・日経CNBC等）経由で本日セッション内に取得。</div></div>
 
-  <!-- ===== 3行サマリー + So What ===== -->
-  <section class="mb-8 reveal">
-    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-5">
-      <div class="text-xs font-bold text-[#465fff] tracking-widest mb-3 uppercase">Today's 3-Line Summary ＋ So What</div>
-      <ol class="space-y-3 text-sm leading-relaxed">
-        <li class="flex gap-3">
-          <span class="w-6 h-6 rounded-full bg-[#465fff]/20 text-[#8ba4ff] text-xs font-bold flex-shrink-0 flex items-center justify-center">1</span>
-          <span><strong class="text-white">日銀が政策金利を 0.75% → 1.0% に引き上げ（6/15–16会合）</strong>、Fed（6/17）も据え置きながらドット図でハイク再開を示唆。日米の金融政策が同時に「引き締め方向」に揃い、為替・債券市場の重要な転換点に差し掛かっている。</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="w-6 h-6 rounded-full bg-[#465fff]/20 text-[#8ba4ff] text-xs font-bold flex-shrink-0 flex items-center justify-center">2</span>
-          <span><strong class="text-white">フジクラ（5803）がFY2027純利益予想を +46% 上方修正</strong>、AI光ファイバー需要の想定外増加でストップ高気配。日経225は6/19終値 71,250円と底堅く、NASDAQ も6/18に+1.91%（26,518）でAIラリー継続を確認。</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="w-6 h-6 rounded-full bg-[#465fff]/20 text-[#8ba4ff] text-xs font-bold flex-shrink-0 flex items-center justify-center">3</span>
-          <span><strong class="text-white">米イラン停戦合意署名（6/19スイス）で原油が $120超 → $83 に急落</strong>したが、週末にイランが再びホルムズ封鎖を示唆。週明け月曜（6/22）の原油先物・日本株の初動が最大の注視ポイント。</span>
-        </li>
-      </ol>
-      <div class="mt-4 pt-4 border-t border-[#1f2733]">
-        <div class="text-xs font-bold text-yellow-400 tracking-wide mb-2">◎ So What ― 中長期投信・ウォッチリスト観点</div>
-        <ul class="text-xs text-gray-300 space-y-1.5 leading-relaxed list-disc list-inside">
-          <li>日銀1.0%（31年ぶり高水準）＋ Fed ハイク再開リスク → <strong class="text-white">為替ヘッジなし外国株投信に逆風シナリオが台頭</strong>。eMAXIS Slim S&P500保有中は円高シフト加速時の影響を確認しておきたい局面。</li>
-          <li>AI需要は構造的拡大を再確認。<strong class="text-white">NASDAQ100連動投信・半導体ETFの中長期積み上げ</strong>は引き続き有効なシナリオ。</li>
-          <li>原油安が定着すれば製造業・輸送コスト低下 → 企業収益改善。ただしホルムズ再緊張は最大のリスク。<strong class="text-white">ゴールド配分は地政学ヘッジとして継続有効</strong>。</li>
-          <li>三菱UFJ（8306）は6/18に年初来高値3,394円、6/19は-2.85%の3,278円で利確。日銀利上げ恩恵は中長期的に持続見込み。持株会積立は継続。</li>
+    <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame" style="height:620px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
+    <div class="charts2">
+      <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame" style="height:340px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+      <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame" style="height:340px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+    </div>
+  </section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">02</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
+    <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開48時間以内を基本とし、重要度が高い場合は最大5日以内を掲載（RSSフィード取得不可のためWebSearch代替）。</p>
+    <div class="news">
+
+      <div class="col">
+        <div class="ch" style="background:var(--cool-soft);color:var(--down)">金利・為替・相場</div>
+        <a class="hl" href="https://online.nikkei-cnbc.co.jp/vod/66215" target="_blank" rel="noopener">
+          <h4>日経平均株価、最高値 終値196円57銭高の7万1250円06銭 大引け解説</h4>
+          <div class="meta">日経CNBC ・ 2日前</div>
+        </a>
+        <a class="hl" href="https://www.gaitame.com/media/entry/2026/06/21/070000" target="_blank" rel="noopener">
+          <h4>来週のドル円相場はどうなる？6/22週のイベント予定 2026年6月21日</h4>
+          <div class="meta">外為どっとコム ・ 本日</div>
+        </a>
+        <a class="hl" href="https://www.bloomberg.com/jp/news/articles/2026-06-17/TGSFDYT96OSG00" target="_blank" rel="noopener">
+          <h4>FOMCが金利据え置き、ウォーシュ新体制で利上げに一歩近づく</h4>
+          <div class="meta">Bloomberg ・ 4日前</div>
+        </a>
+      </div>
+
+      <div class="col">
+        <div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">政策・国際</div>
+        <a class="hl" href="https://news.web.nhk/newsweb/na/na-k10015155441000" target="_blank" rel="noopener">
+          <h4>ホルムズ海峡 船舶通過の動きも 戦闘開始前に比べると低調</h4>
+          <div class="meta">NHK ・ 約1日前</div>
+        </a>
+        <a class="hl" href="https://www.newsweekjapan.jp/articles/-/326145" target="_blank" rel="noopener">
+          <h4>米イランがスイスで協議開始へ、仲介国も参加 ホルムズ海峡「再封鎖」が影</h4>
+          <div class="meta">ニューズウィーク日本版 ・ 最近</div>
+        </a>
+        <a class="hl" href="https://www.goal.com/jp/%E3%83%AA%E3%82%B9%E3%83%88/japan-tunisia-kickoff-stadium-member-20260621/blte5b0c8ae0dd4cdb7" target="_blank" rel="noopener">
+          <h4>【6月21日】サッカー日本代表 チュニジア戦のキックオフ時間・試合日程・メンバー</h4>
+          <div class="meta">Goal.com 日本 ・ 本日</div>
+        </a>
+      </div>
+
+      <div class="col">
+        <div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">テック・AI・半導体</div>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOFL190L80Z10C26A6000000/" target="_blank" rel="noopener">
+          <h4>フジクラ株価ストップ高気配 27年3月期純利益46%増に上方修正</h4>
+          <div class="meta">日本経済新聞 ・ 2日前</div>
+        </a>
+        <a class="hl" href="https://www.bloomberg.com/jp/news/articles/2026-06-19/TGUOVSKJH6VT00" target="_blank" rel="noopener">
+          <h4>フジクラショック緩和、今期見通しの上方修正でストップ高買い気配――「懸念材料払しょく」の声</h4>
+          <div class="meta">Bloomberg ・ 2日前</div>
+        </a>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOUC179OF0X10C26A6000000/" target="_blank" rel="noopener">
+          <h4>ChatGPT内に広告表示、日本でOpenAIが展開 電通や博報堂が仲介</h4>
+          <div class="meta">日本経済新聞 ・ 2日前</div>
+        </a>
+      </div>
+
+      <div class="col">
+        <div class="ch" style="background:rgba(63,196,200,.15);color:var(--teal)">週末の横浜グルメ</div>
+        <div class="hl" style="cursor:default;border-bottom:0">
+          <h4>週末に横浜グルメを掲載します</h4>
+          <div class="meta">Google News RSS ・ 取得不可（本日）</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">03</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
+    <p class="thesis"><span class="nb"><span class="hi">AIラリー継続</span>だが、利上げ・地政学・ドル高の三重奏に要注意。</span><br>日本銀行の政策金利1%引き上げ（31年ぶり高水準）後も161円台の円安が続く中、フジクラ等のAI光ファイバー銘柄が週次で日経平均を牽引し最高値を更新。週末のイラン「ホルムズ再封鎖」示唆が週明けの波乱要因となる可能性に要注目。</p>
+    <ul class="ul-thesis">
+      <li><span class="bead"></span><p><b>外国株投信（eMAXIS Slim S&amp;P500等）</b>：日本銀行の利上げサイクル継続で中長期的な円高転換リスクが残る。積立継続は有効だが、円高局面での含み損拡大に備えた為替ヘッジ付き商品とのバランス検討を。米連邦準備制度理事会（FRB）のWarsh新議長体制が「利上げシフト」を示唆しており、ドル高圧力は当面継続見込み。</p></li>
+      <li><span class="bead"></span><p><b>NASDAQ100連動投信</b>：フジクラ（5803）の2027年3月期純利益46%増上方修正がAIインフラ関連の構造的成長を裏付け、引き続き積立継続が基本方針。米連邦準備制度理事会（FRB）の「利上げシフト」後の短期調整リスクは念頭に置くが、AIデータセンター需要は構造的に底堅く、一時的な調整は中長期の積立機会と捉えたい。</p></li>
+      <li><span class="bead"></span><p><b>金（ゴールド）ETF・分散ヘッジ</b>：イランの「ホルムズ再封鎖」示唆と米インフレ再燃リスクが同時に高まる局面では、金ETFのポートフォリオ内ヘッジ機能が上昇する。純金上場信託等の保有比率（目安5〜10%）を確認し、地政学リスクへの備えとして現水準維持または小幅増を検討する時期。</p></li>
+    </ul>
+  </section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">04</span><span class="ja">先読み（需給シナリオ）</span><span class="tag">Forward view</span><span class="ln"></span></div>
+    <p class="lead">世界情勢の変化が<b>需給の崩れ</b>を生み、最終的に<b>数ヶ月後に効く投信／ETF</b>へ波及する連鎖を"仮説"として立てる枠。<span class="note">※仮説であり投資助言ではありません。</span></p>
+    <div class="scen">
+      <div class="card">
+        <h3>シナリオA：イラン「ホルムズ再封鎖」強行・原油高シナリオ</h3>
+        <p class="sub">週末に封鎖示唆が浮上――週明けの原油・インフレ動向が鍵</p>
+        <ul class="flow">
+          <li><span class="stg">情勢</span><span class="txt">イラン革命防衛隊が停戦合意を事実上無効化し、ホルムズ海峡封鎖を再度宣言。世界の原油・液化天然ガス（LNG）輸送の約2割が通過する要衝が遮断。</span></li>
+          <li><span class="stg">需給</span><span class="txt">原油・液化天然ガス（LNG）が急激にタイト化。日本・欧州向けエネルギー輸入コストが急騰し、消費者物価指数（CPI）・生産者物価指数の押し上げ要因に。</span></li>
+          <li><span class="stg">製品</span><span class="txt">原油（ブレント）が$100超えへ。日本の輸入インフレが再燃し、日本銀行はさらなる追加利上げ圧力に。電気代・ガソリン代が家計を圧迫。</span></li>
+          <li><span class="stg">市場</span><span class="txt">日本株は輸出製造業（円高＋原油高のダブル圧迫）が下落リスク。米欧株にも下押し圧力。一方、金（ゴールド）は地政学リスクプレミアムで上昇。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt">純金上場信託（1540等）の<b>ゴールドETF</b>、国内インフレ対応の<b>物価連動国債ファンド</b>に相対的な優位性が浮上。エネルギーセクターETFも注目。</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>シナリオB：米連邦準備制度理事会（FRB）早期利上げ・ドル高・円高転換シナリオ</h3>
+        <p class="sub">連邦公開市場委員会（FOMC）のタカ派転換が実弾化する2〜4ヶ月後を想定</p>
+        <ul class="flow">
+          <li><span class="stg">情勢</span><span class="txt">6月連邦公開市場委員会（FOMC）で据え置き済みだが、6月個人消費支出（PCE）デフレーターが上振れし、Warsh議長が10月FOMCで利上げを実施。</span></li>
+          <li><span class="stg">需給</span><span class="txt">ドル需要が急増し、新興国通貨安・資本流出が発生。日本銀行も対抗して追加利上げを前倒しすれば日米金利差が縮小し、円高加速の可能性。</span></li>
+          <li><span class="stg">製品</span><span class="txt">ドル建て商品（原油・金）が調整。グロース株のバリュエーション見直しが進み、米国IT大手の株価収益率が圧縮。NASDAQ100は短期的に調整リスク。</span></li>
+          <li><span class="stg">市場</span><span class="txt">為替ヘッジなし外国株投信は円高ダメージを直撃。国内金融セクター投信・ETFは日本銀行利上げ継続で利ざや拡大の恩恵。為替ヘッジ付き米国株投信に相対的優位性。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>為替ヘッジ付き米国株投信</b>（eMAXIS Slim 米国株式ヘッジあり等）、<b>NEXT FUNDS 銀行業ETF</b>（1615）等の国内金融セクターに注目。</span></li>
         </ul>
       </div>
     </div>
   </section>
 
-  <!-- ===== マーケット市況 ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>マーケット市況
-      <span class="text-[11px] text-gray-600 font-normal ml-1">直近営業日終値｜JP:6/19（木）・US:6/18（木）</span>
-    </h2>
-
-    <!-- 3 TradingView Charts -->
-    <div class="grid md:grid-cols-3 gap-4 mb-4">
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
-        <div class="text-xs text-gray-400 mb-2 px-1">日経225（JP225・日足）</div>
-        <div class="tradingview-widget-container">
-          <div id="tv_nikkei"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"OANDA:JP225USD","container_id":"tv_nikkei","width":"100%","height":240,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
-          </script>
-        </div>
-      </div>
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
-        <div class="text-xs text-gray-400 mb-2 px-1">NASDAQ 100（NAS100・日足）</div>
-        <div class="tradingview-widget-container">
-          <div id="tv_nasdaq"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"OANDA:NAS100USD","container_id":"tv_nasdaq","width":"100%","height":240,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
-          </script>
-        </div>
-      </div>
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
-        <div class="text-xs text-gray-400 mb-2 px-1">ドル円 USD/JPY（日足）</div>
-        <div class="tradingview-widget-container">
-          <div id="tv_usdjpy"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"FX:USDJPY","container_id":"tv_usdjpy","width":"100%","height":240,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
-          </script>
-        </div>
-      </div>
-    </div>
-
-    <!-- OHLC Table -->
-    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-      <table class="w-full text-sm tnum">
-        <thead class="text-gray-400 text-xs border-b border-[#1f2733]">
-          <tr>
-            <th class="text-left font-medium px-3 py-2.5">銘柄 <span id="ohlc-date" class="font-normal text-gray-600 ml-1">（読込中…）</span></th>
-            <th class="text-right font-medium px-2">始値</th>
-            <th class="text-right font-medium px-2">高値</th>
-            <th class="text-right font-medium px-2">安値</th>
-            <th class="text-right font-medium px-2">終値</th>
-            <th class="text-right font-medium px-3">前日比</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#1f2733]">
-          <tr id="row-nikkei">
-            <td class="px-3 py-2.5 font-semibold">日経平均</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold text-up" id="static-nikkei">71,250</td>
-            <td class="text-right px-3 text-up">+196 (+0.28%)</td>
-          </tr>
-          <tr id="row-nasdaq">
-            <td class="px-3 py-2.5 font-semibold">NASDAQ</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold text-up">26,518</td>
-            <td class="text-right px-3 text-up">+497 (+1.91%)</td>
-          </tr>
-          <tr id="row-sp500">
-            <td class="px-3 py-2.5 font-semibold">S&amp;P 500</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold text-up">7,501</td>
-            <td class="text-right px-3 text-up">+81 (+1.08%)</td>
-          </tr>
-          <tr id="row-usdjpy">
-            <td class="px-3 py-2.5 font-semibold">ドル円</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">161.30</td>
-            <td class="text-right px-3 text-gray-400">—</td>
-          </tr>
-          <tr id="row-gold">
-            <td class="px-3 py-2.5 font-semibold">金 (Gold)</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold text-down">$4,150</td>
-            <td class="text-right px-3 text-gray-400 text-xs">6/11来安値</td>
-          </tr>
-          <tr id="row-mufg">
-            <td class="px-3 py-2.5 font-semibold">三菱UFJ <span class="text-[11px] text-gray-500 font-normal">8306</span></td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold text-down">3,278</td>
-            <td class="text-right px-3 text-down">-96 (-2.85%)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット。数値：ページ読込時にYahoo Finance APIより最新値を取得（直近営業日終値ベース）。静的表示は本ブリーフ生成時データ（JP:6/19・US:6/18）。⚠️ 米国市場は6/19 Juneteenth のため休場。日本株は6/19まで通常通り。</p>
-  </section>
-
-  <!-- ===== ① 相場変動要因 ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>① 相場変動要因｜中銀・金利・為替・指標・要人発言
-    </h2>
-    <div class="grid gap-3">
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">【最重要】日銀、政策金利を 0.75% → 1.0% に引き上げ　31年ぶり高水準</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">日本銀行 / 第一生命経済研究所</span> <span class="ml-2">6月16日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>日本銀行は6月15〜16日の金融政策決定会合で、政策金利を現行0.75%から1.0%へ引き上げることを決定した。1.0%は1995年以来31年ぶりの高水準となる。3年連続で歴史的水準の春闘賃上げが確定し、日銀が利上げの条件とする「賃金と物価の好循環」が実現したと判断した。野村證券は2026年12月・2027年6月にも各0.25%の追加利上げを予想しており、ターミナルレートは1.5%を見込む。銀行・保険株には利ざや改善期待でプラス、住宅ローン変動金利は2026年10月に0.25%程度の引き上げが最有力シナリオとなっている。</p>
-          <a href="https://www.dlri.co.jp/report/macro/623090.html" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：第一生命経済研究所「政策金利1.00%への引き上げ」↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">Fed（FOMC）、据え置き維持もドット図がハイク示唆　Warsh新議長の初会合</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">CNBC / Fox Business / FRB公式</span> <span class="ml-2">6月17日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>FOMCは6月17日、政策金利を現行水準（3.5〜3.75%）に全会一致（12-0）で据え置いた。Kevin Warsh新議長にとって初の会合。市場が注目したドット図（金利見通し）では、FOMC委員の中央値が「2026年中に1回以上の利上げ」を示唆する内容に転換しており、前回（3月）の「利下げ1回示唆」から大幅に変化した。理事18名中17名がインフレリスクを上振れと評価。2026年PCEインフレ予測も3.6%（前回比+0.9%pt）に引き上げられた。市場は10月FOMCでの利上げ再開を織り込み始めており、翌6/18（木）は金利先高観がいったん消化されてリスクオンとなりNASDAQ+1.91%で反発した。</p>
-          <a href="https://www.cnbc.com/2026/06/17/fed-interest-rate-decision-june-2026.html" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：CNBC「Fed holds rates steady」↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">米イラン停戦合意・スイスで正式署名　原油 Brent $83 に急落（$120超から）</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">NPR / Discovery Alert / Wikipedia</span> <span class="ml-2">6月19日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>米国とイランは6月18〜19日にかけてホルムズ海峡通行再開を含む停戦合意に達し、6月19日にスイスで正式署名が行われた。合意の骨子はホルムズ海峡の無関税通行権確保・米海軍封鎖の解除・多方面停戦で、60日間の外交交渉枠組みが設けられた。原油市場は「戦争リスクプレミアム」の解消で急反応し、Brent原油は$120超から$83〜84まで約15%以上急落した。ただし週末（6/20〜21）には双方の主張が再び食い違い、イランが再びホルムズ封鎖を示唆。米軍中央軍（CENTCOM）は「商業船舶の通行は継続中」と反論しており、週明けの原油先物・為替への影響が注目される。</p>
-          <a href="https://www.npr.org/2026/06/14/nx-s1-5858115/oil-prices-trump-iran-deal" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：NPR「Oil prices drop」↗</a>
-          <a href="https://discoveryalert.com.au/us-iran-deal-oil-prices-hormuz-inflation-2026/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline ml-4">詳細分析：Discovery Alert↗</a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- ===== ② 政策→セクター ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-purple-500 rounded"></span>② 政策→セクター
-    </h2>
-    <div class="grid gap-3">
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">日銀利上げが銀行・保険セクターに追い風　三菱UFJ(8306)は6/18に年初来高値3,394円</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">野村證券ウェルスタイル / Yahoo!ファイナンス</span> <span class="ml-2">6月18〜19日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>日銀の政策金利1.0%引き上げを受け、銀行株は利ざや（NIM）改善期待から上昇。三菱UFJフィナンシャル・グループ（8306）は6月18日（木）に年初来高値3,394円を更新した（前日比+3.12%）。翌6月19日（金）は利益確定売りで3,278円（-2.85%）まで押し戻したが、日銀が今後も2026年12月・2027年6月に追加利上げを行うシナリオが野村証券メインシナリオとなっており、中長期的な利ざや改善トレンドは続く見通し。保険株も長期金利上昇で逆ざや縮小期待が高まっている。</p>
-          <a href="https://www.nomura.co.jp/wealthstyle/article/0739/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：野村證券「日銀の6月利上げは長期金利安定の最低条件」↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">住宅ローン変動金利、2026年10月に0.25%引き上げへ　家計・不動産市場への波及</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">モゲチェック</span> <span class="ml-2">6月16日 更新</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>日銀利上げ（0.75%→1.0%）の決定を受け、多くのメガバンク・地銀が2026年10月に変動住宅ローン金利を0.25%引き上げる見込みとなっている。2023年以降の金利引き上げ累計で変動金利は約1%程度上昇しており、借り手の返済額増加が消費にも影響する可能性がある。固定金利は長期金利の上昇を先取りして既に大幅上昇済み。不動産セクターは金利上昇が資産価格に下押し圧力となる一方、金融機関の収益改善と二面性がある局面だ。住宅関連ETFは慎重に見る場面。</p>
-          <a href="https://mogecheck.jp/articles/show/pnl6ZzOV4BDR2k5Ra7PY" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：モゲチェック「日銀追加利上げで住宅ローンはいつ上がる？」↗</a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- ===== ③ 決算・カタリスト ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-emerald-500 rounded"></span>③ 決算・カタリスト
-    </h2>
-    <div class="grid gap-3">
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">フジクラ（5803）、FY2027純利益を+46%上方修正　AI光ファイバー「逆サプライズ」でストップ高</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">日本経済新聞 / 株探</span> <span class="ml-2">6月18日発表・6月19日急騰</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>フジクラ（5803）は6月18日（木）、2027年3月期（FY2027）の連結純利益予想を従来の1,560億円から2,290億円へ+46%大幅上方修正した。米国・欧州のハイパースケーラー（クラウド大手）からの光コンポーネント製品プロジェクト受注が想定を大きく上回り、売価アップも奏功した。修正幅は市場コンセンサスを500億円程度上回る「逆サプライズ」となり、6月19日（金）にはストップ高買い気配となった。AI/データセンターの爆発的なトラフィック増加が背景にあり、光ファイバー需要の構造的拡大を改めて裏付ける決算だ。NVIDIAのGPU需要と連動するエコシステム全体の好循環が継続していることを示す重要なカタリスト。</p>
-          <a href="https://www.nikkei.com/article/DGXZQOFL190L80Z10C26A6000000/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：日経「フジクラ株価ストップ高気配 純利益46%増に上方修正」↗</a>
-          <a href="https://kabutan.jp/news/marketnews/?b=n202606190398" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline ml-4">出典：株探「ストップ高買い気配」↗</a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- ===== ④ DX・テクノロジー・AI ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-cyan-500 rounded"></span>④ DX・テクノロジー・AI
-    </h2>
-    <div class="grid gap-3">
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">ノーベル賞受賞者ジャンパー氏、DeepMind からAnthropicへ移籍　AI人材流動が加速</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">TechCrunch</span> <span class="ml-2">6月20日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>タンパク質構造予測AI「AlphaFold」の共同開発者で2024年ノーベル化学賞を受賞したジョン・ジャンパー氏が、約9年在籍したGoogle DeepMind を退職してAnthropic入りを表明した（6/20報道）。同週にはGeminiの共同リード研究者ノアム・シャジール氏もOpenAI へ転じており、Googleからのトップ研究者流出が相次ぐ異例の週となった。AIラボ間の人材争奪戦が激化する中、Anthropic・OpenAI が優秀な研究者を引き付けていることは両社の技術競争力向上を示す。日系企業・金融機関がどのAIエコシステム・パートナーと組むかの戦略選択が今後一層重要になる。</p>
-          <a href="https://techcrunch.com/2026/06/20/nobel-laureate-john-jumper-is-leaving-deepmind-for-rival-anthropic/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：TechCrunch「Nobel laureate John Jumper is leaving DeepMind for rival Anthropic」↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">クアルコム、AI チップ新興 Tenstorrent を最大 $100億で買収交渉　RISC-V × AI で NVIDIA 対抗</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">The Register</span> <span class="ml-2">6月16日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>半導体大手クアルコムが、AI チップ設計スタートアップ Tenstorrent（創業者：ジム・ケラー氏）を80〜100億ドルで買収する交渉を進めていることが6月16日に報じられた。Tenstorrent はオープンな命令セットアーキテクチャ RISC-V を活用した AI 推論チップを手掛け、NVIDIA への対抗軸として注目されてきた企業だ。クアルコムにとってデータセンター向け AI 半導体市場への本格参入を意味し、成立すれば同社最大規模の買収となる。AI インフラ競争が NVIDIA一強からの多様化局面に移行しつつあることを示す動向であり、半導体 ETF の構成銘柄変化にも注目が必要だ。</p>
-          <a href="https://www.theregister.com/systems/2026/06/16/qualcomm-said-to-be-circling-ai-chip-biz-tenstorrent-in-10b-risc-v-power-play/5256084" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：The Register「Qualcomm said to be circling AI chip biz Tenstorrent」↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">ソフトバンク、OpenAI 技術活用の「PaaS（パッチング as a Service）」発表　重要インフラ3,000社向け</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="tag">SoftBank Group 公式</span> <span class="ml-2">6月16日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>ソフトバンクグループ・ソフトバンク株式会社・SB OAI Japan（ソフトバンク×OpenAI合弁会社）は6月16日、OpenAI 技術を活用した「Patching as a Service（PaaS）」を発表した。空港・電力・交通などの日本の重要インフラを担う上位3,000社を対象に、AIが脆弱性診断・修正計画・実装アドバイスを自動支援するサービスだ。サイバーセキュリティ対策の自動化・AI化は三菱UFJ銀行を含む金融機関にとっても不可欠な投資領域であり、セキュリティ・DX関連ETFへの関心が高まる分野だ。</p>
-          <a href="https://group.softbank/en/news/press/20260616" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：SoftBank Group プレスリリース（6/16）↗</a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- ===== ⑤ 週末グルメ（横浜中心） ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#ef4444] rounded"></span>⑤ 週末グルメ（横浜中心）
-    </h2>
-    <div class="grid gap-3">
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">【本日最終日】お茶とどら焼きフェスティバル　みなとみらい MM テラスにて</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5 text-[11px]">ウォーカープラス</span> <span class="ml-2">6月20〜21日（本日最終日）</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>横浜みなとみらいのMMテラスで「お茶とどら焼きフェスティバル」が開催中で、本日（21日）が最終日となる。静岡・神奈川の茶農家や横浜市内の専門店が集結し、日本茶のほか和紅茶・台湾茶・国産ハーブティーなど多彩なお茶を提供するイベントだ。お茶に合う和菓子・焼き菓子も充実しており、港を一望するロケーションで週末のひとときを楽しめる。今日が最後のチャンスのため、午後の外出先として候補に入れてみてはいかがだろうか。</p>
-          <a href="https://www.walkerplus.com/event_list/weekend/ar0314/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：ウォーカープラス 横浜週末イベント ↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">横浜ベイシェラトン スカイラウンジ「ベイ・ビュー」　ピーチ＆マンゴー アフタヌーンティー実施中</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5 text-[11px]">横浜ベイシェラトン公式</span> <span class="ml-2">6月1日〜7月31日</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>横浜ベイシェラトン ホテル＆タワーズの最上階スカイラウンジ「ベイ・ビュー」では、6月1日から7月31日まで「ピーチ＆マンゴーのスペシャルカクテル＆ローストビーフ アフタヌーンティーセット」を提供中。港と横浜の街並みを一望できる絶景の中で、旬の桃とマンゴーを使ったオリジナルカクテルと本格ローストビーフが楽しめる夏らしいラインナップだ。横浜駅直結のため雨天時も安心。日曜の今日は事前予約の確認をおすすめする。</p>
-          <a href="https://www.marriott.com/ja/hotels/tyobs-sheraton-grand-yokohama-kanai/dining/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：横浜ベイシェラトン 公式ダイニング ↗</a>
-        </div>
-      </details>
-
-      <details class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-        <summary class="p-4 cursor-pointer flex items-start justify-between gap-3">
-          <div>
-            <div class="font-semibold">横浜新店：A5和牛専門「うしこぞう」が横浜に進出　川崎の名店が上陸</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5 text-[11px]">食べログ / 横浜ローカル情報</span> <span class="ml-2">2026年6月オープン</span></div>
-          </div>
-          <svg class="chev w-4 h-4 mt-1 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l5 5 5-5"/></svg>
-        </summary>
-        <div class="px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2">
-          <p>川崎で評判の焼肉・牛串専門店「うしこぞう」が2026年6月に横浜へ進出した。肉屋出身の店主が厳選した雌牛のA5和牛を看板とし、リーズナブルな価格帯で本格的な霜降り肉を楽しめると話題。週末のランチ・夜利用いずれにも対応。詳細は食べログや公式SNS（各種）でご確認を。横浜中区・南区エリアへのおでかけ先として注目の一軒。</p>
-          <a href="https://tabelog.com/kanagawa/C14100/rstLst/cond16-00-00/" target="_blank" rel="noopener" class="inline-block text-[#465fff] text-xs hover:underline">出典：食べログ 横浜新規オープン一覧 ↗</a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- ===== 投信・ETF示唆 ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-yellow-400 rounded"></span>投信・ETF 示唆（情報提供）
-    </h2>
-    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-yellow-500/20 rounded-2xl p-5 reveal">
-      <div class="text-[11px] text-yellow-400 mb-4 bg-yellow-500/10 rounded-lg px-3 py-2 border border-yellow-500/20">
-        ⚠️ 本セクションは情報提供であり投資助言ではありません。個別株の売買推奨は含みません。最終的な投資判断はご自身でお願いします。行員ルールに従い、個別株は対象外としています（三菱UFJ自社株は持株会のみ）。
-      </div>
-      <div class="space-y-4 text-sm">
-
-        <div class="flex gap-3">
-          <span class="text-yellow-400 font-bold text-base shrink-0">①</span>
-          <div>
-            <div class="font-semibold text-white mb-1">国内金融セクターETF ― 日銀利上げ継続恩恵</div>
-            <p class="text-gray-400">日銀が1.0%（今後1.5%まで継続予想）へ向かう中、国内銀行・保険のNIM改善が中長期的に続く見込み。<strong class="text-gray-200">NEXT FUNDS 銀行業ETF〔1615〕</strong>や MAXIS 国内金融（TOPIX-17）ETF 等が参考候補。eMAXIS Slim 国内株式（日経平均）にも金融株が含まれるため間接的な恩恵あり。中長期積み立て視点では、金融セクター傾斜の投信を一部ポートフォリオに組み込む局面と言える。</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <span class="text-yellow-400 font-bold text-base shrink-0">②</span>
-          <div>
-            <div class="font-semibold text-white mb-1">NASDAQ100連動投信 ― AI需要の構造的拡大を取り込む</div>
-            <p class="text-gray-400">フジクラ決算・NASDAQ+1.91%と、AI関連の需要拡大が改めて確認された週。<strong class="text-gray-200">eMAXIS NASDAQ100インデックス</strong>や <strong class="text-gray-200">iシェアーズ「ベストAI」（408A）</strong>等は、光ファイバー・クラウド・半導体サプライチェーン全体に分散して乗れる手段として中長期有効。ただし為替ヘッジなし商品は円高局面に注意（次項参照）。</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <span class="text-yellow-400 font-bold text-base shrink-0">③</span>
-          <div>
-            <div class="font-semibold text-white mb-1">為替ヘッジ有無の見直し ― 日米引き締め競争で円高リスク上昇</div>
-            <p class="text-gray-400">日銀利上げ継続 ＋ Fed ハイク再開リスクという組み合わせは短期的にはドル高（円安）要因と円高（ドル安）要因が拮抗する。しかし中期（2026年末〜2027年）では日米金利差縮小から円高方向に傾く可能性が高い。<strong class="text-gray-200">eMAXIS Slim S&P500</strong>（為替ヘッジなし）を保有中の場合、円高シナリオでの目減りを意識しておきたい。為替ヘッジあり版（ニッセイ外国株式ヘッジあり等）への一部シフトも検討余地。積立 NISA は長期積み立て継続が基本方針のため、大きな変更は不要。</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <span class="text-yellow-400 font-bold text-base shrink-0">④</span>
-          <div>
-            <div class="font-semibold text-white mb-1">ゴールド配分の維持 ― 地政学・インフレヘッジとして</div>
-            <p class="text-gray-400">金価格は6/19に $4,150（6/11以来の安値）と直近では調整局面だが、①イラン情勢の不安定さ、②Fed インフレ予測上方修正（PCE 3.6%）、③日米金利上昇に伴う実物資産需要という3要因で中長期のゴールド需要は下支えされる見方。<strong class="text-gray-200">三菱UFJ国際 純金ファンド</strong>や <strong class="text-gray-200">iシェアーズ ゴールドETF（1326）</strong>等でのゴールド配分（ポートフォリオの5〜10%程度）は維持合理性あり。</p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
-          <span class="text-yellow-400 font-bold text-base shrink-0">⑤</span>
-          <div>
-            <div class="font-semibold text-white mb-1">日経半導体株ETF ― AI光ファイバー系日本株に注目継続</div>
-            <p class="text-gray-400">フジクラ（光ファイバー）やルネサス（車載・産業半導体）等を含む日本の半導体・電子部品関連ETF（<strong class="text-gray-200">日経半導体株指数連動ETF〔各社〕</strong>）は、AI インフラ投資の拡大が長期継続する中で成長性が高い。日経平均に比べてAIインフラ比率が高く、中長期的な注目カテゴリ。</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== テーマ追跡 ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-indigo-400 rounded"></span>継続テーマ追跡
-    </h2>
-    <div class="grid sm:grid-cols-2 gap-3">
-
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 reveal">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="tag-yellow tag text-[10px]">進行中</span>
-          <span class="font-semibold text-sm">日銀利上げ継続</span>
-        </div>
-        <p class="text-xs text-gray-400 leading-relaxed">6/16に1.0%達成（31年ぶり）。野村メインシナリオは12月・来年6月に各+0.25%追加でターミナル1.5%。銀行・保険ETFに中長期プラス。</p>
-        <div class="mt-2 text-[11px] text-gray-500">次の注目 → 7月会合・長期金利1.5%超えリスク</div>
-      </div>
-
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 reveal">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="tag-red tag text-[10px]">新規注目</span>
-          <span class="font-semibold text-sm">Fed 利上げ再開リスク</span>
-        </div>
-        <p class="text-xs text-gray-400 leading-relaxed">6/17 FOMCドット図が2026年内ハイクを示唆。PCEインフレ3.6%予測。10月FOMCが焦点。米長期債・為替ヘッジなし外株投信に影響。</p>
-        <div class="mt-2 text-[11px] text-gray-500">次の注目 → 米CPI（7月公表）・Warsh議長発言</div>
-      </div>
-
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 reveal">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="tag-green tag text-[10px]">加速中</span>
-          <span class="font-semibold text-sm">AI インフラ・光ファイバー需要</span>
-        </div>
-        <p class="text-xs text-gray-400 leading-relaxed">フジクラFY2027+46%上方修正でAIラリー再加速。ハイパースケーラーの受注増が想定超。NASDAQ100・半導体ETFに継続追い風。</p>
-        <div class="mt-2 text-[11px] text-gray-500">次の注目 → NVIDIA決算（8月）・クアルコム/Tenstorrent買収成否</div>
-      </div>
-
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 reveal">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="tag-orange tag text-[10px]">不安定</span>
-          <span class="font-semibold text-sm">US-Iran 停戦・原油変動</span>
-        </div>
-        <p class="text-xs text-gray-400 leading-relaxed">6/19スイス署名で原油$83へ急落。週末にホルムズ再緊張。週明けの原油先物初動が最大注視ポイント。ゴールドETFのヘッジ機能に注目。</p>
-        <div class="mt-2 text-[11px] text-gray-500">次の注目 → 週明け原油初動・バンス外交成否</div>
-      </div>
-
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 reveal">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="tag-blue tag text-[10px]">進行中</span>
-          <span class="font-semibold text-sm">FIFA W杯 2026・日本代表</span>
-        </div>
-        <p class="text-xs text-gray-400 leading-relaxed">グループF第2戦（日本 vs チュニジア）6/21開催。国内消費・インバウンド・広告への波及。グループ突破時の消費拡大効果に注目。</p>
-        <div class="mt-2 text-[11px] text-gray-500">次の注目 → グループF最終戦・決勝トーナメント進出</div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== 週次分析（日曜） ===== -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-fuchsia-500 rounded"></span>週次分析（2026年6月15〜21日週）
-      <span class="text-[10px] bg-fuchsia-500/20 text-fuchsia-300 rounded px-2 py-0.5">毎週日曜・水曜掲載</span>
-    </h2>
-    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-5 reveal">
-
-      <div class="text-xs font-bold text-fuchsia-400 mb-3 tracking-wide">◎ 今週（6/15–6/21）の総括</div>
-      <div class="space-y-3 text-sm text-gray-300 leading-relaxed">
-        <p>今週は<strong class="text-white">「日米同時引き締め」と「AI加速確認」「地政学リセット」</strong>の三つが重なり、中長期投資家にとって重要な転換点となった週だった。</p>
-        <p><strong class="text-white">① 金融政策の分岐点</strong>：日銀が1.0%（31年ぶり）、Fedがハイク示唆と、主要2中銀が揃って「利下げ局面の終焉」を宣言した。日米金利差の縮小トレンドは中期（2027年）にかけて円高方向のバイアスを持つ。為替ヘッジなし外株投信は長期保有でも為替影響に慎重な目配りが必要な局面に入った。</p>
-        <p><strong class="text-white">② AI テーマの継続力確認</strong>：フジクラの決算が示したのは、AI データセンターへの光ファイバー需要が「一時的ブーム」ではなく「インフラ投資のフェーズ」に移行した証拠だ。NASDAQ は FOMC 後の不安を一日で消化し+1.91%でリカバリーした。日経225の71,250円はAI関連銘柄への楽観が国内市場にも波及していることを示す。</p>
-        <p><strong class="text-white">③ 地政学リスクの部分解消</strong>：米イラン停戦合意は原油$120→$83という大幅な供給リスクプレミアム解消をもたらした。しかし週末の再緊張が示す通り、中東リスクは「解決」ではなく「停戦管理」の段階にある。原油安の恩恵（製造業・輸送コスト低下）と残存リスク（ホルムズ再封鎖）の両面を持つシナリオで進む。</p>
-      </div>
-
-      <div class="mt-5 pt-4 border-t border-[#1f2733]">
-        <div class="text-xs font-bold text-fuchsia-400 mb-3 tracking-wide">◎ 投信カテゴリ間の注目度変化（中長期視点）</div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-xs text-gray-300">
-            <thead class="text-gray-500 border-b border-[#1f2733]">
-              <tr>
-                <th class="text-left py-2 pr-4 font-medium">投信カテゴリ</th>
-                <th class="text-center py-2 px-3 font-medium">方向性</th>
-                <th class="text-left py-2 pl-3 font-medium">変化の主因</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#1f2733]">
-              <tr>
-                <td class="py-2 pr-4">国内金融セクターETF</td>
-                <td class="py-2 px-3 text-center text-up">↑ 上昇</td>
-                <td class="py-2 pl-3 text-gray-400">日銀利上げ継続→NIM改善期待</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">NASDAQ100連動投信</td>
-                <td class="py-2 px-3 text-center text-up">↑ 維持</td>
-                <td class="py-2 pl-3 text-gray-400">AI需要拡大確認、フジクラ・NASDAQ反発</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">米国半導体ETF</td>
-                <td class="py-2 px-3 text-center text-up">↑ 維持</td>
-                <td class="py-2 pl-3 text-gray-400">AI光ファイバー需要・Qualcomm買収拡大</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">eMAXIS Slim S&P500（ヘッジなし）</td>
-                <td class="py-2 px-3 text-center text-yellow-400">→ 要注意</td>
-                <td class="py-2 pl-3 text-gray-400">株価↑だが円高リスク台頭（日銀利上げ）</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">ゴールドETF</td>
-                <td class="py-2 px-3 text-center text-yellow-400">→ 維持</td>
-                <td class="py-2 pl-3 text-gray-400">金価格調整も地政学・インフレヘッジ継続</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">エネルギーETF</td>
-                <td class="py-2 px-3 text-center text-down">↓ 慎重</td>
-                <td class="py-2 pl-3 text-gray-400">原油$83急落、ホルムズ再緊張は変動要因</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4">国内不動産・住宅REITなど</td>
-                <td class="py-2 px-3 text-center text-down">↓ 慎重</td>
-                <td class="py-2 pl-3 text-gray-400">金利上昇→資産価格下押し・ローン返済増</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="mt-5 pt-4 border-t border-[#1f2733]">
-        <div class="text-xs font-bold text-fuchsia-400 mb-2 tracking-wide">◎ 来週（6/22〜）の重点チェックポイント</div>
-        <ul class="text-xs text-gray-400 space-y-1.5 list-disc list-inside leading-relaxed">
-          <li>週明け原油先物・日本株の初動（イラン再緊張の市場反応）</li>
-          <li>三菱UFJ(8306)の株価レジリエンス（利確後の下値支持水準）</li>
-          <li>米国6月雇用統計・CPI（Fedハイクタイミングのデータ点）</li>
-          <li>フジクラ・AI関連株の追随買い継続可否</li>
-          <li>日銀7月会合に向けた要人発言・長期金利動向</li>
-        </ul>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== フッター ===== -->
-  <footer class="mt-10 pt-4 border-t border-[#1f2733] text-xs text-gray-500 space-y-1">
-    <p>📋 本ブリーフは情報提供であり投資助言ではありません。最終的な投資判断はご自身でお願いします。</p>
-    <p>📰 記事本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト利用規約に配慮しています。</p>
-    <p>🤖 自動生成ブリーフ ― 公開ソース（日本経済新聞・CNBC・Fox Business・TechCrunch・NPR・第一生命経済研究所・野村證券・各社公式リリース等）より収集・要約。</p>
-    <p class="mt-2 text-gray-600">生成日時：2026年6月21日（日）｜アーカイブ：<a href="archive/" class="text-[#465fff] hover:underline">過去のブリーフ一覧</a></p>
+  <footer class="foot">
+    <div class="dsum"><b>本日のデータ取得サマリー</b>：市況6項目のうち取得成功4項目（日経平均・NASDAQ100・S&amp;P500・三菱UFJ）、前日比変化未取得2項目（ドル円・金）。ニュース採用12本（金利・為替・相場3本／政策・国際3本／テック・AI・半導体3本）＋横浜グルメプレースホルダー1枚。Yahoo!ニュースRSSおよびGoogle News RSSは本環境のネットワーク制限により取得不可のためWebSearch代替。一部記事は公開から48〜96時間以内の範囲で掲載。</div>
+    <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
-
 </div>
-
-<script>const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))</script>
-
-<script>
-(async function loadMarketData() {
-  const PROXY = 'https://corsproxy.io/?url=';
-  const instruments = [
-    { rowId: 'row-nikkei', symbol: '%5EN225',    dec: 0 },
-    { rowId: 'row-nasdaq', symbol: '%5EIXIC',     dec: 0 },
-    { rowId: 'row-sp500',  symbol: '%5EGSPC',     dec: 0 },
-    { rowId: 'row-usdjpy', symbol: 'USDJPY%3DX',  dec: 2 },
-    { rowId: 'row-gold',   symbol: 'GC%3DF',      dec: 0 },
-    { rowId: 'row-mufg',   symbol: '8306.T',      dec: 0 },
-  ];
-
-  async function yfetch(symbol) {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=10d`;
-    for (const src of [url, PROXY + encodeURIComponent(url)]) {
-      try {
-        const r = await fetch(src, { mode: 'cors', credentials: src === url ? 'include' : 'omit' });
-        if (r.ok) { const j = await r.json(); if (j.chart?.result?.[0]) return j.chart.result[0]; }
-      } catch (_) {}
-    }
-    return null;
-  }
-
-  function fmt(v, dec) {
-    if (v == null || isNaN(v)) return '—';
-    return Number(v).toLocaleString('ja-JP', { minimumFractionDigits: dec, maximumFractionDigits: dec });
-  }
-
-  function jdate(ts) {
-    const d = new Date(ts * 1000);
-    const dow = ['日','月','火','水','木','金','土'][d.getDay()];
-    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${dow}）`;
-  }
-
-  let dateLabel = null;
-  const results = await Promise.allSettled(instruments.map(inst => yfetch(inst.symbol)));
-
-  results.forEach((res, i) => {
-    const inst = instruments[i];
-    const row = document.getElementById(inst.rowId);
-    if (!row) return;
-    const tds = row.querySelectorAll('td');
-    if (res.status !== 'fulfilled' || !res.value) return;
-    const data = res.value;
-    const ts = data.timestamp;
-    const q = data.indicators.quote[0];
-    let last = ts.length - 1;
-    while (last > 0 && (q.close[last] == null || isNaN(q.close[last]))) last--;
-    if (q.close[last] == null) return;
-    const o = q.open[last], h = q.high[last], l = q.low[last], c = q.close[last];
-    let prev = null;
-    for (let k = last - 1; k >= 0; k--) { if (q.close[k] != null && !isNaN(q.close[k])) { prev = q.close[k]; break; } }
-    const chg = prev != null ? c - prev : null;
-    const chgPct = prev != null ? (chg / prev * 100) : null;
-    const isUp = chg != null && chg >= 0;
-    const sign = chg != null ? (isUp ? '+' : '') : '';
-    const chgCls = chg != null ? (isUp ? 'text-right px-3 tnum text-up' : 'text-right px-3 tnum text-down') : 'text-right px-3 text-gray-400';
-    tds[1].textContent = fmt(o, inst.dec); tds[1].className = 'text-right px-2 text-gray-400 tnum';
-    tds[2].textContent = fmt(h, inst.dec); tds[2].className = 'text-right px-2 text-gray-400 tnum';
-    tds[3].textContent = fmt(l, inst.dec); tds[3].className = 'text-right px-2 text-gray-400 tnum';
-    tds[4].textContent = fmt(c, inst.dec); tds[4].className = 'text-right px-2 font-semibold tnum';
-    tds[5].textContent = chg != null ? `${sign}${fmt(chg, inst.dec)} (${sign}${chgPct.toFixed(2)}%)` : '—';
-    tds[5].className = chgCls;
-    if (!dateLabel) dateLabel = jdate(ts[last]);
-  });
-
-  const el = document.getElementById('ohlc-date');
-  if (el) el.textContent = dateLabel ? `直近営業日 ${dateLabel}` : '（静的表示：JP 6/19・US 6/18）';
-})();
-</script>
-
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
 </body>
 </html>

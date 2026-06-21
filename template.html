@@ -1,282 +1,257 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>投資インテリジェンス・ブリーフ｜YYYY年M月D日（曜）</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: { extend: {
-      colors: {
-        brand:{500:'#465fff',600:'#3641f5'},
-        bd:'#1f2733', card:'#171c26', base:'#0e1117',
-        up:'#22c55e', down:'#ef4444', gold:'#eab308'
-      },
-      fontFamily:{ sans:['-apple-system','Segoe UI','Noto Sans JP','Hiragino Kaku Gothic ProN','sans-serif'] }
-    }}
-  }
-</script>
+<title>朝のニュースまとめ｜2026年6月21日</title>
+<script>document.documentElement.className+=' js';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-feature-settings:"palt"}
-.tnum{font-variant-numeric:tabular-nums}
-.text-up{color:#22c55e}
-.text-down{color:#ef4444}
-summary::-webkit-details-marker{display:none}
-summary{list-style:none}
-.chev{transition:transform .2s}
-details[open] .chev{transform:rotate(180deg)}
-.bg-animated{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 18% 22%,rgba(70,95,255,.20),transparent 42%),radial-gradient(circle at 82% 28%,rgba(150,60,220,.16),transparent 42%),radial-gradient(circle at 50% 85%,rgba(20,120,200,.16),transparent 46%),#0e1117;background-size:180% 180%;animation:bgmove 22s ease-in-out infinite}
-@keyframes bgmove{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-.reveal.in{opacity:1;transform:none}
+  :root{--bg-0:#0e121b;--bg-1:#121723;--surface:#1a2130;--surface-2:#222b3c;--ink:#e9ecf4;--sub:#9aa4ba;--faint:#6d7689;--line:rgba(255,255,255,.09);--gold:#d6ab5b;--gold-ink:#e3c489;--gold-soft:rgba(214,171,91,.15);--gold-line:rgba(214,171,91,.36);--cool:#6b97ff;--cool-soft:rgba(91,140,255,.15);--teal:#3fc4c8;--up:#ff6b81;--down:#6b97ff;--chart-bg:#16203b;--chart-2:#1d2a4d;--chart-line:#2c3a63;--chart-ink:#e9edf7;--shadow:0 1px 1px rgba(0,0,0,.3),0 6px 16px -6px rgba(0,0,0,.5),0 34px 64px -32px rgba(0,0,0,.8);--shadow-sm:0 2px 12px -6px rgba(0,0,0,.6)}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--bg-1);position:relative;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;z-index:-2;background:radial-gradient(1200px 700px at 80% -10%,rgba(214,171,91,.12),transparent 58%),radial-gradient(1000px 760px at 10% 2%,rgba(91,140,255,.12),transparent 54%),linear-gradient(168deg,#0c0f17 0%,#11151f 44%,#141a27 100%)}
+  body::after{content:'';position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(360px 360px at 15% 18%,rgba(214,171,91,.16),transparent 70%),radial-gradient(420px 420px at 90% 26%,rgba(91,140,255,.16),transparent 70%),radial-gradient(360px 360px at 74% 88%,rgba(63,196,200,.12),transparent 70%);animation:drift 26s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-2.4%,2.2%,0) scale(1.06)}}
+  a{color:inherit;text-decoration:none}:focus-visible{outline:2px solid var(--cool);outline-offset:3px;border-radius:3px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  .bar{position:sticky;top:0;z-index:40;backdrop-filter:saturate(140%) blur(12px);background:linear-gradient(to bottom,rgba(14,18,27,.82),rgba(14,18,27,.55));border-bottom:1px solid rgba(255,255,255,.07)}
+  .bar .in{max-width:1080px;margin:0 auto;padding:.6rem 22px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .bar .bm{font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:1.02rem;letter-spacing:.02em}
+  .bar .bd{font-family:'Space Grotesk',sans-serif;font-size:.72rem;letter-spacing:.04em;color:var(--sub);white-space:nowrap}
+  .bar .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px var(--gold-soft);margin-right:.45rem;vertical-align:middle;animation:pulse 3.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.38}}
+  .hero{position:relative;padding:3.4rem 0 2.2rem;text-align:left}
+  .hero .glow{position:absolute;left:-6%;top:-46%;width:560px;height:560px;z-index:-1;pointer-events:none;background:radial-gradient(circle at 40% 50%,rgba(208,160,60,.30),rgba(208,160,60,.08) 42%,transparent 66%);filter:blur(8px);animation:breathe 12s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+  .eyebrow{font-family:'Space Grotesk',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.34em;color:var(--gold-ink);text-transform:uppercase}
+  .wordmark{font-family:'Shippori Mincho B1',serif;font-weight:800;letter-spacing:.015em;font-size:clamp(2.5rem,7.4vw,3.9rem);line-height:1.04;margin:.5rem 0 .1rem}
+  .issue{font-family:'Space Grotesk',sans-serif;font-size:.8rem;color:var(--sub);letter-spacing:.03em;margin-top:.55rem}
+  .issue .sep{color:var(--gold-line);margin:0 .55rem}
+  .horizon{height:2px;border:0;margin:1.5rem 0 0;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold-line) 14%,var(--gold) 50%,var(--gold-line) 86%,transparent);transform-origin:left;animation:sweep 1.1s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes sweep{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+  .panel{background:linear-gradient(180deg,#1f2738,var(--surface));border:1px solid rgba(255,255,255,.07);border-radius:20px;box-shadow:var(--shadow);padding:2.1rem 2rem;margin:1.5rem 0;position:relative}
+  .panel::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent)}
+  @media(max-width:680px){.panel{padding:1.6rem 1.25rem;border-radius:16px}}
+  .kicker{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
+  .kicker .no{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.8rem;color:var(--gold-ink);border:1px solid var(--gold-line);border-radius:999px;padding:.12rem .6rem;letter-spacing:.04em}
+  .kicker .ja{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:1.22rem;white-space:nowrap}
+  .kicker .tag{font-family:'Space Grotesk',sans-serif;font-size:.66rem;font-weight:600;letter-spacing:.22em;color:var(--faint);text-transform:uppercase}
+  .kicker .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .thesis{font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:clamp(1.45rem,4.3vw,2.25rem);line-height:1.5;letter-spacing:.01em;margin:.1rem 0 1.3rem}
+  .thesis .nb{white-space:nowrap}.thesis .hi{color:var(--gold-ink);box-shadow:inset 0 -.5em 0 var(--gold-soft)}
+  .ul-thesis{list-style:none;margin:0;padding:0;display:grid;gap:.95rem;max-width:52rem}
+  .ul-thesis li{display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start}
+  .bead{width:.7rem;height:.7rem;margin-top:.6rem;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--gold-soft)}
+  .ul-thesis p{margin:0;font-size:1.02rem}.ul-thesis b{font-weight:700;color:var(--ink)}
+  .lead{font-size:.92rem;color:var(--sub);max-width:50rem;margin:0 0 1.5rem}.lead b{color:var(--ink)}.note{color:var(--gold-ink)}
+  .scen{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}@media(max-width:760px){.scen{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,#252e41,#1b2433);border:1px solid var(--line);border-radius:16px;padding:1.5rem 1.4rem;box-shadow:var(--shadow-sm);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease}
+  .card:hover{transform:translateY(-5px);box-shadow:0 18px 42px -18px rgba(0,0,0,.7);border-color:var(--gold-line)}
+  .card h3{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:1.08rem;margin:0 0 .25rem;line-height:1.45}
+  .card .sub{font-size:.82rem;color:var(--sub);margin:0 0 1.1rem}
+  .flow{margin:0;padding:0;list-style:none}.flow li{position:relative;padding:0 0 1rem 1.7rem}.flow li:last-child{padding-bottom:0}
+  .flow li::before{content:'';position:absolute;left:.3rem;top:.45rem;width:8px;height:8px;border-radius:50%;background:var(--surface);border:2px solid var(--gold);z-index:1}
+  .flow li:not(:last-child)::after{content:'';position:absolute;left:.59rem;top:.95rem;bottom:-.05rem;width:2px;background:linear-gradient(var(--gold-line),var(--gold-soft))}
+  .flow .stg{display:block;font-family:'Space Grotesk',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.16em;color:var(--gold-ink);text-transform:uppercase;margin-bottom:.05rem}
+  .flow .txt{font-size:.91rem;line-height:1.6}.flow .txt b{font-weight:700}
+  .flow .final{margin-top:.25rem;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:12px;padding:.75rem .9rem}
+  .flow .final::after{display:none}.flow .final::before{background:var(--gold);border-color:var(--gold)}
+  .legend{font-size:.8rem;color:var(--sub);max-width:50rem;margin:0 0 1.5rem}.up{color:var(--up);font-weight:700}.down{color:var(--down);font-weight:700}
+  .tbl-shell{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:1.3rem;background:var(--surface)}
+  .mkt{width:100%;border-collapse:collapse;font-size:.92rem}
+  .mkt thead th{font-family:'Space Grotesk',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.08em;color:var(--sub);text-align:right;padding:.6rem .95rem;background:var(--surface-2);border-bottom:1px solid var(--line);text-transform:uppercase}
+  .mkt thead th:first-child{text-align:left}
+  .mkt td{padding:.72rem .95rem;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;font-family:'Space Grotesk',sans-serif}
+  .mkt td:first-child{text-align:left;font-weight:700;font-family:'Noto Sans JP',sans-serif}
+  .mkt tbody tr:hover{background:var(--cool-soft)}.mkt tr:last-child td{border-bottom:0}
+  .src-note{display:block;font-size:.62rem;font-weight:400;color:var(--faint);font-family:'Space Grotesk',sans-serif;margin-top:.1rem;letter-spacing:0}
+  .tcap{font-size:.72rem;color:var(--sub);padding:.7rem .95rem;border-top:1px solid var(--line);background:var(--surface-2)}
+  .chart{position:relative;background:linear-gradient(160deg,var(--chart-2),var(--chart-bg));border:1px solid var(--chart-line);border-radius:16px;padding:.5rem;overflow:hidden;box-shadow:0 0 0 1px rgba(47,86,207,.10),0 22px 44px -26px rgba(22,32,68,.5)}
+  .chart::before{content:'';position:absolute;top:-40%;right:-20%;width:60%;height:120%;pointer-events:none;background:radial-gradient(circle,rgba(176,133,41,.12),transparent 70%)}
+  .chart .ttl{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.02em;color:var(--chart-ink);padding:.45rem .55rem .55rem}
+  .chart .ttl::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  .chart .frame{border-radius:11px;overflow:hidden;background:var(--chart-bg)}
+  .charts2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}@media(max-width:760px){.charts2{grid-template-columns:1fr}}
+  .news{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem 2.4rem}@media(max-width:760px){.news{grid-template-columns:1fr}}
+  .col .ch{display:inline-flex;align-items:center;gap:.45rem;font-family:'Space Grotesk',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.04em;margin:0 0 .5rem;padding:.2rem .65rem;border-radius:999px}
+  .hl{display:block;padding:.7rem 0;border-bottom:1px solid var(--line);transition:padding-left .25s ease}
+  .hl:last-child{border-bottom:0}.hl:hover{padding-left:.4rem}
+  .hl h4{font-family:'Shippori Mincho B1',serif;font-weight:600;font-size:.97rem;line-height:1.5;margin:0 0 .25rem;transition:color .2s}
+  .hl:hover h4{color:var(--gold-ink)}
+  .hl .meta{font-family:'Space Grotesk',sans-serif;font-size:.72rem;color:var(--faint);letter-spacing:.01em}
+  .foot{font-size:.78rem;color:var(--sub);line-height:1.75;padding:1.6rem 0 3rem;text-align:center}
+  .foot .dsum{display:inline-block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.85rem 1.1rem;margin-bottom:.9rem;box-shadow:var(--shadow-sm);text-align:left;max-width:46rem}
+  .foot .dsum b{color:var(--ink)}
+  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+  .js .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}body::after,.hero .glow,.bar .dot,.horizon{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
-<body class="bg-[#0e1117] text-gray-200 font-sans">
-<div class="bg-animated"></div>
-<div class="max-w-5xl mx-auto px-4 py-6 pb-24">
+<body>
+<div class="bar"><div class="in"><div class="bm">朝のニュースまとめ</div><div class="bd"><span class="dot"></span>2026.06.21 日</div></div></div>
+<div class="wrap">
+  <header class="hero"><div class="glow"></div><div class="eyebrow">Morning News Digest</div><h1 class="wordmark">朝のニュースまとめ</h1><div class="issue">2026年6月21日（日）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon"></header>
 
-  <!-- Top bar -->
-  <header class="flex items-end justify-between border-b border-[#1f2733] pb-4 mb-6">
-    <div>
-      <div class="text-[#465fff] font-bold tracking-widest text-xs uppercase">Morning Intelligence Brief</div>
-      <h1 class="text-2xl font-bold mt-1">朝の投資インテリジェンス・ブリーフ</h1>
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
+    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">赤 ▲</span>・下落＝<span class="down">青 ▼</span>。米国は6月19日（Juneteenth）休場のため最終取引日は6月18日。日本最終取引日は6月19日（金）。</p>
+    <div class="tbl-shell"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
+      <tr>
+        <td>日経平均<span class="src-note">日経CNBC・WebSearch / as of 2026-06-19</span></td>
+        <td>71,250.06</td>
+        <td class="up">▲ 196.57</td>
+        <td class="up">▲ 0.28%</td>
+      </tr>
+      <tr>
+        <td>NASDAQ100<span class="src-note">Yahoo Finance・WebSearch / as of 2026-06-18（Juneteenth休場前）</span></td>
+        <td>26,517.93</td>
+        <td class="up">▲ 496.82</td>
+        <td class="up">▲ 1.91%</td>
+      </tr>
+      <tr>
+        <td>S&amp;P500<span class="src-note">Yahoo Finance・WebSearch / as of 2026-06-18（Juneteenth休場前）</span></td>
+        <td>7,500.58</td>
+        <td class="up">▲ 80.85</td>
+        <td class="up">▲ 1.08%</td>
+      </tr>
+      <tr>
+        <td>ドル円<span class="src-note">FXニュース各社・WebSearch / as of 2026-06-19</span></td>
+        <td>161.30</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>金（ゴールド）<span class="src-note">Trading Economics・WebSearch / as of 2026-06-19（単位：USD/oz）</span></td>
+        <td>$4,150</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>三菱UFJ（8306）<span class="src-note">Yahoo Finance Japan・WebSearch / as of 2026-06-19（単位：円）</span></td>
+        <td>3,278</td>
+        <td class="down">▼ 96</td>
+        <td class="down">▼ 2.85%</td>
+      </tr>
+    </tbody></table><div class="tcap">※米国はJuneteenth（6/19）休場のため前取引日6/18終値を使用。ドル円・金の前日比は取得不可のため「—」。数値はWebSearch（Yahoo Finance・日経CNBC等）経由で本日セッション内に取得。</div></div>
+
+    <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame" style="height:620px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
+    <div class="charts2">
+      <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame" style="height:340px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+      <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame" style="height:340px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
     </div>
-    <div class="text-right text-sm text-gray-400">
-      <div class="font-semibold text-gray-300">YYYY年M月D日（曜）</div>
-      <div>松本紳汰さん向け ― 中長期投資家版</div>
-      <div class="text-[11px] mt-0.5 text-[#465fff]">三菱UFJ銀行 デジタル企画</div>
-    </div>
-  </header>
+  </section>
 
-  <!-- ① マーケット市況 -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>① マーケット市況
-    </h2>
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">02</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
+    <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開48時間以内を基本とし、重要度が高い場合は最大5日以内を掲載（RSSフィード取得不可のためWebSearch代替）。</p>
+    <div class="news">
 
-    <!-- charts: 日経225(OANDA:JP225USD) & ドル円(FX:USDJPY) -->
-    <div class="grid md:grid-cols-2 gap-4 mb-4">
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
-        <div class="text-xs text-gray-400 mb-2 px-1">日経225（JP225・日足）</div>
-        <div class="tradingview-widget-container">
-          <div id="tv_nikkei"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"OANDA:JP225USD","container_id":"tv_nikkei","width":"100%","height":300,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
-          </script>
+      <div class="col">
+        <div class="ch" style="background:var(--cool-soft);color:var(--down)">金利・為替・相場</div>
+        <a class="hl" href="https://online.nikkei-cnbc.co.jp/vod/66215" target="_blank" rel="noopener">
+          <h4>日経平均株価、最高値 終値196円57銭高の7万1250円06銭 大引け解説</h4>
+          <div class="meta">日経CNBC ・ 2日前</div>
+        </a>
+        <a class="hl" href="https://www.gaitame.com/media/entry/2026/06/21/070000" target="_blank" rel="noopener">
+          <h4>来週のドル円相場はどうなる？6/22週のイベント予定 2026年6月21日</h4>
+          <div class="meta">外為どっとコム ・ 本日</div>
+        </a>
+        <a class="hl" href="https://www.bloomberg.com/jp/news/articles/2026-06-17/TGSFDYT96OSG00" target="_blank" rel="noopener">
+          <h4>FOMCが金利据え置き、ウォーシュ新体制で利上げに一歩近づく</h4>
+          <div class="meta">Bloomberg ・ 4日前</div>
+        </a>
+      </div>
+
+      <div class="col">
+        <div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">政策・国際</div>
+        <a class="hl" href="https://news.web.nhk/newsweb/na/na-k10015155441000" target="_blank" rel="noopener">
+          <h4>ホルムズ海峡 船舶通過の動きも 戦闘開始前に比べると低調</h4>
+          <div class="meta">NHK ・ 約1日前</div>
+        </a>
+        <a class="hl" href="https://www.newsweekjapan.jp/articles/-/326145" target="_blank" rel="noopener">
+          <h4>米イランがスイスで協議開始へ、仲介国も参加 ホルムズ海峡「再封鎖」が影</h4>
+          <div class="meta">ニューズウィーク日本版 ・ 最近</div>
+        </a>
+        <a class="hl" href="https://www.goal.com/jp/%E3%83%AA%E3%82%B9%E3%83%88/japan-tunisia-kickoff-stadium-member-20260621/blte5b0c8ae0dd4cdb7" target="_blank" rel="noopener">
+          <h4>【6月21日】サッカー日本代表 チュニジア戦のキックオフ時間・試合日程・メンバー</h4>
+          <div class="meta">Goal.com 日本 ・ 本日</div>
+        </a>
+      </div>
+
+      <div class="col">
+        <div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">テック・AI・半導体</div>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOFL190L80Z10C26A6000000/" target="_blank" rel="noopener">
+          <h4>フジクラ株価ストップ高気配 27年3月期純利益46%増に上方修正</h4>
+          <div class="meta">日本経済新聞 ・ 2日前</div>
+        </a>
+        <a class="hl" href="https://www.bloomberg.com/jp/news/articles/2026-06-19/TGUOVSKJH6VT00" target="_blank" rel="noopener">
+          <h4>フジクラショック緩和、今期見通しの上方修正でストップ高買い気配――「懸念材料払しょく」の声</h4>
+          <div class="meta">Bloomberg ・ 2日前</div>
+        </a>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOUC179OF0X10C26A6000000/" target="_blank" rel="noopener">
+          <h4>ChatGPT内に広告表示、日本でOpenAIが展開 電通や博報堂が仲介</h4>
+          <div class="meta">日本経済新聞 ・ 2日前</div>
+        </a>
+      </div>
+
+      <div class="col">
+        <div class="ch" style="background:rgba(63,196,200,.15);color:var(--teal)">週末の横浜グルメ</div>
+        <div class="hl" style="cursor:default;border-bottom:0">
+          <h4>週末に横浜グルメを掲載します</h4>
+          <div class="meta">Google News RSS ・ 取得不可（本日）</div>
         </div>
       </div>
-      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
-        <div class="text-xs text-gray-400 mb-2 px-1">ドル円 USD/JPY（日足）</div>
-        <div class="tradingview-widget-container">
-          <div id="tv_usdjpy"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"FX:USDJPY","container_id":"tv_usdjpy","width":"100%","height":300,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
-          </script>
-        </div>
+
+    </div>
+  </section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">03</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
+    <p class="thesis"><span class="nb"><span class="hi">AIラリー継続</span>だが、利上げ・地政学・ドル高の三重奏に要注意。</span><br>日本銀行の政策金利1%引き上げ（31年ぶり高水準）後も161円台の円安が続く中、フジクラ等のAI光ファイバー銘柄が週次で日経平均を牽引し最高値を更新。週末のイラン「ホルムズ再封鎖」示唆が週明けの波乱要因となる可能性に要注目。</p>
+    <ul class="ul-thesis">
+      <li><span class="bead"></span><p><b>外国株投信（eMAXIS Slim S&amp;P500等）</b>：日本銀行の利上げサイクル継続で中長期的な円高転換リスクが残る。積立継続は有効だが、円高局面での含み損拡大に備えた為替ヘッジ付き商品とのバランス検討を。米連邦準備制度理事会（FRB）のWarsh新議長体制が「利上げシフト」を示唆しており、ドル高圧力は当面継続見込み。</p></li>
+      <li><span class="bead"></span><p><b>NASDAQ100連動投信</b>：フジクラ（5803）の2027年3月期純利益46%増上方修正がAIインフラ関連の構造的成長を裏付け、引き続き積立継続が基本方針。米連邦準備制度理事会（FRB）の「利上げシフト」後の短期調整リスクは念頭に置くが、AIデータセンター需要は構造的に底堅く、一時的な調整は中長期の積立機会と捉えたい。</p></li>
+      <li><span class="bead"></span><p><b>金（ゴールド）ETF・分散ヘッジ</b>：イランの「ホルムズ再封鎖」示唆と米インフレ再燃リスクが同時に高まる局面では、金ETFのポートフォリオ内ヘッジ機能が上昇する。純金上場信託等の保有比率（目安5〜10%）を確認し、地政学リスクへの備えとして現水準維持または小幅増を検討する時期。</p></li>
+    </ul>
+  </section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">04</span><span class="ja">先読み（需給シナリオ）</span><span class="tag">Forward view</span><span class="ln"></span></div>
+    <p class="lead">世界情勢の変化が<b>需給の崩れ</b>を生み、最終的に<b>数ヶ月後に効く投信／ETF</b>へ波及する連鎖を"仮説"として立てる枠。<span class="note">※仮説であり投資助言ではありません。</span></p>
+    <div class="scen">
+      <div class="card">
+        <h3>シナリオA：イラン「ホルムズ再封鎖」強行・原油高シナリオ</h3>
+        <p class="sub">週末に封鎖示唆が浮上――週明けの原油・インフレ動向が鍵</p>
+        <ul class="flow">
+          <li><span class="stg">情勢</span><span class="txt">イラン革命防衛隊が停戦合意を事実上無効化し、ホルムズ海峡封鎖を再度宣言。世界の原油・液化天然ガス（LNG）輸送の約2割が通過する要衝が遮断。</span></li>
+          <li><span class="stg">需給</span><span class="txt">原油・液化天然ガス（LNG）が急激にタイト化。日本・欧州向けエネルギー輸入コストが急騰し、消費者物価指数（CPI）・生産者物価指数の押し上げ要因に。</span></li>
+          <li><span class="stg">製品</span><span class="txt">原油（ブレント）が$100超えへ。日本の輸入インフレが再燃し、日本銀行はさらなる追加利上げ圧力に。電気代・ガソリン代が家計を圧迫。</span></li>
+          <li><span class="stg">市場</span><span class="txt">日本株は輸出製造業（円高＋原油高のダブル圧迫）が下落リスク。米欧株にも下押し圧力。一方、金（ゴールド）は地政学リスクプレミアムで上昇。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt">純金上場信託（1540等）の<b>ゴールドETF</b>、国内インフレ対応の<b>物価連動国債ファンド</b>に相対的な優位性が浮上。エネルギーセクターETFも注目。</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>シナリオB：米連邦準備制度理事会（FRB）早期利上げ・ドル高・円高転換シナリオ</h3>
+        <p class="sub">連邦公開市場委員会（FOMC）のタカ派転換が実弾化する2〜4ヶ月後を想定</p>
+        <ul class="flow">
+          <li><span class="stg">情勢</span><span class="txt">6月連邦公開市場委員会（FOMC）で据え置き済みだが、6月個人消費支出（PCE）デフレーターが上振れし、Warsh議長が10月FOMCで利上げを実施。</span></li>
+          <li><span class="stg">需給</span><span class="txt">ドル需要が急増し、新興国通貨安・資本流出が発生。日本銀行も対抗して追加利上げを前倒しすれば日米金利差が縮小し、円高加速の可能性。</span></li>
+          <li><span class="stg">製品</span><span class="txt">ドル建て商品（原油・金）が調整。グロース株のバリュエーション見直しが進み、米国IT大手の株価収益率が圧縮。NASDAQ100は短期的に調整リスク。</span></li>
+          <li><span class="stg">市場</span><span class="txt">為替ヘッジなし外国株投信は円高ダメージを直撃。国内金融セクター投信・ETFは日本銀行利上げ継続で利ざや拡大の恩恵。為替ヘッジ付き米国株投信に相対的優位性。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>為替ヘッジ付き米国株投信</b>（eMAXIS Slim 米国株式ヘッジあり等）、<b>NEXT FUNDS 銀行業ETF</b>（1615）等の国内金融セクターに注目。</span></li>
+        </ul>
       </div>
     </div>
-
-    <!-- OHLC table: 5 instruments — populated client-side by loadMarketData() below -->
-    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
-      <table class="w-full text-sm tnum">
-        <thead class="text-gray-400 text-xs border-b border-[#1f2733]">
-          <tr>
-            <th class="text-left font-medium px-3 py-2.5">銘柄 <span id="ohlc-date" class="font-normal text-gray-600 ml-1">（読込中…）</span></th>
-            <th class="text-right font-medium px-2">始値</th>
-            <th class="text-right font-medium px-2">高値</th>
-            <th class="text-right font-medium px-2">安値</th>
-            <th class="text-right font-medium px-2">終値</th>
-            <th class="text-right font-medium px-3">前日比</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#1f2733]">
-          <tr id="row-nikkei">
-            <td class="px-3 py-2.5 font-semibold">日経平均</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">—</td>
-            <td class="text-right px-3 text-gray-400">—</td>
-          </tr>
-          <tr id="row-usdjpy">
-            <td class="px-3 py-2.5 font-semibold">ドル円</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">—</td>
-            <td class="text-right px-3 text-gray-400">—</td>
-          </tr>
-          <tr id="row-wti">
-            <td class="px-3 py-2.5 font-semibold">WTI原油</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">—</td>
-            <td class="text-right px-3 text-gray-400">—</td>
-          </tr>
-          <tr id="row-sp500">
-            <td class="px-3 py-2.5 font-semibold">S&amp;P 500</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">—</td>
-            <td class="text-right px-3 text-gray-400">—</td>
-          </tr>
-          <tr id="row-gold">
-            <td class="px-3 py-2.5 font-semibold">金 (Gold)</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">—</td>
-            <td class="text-right px-3 text-gray-400">—</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット。数値：ページ読込時にYahoo Finance APIより自動取得（直近営業日終値ベース）。市場休場中は直近営業日データを日付付きで表示。</p>
   </section>
 
-  <!-- ② 経済・金融 (各カテゴリ2〜4本・本日JST公開優先; 本日分なければ「本日の新規なし」と明記) -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>② 経済・金融
-    </h2>
-    <div class="grid gap-3">
-
-      <!-- ニュースカードパターン（<details>アコーディオン）-->
-      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
-        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div>
-            <div class='font-semibold'>見出し</div>
-            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>出典</span> M/D HH:MM</div>
-          </div>
-          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
-        </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
-          <p>詳細な要点（自分の言葉, 3〜5文。背景・数字・銀行/デジタル企画への含意）</p>
-          <a href='実URL' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
-        </div>
-      </details>
-
-    </div>
-  </section>
-
-  <!-- ③ 政治・経済政策 -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>③ 政治・経済政策
-    </h2>
-    <div class="grid gap-3">
-      <!-- ニュースカード（上記パターンと同じ） -->
-    </div>
-  </section>
-
-  <!-- ④ DX・テクノロジー・AI -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>④ DX・テクノロジー・AI
-    </h2>
-    <div class="grid gap-3">
-      <!-- ニュースカード（上記パターンと同じ） -->
-      <!-- 当日分なければ: <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 text-sm text-gray-500 reveal">本日の新規なし</div> -->
-    </div>
-  </section>
-
-  <!-- ⑤ 週末グルメ（横浜中心） -->
-  <section class="mb-8 reveal">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-[#ef4444] rounded"></span>⑤ 週末グルメ（横浜中心）
-    </h2>
-    <div class="grid gap-3">
-      <!-- ニュースカード（上記パターンと同じ） -->
-    </div>
-  </section>
-
-  <footer class="mt-10 pt-4 border-t border-[#1f2733] text-xs text-gray-500">
-    自動生成：毎朝のニュースブリーフ · 公開ソース（ロイター/NHK/ITmedia/金融庁 等）より自動編集。<br>
-    本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト規約に配慮しています。
+  <footer class="foot">
+    <div class="dsum"><b>本日のデータ取得サマリー</b>：市況6項目のうち取得成功4項目（日経平均・NASDAQ100・S&amp;P500・三菱UFJ）、前日比変化未取得2項目（ドル円・金）。ニュース採用12本（金利・為替・相場3本／政策・国際3本／テック・AI・半導体3本）＋横浜グルメプレースホルダー1枚。Yahoo!ニュースRSSおよびGoogle News RSSは本環境のネットワーク制限により取得不可のためWebSearch代替。一部記事は公開から48〜96時間以内の範囲で掲載。</div>
+    <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
-
 </div>
-<script>const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))</script>
-<script>
-(async function loadMarketData() {
-  const PROXY = 'https://corsproxy.io/?url=';
-  const instruments = [
-    { rowId: 'row-nikkei', symbol: '%5EN225',   dec: 0 },
-    { rowId: 'row-usdjpy', symbol: 'USDJPY%3DX', dec: 2 },
-    { rowId: 'row-wti',    symbol: 'CL%3DF',     dec: 2 },
-    { rowId: 'row-sp500',  symbol: '%5EGSPC',    dec: 0 },
-    { rowId: 'row-gold',   symbol: 'GC%3DF',     dec: 0 },
-  ];
-
-  async function yfetch(symbol) {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=10d`;
-    for (const src of [url, PROXY + encodeURIComponent(url)]) {
-      try {
-        const r = await fetch(src, { mode: 'cors', credentials: src === url ? 'include' : 'omit' });
-        if (r.ok) { const j = await r.json(); if (j.chart?.result?.[0]) return j.chart.result[0]; }
-      } catch (_) {}
-    }
-    return null;
-  }
-
-  function fmt(v, dec) {
-    if (v == null || isNaN(v)) return '—';
-    return Number(v).toLocaleString('ja-JP', { minimumFractionDigits: dec, maximumFractionDigits: dec });
-  }
-
-  function jdate(ts) {
-    const d = new Date(ts * 1000);
-    const dow = ['日','月','火','水','木','金','土'][d.getDay()];
-    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${dow}）`;
-  }
-
-  let dateLabel = null;
-  const results = await Promise.allSettled(instruments.map(inst => yfetch(inst.symbol)));
-
-  results.forEach((res, i) => {
-    const inst = instruments[i];
-    const row = document.getElementById(inst.rowId);
-    if (!row) return;
-    const tds = row.querySelectorAll('td');
-    if (res.status !== 'fulfilled' || !res.value) return;
-
-    const data = res.value;
-    const ts   = data.timestamp;
-    const q    = data.indicators.quote[0];
-
-    let last = ts.length - 1;
-    while (last > 0 && (q.close[last] == null || isNaN(q.close[last]))) last--;
-    if (q.close[last] == null) return;
-
-    const o   = q.open[last];
-    const h   = q.high[last];
-    const l   = q.low[last];
-    const c   = q.close[last];
-    let prev  = null;
-    for (let k = last - 1; k >= 0; k--) { if (q.close[k] != null && !isNaN(q.close[k])) { prev = q.close[k]; break; } }
-    const chg    = prev != null ? c - prev : null;
-    const chgPct = prev != null ? (chg / prev * 100) : null;
-    const isUp   = chg != null && chg >= 0;
-    const sign   = chg != null ? (isUp ? '+' : '') : '';
-    const chgCls = chg != null ? (isUp ? 'text-right px-3 tnum text-up' : 'text-right px-3 tnum text-down') : 'text-right px-3 text-gray-400';
-
-    tds[1].textContent = fmt(o, inst.dec);  tds[1].className = 'text-right px-2 text-gray-400 tnum';
-    tds[2].textContent = fmt(h, inst.dec);  tds[2].className = 'text-right px-2 text-gray-400 tnum';
-    tds[3].textContent = fmt(l, inst.dec);  tds[3].className = 'text-right px-2 text-gray-400 tnum';
-    tds[4].textContent = fmt(c, inst.dec);  tds[4].className = 'text-right px-2 font-semibold tnum';
-    tds[5].textContent = chg != null ? `${sign}${fmt(chg, inst.dec)} (${sign}${chgPct.toFixed(2)}%)` : '—';
-    tds[5].className   = chgCls;
-
-    if (!dateLabel) dateLabel = jdate(ts[last]);
-  });
-
-  const el = document.getElementById('ohlc-date');
-  if (el) el.textContent = dateLabel ? `直近営業日 ${dateLabel}` : '（データ取得失敗）';
-})();
-</script>
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
 </body>
 </html>

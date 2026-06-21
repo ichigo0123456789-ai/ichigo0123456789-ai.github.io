@@ -1,35 +1,49 @@
 <!DOCTYPE html>
-<html lang="ja" class="dark">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ブリーフ アーカイブ一覧｜投資インテリジェンス・ブリーフ</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>朝のニュースまとめ｜アーカイブ一覧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-.bg-animated{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 18% 22%,rgba(70,95,255,.20),transparent 42%),radial-gradient(circle at 82% 28%,rgba(150,60,220,.16),transparent 42%),radial-gradient(circle at 50% 85%,rgba(20,120,200,.16),transparent 46%),#0e1117;background-size:180% 180%;animation:bgmove 22s ease-in-out infinite}
-@keyframes bgmove{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+  :root{--bg-1:#121723;--surface:#1a2130;--surface-2:#222b3c;--ink:#e9ecf4;--sub:#9aa4ba;--faint:#6d7689;--line:rgba(255,255,255,.09);--gold:#d6ab5b;--gold-ink:#e3c489;--gold-soft:rgba(214,171,91,.15);--gold-line:rgba(214,171,91,.36);--cool:#6b97ff;--shadow-sm:0 2px 12px -6px rgba(0,0,0,.6)}
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--bg-1)}
+  body::before{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(1000px 600px at 70% -10%,rgba(214,171,91,.10),transparent 55%),radial-gradient(800px 600px at 10% 5%,rgba(91,140,255,.10),transparent 50%),linear-gradient(168deg,#0c0f17 0%,#11151f 44%,#141a27 100%)}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:720px;margin:0 auto;padding:2.5rem 22px 4rem}
+  .back{font-family:'Space Grotesk',sans-serif;font-size:.8rem;color:var(--cool);display:inline-flex;align-items:center;gap:.3rem;margin-bottom:2rem}
+  .back:hover{text-decoration:underline}
+  h1{font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:clamp(1.6rem,5vw,2.2rem);margin:0 0 .3rem}
+  .sub-h{font-size:.85rem;color:var(--sub);margin:0 0 2rem}
+  .list{list-style:none;margin:0;padding:0;display:grid;gap:.75rem}
+  .list li a{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1f2738,var(--surface));border:1px solid var(--line);border-radius:14px;padding:1rem 1.25rem;transition:border-color .2s,transform .2s}
+  .list li a:hover{border-color:var(--gold-line);transform:translateX(3px)}
+  .list li a .date-label{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:1rem}
+  .list li a .desc{font-size:.78rem;color:var(--sub);margin-top:.15rem}
+  .list li a svg{flex-shrink:0;color:var(--faint)}
+  .foot{font-size:.75rem;color:var(--faint);margin-top:2.5rem;text-align:center}
 </style>
 </head>
-<body class="bg-[#0e1117] text-gray-200" style="font-family:-apple-system,'Segoe UI','Noto Sans JP',sans-serif">
-<div class="bg-animated"></div>
-<div class="max-w-3xl mx-auto px-4 py-10">
-  <a href="../" class="text-[#465fff] text-sm hover:underline">← 最新ブリーフへ</a>
-  <h1 class="text-2xl font-bold mt-4 mb-2">アーカイブ一覧</h1>
-  <p class="text-sm text-gray-400 mb-8">過去の朝の投資インテリジェンス・ブリーフ（松本紳汰さん向け）</p>
-
-  <ul class="space-y-3">
+<body>
+<div class="wrap">
+  <a class="back" href="../">← 最新版を見る</a>
+  <h1>朝のニュースまとめ</h1>
+  <p class="sub-h">アーカイブ一覧 ｜ 中長期・投資信託／ETF視点</p>
+  <ul class="list">
     <li>
-      <a href="2026-06-21.html" class="flex items-center justify-between bg-[rgba(23,28,38,.72)] border border-[#1f2733] rounded-xl px-5 py-4 hover:border-[#465fff]/50 transition-colors">
+      <a href="2026-06-21.html">
         <div>
-          <div class="font-semibold">2026年6月21日（日）</div>
-          <div class="text-xs text-gray-500 mt-0.5">日銀1.0%利上げ・FOMC ハイク示唆・フジクラAI決算・米イラン停戦・週次分析</div>
+          <div class="date-label">2026年6月21日（日）</div>
+          <div class="desc">日銀1.0%利上げ・米連邦公開市場委員会（FOMC）ハイク示唆・フジクラAI決算・イラン停戦・日経平均最高値</div>
         </div>
-        <svg class="w-4 h-4 text-gray-500 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 5l5 5-5 5"/></svg>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 5l5 5-5 5"/></svg>
       </a>
     </li>
   </ul>
-
-  <p class="text-xs text-gray-600 mt-10">本ブリーフは情報提供であり投資助言ではありません。最終判断はご自身で。</p>
+  <p class="foot">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。</p>
 </div>
 </body>
 </html>
