@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>朝のニュースブリーフ｜2026-06-21（土）</title>
+<title>朝のニュースブリーフ｜2026年6月21日（日）</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -27,32 +27,37 @@ summary::-webkit-details-marker{display:none}
 summary{list-style:none}
 .chev{transition:transform .2s}
 details[open] .chev{transform:rotate(180deg)}
+.bg-animated{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 18% 22%,rgba(70,95,255,.20),transparent 42%),radial-gradient(circle at 82% 28%,rgba(150,60,220,.16),transparent 42%),radial-gradient(circle at 50% 85%,rgba(20,120,200,.16),transparent 46%),#0e1117;background-size:180% 180%;animation:bgmove 22s ease-in-out infinite}
+@keyframes bgmove{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
 </style>
 </head>
-<body class="bg-base text-gray-200 font-sans">
+<body class="bg-[#0e1117] text-gray-200 font-sans">
+<div class="bg-animated"></div>
 <div class="max-w-5xl mx-auto px-4 py-6 pb-24">
 
   <!-- Top bar -->
-  <header class="flex items-end justify-between border-b border-bd pb-4 mb-6">
+  <header class="flex items-end justify-between border-b border-[#1f2733] pb-4 mb-6">
     <div>
-      <div class="text-brand-500 font-bold tracking-widest text-xs">MORNING BRIEF</div>
+      <div class="text-[#465fff] font-bold tracking-widest text-xs">MORNING BRIEF</div>
       <h1 class="text-2xl font-bold mt-1">朝のニュースブリーフ</h1>
     </div>
     <div class="text-right text-sm text-gray-400">
-      <div class="font-semibold text-gray-300">2026年6月21日（土）</div>
+      <div class="font-semibold text-gray-300">2026年6月21日（日）</div>
       <div>松本紳汰さん向け</div>
     </div>
   </header>
 
   <!-- ① マーケット市況 -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>① マーケット市況
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>① マーケット市況
     </h2>
 
-    <!-- charts: 日経225 & ドル円 -->
+    <!-- charts: 日経225(OANDA:JP225USD) & ドル円(FX:USDJPY) -->
     <div class="grid md:grid-cols-2 gap-4 mb-4">
-      <div class="bg-card border border-bd rounded-2xl p-3">
+      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
         <div class="text-xs text-gray-400 mb-2 px-1">日経225（JP225・日足）</div>
         <div class="tradingview-widget-container">
           <div id="tv_nikkei"></div>
@@ -61,7 +66,7 @@ details[open] .chev{transform:rotate(180deg)}
           </script>
         </div>
       </div>
-      <div class="bg-card border border-bd rounded-2xl p-3">
+      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
         <div class="text-xs text-gray-400 mb-2 px-1">ドル円 USD/JPY（日足）</div>
         <div class="tradingview-widget-container">
           <div id="tv_usdjpy"></div>
@@ -72,10 +77,10 @@ details[open] .chev{transform:rotate(180deg)}
       </div>
     </div>
 
-    <!-- OHLC table: 5 instruments -->
-    <div class="bg-card border border-bd rounded-2xl overflow-hidden">
+    <!-- OHLC table: 5 instruments (直近営業日 2026/6/20金) -->
+    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
       <table class="w-full text-sm tnum">
-        <thead class="text-gray-400 text-xs border-b border-bd">
+        <thead class="text-gray-400 text-xs border-b border-[#1f2733]">
           <tr>
             <th class="text-left font-medium px-3 py-2.5">銘柄</th>
             <th class="text-right font-medium px-2">始値</th>
@@ -85,7 +90,7 @@ details[open] .chev{transform:rotate(180deg)}
             <th class="text-right font-medium px-3">前日比</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-bd">
+        <tbody class="divide-y divide-[#1f2733]">
           <tr>
             <td class="px-3 py-2.5 font-semibold">日経平均</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -129,49 +134,41 @@ details[open] .chev{transform:rotate(180deg)}
         </tbody>
       </table>
     </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／直近営業日（6/20）終値ベース。本日はOHLC数値の取得に失敗したため「—」表示。最新値はチャートウィジェットにてご確認ください。</p>
+    <p class="text-[11px] text-gray-500 mt-2 px-1">直近営業日（2026年6月20日金曜）。市場データAPIへのアクセスが制限されたため数値は「—」表示。TradingViewチャートで最新値をご確認ください。⚠️ イランのホルムズ海峡封鎖宣言（6/20〜21）でWTI原油の週明け動向に要注意。</p>
   </section>
 
   <!-- ② 経済・金融 -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>② 経済・金融
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>② 経済・金融
     </h2>
     <div class="grid gap-3">
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>日銀、政策金利を31年ぶり高水準の1.0%に引き上げ決定</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>NHK / 第一生命経済研究所</span> 6/16 18:00</div></div>
+          <div>
+            <div class='font-semibold'>イランがホルムズ海峡封鎖を宣言　日本の原油調達コストと金融市場に警戒感</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>CBS News / CNN</span> 6月21日 更新中</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>日本銀行は6月15・16日の金融政策決定会合で、政策金利を0.75%から1.0%に引き上げることを7対1の賛成多数で決定した。1995年以来31年ぶりの高水準であり、3年連続の歴史的な賃上げによる「賃金と物価の好循環」の確認が主な背景。住宅ローンの変動金利は2026年10月に多くの銀行が一斉に0.25%引き上げる見込みで、既存借入者への返済増反映は2027年1月以降が一般的。銀行にとっては利ざや改善という正の影響が続く一方、法人向け融資コスト上昇による与信リスク増大を慎重に管理する必要がある。次の焦点は年内追加利上げ（1.25%水準）の時期と、長期金利の安定性確保にある。</p>
-          <a href='https://news.web.nhk/newsweb/na/na-k10015150921000' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>イラン軍が6月21日（日本時間）、ホルムズ海峡の封鎖を宣言した。世界の原油・液化天然ガス輸送量の約20%が通過するこの海峡が機能不全に陥れば、原油価格の再高騰は避けられない。日本は原油輸入の約90%を中東に依存しており、エネルギーコスト上昇は企業の製造費や電力・ガス料金を押し上げ、6月に日銀が決定した政策金利1.0%（31年ぶり高水準）という金融引き締め下でも物価上振れリスクが再燃しかねない構図だ。米軍中央軍は「商業船舶の通行は継続中」と反論し、実態をめぐって米イランが主張を真っ向から食い違わせている。市場参加者は週明け月曜（6/22）の原油先物・円相場・日本株の動向を固唾をのんで見守っている。</p>
+          <a href='https://www.cbsnews.com/live-updates/iran-us-war-talks-suspended-trump-mou-israel-lebanon-hezbollah-fighting/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>3メガバンク年間配当が初の2兆円超え・普通預金金利は34年ぶり高水準0.4%に</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>時事通信 / 各社</span> 6/21</div></div>
+          <div>
+            <div class='font-semibold'>W杯日本代表が前半2-0リード　鎌田・上田が決め関連消費にも活気</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>日本経済新聞 / NHK</span> 6月21日 13:00〜速報</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>三菱UFJ・三井住友・みずほの3メガバンクが株主に払う年間配当総額が、2026年度に初めて2兆円を突破する見通しとなった。日銀のマイナス金利解除から3年で配当は約2倍になり、金利正常化の恩恵が株主還元として本格的に具体化している。普通預金金利も3メガ銀一斉に0.4%となり、34年ぶりの高水準を更新した。高収益基盤を背景にAI・DX投資余力が一段と拡大することが期待され、各行のデジタル企画の予算環境にポジティブな影響が見込まれる。個人の資産形成においては銀行預金の相対的魅力が高まっており、投資信託・NISAとの競合関係の変化も注目点。</p>
-          <a href='https://www.jiji.com/jc/c?g=eco' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
-        </div>
-      </details>
-
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
-        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>住宅ローン変動金利、2026年10月に各行が一斉0.25%引き上げへ</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>モゲチェック</span> 6/16 更新</div></div>
-          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
-        </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>今回の日銀1.0%利上げを受け、住宅ローンの変動金利は2026年10月に国内主要銀行が一斉に0.25%程度引き上げる展開が最有力シナリオとなった。2026年6月時点の変動金利は主要行で約1.08%前後、固定（フラット35）は約3.21%で、両者の差は約2.13%に縮小している。「5年ルール」適用の借入者は当面の返済額が据え置かれるが、2027年1月以降の見直しで実際の負担増が表面化する。借入額4,000万円・35年返済で金利が0.25%上昇すると月々約5,000円・年間約6万円の返済増となる試算で、消費マインドへの下押し圧力として注視が必要。銀行の住宅ローン審査においても、金利上昇局面でのストレステスト基準の見直しが課題となってくる。</p>
-          <a href='https://mogecheck.jp/articles/show/pnl6ZzOV4BDR2k5Ra7PY' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>FIFAワールドカップ2026のグループF第2戦、日本対チュニジアが6月21日13時（JST）にメキシコ・モンテレイでキックオフされた。前半4分に鎌田大地、31分に上田綺世がゴールを決め、日本が2-0とリードしてハーフタイムを迎えた。初戦でオランダと2-2ドローだった日本にとって決勝トーナメント進出の鍵を握る一戦で、国内では居酒屋・パブリックビューイング・グッズ販売が活況を呈し、スポーツ関連消費が盛り上がっている。チュニジアは初戦でスウェーデンに1-5で大敗しており、日本が勝利すればグループ突破がほぼ確定する見通しだ。好成績が続けばインバウンド需要や広告関連消費の追い風にもなりうる。</p>
+          <a href='https://www.nikkei.com/article/DGXZQODH201B90Q6A620C2000000/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
@@ -179,33 +176,37 @@ details[open] .chev{transform:rotate(180deg)}
   </section>
 
   <!-- ③ 政治・経済政策 -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>③ 政治・経済政策
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>③ 政治・経済政策
     </h2>
     <div class="grid gap-3">
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>第221回通常国会が本日（6/21）閉会、過去最大規模122兆円超の予算成立</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>NHK / 首相官邸</span> 6/21</div></div>
+          <div>
+            <div class='font-semibold'>バンス副大統領がスイスへ出発　米イラン核協議が再び正念場へ</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>CBS News</span> 6月21日 更新中</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>高市首相が主導する第221回通常国会が本日（6月21日）で会期末を迎え閉会した。122兆3000億円の2026年度予算は既に成立しており、子ども1人あたり2万円給付・電気ガス料金補助など物価高対策が盛り込まれている。「責任ある積極財政」路線のもとで半導体・AI・量子など17の戦略分野への集中支援も閣議決定されており、政府が民間投資を誘発する産業政策色が一段と強まっている。今後の焦点は秋の参院選に向けた追加経済対策と、日銀の利上げ継続との政策協調をどう図るかという点。銀行・デジタル企画への含意としては、政府の産業振興策に伴う設備投資融資需要の拡大とAI・デジタルインフラへの公的投資増加が見込まれる。</p>
-          <a href='https://www.kantei.go.jp/jp/105/statement/2026/0220shiseihoshin.html' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>米国のバンス副大統領は21日、イランとの核合意（MOU）履行を巡る協議継続のためスイス・ジュネーブへ出発した。トランプ大統領が6月14日に「戦闘終結合意」を発表して以降、イランによるレバノン情勢への関与をめぐり両国の緊張が再燃していた。バンス氏はFoxニュースで「昨日だけで1,600万バレルの原油がホルムズ海峡を通過した。紛争前を上回る記録だ」と述べ、イランの封鎖宣言を実質否定した。米国はイスラエルへのレバノン攻撃停止を求める外交的圧力を続けており、スイスでの会談の成否が中東情勢全体を左右する。合意が崩れれば石油供給不安や安全保障リスクを通じ、日本を含む世界経済への波及は大きい。</p>
+          <a href='https://www.cbsnews.com/live-updates/iran-us-war-talks-suspended-trump-mou-israel-lebanon-hezbollah-fighting/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>高市内閣の総合経済対策、今後3年で7兆円超の経済効果を試算</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>内閣府 / 各社</span> 6/21</div></div>
+          <div>
+            <div class='font-semibold'>米軍「ホルムズ通行は継続中」　イランの封鎖宣言を即否定、主張が真っ向対立</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>Newsweek / CNN</span> 6月21日 更新中</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>高市政権の総合経済対策は今後3年程度で7兆円規模の経済効果があると内閣府が試算しており、国会閉会を機にその実施に向けた具体化が本格化する見込み。特に半導体・AI・蓄電池など「17の戦略分野」への設備投資減税・補助金の枠組みが整い、民間企業の国内回帰投資が加速する局面に入った。実質GDP成長率は2026年度0.9%と1%弱の緩やかな拡大が見込まれているが、日銀の追加利上げが消費・投資マインドに与える影響が下振れリスクとして残る。銀行の融資戦略では、政府支援と連動した成長分野への設備資金需要の取り込みが重要な競争軸となる。デジタル企画部門としては、政府の産業政策との接点を把握し官民連携のビジネス機会を早期に探ることが求められる。</p>
-          <a href='https://www.soumu.go.jp/menu_news/s-news/index.html' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>米軍中央軍司令部（CENTCOM）は21日、「イランはホルムズ海峡を支配していない。商業船舶の通行は継続しており、米軍が状況を監視している」と声明を発表し、イランの封鎖宣言を否定した。CENTCOMによれば同日の商業船舶通行数は実際に増加しているという。Newsweekはイラン軍がレバノンへのイスラエル攻撃を「MOU違反」と主張し封鎖を宣言した経緯を報じており、バンス副大統領も「封鎖の証拠はない」と述べた。ただし海峡周辺には機雷が残存しており、商業航路リスクが完全に払拭されたわけではない。米イランの主張の食い違いが続く中、エネルギー市場と外交交渉の両面で注目が集まっている。</p>
+          <a href='https://www.newsweek.com/iran-army-strait-of-hormuz-closed-vance-open-mou-trump-deal-breach-12098993' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
@@ -213,33 +214,51 @@ details[open] .chev{transform:rotate(180deg)}
   </section>
 
   <!-- ④ DX・テクノロジー・AI -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>④ DX・テクノロジー・AI
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>④ DX・テクノロジー・AI
     </h2>
     <div class="grid gap-3">
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>MUFG×Google、AIエージェントが商品選択から決済まで完結させる金融基盤を構築へ</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>ITmedia NEWS / MUFG公式</span> 5/7（継続注目）</div></div>
+          <div>
+            <div class='font-semibold'>ノーベル賞受賞者ジャンパー氏がDeepMind→Anthropicへ　AIトップ人材争奪が激化</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>TechCrunch / Bloomberg</span> 6月19〜20日 ※当日付け記事不足のため直近重要報道を参考掲載</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>三菱UFJフィナンシャル・グループと米Googleは5月7日、リテール金融領域における戦略的提携を発表し、Google Cloud上に「エージェンティック・ペイメント」基盤を構築する方針を示した。スマホで商品を撮影するだけでAIが最安値購入先を選定し、最適な支払い方法で決済まで自律的に完結させる世界観を目指しており、MUFGにとってOpenAIに続くAI大手との「二重提携」戦略となる。GoogleのAgent Payments ProtocolやUniversal Commerce Protocolといった標準規格を採用し、2026年度中にPoC（実証実験）開始・2027年度の本格サービス化を目指す計画だ。これは銀行の金融機能をAIエコシステムの最上流に組み込む先手であり、非金融サービスへの「エンベデッド・ファイナンス」の加速を象徴する動き。デジタル企画担当者として「APIとしての銀行」化がもたらすビジネスモデル変革を早期に把握し、自行の対応戦略を検討する必要がある。</p>
-          <a href='https://www.itmedia.co.jp/news/articles/2605/07/news110.html' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>タンパク質構造予測AI「AlphaFold」の共同開発者で2024年ノーベル化学賞を受賞したジョン・ジャンパー氏が、約9年間在籍したGoogle DeepMindを退職してAnthropic入りを表明した（6/19〜20報道）。同週にはGeminiの共同リード研究者ノアム・シャジール氏もOpenAIへ転じており、Googleのトップ研究者離脱が相次ぐ異例の週となった。AIラボ間のトップ研究者引き抜きは2026年に入り一段と激化しており、待遇・研究環境・組織文化の差別化が各社にとって喫緊の課題だ。日系企業のAI戦略においても「どのエコシステム・どのパートナーと組むか」という選択が、技術格差を左右する重要な経営判断となりつつある。</p>
+          <a href='https://techcrunch.com/2026/06/20/nobel-laureate-john-jumper-is-leaving-deepmind-for-rival-anthropic/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>金融庁、「金融分野におけるAI健全利活用」のディスカッションペーパー公表・業界議論進む</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>金融庁</span> 3/3 公表・継続議論中</div></div>
+          <div>
+            <div class='font-semibold'>クアルコム、AIチップ新興Tenstorrentを最大100億ドルで買収交渉　RISC-V×AIで攻勢</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>The Register / GuruFocus</span> 6月16日 ※直近重要報道を参考掲載</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>金融庁は2026年3月に「金融分野におけるAIの健全な利活用の促進に向けた初期的な論点整理（第1.1版）」を公表し、AIによる与信判断・保険引受・投資アドバイス拡大を見据えた規制論点を整理した。現時点では明確な新規制の創設ではなく業界との対話を重視するスタンスだが、各社がAI活用の社内ガバナンス体制を今から整備することが実務的に必要。特に「AIによる与信判断の根拠説明（説明可能性）」と「顧客への公正・透明な情報開示」が将来の規制枠組みの核心となる可能性が高く、システム設計段階から組み込む視点が求められる。三井住友グループが生成AIに500億円の投資を表明するなど国内大手行での全行員向け展開が加速しており、稟議書作成・与信メモ下書きが実用フェーズに入っている。本日（6/21）の新規AI/DX記事は確認できなかったため、直近の重要トピックを継続掲載。</p>
-          <a href='https://www.fsa.go.jp/news/r7/sonota/20260303/aidp_version1.1.pdf' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>半導体大手クアルコムが、AIチップ設計スタートアップのTenstorrent（創業者：ジム・ケラー氏）を80〜100億ドルで買収する交渉を進めていることが6月16日に報じられた。Tenstorrentはオープンな命令セットアーキテクチャRISC-Vを活用したAI推論チップを手掛け、NVIDIAへの対抗軸として注目されてきた企業だ。クアルコムにとってはデータセンター向けAI半導体市場への本格参入を意味し、成立すれば同社最大規模の買収案件となる。エッジAIとクラウドAIの両フロントでのシェア拡大が期待される一方、NVIDIA支配体制を切り崩せるかが最大の焦点だ。日系半導体・DX関連企業にとってもAIインフラの競争環境変化を読む上で見逃せない動向だ。</p>
+          <a href='https://www.theregister.com/systems/2026/06/16/qualcomm-said-to-be-circling-ai-chip-biz-tenstorrent-in-10b-risc-v-power-play/5256084' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div>
+            <div class='font-semibold'>ソフトバンクがOpenAI技術活用のサイバーセキュリティ「PaaS」を発表　重要インフラ3,000社へ</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>SoftBank Group / Nikkei Asia</span> 6月16日 ※直近重要報道を参考掲載</div>
+          </div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>ソフトバンクグループ・ソフトバンク株式会社・SB OAI Japanは6月16日、OpenAI技術を活用した「Patching as a Service（PaaS）」サービスを発表した。空港・電力・交通など日本の重要インフラを担う上位3,000社を対象に、AIが脆弱性診断・修正計画・実装アドバイスを自動支援するものだ。SB OAI Japanは2025年11月にソフトバンクとOpenAIが設立した合弁会社で、日本企業向けにAIツールのローカライズ実装を進めている。価格は未発表で、まず無料診断による導入促進を図る戦略を採る。高度化する自動化サイバー攻撃への対応において、AIを用いたパッチ管理の自動化は国内企業のセキュリティ戦略の新軸として広がりそうだ。</p>
+          <a href='https://group.softbank/en/news/press/20260616' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
@@ -247,44 +266,64 @@ details[open] .chev{transform:rotate(180deg)}
   </section>
 
   <!-- ⑤ 週末グルメ（横浜中心） -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-down rounded"></span>⑤ 週末グルメ（横浜中心）
+      <span class="w-1.5 h-4 bg-[#ef4444] rounded"></span>⑤ 週末グルメ（横浜中心）
     </h2>
     <div class="grid gap-3">
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>新横浜に本場ナポリスタイルのイタリアン「Tavernetta Salvatore」がオープン</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>食べログ / 店舗情報</span> 6/1 オープン</div></div>
+          <div>
+            <div class='font-semibold'>【本日最終日】お茶とどら焼きフェスティバル　みなとみらいMMテラスで開催中</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>ウォーカープラス</span> 今週末（6/20〜6/21）</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>新横浜駅から徒歩圏内に、本場ナポリスタイルの窯焼きピッツァと旬の食材を活かしたイタリア料理を提供する「Tavernetta Salvatore」が6月1日にオープンした。ランチ・ディナーともに対応しており、落ち着いた雰囲気でイタリアの食文化をゆっくり楽しめる作り。新横浜エリアは再開発が続いており食の選択肢が広がりつつある注目エリア。週末に横浜北部へお出かけの際はチェックを。本日（6/21）の新規グルメ記事は確認できなかったため、直近オープンの注目店として掲載しています。</p>
-          <a href='https://tabelog.com/kanagawa/C14100/rstLst/cond16-00-00/' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>食べログ・横浜新店一覧を開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>横浜みなとみらいのMMテラスで「お茶とどら焼きフェスティバル」が開催中で、本日（21日）が最終日となる。静岡・神奈川の茶農家や横浜市内の専門店が集結し、日本茶のほか和紅茶・台湾茶・国産ハーブティーなど多彩なお茶を販売するイベントだ。お茶に合う和菓子・焼き菓子も充実しており、港を一望するロケーションでゆったりとした午後のひとときを過ごせる。テイクアウトや茶葉のお土産探しにも最適で、みなとみらいの散策と組み合わせて楽しみたい。今日が最後のチャンスのため、午後の外出先として候補に入れてみてはいかがだろうか。</p>
+          <a href='https://www.walkerplus.com/event_list/weekend/ar0314/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>横浜モアーズ9階レストランフロアがグランドオープン、横浜駅直結の新グルメスポット</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>横浜市観光情報 / 公式</span> 4/25 オープン</div></div>
+          <div>
+            <div class='font-semibold'>【本日最終日】名探偵コナンランド2026　ららぽーと横浜で6/21まで</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>ウォーカープラス</span> 今週末（6/20〜6/21）</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
-          <p>横浜駅直結の「横浜モアーズ」9階レストランフロアが4月25日にグランドオープンし、複数の新店舗が一気に集結した。悪天候時も雨に濡れずアクセスできる利便性の高さと多様なジャンルのラインナップが特徴で、ランチ・ディナーともに利用しやすい構成になっている。週末の横浜中心部でのお食事候補として引き続き注目の一角。公式サイトで店舗ラインナップの最新情報をご確認ください。</p>
-          <a href='https://www.welcome.city.yokohama.jp/topics/tp_detail.php?tpid=T04222' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>横浜市観光情報サイトを開く ↗</a>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>三井ショッピングパーク ららぽーと横浜で「名探偵コナンランド2026」が6月12日から開催されており、本日（21日）が最終日だ。キャラクターフードや限定グッズ、フォトスポット、体験型コンテンツが充実し、ファミリーにもカップルにも人気の集客イベントとなっている。ららぽーと横浜にはフードコートや多数のレストランも揃っており、イベント後にそのままランチ・ショッピングを楽しめるのが魅力だ。横浜都筑区エリアへのおでかけ先として、今日限りの機会を逃さないようにしたい。アクセスは横浜市営地下鉄グリーンライン「中山」駅から徒歩約10分。</p>
+          <a href='https://www.walkerplus.com/event_list/weekend/ar0314/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div>
+            <div class='font-semibold'>横浜ベイシェラトン スカイラウンジ「ベイ・ビュー」　ピーチ＆マンゴー アフタヌーンティー開催中</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>横浜ベイシェラトン公式</span> 6月1日〜7月31日 実施中</div>
+          </div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
+          <p>横浜ベイシェラトン ホテル＆タワーズの最上階スカイラウンジ「ベイ・ビュー」では、6月1日から7月31日まで「ピーチ＆マンゴーのスペシャルカクテル＆ローストビーフ アフタヌーンティーセット」を提供している。港と横浜の街並みを一望できる絶景の中で、旬の桃とマンゴーを使ったオリジナルカクテルと本格ローストビーフが楽しめる、夏らしいラインナップだ。横浜駅直結のため雨天時も安心して訪れることができ、記念日や特別な午後のひとときを演出するのに最適な場所だ。日曜の今日は混み合う可能性があるため、事前予約の確認をおすすめする。</p>
+          <a href='https://www.marriott.com/ja/hotels/tyobs-sheraton-grand-yokohama-kanai/dining/' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
     </div>
   </section>
 
-  <footer class="mt-10 pt-4 border-t border-bd text-xs text-gray-500">
-    自動生成：毎朝のニュースブリーフ · 公開ソース（NHK / ITmedia / 時事通信 / 首相官邸 / 金融庁 / モゲチェック / 食べログ 等）より自動編集。<br>
-    本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト規約に配慮しています。
+  <footer class="mt-10 pt-4 border-t border-[#1f2733] text-xs text-gray-500">
+    自動生成：毎朝のニュースブリーフ · 公開ソース（CBS News / CNN / Newsweek / 日本経済新聞 / NHK / TechCrunch / Bloomberg / SoftBank Group 等）より自動編集。<br>
+    本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト規約に配慮しています。<br>
+    ④DX・AIは日曜のため当日付け記事が不足し、直近の重要記事を各カード内に日付明記のうえ参考掲載しました。
   </footer>
 
 </div>
+<script>const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))</script>
 </body>
 </html>

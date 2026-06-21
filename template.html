@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>朝のニュースブリーフ｜YYYY-MM-DD（曜）</title>
+<title>朝のニュースブリーフ｜YYYY年M月D日（曜）</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -27,15 +27,20 @@ summary::-webkit-details-marker{display:none}
 summary{list-style:none}
 .chev{transition:transform .2s}
 details[open] .chev{transform:rotate(180deg)}
+.bg-animated{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 18% 22%,rgba(70,95,255,.20),transparent 42%),radial-gradient(circle at 82% 28%,rgba(150,60,220,.16),transparent 42%),radial-gradient(circle at 50% 85%,rgba(20,120,200,.16),transparent 46%),#0e1117;background-size:180% 180%;animation:bgmove 22s ease-in-out infinite}
+@keyframes bgmove{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
 </style>
 </head>
-<body class="bg-base text-gray-200 font-sans">
+<body class="bg-[#0e1117] text-gray-200 font-sans">
+<div class="bg-animated"></div>
 <div class="max-w-5xl mx-auto px-4 py-6 pb-24">
 
   <!-- Top bar -->
-  <header class="flex items-end justify-between border-b border-bd pb-4 mb-6">
+  <header class="flex items-end justify-between border-b border-[#1f2733] pb-4 mb-6">
     <div>
-      <div class="text-brand-500 font-bold tracking-widest text-xs">MORNING BRIEF</div>
+      <div class="text-[#465fff] font-bold tracking-widest text-xs">MORNING BRIEF</div>
       <h1 class="text-2xl font-bold mt-1">朝のニュースブリーフ</h1>
     </div>
     <div class="text-right text-sm text-gray-400">
@@ -45,14 +50,14 @@ details[open] .chev{transform:rotate(180deg)}
   </header>
 
   <!-- ① マーケット市況 -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>① マーケット市況
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>① マーケット市況
     </h2>
 
     <!-- charts: 日経225(OANDA:JP225USD) & ドル円(FX:USDJPY) -->
     <div class="grid md:grid-cols-2 gap-4 mb-4">
-      <div class="bg-card border border-bd rounded-2xl p-3">
+      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
         <div class="text-xs text-gray-400 mb-2 px-1">日経225（JP225・日足）</div>
         <div class="tradingview-widget-container">
           <div id="tv_nikkei"></div>
@@ -61,7 +66,7 @@ details[open] .chev{transform:rotate(180deg)}
           </script>
         </div>
       </div>
-      <div class="bg-card border border-bd rounded-2xl p-3">
+      <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-3 reveal">
         <div class="text-xs text-gray-400 mb-2 px-1">ドル円 USD/JPY（日足）</div>
         <div class="tradingview-widget-container">
           <div id="tv_usdjpy"></div>
@@ -73,9 +78,10 @@ details[open] .chev{transform:rotate(180deg)}
     </div>
 
     <!-- OHLC table: 5 instruments (直近営業日 WebSearch/WebFetchで取得; 取得不可は「—」) -->
-    <div class="bg-card border border-bd rounded-2xl overflow-hidden">
+    <!-- 上昇: class="text-up"  下落: class="text-down"  取得不可: — -->
+    <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
       <table class="w-full text-sm tnum">
-        <thead class="text-gray-400 text-xs border-b border-bd">
+        <thead class="text-gray-400 text-xs border-b border-[#1f2733]">
           <tr>
             <th class="text-left font-medium px-3 py-2.5">銘柄</th>
             <th class="text-right font-medium px-2">始値</th>
@@ -85,8 +91,7 @@ details[open] .chev{transform:rotate(180deg)}
             <th class="text-right font-medium px-3">前日比</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-bd">
-          <!-- 上昇: class="text-up"  下落: class="text-down"  取得不可: — -->
+        <tbody class="divide-y divide-[#1f2733]">
           <tr>
             <td class="px-3 py-2.5 font-semibold">日経平均</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -130,26 +135,28 @@ details[open] .chev{transform:rotate(180deg)}
         </tbody>
       </table>
     </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／数値：市況データ。前日比は終値ベース。</p>
+    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／数値：市況データ。直近営業日終値ベース。上昇はtext-up（緑）・下落はtext-down（赤）・取得不可は「—」で表示。</p>
   </section>
 
   <!-- ② 経済・金融 (各カテゴリ2〜4本・本日JST公開優先; 本日分なければ「本日の新規なし」と明記) -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>② 経済・金融
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>② 経済・金融
     </h2>
     <div class="grid gap-3">
 
-      <!-- ニュースカードパターン（<details>アコーディオン） -->
-      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+      <!-- ニュースカードパターン（<details>アコーディオン）-->
+      <details class='bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal'>
         <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
-          <div><div class='font-semibold'>見出し</div>
-          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>出典</span> M/D HH:MM</div></div>
+          <div>
+            <div class='font-semibold'>見出し</div>
+            <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>出典</span> M/D HH:MM</div>
+          </div>
           <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
         </summary>
-        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-[#1f2733] pt-3 space-y-2'>
           <p>詳細な要点（自分の言葉, 3〜5文。背景・数字・銀行/デジタル企画への含意）</p>
-          <a href='実URL' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+          <a href='実URL' target='_blank' rel='noopener' class='inline-block text-[#465fff] text-xs hover:underline'>出典記事を開く ↗</a>
         </div>
       </details>
 
@@ -157,9 +164,9 @@ details[open] .chev{transform:rotate(180deg)}
   </section>
 
   <!-- ③ 政治・経済政策 -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>③ 政治・経済政策
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>③ 政治・経済政策
     </h2>
     <div class="grid gap-3">
       <!-- ニュースカード（上記パターンと同じ） -->
@@ -167,30 +174,32 @@ details[open] .chev{transform:rotate(180deg)}
   </section>
 
   <!-- ④ DX・テクノロジー・AI -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>④ DX・テクノロジー・AI
+      <span class="w-1.5 h-4 bg-[#465fff] rounded"></span>④ DX・テクノロジー・AI
     </h2>
     <div class="grid gap-3">
       <!-- ニュースカード（上記パターンと同じ） -->
+      <!-- 当日分なければ: <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl p-4 text-sm text-gray-500 reveal">本日の新規なし</div> -->
     </div>
   </section>
 
   <!-- ⑤ 週末グルメ（横浜中心） -->
-  <section class="mb-8">
+  <section class="mb-8 reveal">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-down rounded"></span>⑤ 週末グルメ（横浜中心）
+      <span class="w-1.5 h-4 bg-[#ef4444] rounded"></span>⑤ 週末グルメ（横浜中心）
     </h2>
     <div class="grid gap-3">
       <!-- ニュースカード（上記パターンと同じ） -->
     </div>
   </section>
 
-  <footer class="mt-10 pt-4 border-t border-bd text-xs text-gray-500">
+  <footer class="mt-10 pt-4 border-t border-[#1f2733] text-xs text-gray-500">
     自動生成：毎朝のニュースブリーフ · 公開ソース（ロイター/NHK/ITmedia/金融庁 等）より自動編集。<br>
     本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト規約に配慮しています。
   </footer>
 
 </div>
+<script>const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))</script>
 </body>
 </html>
