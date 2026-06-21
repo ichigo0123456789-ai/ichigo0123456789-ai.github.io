@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>朝のニュースブリーフ｜2026-06-21（土）</title>
+<title>朝のニュースブリーフ｜YYYY-MM-DD（曜）</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -18,7 +18,16 @@
     }}
   }
 </script>
-<style>body{font-feature-settings:"palt"}.tnum{font-variant-numeric:tabular-nums}</style>
+<style>
+body{font-feature-settings:"palt"}
+.tnum{font-variant-numeric:tabular-nums}
+.text-up{color:#22c55e}
+.text-down{color:#ef4444}
+summary::-webkit-details-marker{display:none}
+summary{list-style:none}
+.chev{transition:transform .2s}
+details[open] .chev{transform:rotate(180deg)}
+</style>
 </head>
 <body class="bg-base text-gray-200 font-sans">
 <div class="max-w-5xl mx-auto px-4 py-6 pb-24">
@@ -30,7 +39,7 @@
       <h1 class="text-2xl font-bold mt-1">朝のニュースブリーフ</h1>
     </div>
     <div class="text-right text-sm text-gray-400">
-      <div class="font-semibold text-gray-300">2026年6月21日（土）</div>
+      <div class="font-semibold text-gray-300">YYYY年M月D日（曜）</div>
       <div>松本紳汰さん向け</div>
     </div>
   </header>
@@ -38,17 +47,17 @@
   <!-- ① マーケット市況 -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>マーケット市況
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>① マーケット市況
     </h2>
 
-    <!-- charts: 日経平均 & ドル円 -->
+    <!-- charts: 日経225(OANDA:JP225USD) & ドル円(FX:USDJPY) -->
     <div class="grid md:grid-cols-2 gap-4 mb-4">
       <div class="bg-card border border-bd rounded-2xl p-3">
-        <div class="text-xs text-gray-400 mb-2 px-1">日経平均（日足）</div>
+        <div class="text-xs text-gray-400 mb-2 px-1">日経225（JP225・日足）</div>
         <div class="tradingview-widget-container">
           <div id="tv_nikkei"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"TVC:NI225","container_id":"tv_nikkei","width":"100%","height":300,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
+          {"symbol":"OANDA:JP225USD","container_id":"tv_nikkei","width":"100%","height":300,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
           </script>
         </div>
       </div>
@@ -63,7 +72,7 @@
       </div>
     </div>
 
-    <!-- OHLC table: 5 instruments -->
+    <!-- OHLC table: 5 instruments (直近営業日 WebSearch/WebFetchで取得; 取得不可は「—」) -->
     <div class="bg-card border border-bd rounded-2xl overflow-hidden">
       <table class="w-full text-sm tnum">
         <thead class="text-gray-400 text-xs border-b border-bd">
@@ -77,122 +86,109 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-bd">
+          <!-- 上昇: class="text-up"  下落: class="text-down"  取得不可: — -->
           <tr>
             <td class="px-3 py-2.5 font-semibold">日経平均</td>
-            <td class="text-right px-2 text-gray-400">38,100</td>
-            <td class="text-right px-2 text-gray-400">38,540</td>
-            <td class="text-right px-2 text-gray-400">38,050</td>
-            <td class="text-right px-2 font-semibold">38,420</td>
-            <td class="text-right px-3 text-up">+312<span class="text-xs ml-1">(+0.82%)</span></td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
           <tr>
             <td class="px-3 py-2.5 font-semibold">ドル円</td>
-            <td class="text-right px-2 text-gray-400">157.70</td>
-            <td class="text-right px-2 text-gray-400">157.85</td>
-            <td class="text-right px-2 text-gray-400">157.05</td>
-            <td class="text-right px-2 font-semibold">157.21</td>
-            <td class="text-right px-3 text-down">-0.49<span class="text-xs ml-1">(-0.31%)</span></td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
           <tr>
             <td class="px-3 py-2.5 font-semibold">WTI原油</td>
-            <td class="text-right px-2 text-gray-400">79.10</td>
-            <td class="text-right px-2 text-gray-400">79.30</td>
-            <td class="text-right px-2 text-gray-400">78.20</td>
-            <td class="text-right px-2 font-semibold">78.40</td>
-            <td class="text-right px-3 text-down">-0.71<span class="text-xs ml-1">(-0.90%)</span></td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
           <tr>
             <td class="px-3 py-2.5 font-semibold">S&amp;P 500</td>
-            <td class="text-right px-2 text-gray-400">5,512</td>
-            <td class="text-right px-2 text-gray-400">5,548</td>
-            <td class="text-right px-2 text-gray-400">5,505</td>
-            <td class="text-right px-2 font-semibold">5,540</td>
-            <td class="text-right px-3 text-up">+24.8<span class="text-xs ml-1">(+0.45%)</span></td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
           <tr>
             <td class="px-3 py-2.5 font-semibold">金 (Gold)</td>
-            <td class="text-right px-2 text-gray-400">2,333</td>
-            <td class="text-right px-2 text-gray-400">2,345</td>
-            <td class="text-right px-2 text-gray-400">2,328</td>
-            <td class="text-right px-2 font-semibold">2,340</td>
-            <td class="text-right px-3 text-up">+7.0<span class="text-xs ml-1">(+0.30%)</span></td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／数値：市況データAPI。前日比は終値ベース。</p>
+    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／数値：市況データ。前日比は終値ベース。</p>
   </section>
 
-  <!-- ② 経済・金融 -->
+  <!-- ② 経済・金融 (各カテゴリ2〜4本・本日JST公開優先; 本日分なければ「本日の新規なし」と明記) -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>経済・金融
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>② 経済・金融
     </h2>
     <div class="grid gap-3">
-      <a href="#" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">日銀、追加利上げ観測で円相場が一時157円台に</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">ロイター</span> 05:40</div>
-        <div class="text-sm text-gray-400 mt-2">7月会合での政策変更を市場が織り込みつつある。銀行収益（利ざや）への影響に注目。</div>
-      </a>
-      <a href="#" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">金融庁、地銀のシステム共通化を後押しする新方針</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">金融庁</span> 前日公表</div>
-        <div class="text-sm text-gray-400 mt-2">勘定系コスト削減と人材集約が狙い。デジタル企画文脈で要チェック。</div>
-      </a>
+
+      <!-- ニュースカードパターン（<details>アコーディオン） -->
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>見出し</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>出典</span> M/D HH:MM</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>詳細な要点（自分の言葉, 3〜5文。背景・数字・銀行/デジタル企画への含意）</p>
+          <a href='実URL' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
     </div>
   </section>
 
-  <!-- ③ 政治・政策 -->
+  <!-- ③ 政治・経済政策 -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>政治・経済政策
-    </h2>
-    <a href="#" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-      <div class="font-semibold">政府、半導体・AI分野へ追加支援を閣議決定へ</div>
-      <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">NHK</span> 06:00</div>
-      <div class="text-sm text-gray-400 mt-2">骨太の方針に明記。設備投資減税の拡充も検討段階。</div>
-    </a>
-  </section>
-
-  <!-- ④ DX / テクノロジー / AI -->
-  <section class="mb-8">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>DX / テクノロジー / AI
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>③ 政治・経済政策
     </h2>
     <div class="grid gap-3">
-      <a href="#" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">国内大手行、生成AIの行内利用を全行員へ拡大</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">ITmedia</span> 前日</div>
-        <div class="text-sm text-gray-400 mt-2">稟議書作成・与信メモの下書きで実用フェーズへ。</div>
-      </a>
+      <!-- ニュースカード（上記パターンと同じ） -->
     </div>
   </section>
 
-  <!-- ⑤ 日経（Gmail配信経由・後付け） -->
+  <!-- ④ DX・テクノロジー・AI -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-gold rounded"></span>日経（あなたの購読配信より）
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>④ DX・テクノロジー・AI
     </h2>
-    <div class="bg-card border border-bd border-l-4 border-l-gold rounded-2xl p-4">
-      <div class="text-gold text-xs font-bold tracking-wide">NIKKEI</div>
-      <div class="text-sm text-gray-400 mt-2">※ 日経電子版のメール配信をGmail経由で取り込んだ要点が入ります（設定後に有効化）。本文転載はせず、見出し＋出典リンクのみ。</div>
+    <div class="grid gap-3">
+      <!-- ニュースカード（上記パターンと同じ） -->
     </div>
   </section>
 
-  <!-- ⑥ 週末グルメ -->
+  <!-- ⑤ 週末グルメ（横浜中心） -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-down rounded"></span>週末グルメ
+      <span class="w-1.5 h-4 bg-down rounded"></span>⑤ 週末グルメ（横浜中心）
     </h2>
-    <a href="#" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-      <div class="font-semibold">横浜・関内に予約困難の鮨店が新規開業</div>
-      <div class="text-sm text-gray-400 mt-2">食べログ3.7スタート。カウンター8席、夜のみ。</div>
-    </a>
+    <div class="grid gap-3">
+      <!-- ニュースカード（上記パターンと同じ） -->
+    </div>
   </section>
 
   <footer class="mt-10 pt-4 border-t border-bd text-xs text-gray-500">
-    自動生成：毎朝のニュースブリーフ · 公開ソース（ロイター/NHK/金融庁/日銀/ITmedia 等）＋市況データより自動編集。<br>
-    日経の本文は転載していません。著作権・各サイト規約に配慮しています。
+    自動生成：毎朝のニュースブリーフ · 公開ソース（ロイター/NHK/ITmedia/金融庁 等）より自動編集。<br>
+    本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト規約に配慮しています。
   </footer>
 
 </div>

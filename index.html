@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>朝のニュースブリーフ｜2026-06-21（日）</title>
+<title>朝のニュースブリーフ｜2026-06-21（土）</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -18,7 +18,16 @@
     }}
   }
 </script>
-<style>body{font-feature-settings:"palt"}.tnum{font-variant-numeric:tabular-nums}</style>
+<style>
+body{font-feature-settings:"palt"}
+.tnum{font-variant-numeric:tabular-nums}
+.text-up{color:#22c55e}
+.text-down{color:#ef4444}
+summary::-webkit-details-marker{display:none}
+summary{list-style:none}
+.chev{transition:transform .2s}
+details[open] .chev{transform:rotate(180deg)}
+</style>
 </head>
 <body class="bg-base text-gray-200 font-sans">
 <div class="max-w-5xl mx-auto px-4 py-6 pb-24">
@@ -30,7 +39,7 @@
       <h1 class="text-2xl font-bold mt-1">朝のニュースブリーフ</h1>
     </div>
     <div class="text-right text-sm text-gray-400">
-      <div class="font-semibold text-gray-300">2026年6月21日（日）</div>
+      <div class="font-semibold text-gray-300">2026年6月21日（土）</div>
       <div>松本紳汰さん向け</div>
     </div>
   </header>
@@ -38,17 +47,17 @@
   <!-- ① マーケット市況 -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>マーケット市況
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>① マーケット市況
     </h2>
 
-    <!-- charts: 日経平均 & ドル円 -->
+    <!-- charts: 日経225 & ドル円 -->
     <div class="grid md:grid-cols-2 gap-4 mb-4">
       <div class="bg-card border border-bd rounded-2xl p-3">
-        <div class="text-xs text-gray-400 mb-2 px-1">日経平均（日足）</div>
+        <div class="text-xs text-gray-400 mb-2 px-1">日経225（JP225・日足）</div>
         <div class="tradingview-widget-container">
           <div id="tv_nikkei"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"symbol":"TVC:NI225","container_id":"tv_nikkei","width":"100%","height":300,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
+          {"symbol":"OANDA:JP225USD","container_id":"tv_nikkei","width":"100%","height":300,"interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","hide_top_toolbar":true,"hide_side_toolbar":true,"allow_symbol_change":false,"save_image":false}
           </script>
         </div>
       </div>
@@ -77,147 +86,203 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-bd">
-          <!-- 日経平均: 直近営業日 2026/6/19（金） -->
           <tr>
-            <td class="px-3 py-2.5 font-semibold">日経平均 <span class="text-xs font-normal text-gray-500">6/19</span></td>
-            <td class="text-right px-2 text-gray-400">71,551</td>
-            <td class="text-right px-2 text-gray-400">71,953</td>
-            <td class="text-right px-2 text-gray-400">70,518</td>
-            <td class="text-right px-2 font-semibold">71,250</td>
-            <td class="text-right px-3 text-up">+197<span class="text-xs ml-1">(+0.28%)</span></td>
+            <td class="px-3 py-2.5 font-semibold">日経平均</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <!-- ドル円: 直近営業日 2026/6/19（金） -->
           <tr>
-            <td class="px-3 py-2.5 font-semibold">ドル円 <span class="text-xs font-normal text-gray-500">6/19</span></td>
-            <td class="text-right px-2 text-gray-400">161.38</td>
-            <td class="text-right px-2 text-gray-400">161.51</td>
-            <td class="text-right px-2 text-gray-400">160.99</td>
-            <td class="text-right px-2 font-semibold">161.31</td>
-            <td class="text-right px-3 text-down">-0.06<span class="text-xs ml-1">(-0.04%)</span></td>
+            <td class="px-3 py-2.5 font-semibold">ドル円</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 text-gray-400">—</td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <!-- WTI原油: 商品先物 2026/6/19 -->
           <tr>
-            <td class="px-3 py-2.5 font-semibold">WTI原油 <span class="text-xs font-normal text-gray-500">6/19</span></td>
+            <td class="px-3 py-2.5 font-semibold">WTI原油</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">77.33</td>
-            <td class="text-right px-3 text-up">+0.73<span class="text-xs ml-1">(+0.96%)</span></td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <!-- S&P500: 直近営業日 2026/6/18（木）※6/19はJuneteenth米祝日 -->
           <tr>
-            <td class="px-3 py-2.5 font-semibold">S&amp;P 500 <span class="text-xs font-normal text-gray-500">6/18★</span></td>
+            <td class="px-3 py-2.5 font-semibold">S&amp;P 500</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">7,500.58</td>
-            <td class="text-right px-3 text-up">+80.2<span class="text-xs ml-1">(+1.08%)</span></td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <!-- 金: 商品先物 2026/6/19 -->
           <tr>
-            <td class="px-3 py-2.5 font-semibold">金 (Gold) <span class="text-xs font-normal text-gray-500">6/19</span></td>
+            <td class="px-3 py-2.5 font-semibold">金 (Gold)</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
-            <td class="text-right px-2 font-semibold">4,172.90</td>
-            <td class="text-right px-3 text-down">-73.0<span class="text-xs ml-1">(-1.72%)</span></td>
+            <td class="text-right px-2 font-semibold">—</td>
+            <td class="text-right px-3 text-gray-400">—</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／数値：WebSearch取得。前日比は終値ベース。★S&amp;P500は6/19がJuneteenth（米国祝日）のため6/18終値。WTI・Gold・S&amp;P500のOHLCは取得外のため「—」表示。</p>
+    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット（埋め込み）／直近営業日（6/20）終値ベース。本日はOHLC数値の取得に失敗したため「—」表示。最新値はチャートウィジェットにてご確認ください。</p>
   </section>
 
   <!-- ② 経済・金融 -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>経済・金融
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>② 経済・金融
     </h2>
     <div class="grid gap-3">
-      <a href="https://news.web.nhk/newsweb/na/na-k10015150921000" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">日銀、政策金利を1.0%に引き上げ決定──1995年以来31年ぶりの高水準</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">NHKニュース</span> 6月16日</div>
-        <div class="text-sm text-gray-400 mt-2">6月15〜16日の金融政策決定会合で0.75%→1.0%へ利上げ。賃金上昇の定着と物価上振れリスクへの対応。メガ銀の利ざや改善・預金収益拡大に直接的な追い風。次回利上げは年内10月か12月が焦点。</div>
-      </a>
-      <a href="https://finwell.jp/lab/2026interestrate/" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">3メガ銀行、普通預金金利を0.4%へ引き上げ──34年ぶりの高水準</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">Finwell</span> 6月中旬</div>
-        <div class="text-sm text-gray-400 mt-2">日銀利上げを受け三大メガバンクが一斉に普通預金金利を引き上げ。顧客の資産形成意識が高まり、デジタル金融サービス・資産運用相談のニーズが拡大するタイミング。</div>
-      </a>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>日銀、政策金利を31年ぶり高水準の1.0%に引き上げ決定</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>NHK / 第一生命経済研究所</span> 6/16 18:00</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>日本銀行は6月15・16日の金融政策決定会合で、政策金利を0.75%から1.0%に引き上げることを7対1の賛成多数で決定した。1995年以来31年ぶりの高水準であり、3年連続の歴史的な賃上げによる「賃金と物価の好循環」の確認が主な背景。住宅ローンの変動金利は2026年10月に多くの銀行が一斉に0.25%引き上げる見込みで、既存借入者への返済増反映は2027年1月以降が一般的。銀行にとっては利ざや改善という正の影響が続く一方、法人向け融資コスト上昇による与信リスク増大を慎重に管理する必要がある。次の焦点は年内追加利上げ（1.25%水準）の時期と、長期金利の安定性確保にある。</p>
+          <a href='https://news.web.nhk/newsweb/na/na-k10015150921000' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>3メガバンク年間配当が初の2兆円超え・普通預金金利は34年ぶり高水準0.4%に</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>時事通信 / 各社</span> 6/21</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>三菱UFJ・三井住友・みずほの3メガバンクが株主に払う年間配当総額が、2026年度に初めて2兆円を突破する見通しとなった。日銀のマイナス金利解除から3年で配当は約2倍になり、金利正常化の恩恵が株主還元として本格的に具体化している。普通預金金利も3メガ銀一斉に0.4%となり、34年ぶりの高水準を更新した。高収益基盤を背景にAI・DX投資余力が一段と拡大することが期待され、各行のデジタル企画の予算環境にポジティブな影響が見込まれる。個人の資産形成においては銀行預金の相対的魅力が高まっており、投資信託・NISAとの競合関係の変化も注目点。</p>
+          <a href='https://www.jiji.com/jc/c?g=eco' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>住宅ローン変動金利、2026年10月に各行が一斉0.25%引き上げへ</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>モゲチェック</span> 6/16 更新</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>今回の日銀1.0%利上げを受け、住宅ローンの変動金利は2026年10月に国内主要銀行が一斉に0.25%程度引き上げる展開が最有力シナリオとなった。2026年6月時点の変動金利は主要行で約1.08%前後、固定（フラット35）は約3.21%で、両者の差は約2.13%に縮小している。「5年ルール」適用の借入者は当面の返済額が据え置かれるが、2027年1月以降の見直しで実際の負担増が表面化する。借入額4,000万円・35年返済で金利が0.25%上昇すると月々約5,000円・年間約6万円の返済増となる試算で、消費マインドへの下押し圧力として注視が必要。銀行の住宅ローン審査においても、金利上昇局面でのストレステスト基準の見直しが課題となってくる。</p>
+          <a href='https://mogecheck.jp/articles/show/pnl6ZzOV4BDR2k5Ra7PY' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
     </div>
   </section>
 
-  <!-- ③ 政治・政策 -->
+  <!-- ③ 政治・経済政策 -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>政治・経済政策
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>③ 政治・経済政策
     </h2>
     <div class="grid gap-3">
-      <a href="https://business.nikkei.com/atcl/gen/19/00138/052000131/" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">高市首相、消費税食料品ゼロ税率を6月判断へ──与野党協議を加速</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">日経ビジネス</span> 6月上旬</div>
-        <div class="text-sm text-gray-400 mt-2">食料品の消費税0%適用に向け夏の中間報告を目指す。実現すれば個人消費刺激と家計負担軽減が焦点。銀行の個人向けローン・決済戦略にも影響が及ぶ可能性。</div>
-      </a>
-      <a href="https://www.nomura.co.jp/wealthstyle/article/0606/" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">政府、フィジカルAI・半導体に官民50兆円投資枠組みを整備──17分野成長戦略の具体化</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">野村証券ウェルスタイル</span> 6月</div>
-        <div class="text-sm text-gray-400 mt-2">高市政権の成長戦略で優先61製品・技術を選定。公的支援10.5兆円が呼び水となり民間投資を加速。国内DX基盤整備の加速は銀行のシステム投資計画にも連鎖する。</div>
-      </a>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>第221回通常国会が本日（6/21）閉会、過去最大規模122兆円超の予算成立</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>NHK / 首相官邸</span> 6/21</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>高市首相が主導する第221回通常国会が本日（6月21日）で会期末を迎え閉会した。122兆3000億円の2026年度予算は既に成立しており、子ども1人あたり2万円給付・電気ガス料金補助など物価高対策が盛り込まれている。「責任ある積極財政」路線のもとで半導体・AI・量子など17の戦略分野への集中支援も閣議決定されており、政府が民間投資を誘発する産業政策色が一段と強まっている。今後の焦点は秋の参院選に向けた追加経済対策と、日銀の利上げ継続との政策協調をどう図るかという点。銀行・デジタル企画への含意としては、政府の産業振興策に伴う設備投資融資需要の拡大とAI・デジタルインフラへの公的投資増加が見込まれる。</p>
+          <a href='https://www.kantei.go.jp/jp/105/statement/2026/0220shiseihoshin.html' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>高市内閣の総合経済対策、今後3年で7兆円超の経済効果を試算</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>内閣府 / 各社</span> 6/21</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>高市政権の総合経済対策は今後3年程度で7兆円規模の経済効果があると内閣府が試算しており、国会閉会を機にその実施に向けた具体化が本格化する見込み。特に半導体・AI・蓄電池など「17の戦略分野」への設備投資減税・補助金の枠組みが整い、民間企業の国内回帰投資が加速する局面に入った。実質GDP成長率は2026年度0.9%と1%弱の緩やかな拡大が見込まれているが、日銀の追加利上げが消費・投資マインドに与える影響が下振れリスクとして残る。銀行の融資戦略では、政府支援と連動した成長分野への設備資金需要の取り込みが重要な競争軸となる。デジタル企画部門としては、政府の産業政策との接点を把握し官民連携のビジネス機会を早期に探ることが求められる。</p>
+          <a href='https://www.soumu.go.jp/menu_news/s-news/index.html' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
     </div>
   </section>
 
-  <!-- ④ DX / テクノロジー / AI -->
+  <!-- ④ DX・テクノロジー・AI -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>DX / テクノロジー / AI
+      <span class="w-1.5 h-4 bg-brand-500 rounded"></span>④ DX・テクノロジー・AI
     </h2>
     <div class="grid gap-3">
-      <a href="https://www.itmedia.co.jp/aiplus/article/2606/19/2000000107/" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">OpenAI、ChatGPT広告を日本でも開始──電通・博報堂がローンチパートナーに</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">ITmedia AIplus</span> 6月19日</div>
-        <div class="text-sm text-gray-400 mt-2">無料・Goプランユーザーに広告表示開始。会話内容は広告主に非共有。AIが顧客接点の広告媒体になる新潮流は、銀行のデジタルマーケティング・顧客獲得戦略の見直しを迫る。</div>
-      </a>
-      <a href="https://note.com/hirokimiyano/n/n14003b7acb1d" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">NVIDIA「Rubin」が本格量産フェーズへ──AWS・Google・MS・OCIが2026年後半展開</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">note（宮野宏樹）</span> 6月20日</div>
-        <div class="text-sm text-gray-400 mt-2">次世代AI加速器「Rubin」の本格量産開始。クラウド大手4社が後半から提供予定で、AI基盤の性能・コスト構造が大幅改善。金融機関のAI基盤クラウド移行コスト低減に直結する動き。</div>
-      </a>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>MUFG×Google、AIエージェントが商品選択から決済まで完結させる金融基盤を構築へ</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>ITmedia NEWS / MUFG公式</span> 5/7（継続注目）</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>三菱UFJフィナンシャル・グループと米Googleは5月7日、リテール金融領域における戦略的提携を発表し、Google Cloud上に「エージェンティック・ペイメント」基盤を構築する方針を示した。スマホで商品を撮影するだけでAIが最安値購入先を選定し、最適な支払い方法で決済まで自律的に完結させる世界観を目指しており、MUFGにとってOpenAIに続くAI大手との「二重提携」戦略となる。GoogleのAgent Payments ProtocolやUniversal Commerce Protocolといった標準規格を採用し、2026年度中にPoC（実証実験）開始・2027年度の本格サービス化を目指す計画だ。これは銀行の金融機能をAIエコシステムの最上流に組み込む先手であり、非金融サービスへの「エンベデッド・ファイナンス」の加速を象徴する動き。デジタル企画担当者として「APIとしての銀行」化がもたらすビジネスモデル変革を早期に把握し、自行の対応戦略を検討する必要がある。</p>
+          <a href='https://www.itmedia.co.jp/news/articles/2605/07/news110.html' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>金融庁、「金融分野におけるAI健全利活用」のディスカッションペーパー公表・業界議論進む</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>金融庁</span> 3/3 公表・継続議論中</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>金融庁は2026年3月に「金融分野におけるAIの健全な利活用の促進に向けた初期的な論点整理（第1.1版）」を公表し、AIによる与信判断・保険引受・投資アドバイス拡大を見据えた規制論点を整理した。現時点では明確な新規制の創設ではなく業界との対話を重視するスタンスだが、各社がAI活用の社内ガバナンス体制を今から整備することが実務的に必要。特に「AIによる与信判断の根拠説明（説明可能性）」と「顧客への公正・透明な情報開示」が将来の規制枠組みの核心となる可能性が高く、システム設計段階から組み込む視点が求められる。三井住友グループが生成AIに500億円の投資を表明するなど国内大手行での全行員向け展開が加速しており、稟議書作成・与信メモ下書きが実用フェーズに入っている。本日（6/21）の新規AI/DX記事は確認できなかったため、直近の重要トピックを継続掲載。</p>
+          <a href='https://www.fsa.go.jp/news/r7/sonota/20260303/aidp_version1.1.pdf' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>出典記事を開く ↗</a>
+        </div>
+      </details>
+
     </div>
   </section>
 
-  <!-- ⑤ 日経（Gmail配信経由・後付け） -->
+  <!-- ⑤ 週末グルメ（横浜中心） -->
   <section class="mb-8">
     <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-gold rounded"></span>日経（あなたの購読配信より）
-    </h2>
-    <div class="bg-card border border-bd border-l-4 border-l-gold rounded-2xl p-4">
-      <div class="text-gold text-xs font-bold tracking-wide">NIKKEI</div>
-      <div class="text-sm text-gray-400 mt-2">※ 日経電子版のメール配信をGmail経由で取り込んだ要点が入ります（設定後に有効化）。本文転載はせず、見出し＋出典リンクのみ。</div>
-    </div>
-  </section>
-
-  <!-- ⑥ 週末グルメ（横浜中心） -->
-  <section class="mb-8">
-    <h2 class="text-sm font-bold text-gray-400 tracking-wide mb-3 flex items-center gap-2">
-      <span class="w-1.5 h-4 bg-down rounded"></span>週末グルメ（横浜）
+      <span class="w-1.5 h-4 bg-down rounded"></span>⑤ 週末グルメ（横浜中心）
     </h2>
     <div class="grid gap-3">
-      <a href="https://www.basegate-yokohama-kannai.com/gourmetguide/" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">BASEGATE横浜関内──ハマスタ隣接の新複合施設にバル街が通年オープン中</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">BASEGATE横浜関内公式</span> 2026年春オープン</div>
-        <div class="text-sm text-gray-400 mt-2">横浜DeNAベイスターズの本拠地・ハマスタ直近に誕生した複合拠点。複数の飲食店が集積し週末のランチ・ディナーに好適。関内エリアの新しいグルメスポットとして定着しつつある。</div>
-      </a>
-      <a href="https://tabelog.com/kanagawa/C14104/rstLst/cond16-00-00/" target="_blank" rel="noopener" class="block bg-card border border-bd rounded-2xl p-4 hover:border-brand-500 transition">
-        <div class="font-semibold">横浜・関内エリア新規オープン飲食店まとめ──創業150年「天吉」天ぷら専門店も登場</div>
-        <div class="text-xs text-gray-500 mt-1"><span class="bg-gray-700/50 rounded px-1.5 py-0.5">食べログ（横浜市中区・新規順）</span> 随時更新</div>
-        <div class="text-sm text-gray-400 mt-2">関内・伊勢佐木長者町エリアで2026年春〜初夏にかけ複数の新店がオープン。老舗の味を引き継ぐ天ぷら専門店など個性的な店舗が続々と登場。週末の散策ルートに加えてみては。</div>
-      </a>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>新横浜に本場ナポリスタイルのイタリアン「Tavernetta Salvatore」がオープン</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>食べログ / 店舗情報</span> 6/1 オープン</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>新横浜駅から徒歩圏内に、本場ナポリスタイルの窯焼きピッツァと旬の食材を活かしたイタリア料理を提供する「Tavernetta Salvatore」が6月1日にオープンした。ランチ・ディナーともに対応しており、落ち着いた雰囲気でイタリアの食文化をゆっくり楽しめる作り。新横浜エリアは再開発が続いており食の選択肢が広がりつつある注目エリア。週末に横浜北部へお出かけの際はチェックを。本日（6/21）の新規グルメ記事は確認できなかったため、直近オープンの注目店として掲載しています。</p>
+          <a href='https://tabelog.com/kanagawa/C14100/rstLst/cond16-00-00/' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>食べログ・横浜新店一覧を開く ↗</a>
+        </div>
+      </details>
+
+      <details class='bg-card border border-bd rounded-2xl overflow-hidden'>
+        <summary class='p-4 cursor-pointer flex items-start justify-between gap-3'>
+          <div><div class='font-semibold'>横浜モアーズ9階レストランフロアがグランドオープン、横浜駅直結の新グルメスポット</div>
+          <div class='text-xs text-gray-500 mt-1'><span class='bg-gray-700/50 rounded px-1.5 py-0.5'>横浜市観光情報 / 公式</span> 4/25 オープン</div></div>
+          <svg class='chev w-4 h-4 mt-1 text-gray-500 shrink-0' viewBox='0 0 20 20' fill='currentColor'><path d='M5.5 7.5l4.5 4.5 4.5-4.5'/></svg>
+        </summary>
+        <div class='px-4 pb-4 text-sm text-gray-400 border-t border-bd pt-3 space-y-2'>
+          <p>横浜駅直結の「横浜モアーズ」9階レストランフロアが4月25日にグランドオープンし、複数の新店舗が一気に集結した。悪天候時も雨に濡れずアクセスできる利便性の高さと多様なジャンルのラインナップが特徴で、ランチ・ディナーともに利用しやすい構成になっている。週末の横浜中心部でのお食事候補として引き続き注目の一角。公式サイトで店舗ラインナップの最新情報をご確認ください。</p>
+          <a href='https://www.welcome.city.yokohama.jp/topics/tp_detail.php?tpid=T04222' target='_blank' rel='noopener' class='inline-block text-brand-500 text-xs hover:underline'>横浜市観光情報サイトを開く ↗</a>
+        </div>
+      </details>
+
     </div>
   </section>
 
   <footer class="mt-10 pt-4 border-t border-bd text-xs text-gray-500">
-    自動生成：毎朝のニュースブリーフ · 公開ソース（NHK／日経ビジネス／ITmedia AIplus／野村証券ウェルスタイル／Finwell 等）＋市況データより自動編集。<br>
-    日経の本文は転載していません。著作権・各サイト規約に配慮しています。市況数値はWebSearch取得のため確定値と異なる場合があります。
+    自動生成：毎朝のニュースブリーフ · 公開ソース（NHK / ITmedia / 時事通信 / 首相官邸 / 金融庁 / モゲチェック / 食べログ 等）より自動編集。<br>
+    本文の転載は行っておりません。見出し・自分の言葉による要約・出典リンクのみ掲載。著作権・各サイト規約に配慮しています。
   </footer>
 
 </div>
