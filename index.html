@@ -77,12 +77,12 @@ details[open] .chev{transform:rotate(180deg)}
       </div>
     </div>
 
-    <!-- OHLC table: 5 instruments (直近営業日 2026/6/20金) -->
+    <!-- OHLC table: 5 instruments — populated client-side by loadMarketData() -->
     <div class="bg-[rgba(23,28,38,.72)] backdrop-blur-sm border border-[#1f2733] rounded-2xl overflow-hidden reveal">
       <table class="w-full text-sm tnum">
         <thead class="text-gray-400 text-xs border-b border-[#1f2733]">
           <tr>
-            <th class="text-left font-medium px-3 py-2.5">銘柄</th>
+            <th class="text-left font-medium px-3 py-2.5">銘柄 <span id="ohlc-date" class="font-normal text-gray-600 ml-1">（読込中…）</span></th>
             <th class="text-right font-medium px-2">始値</th>
             <th class="text-right font-medium px-2">高値</th>
             <th class="text-right font-medium px-2">安値</th>
@@ -91,7 +91,7 @@ details[open] .chev{transform:rotate(180deg)}
           </tr>
         </thead>
         <tbody class="divide-y divide-[#1f2733]">
-          <tr>
+          <tr id="row-nikkei">
             <td class="px-3 py-2.5 font-semibold">日経平均</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -99,7 +99,7 @@ details[open] .chev{transform:rotate(180deg)}
             <td class="text-right px-2 font-semibold">—</td>
             <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <tr>
+          <tr id="row-usdjpy">
             <td class="px-3 py-2.5 font-semibold">ドル円</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -107,7 +107,7 @@ details[open] .chev{transform:rotate(180deg)}
             <td class="text-right px-2 font-semibold">—</td>
             <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <tr>
+          <tr id="row-wti">
             <td class="px-3 py-2.5 font-semibold">WTI原油</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -115,7 +115,7 @@ details[open] .chev{transform:rotate(180deg)}
             <td class="text-right px-2 font-semibold">—</td>
             <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <tr>
+          <tr id="row-sp500">
             <td class="px-3 py-2.5 font-semibold">S&amp;P 500</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -123,7 +123,7 @@ details[open] .chev{transform:rotate(180deg)}
             <td class="text-right px-2 font-semibold">—</td>
             <td class="text-right px-3 text-gray-400">—</td>
           </tr>
-          <tr>
+          <tr id="row-gold">
             <td class="px-3 py-2.5 font-semibold">金 (Gold)</td>
             <td class="text-right px-2 text-gray-400">—</td>
             <td class="text-right px-2 text-gray-400">—</td>
@@ -134,7 +134,7 @@ details[open] .chev{transform:rotate(180deg)}
         </tbody>
       </table>
     </div>
-    <p class="text-[11px] text-gray-500 mt-2 px-1">直近営業日（2026年6月20日金曜）。市場データAPIへのアクセスが制限されたため数値は「—」表示。TradingViewチャートで最新値をご確認ください。⚠️ イランのホルムズ海峡封鎖宣言（6/20〜21）でWTI原油の週明け動向に要注意。</p>
+    <p class="text-[11px] text-gray-500 mt-2 px-1">チャート：TradingView公式ウィジェット。数値：ページ読込時にYahoo Finance APIより取得（直近営業日終値ベース）。市場休場中は直近営業日データを日付付きで表示。⚠️ イランのホルムズ海峡封鎖宣言（6/20〜21）でWTI原油の週明け動向に要注意。</p>
   </section>
 
   <!-- ② 経済・金融 -->
@@ -325,5 +325,83 @@ details[open] .chev{transform:rotate(180deg)}
 
 </div>
 <script>const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))</script>
+<script>
+(async function loadMarketData() {
+  const PROXY = 'https://corsproxy.io/?url=';
+  const instruments = [
+    { rowId: 'row-nikkei', symbol: '%5EN225',   dec: 0 },
+    { rowId: 'row-usdjpy', symbol: 'USDJPY%3DX', dec: 2 },
+    { rowId: 'row-wti',    symbol: 'CL%3DF',     dec: 2 },
+    { rowId: 'row-sp500',  symbol: '%5EGSPC',    dec: 0 },
+    { rowId: 'row-gold',   symbol: 'GC%3DF',     dec: 0 },
+  ];
+
+  async function yfetch(symbol) {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=10d`;
+    for (const src of [url, PROXY + encodeURIComponent(url)]) {
+      try {
+        const r = await fetch(src, { mode: 'cors', credentials: src === url ? 'include' : 'omit' });
+        if (r.ok) { const j = await r.json(); if (j.chart?.result?.[0]) return j.chart.result[0]; }
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  function fmt(v, dec) {
+    if (v == null || isNaN(v)) return '—';
+    return Number(v).toLocaleString('ja-JP', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+
+  function jdate(ts) {
+    const d = new Date(ts * 1000);
+    const dow = ['日','月','火','水','木','金','土'][d.getDay()];
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${dow}）`;
+  }
+
+  let dateLabel = null;
+  const results = await Promise.allSettled(instruments.map(inst => yfetch(inst.symbol)));
+
+  results.forEach((res, i) => {
+    const inst = instruments[i];
+    const row = document.getElementById(inst.rowId);
+    if (!row) return;
+    const tds = row.querySelectorAll('td');
+    if (res.status !== 'fulfilled' || !res.value) return;
+
+    const data = res.value;
+    const ts   = data.timestamp;
+    const q    = data.indicators.quote[0];
+
+    // find last index with a valid close
+    let last = ts.length - 1;
+    while (last > 0 && (q.close[last] == null || isNaN(q.close[last]))) last--;
+    if (q.close[last] == null) return;
+
+    const o   = q.open[last];
+    const h   = q.high[last];
+    const l   = q.low[last];
+    const c   = q.close[last];
+    let prev  = null;
+    for (let k = last - 1; k >= 0; k--) { if (q.close[k] != null && !isNaN(q.close[k])) { prev = q.close[k]; break; } }
+    const chg    = prev != null ? c - prev : null;
+    const chgPct = prev != null ? (chg / prev * 100) : null;
+    const isUp   = chg != null && chg >= 0;
+    const sign   = chg != null ? (isUp ? '+' : '') : '';
+    const chgCls = chg != null ? (isUp ? 'text-right px-3 tnum text-up' : 'text-right px-3 tnum text-down') : 'text-right px-3 text-gray-400';
+
+    tds[1].textContent = fmt(o, inst.dec);  tds[1].className = 'text-right px-2 text-gray-400 tnum';
+    tds[2].textContent = fmt(h, inst.dec);  tds[2].className = 'text-right px-2 text-gray-400 tnum';
+    tds[3].textContent = fmt(l, inst.dec);  tds[3].className = 'text-right px-2 text-gray-400 tnum';
+    tds[4].textContent = fmt(c, inst.dec);  tds[4].className = 'text-right px-2 font-semibold tnum';
+    tds[5].textContent = chg != null ? `${sign}${fmt(chg, inst.dec)} (${sign}${chgPct.toFixed(2)}%)` : '—';
+    tds[5].className   = chgCls;
+
+    if (!dateLabel) dateLabel = jdate(ts[last]);
+  });
+
+  const el = document.getElementById('ohlc-date');
+  if (el) el.textContent = dateLabel ? `直近営業日 ${dateLabel}` : '（データ取得失敗）';
+})();
+</script>
 </body>
 </html>
