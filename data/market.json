@@ -1,0 +1,21 @@
+[
+  {
+    "briefDate": "2026-06-21",
+    "tradingDate": { "jp": "2026-06-19", "us": "2026-06-18" },
+    "note": "US市場は6/19 Juneteenth休場。日本市場は6/19まで通常営業。",
+    "nikkei":  { "close": 71250.06, "change": 196,   "changePct":  0.28 },
+    "sp500":   { "close": 7500.58,  "change": 80.85,  "changePct":  1.08 },
+    "nasdaq":  { "close": 26517.93, "change": 496.82, "changePct":  1.91 },
+    "usdjpy":  { "close": 161.30,   "change": null,   "changePct":  null },
+    "gold":    { "close": 4150,     "change": null,   "changePct":  null },
+    "mufg":    { "close": 3278,     "change": -96,    "changePct": -2.85 },
+    "events": [
+      "日銀 政策金利 0.75%→1.0% 引き上げ決定（6/15-16会合、31年ぶり高水準）",
+      "FOMC 6/17: Warsh新議長初会合、金利据え置き（3.5-3.75%）・ドット図でハイク示唆",
+      "米イラン停戦合意署名（6/19スイス）、原油 $120超→$83へ急落",
+      "フジクラ(5803) FY2027純利益予想+46%上方修正（2,290億円）、6/19ストップ高気配",
+      "三菱UFJ(8306) 6/18に年初来高値3,394円、6/19に3,278円（-2.85%）と利確売り",
+      "US Juneteenth休場（6/19）"
+    ]
+  }
+]
