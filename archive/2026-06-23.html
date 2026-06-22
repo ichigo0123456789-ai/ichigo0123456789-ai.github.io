@@ -10,8 +10,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg-0:#0e121b;--bg-1:#121723;--surface:#1a2130;--surface-2:#222b3c;--ink:#e9ecf4;--sub:#9aa4ba;--faint:#6d7689;--line:rgba(255,255,255,.09);--gold:#d6ab5b;--gold-ink:#e3c489;--gold-soft:rgba(214,171,91,.15);--gold-line:rgba(214,171,91,.36);--cool:#6b97ff;--cool-soft:rgba(91,140,255,.15);--teal:#3fc4c8;--up:#ff6b81;--down:#6b97ff;--chart-bg:#16203b;--chart-2:#1d2a4d;--chart-line:#2c3a63;--chart-ink:#e9edf7;--shadow:0 1px 1px rgba(0,0,0,.3),0 6px 16px -6px rgba(0,0,0,.5),0 34px 64px -32px rgba(0,0,0,.8);--shadow-sm:0 2px 12px -6px rgba(0,0,0,.6)}
-  *{box-sizing:border-box}html{scroll-behavior:smooth}
-  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--bg-1);position:relative;overflow-x:hidden}
+  *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip}
+  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--bg-1);position:relative;overflow-x:clip;width:100%;max-width:100%}
+  img,iframe,table,.frame,.chart,.tradingview-widget-container,.tradingview-widget-container__widget{max-width:100%}
   body::before{content:'';position:fixed;inset:0;z-index:-2;background:radial-gradient(1200px 700px at 80% -10%,rgba(214,171,91,.12),transparent 58%),radial-gradient(1000px 760px at 10% 2%,rgba(91,140,255,.12),transparent 54%),linear-gradient(168deg,#0c0f17 0%,#11151f 44%,#141a27 100%)}
   body::after{content:'';position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(360px 360px at 15% 18%,rgba(214,171,91,.16),transparent 70%),radial-gradient(420px 420px at 90% 26%,rgba(91,140,255,.16),transparent 70%),radial-gradient(360px 360px at 74% 88%,rgba(63,196,200,.12),transparent 70%);animation:drift 26s ease-in-out infinite alternate}
   @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-2.4%,2.2%,0) scale(1.06)}}
@@ -61,7 +62,10 @@
   .flow .final::after{display:none}.flow .final::before{background:var(--gold);border-color:var(--gold)}
   .legend{font-size:.8rem;color:var(--sub);max-width:50rem;margin:0 0 1.5rem}.up{color:var(--up);font-weight:700}.down{color:var(--down);font-weight:700}
   .tbl-shell{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:1.3rem;background:var(--surface)}
-  .mkt{width:100%;border-collapse:collapse;font-size:.92rem}
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--gold-line) transparent}
+  .tbl-scroll::-webkit-scrollbar{height:6px}
+  .tbl-scroll::-webkit-scrollbar-thumb{background:var(--gold-line);border-radius:6px}
+  .mkt{width:100%;border-collapse:collapse;font-size:.92rem;min-width:560px}
   .mkt thead th{font-family:'Space Grotesk',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.08em;color:var(--sub);text-align:right;padding:.6rem .95rem;background:var(--surface-2);border-bottom:1px solid var(--line);text-transform:uppercase}
   .mkt thead th:first-child{text-align:left}
   .mkt td{padding:.72rem .95rem;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;font-family:'Space Grotesk',sans-serif}
@@ -74,7 +78,9 @@
   .chart .ttl{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.02em;color:var(--chart-ink);padding:.45rem .55rem .55rem}
   .chart .ttl::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
   .chart .frame{border-radius:11px;overflow:hidden;background:var(--chart-bg)}
+  .frame-hero{height:620px}.frame-mini{height:340px}
   .charts2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}@media(max-width:760px){.charts2{grid-template-columns:1fr}}
+  @media(max-width:760px){.frame-hero{height:360px}.frame-mini{height:300px}}
   .news{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem 2.4rem}@media(max-width:760px){.news{grid-template-columns:1fr}}
   .col .ch{display:inline-flex;align-items:center;gap:.45rem;font-family:'Space Grotesk',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.04em;margin:0 0 .5rem;padding:.2rem .65rem;border-radius:999px}
   .hl{display:block;padding:.7rem 0;border-bottom:1px solid var(--line);transition:padding-left .25s ease}
@@ -98,7 +104,7 @@
   <section class="panel reveal">
     <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
     <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">赤 ▲</span>・下落＝<span class="down">青 ▼</span>。日経平均・三菱UFJ（8306）は本日（6/23）終値が取得不可のため「—」、米国市場は6/22（月）終値掲載。</p>
-    <div class="tbl-shell"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
+    <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
       <tr>
         <td>日経平均<span class="src-note">株探ニュース・Yahoo!ファイナンス / as of 2026-06-23（続落報道、終値確認不可）</span></td>
         <td>—</td>
@@ -135,12 +141,12 @@
         <td>—</td>
         <td>—</td>
       </tr>
-    </tbody></table><div class="tcap">※日経平均・三菱UFJ（8306）の本日（6/23）終値は本セッションで確認不可（株探ニュース・Yahoo!ファイナンス報道では「3日続落・中東情勢懸念でリスク回避の売り優勢」）。直近確認値：日経 72,353.96（2026-06-22、8連騰・日経新聞）。S&amp;P500・ドル円・金は本セッション内のWebSearchで取得確認済み。ナスダック100は-0.25%下落を確認、具体値は取得不可のため「—」。</div></div>
+    </tbody></table></div><div class="tcap">※日経平均・三菱UFJ（8306）の本日（6/23）終値は本セッションで確認不可（株探ニュース・Yahoo!ファイナンス報道では「3日続落・中東情勢懸念でリスク回避の売り優勢」）。直近確認値：日経 72,353.96（2026-06-22、8連騰・日経新聞）。S&amp;P500・ドル円・金は本セッション内のWebSearchで取得確認済み。ナスダック100は-0.25%下落を確認、具体値は取得不可のため「—」。</div></div>
 
-    <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame" style="height:620px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
+    <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame frame-hero"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
     <div class="charts2">
-      <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame" style="height:340px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
-      <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame" style="height:340px"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+      <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+      <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
     </div>
   </section>
 
@@ -163,6 +169,10 @@
           <h4>東証大引け 日経平均、初の7万2000円台 2023年9月以来の8連騰</h4>
           <div class="meta">日本経済新聞 ・ 1日前</div>
         </a>
+        <a class="hl" href="https://www.nomura.co.jp/wealthstyle/article/0676/" target="_blank" rel="noopener">
+          <h4>26年末ドル円見通しを152.5円に引き上げ 中東情勢で強まる米ドル高圧力</h4>
+          <div class="meta">野村ウェルスタイル ・ 1日前</div>
+        </a>
       </div>
 
       <div class="col">
@@ -170,6 +180,10 @@
         <a class="hl" href="https://www.nikkei.com/article/DGXZQOGR232YG0T20C26A5000000/" target="_blank" rel="noopener">
           <h4>米イラン、停戦60日延長で合意に近づく フィナンシャル・タイムズ報道</h4>
           <div class="meta">日本経済新聞 ・ 本日</div>
+        </a>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOFL083DKTY6A600C2000000/" target="_blank" rel="noopener">
+          <h4>日銀利上げ、6月の次は年内にも 政策金利「到達点」予想が切り上がり</h4>
+          <div class="meta">日本経済新聞 ・ 2日前</div>
         </a>
         <a class="hl" href="https://www.nikkei.com/article/DGXZQOCB2108R0R20C26A6000000/" target="_blank" rel="noopener">
           <h4>スターマー英首相が22日にも辞意表明、現地報道 政府関係者は否定</h4>
@@ -191,9 +205,13 @@
           <h4>米政府、対中関係悪化を懸念 DeepSeekなど中国企業100社超の輸出規制リスト掲載を保留</h4>
           <div class="meta">マイナビTECH+ ・ 4日前</div>
         </a>
-        <a class="hl" href="https://www.nikkei.com/article/DGXZQOUC179OF0X10C26A6000000/" target="_blank" rel="noopener">
-          <h4>ChatGPT内に広告表示、日本でOpenAIが展開 電通や博報堂が仲介</h4>
-          <div class="meta">日本経済新聞 ・ 6日前（重要性により掲載）</div>
+        <a class="hl" href="https://kabutan.jp/news/marketnews/?b=n202606210016" target="_blank" rel="noopener">
+          <h4>フジクラ、上方修正後に株価+38% 通期営業益3,100億円へ AI電力・光ケーブル需要が牽引</h4>
+          <div class="meta">株探ニュース ・ 1日前</div>
+        </a>
+        <a class="hl" href="https://jp.investing.com/news/stock-market-news/article-93CH-1579002" target="_blank" rel="noopener">
+          <h4>エヌビディアがAIデータセンター設計図発表、スーパーマイクロ8%高 液冷ラックにRubin GPU 1,152基</h4>
+          <div class="meta">Investing.com ・ 1日前</div>
         </a>
       </div>
 
@@ -218,7 +236,7 @@
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">03</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
-    <p class="thesis">日経8連騰後の<span class="hi">反動調整</span>と米イラン停戦交渉の進展が交錯—積立継続を基本に金（ゴールド）ポジションを点検。<br>前日（6月22日）に初の7万2000円台（8連騰）を記録した日経平均は、中東情勢への警戒とリスク回避売りで6月23日に続落。一方、英フィナンシャル・タイムズが米国とイランの停戦60日延長合意接近を報道し、ホルムズ海峡の段階的再開の可能性が浮上した。S&amp;P500は6月22日の定期見直し需給圧力で-0.37%、ドル円は161円台後半の円安水準を維持。日本銀行（日銀）の政策金利1.0%（31年ぶり高水準）を背景に10年国債利回りは2.66〜2.67%に上昇し、金利環境の変化が資産配分に影響を与え始めている。</p>
+    <p class="thesis">日経8連騰後の<span class="hi">反動調整</span>と米イラン停戦交渉の進展が交錯—積立継続を基本に金（ゴールド）ポジションを点検。<br>前日（6月22日）に初の7万2000円台（8連騰）を記録した日経平均は、中東情勢への警戒とリスク回避売りで6月23日に続落。一方、英フィナンシャル・タイムズが米国とイランの停戦60日延長合意接近を報道し、ホルムズ海峡の段階的再開の可能性が浮上した。S&amp;P500は6月22日の定期見直し需給圧力で-0.37%、ドル円は161円台後半の円安水準を維持。日本銀行（日銀）の政策金利1.0%（31年ぶり高水準）を背景に10年国債利回りは2.66〜2.67%に上昇し、金利環境の変化が資産配分に影響を与え始めている。今週は<b>6/25の米PCE</b>、<b>6/26の株主総会ピーク（集中日）とW杯日本×スウェーデン（決勝トーナメント進出かけ）</b>が焦点。</p>
     <ul class="ul-thesis">
       <li><span class="bead"></span><p><b>外国株投信（eMAXIS Slim S&amp;P500等）</b>：S&amp;P500は6月22日の四半期定期見直し（銘柄入れ替え）に伴う需給影響で-0.37%と小幅下落。米連邦準備制度（FRB）のインフレ警戒スタンスと161円台の円安が並存し、為替ヘッジなし外国株投信の円建て含み益は依然高水準。積立継続を基本方針として、FRB追加利上げ観測と日銀1%定着の両リスクに対する為替ヘッジ比率の点検が推奨される時期。</p></li>
       <li><span class="bead"></span><p><b>NASDAQ100連動投信</b>：6月22日の定期見直しで人工知能（AI）関連銘柄が追加採用され、入れ替えに伴う需給整理が一時的な下押し要因に。ただし世界半導体市場の89%増加予測や対中輸出規制をめぐる交渉動向（DeepSeek等の規制保留が好材料）はAI関連の中長期需要の構造的強さを示す。調整局面を積立買い増しの機会として活用し、保有継続が基本スタンス。</p></li>
@@ -256,7 +274,7 @@
   </section>
 
   <footer class="foot">
-    <div class="dsum"><b>本日のデータ取得サマリー（最終更新：2026年6月23日）</b>：市況6項目のうち3項目確認（S&amp;P500 7,472.79・ドル円161.54・金$4,190.32 各WebSearch取得確認済み）。日経平均・三菱UFJ（8306）は本日（6/23）終値が取得不可（株探ニュース・Yahoo!ファイナンス報道により「3日続落・中東情勢懸念でリスク回避の売り優勢」を確認、直近確認値：日経72,353.96円 2026-06-22）。ナスダック100は-0.25%下落を確認、具体値は取得不可のため「—」。ニュース採用12本（金利・為替3本〈Yahoo!ニュース共同通信・日経2本〉／政策・国際3本〈日経3本〉／テック・人工知能・半導体3本〈NHK・マイナビTECH+・日経、うち2本は5日以内例外適用〉／横浜グルメ3本〈くふうトリップ・Hanako・一休〉）。RSSフィード（Yahoo!ニュース・Google News）はネットワーク制限（HTTP 403）により取得不可のためWebSearch代替。</div>
+    <div class="dsum"><b>本日のデータ取得サマリー（最終更新：2026年6月23日）</b>：市況6項目のうち3項目確認（S&amp;P500 7,472.79・ドル円161.54・金$4,190.32 各WebSearch取得確認済み）。日経平均・三菱UFJ（8306）は本日（6/23）終値が取得不可（株探ニュース・Yahoo!ファイナンス報道により「3日続落・中東情勢懸念でリスク回避の売り優勢」を確認、直近確認値：日経72,353.96円 2026-06-22）。ナスダック100は-0.25%下落を確認、具体値は取得不可のため「—」。ニュース採用15本（金利・為替4本〈Yahoo!ニュース共同通信・日経2本・野村〉／政策・国際4本〈日経3本・日銀日経〉／テック・人工知能・半導体4本〈NHK・株探・Investing.com・マイナビTECH+〉／横浜グルメ3本〈くふうトリップ・Hanako・一休〉）。RSSフィード（Yahoo!ニュース・Google News）はネットワーク制限（HTTP 403）により取得不可のためWebSearch代替。本版はルーチン自動生成分に手動でニュース・テーマを統合し、スマホ表示（横スクロール表・チャート高さ・横幅）を最適化。</div>
     <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
 </div>
