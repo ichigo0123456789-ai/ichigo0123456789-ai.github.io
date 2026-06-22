@@ -1,5 +1,27 @@
 [
   {
+    "briefDate": "2026-06-23",
+    "tradingDate": { "jp": "2026-06-23", "us": "2026-06-22" },
+    "note": "日本市場6/23終値は取得不可。US市場は6/22（月）終値使用。",
+    "nikkei":  { "close": null,     "change": null,   "changePct": null  },
+    "sp500":   { "close": 7472.79,  "change": -27.79, "changePct": -0.37 },
+    "nasdaq":  { "close": null,     "change": null,   "changePct": -0.25 },
+    "usdjpy":  { "close": 161.54,   "change": 0.24,   "changePct":  0.15 },
+    "gold":    { "close": 4190.32,  "change": 40.32,  "changePct":  0.97 },
+    "mufg":    { "close": null,     "change": null,   "changePct": null  },
+    "events": [
+      "日経平均 6/23続落（3日続落、中東情勢懸念・リスク回避売り）、直近確認値72,353.96（6/22終値）",
+      "英FTが米イラン停戦60日延長・ホルムズ段階的再開合意接近を報道（6/23）",
+      "スターマー英首相が辞意表明（6/22）",
+      "S&P500 四半期定期見直し（銘柄入れ替え）需給圧力で-0.37%（6/22終値 7,472.79）",
+      "NASDAQ100 定期見直し追加採用・調整で▼約0.25%（6/22終値、具体値取得不可）",
+      "日銀 政策金利1.0% 10年国債利回り2.66〜2.67%（31年ぶり高水準）",
+      "ドル円 161.54円（6/22ニューヨーク終値）、161円台後半の円安水準を維持",
+      "金（ゴールド） $4,190.32/oz +0.97%（6/22終値）",
+      "FIFA W杯2026 日本 勝ち点4、決勝トーナメントへ前進"
+    ]
+  },
+  {
     "briefDate": "2026-06-22",
     "tradingDate": { "jp": "2026-06-19", "us": "2026-06-18" },
     "note": "週末（土日）のため市況更新なし。US市場は6/19 Juneteenth休場。日本最終取引日6/19。",
@@ -24,7 +46,7 @@
     "briefDate": "2026-06-21",
     "tradingDate": { "jp": "2026-06-19", "us": "2026-06-18" },
     "note": "US市場は6/19 Juneteenth休場。日本市場は6/19まで通常営業。",
-    "nikkei":  { "close": 71250.06, "change": 196,   "changePct":  0.28 },
+    "nikkei":  { "close": 71250.06, "change": 196,    "changePct":  0.28 },
     "sp500":   { "close": 7500.58,  "change": 80.85,  "changePct":  1.08 },
     "nasdaq":  { "close": 26517.93, "change": 496.82, "changePct":  1.91 },
     "usdjpy":  { "close": 161.30,   "change": null,   "changePct":  null },
