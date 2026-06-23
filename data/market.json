@@ -1,14 +1,90 @@
 [
   {
+    "briefDate": "2026-06-24",
+    "tradingDate": {
+      "jp": "2026-06-23",
+      "us": "2026-06-23"
+    },
+    "note": "日本市場・米国市場ともに2026-06-23終値使用（JST 07:01時点で東京市場未開場）",
+    "nikkei": {
+      "close": 69788.38,
+      "change": -2565.58,
+      "changePct": -3.55
+    },
+    "sp500": {
+      "close": 7365.96,
+      "change": -106.83,
+      "changePct": -1.43
+    },
+    "nasdaq": {
+      "close": null,
+      "change": null,
+      "changePct": -2.1
+    },
+    "usdjpy": {
+      "close": 161.57,
+      "change": 0.03,
+      "changePct": 0.02
+    },
+    "gold": {
+      "close": 4129.07,
+      "change": -61.25,
+      "changePct": -1.46
+    },
+    "mufg": {
+      "close": 3284,
+      "change": -49,
+      "changePct": -1.47
+    },
+    "events": [
+      "日経平均 6/23終値 69,788.38（▼2,565.58、▼3.55%）7万円台割れ・AI半導体主導の大幅安",
+      "韓国KOSPI 6/23 史上最大の▼9.99%暴落、サーキットブレーカー2度発動",
+      "S&P500 7,365.96（▼1.43%）AI・半導体・BofA利上げ示唆で下落（6/23 NY終値）",
+      "NASDAQ100 ▼約2.1%（終値未確認）AIバリュエーション調整継続",
+      "ドル円 161.57円（東京終値）日米財務相オンライン会談、介入警戒感",
+      "金（ゴールド） $4,129.07（▼1.46%）利確売り優勢",
+      "三菱UFJ（8306） 3,284円（▼49、▼1.47%）半導体安連鎖",
+      "マイクロン・テクノロジー 日本時間6/25早朝決算発表予定（HBM需要焦点）",
+      "FIFA W杯2026 日本 第3戦 6/26 8時 vsスウェーデン 決勝T進出かけ"
+    ]
+  },
+  {
     "briefDate": "2026-06-23",
-    "tradingDate": { "jp": "2026-06-23", "us": "2026-06-22" },
+    "tradingDate": {
+      "jp": "2026-06-23",
+      "us": "2026-06-22"
+    },
     "note": "日本市場6/23終値は取得不可。US市場は6/22（月）終値使用。",
-    "nikkei":  { "close": null,     "change": null,   "changePct": null  },
-    "sp500":   { "close": 7472.79,  "change": -27.79, "changePct": -0.37 },
-    "nasdaq":  { "close": null,     "change": null,   "changePct": -0.25 },
-    "usdjpy":  { "close": 161.54,   "change": 0.24,   "changePct":  0.15 },
-    "gold":    { "close": 4190.32,  "change": 40.32,  "changePct":  0.97 },
-    "mufg":    { "close": null,     "change": null,   "changePct": null  },
+    "nikkei": {
+      "close": null,
+      "change": null,
+      "changePct": null
+    },
+    "sp500": {
+      "close": 7472.79,
+      "change": -27.79,
+      "changePct": -0.37
+    },
+    "nasdaq": {
+      "close": null,
+      "change": null,
+      "changePct": -0.25
+    },
+    "usdjpy": {
+      "close": 161.54,
+      "change": 0.24,
+      "changePct": 0.15
+    },
+    "gold": {
+      "close": 4190.32,
+      "change": 40.32,
+      "changePct": 0.97
+    },
+    "mufg": {
+      "close": null,
+      "change": null,
+      "changePct": null
+    },
     "events": [
       "日経平均 6/23続落（3日続落、中東情勢懸念・リスク回避売り）、直近確認値72,353.96（6/22終値）",
       "英FTが米イラン停戦60日延長・ホルムズ段階的再開合意接近を報道（6/23）",
@@ -23,14 +99,41 @@
   },
   {
     "briefDate": "2026-06-22",
-    "tradingDate": { "jp": "2026-06-19", "us": "2026-06-18" },
+    "tradingDate": {
+      "jp": "2026-06-19",
+      "us": "2026-06-18"
+    },
     "note": "週末（土日）のため市況更新なし。US市場は6/19 Juneteenth休場。日本最終取引日6/19。",
-    "nikkei":  { "close": 71250.06, "change": 196.57, "changePct":  0.28 },
-    "sp500":   { "close": 7500.58,  "change": 80.85,  "changePct":  1.08 },
-    "nasdaq":  { "close": 26517.93, "change": 496.82, "changePct":  1.91 },
-    "usdjpy":  { "close": 161.30,   "change": null,   "changePct":  null },
-    "gold":    { "close": 4150,     "change": null,   "changePct":  null },
-    "mufg":    { "close": 3278,     "change": -96,    "changePct": -2.85 },
+    "nikkei": {
+      "close": 71250.06,
+      "change": 196.57,
+      "changePct": 0.28
+    },
+    "sp500": {
+      "close": 7500.58,
+      "change": 80.85,
+      "changePct": 1.08
+    },
+    "nasdaq": {
+      "close": 26517.93,
+      "change": 496.82,
+      "changePct": 1.91
+    },
+    "usdjpy": {
+      "close": 161.3,
+      "change": null,
+      "changePct": null
+    },
+    "gold": {
+      "close": 4150,
+      "change": null,
+      "changePct": null
+    },
+    "mufg": {
+      "close": 3278,
+      "change": -96,
+      "changePct": -2.85
+    },
     "events": [
       "日銀 政策金利 0.75%→1.0% 引き上げ決定（6/15-16会合、31年ぶり高水準）",
       "FOMC 6/17: Warsh新議長初会合、金利据え置き（3.5-3.75%）・ドット図でハイク示唆",
@@ -44,14 +147,41 @@
   },
   {
     "briefDate": "2026-06-21",
-    "tradingDate": { "jp": "2026-06-19", "us": "2026-06-18" },
+    "tradingDate": {
+      "jp": "2026-06-19",
+      "us": "2026-06-18"
+    },
     "note": "US市場は6/19 Juneteenth休場。日本市場は6/19まで通常営業。",
-    "nikkei":  { "close": 71250.06, "change": 196,    "changePct":  0.28 },
-    "sp500":   { "close": 7500.58,  "change": 80.85,  "changePct":  1.08 },
-    "nasdaq":  { "close": 26517.93, "change": 496.82, "changePct":  1.91 },
-    "usdjpy":  { "close": 161.30,   "change": null,   "changePct":  null },
-    "gold":    { "close": 4150,     "change": null,   "changePct":  null },
-    "mufg":    { "close": 3278,     "change": -96,    "changePct": -2.85 },
+    "nikkei": {
+      "close": 71250.06,
+      "change": 196,
+      "changePct": 0.28
+    },
+    "sp500": {
+      "close": 7500.58,
+      "change": 80.85,
+      "changePct": 1.08
+    },
+    "nasdaq": {
+      "close": 26517.93,
+      "change": 496.82,
+      "changePct": 1.91
+    },
+    "usdjpy": {
+      "close": 161.3,
+      "change": null,
+      "changePct": null
+    },
+    "gold": {
+      "close": 4150,
+      "change": null,
+      "changePct": null
+    },
+    "mufg": {
+      "close": 3278,
+      "change": -96,
+      "changePct": -2.85
+    },
     "events": [
       "日銀 政策金利 0.75%→1.0% 引き上げ決定（6/15-16会合、31年ぶり高水準）",
       "FOMC 6/17: Warsh新議長初会合、金利据え置き（3.5-3.75%）・ドット図でハイク示唆",
