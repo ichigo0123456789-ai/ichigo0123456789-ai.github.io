@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg-0:#0e121b;--bg-1:#121723;--surface:#1a2130;--surface-2:#222b3c;--ink:#e9ecf4;--sub:#9aa4ba;--faint:#6d7689;--line:rgba(255,255,255,.09);--gold:#d6ab5b;--gold-ink:#e3c489;--gold-soft:rgba(214,171,91,.15);--gold-line:rgba(214,171,91,.36);--cool:#6b97ff;--cool-soft:rgba(91,140,255,.15);--teal:#3fc4c8;--up:#ff6b81;--down:#6b97ff;--chart-bg:#16203b;--chart-2:#1d2a4d;--chart-line:#2c3a63;--chart-ink:#e9edf7;--shadow:0 1px 1px rgba(0,0,0,.3),0 6px 16px -6px rgba(0,0,0,.5),0 34px 64px -32px rgba(0,0,0,.8);--shadow-sm:0 2px 12px -6px rgba(0,0,0,.6)}
+  :root{--bg-0:#0e121b;--bg-1:#121723;--surface:#1a2130;--surface-2:#222b3c;--ink:#e9ecf4;--sub:#9aa4ba;--faint:#6d7689;--line:rgba(255,255,255,.09);--gold:#d6ab5b;--gold-ink:#e3c489;--gold-soft:rgba(214,171,91,.15);--gold-line:rgba(214,171,91,.36);--cool:#6b97ff;--cool-soft:rgba(91,140,255,.15);--teal:#3fc4c8;--up:#4ade80;--down:#f87171;--chart-bg:#16203b;--chart-2:#1d2a4d;--chart-line:#2c3a63;--chart-ink:#e9edf7;--shadow:0 1px 1px rgba(0,0,0,.3),0 6px 16px -6px rgba(0,0,0,.5),0 34px 64px -32px rgba(0,0,0,.8);--shadow-sm:0 2px 12px -6px rgba(0,0,0,.6)}
   *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip}
   body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;background:var(--bg-1);position:relative;overflow-x:clip;width:100%;max-width:100%}
   img,iframe,table,.frame,.chart,.tradingview-widget-container,.tradingview-widget-container__widget{max-width:100%}
@@ -129,7 +129,7 @@
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
-    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">赤 ▲</span>・下落＝<span class="down">青 ▼</span>。本日JST 07時01分時点で東京市場は未開場のため、全数値は2026-06-23（前日）終値を使用。NASDAQ100の終値は方向のみ確認、具体値は「—」。</p>
+    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">緑 ▲</span>・下落＝<span class="down">赤 ▼</span>。本日JST 07時01分時点で東京市場は未開場のため、全数値は2026-06-23（前日）終値を使用。NASDAQ100の終値は方向のみ確認、具体値は「—」。</p>
     <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
       <tr>
         <td>日経平均<span class="src-note">株探ニュース・日本経済新聞 / as of 2026-06-23（東証終値）※6/24は07:01JST時点で未開場</span></td>
@@ -175,10 +175,10 @@
       <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
 
     <div class="heatmap-wrap reveal">
-      <div class="ttl">日経225 セクター別ヒートマップ（時価総額加重・当日騰落）</div>
+      <div class="ttl">東京証券取引所（TSE）セクター別ヒートマップ（時価総額加重・当日騰落）</div>
       <div class="tradingview-widget-container" style="height:460px">
         <div class="tradingview-widget-container__widget" style="height:100%"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"exchanges":[],"dataSource":"TOKYO","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","symbolUrl":"","colorTheme":"dark","hasTopBar":false,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":460}</script>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"exchanges":["TSE"],"dataSource":"Japan","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","symbolUrl":"","colorTheme":"dark","hasTopBar":false,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":460}</script>
       </div>
     </div>
     </div>
