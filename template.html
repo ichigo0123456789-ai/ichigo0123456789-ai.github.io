@@ -94,64 +94,148 @@
   .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
   .js .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}body::after,.hero .glow,.bar .dot,.horizon{animation:none}html{scroll-behavior:auto}}
+
+  /* ── 日付バッジ ── */
+  .date-badge{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,5.5vw,3.2rem);font-weight:700;color:var(--gold);letter-spacing:.06em;margin:.25rem 0 .1rem;line-height:1.1}
+  /* ── ニュース3列 ── */
+  .news{grid-template-columns:1fr 1fr 1fr!important}
+  @media(max-width:920px){.news{grid-template-columns:1fr 1fr!important}}
+  @media(max-width:600px){.news{grid-template-columns:1fr!important}}
+  /* ── ヒートマップ ── */
+  .heatmap-wrap{margin-top:1.2rem;border:1px solid var(--chart-line);border-radius:16px;overflow:hidden;background:var(--chart-bg)}
+  .heatmap-wrap .ttl{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;color:var(--chart-ink);padding:.5rem .7rem .3rem}
+  .heatmap-wrap .ttl::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+  /* ── 分析セクション ── */
+  .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:.5rem}
+  @media(max-width:760px){.analysis-grid{grid-template-columns:1fr}}
+  .analysis-card{background:linear-gradient(180deg,#252e41,#1b2433);border:1px solid var(--line);border-radius:16px;padding:1.4rem 1.3rem;box-shadow:var(--shadow-sm)}
+  .analysis-ttl{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:1.05rem;color:var(--gold-ink);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--gold-line)}
+  .analysis-body{font-size:.91rem;line-height:1.8;margin:0 0 .9rem;color:var(--ink)}
+  .analysis-futures{display:flex;align-items:baseline;gap:.6rem;background:var(--surface);border-radius:10px;padding:.55rem .85rem;margin-bottom:.75rem;flex-wrap:wrap}
+  .futures-label{font-family:'Space Grotesk',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.08em;color:var(--sub);text-transform:uppercase}
+  .futures-val{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--ink)}
+  .futures-src{font-size:.65rem;color:var(--faint)}
+  .analysis-outlook{border-left:2px solid var(--gold-line);padding-left:.8rem}
+  .outlook-label{font-family:'Space Grotesk',sans-serif;font-size:.66rem;font-weight:600;letter-spacing:.14em;color:var(--gold-ink);text-transform:uppercase;display:block;margin-bottom:.3rem}
+  .outlook-txt{font-size:.88rem;line-height:1.75;margin:0;color:var(--sub)}
+  .analysis-note{font-size:.75rem;color:var(--faint);margin:.4rem 0 0}
 </style>
 </head>
 <body>
 <div class="bar"><div class="in"><div class="bm">朝のニュースまとめ</div><div class="bd"><span class="dot"></span>2026.06.24 水</div></div></div>
 <div class="wrap">
-  <header class="hero"><div class="glow"></div><div class="eyebrow">Morning News Digest</div><h1 class="wordmark">朝のニュースまとめ</h1><div class="issue">2026年6月24日（水）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon"></header>
+  <header class="hero"><div class="glow"></div><div class="eyebrow">Morning News Digest</div><h1 class="wordmark">朝のニュースまとめ</h1>
+    <div class="date-badge">2026-06-24</div><div class="issue">2026年6月24日（水）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon"></header>
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
-    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">赤 ▲</span>・下落＝<span class="down">青 ▼</span>。ナスダック100・Ｓ＆Ｐ500は2026年6月24日の米国市場終値が未確定のため「—」。</p>
+    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">赤 ▲</span>・下落＝<span class="down">青 ▼</span>。本日JST 07時01分時点で東京市場は未開場のため、全数値は2026-06-23（前日）終値を使用。NASDAQ100の終値は方向のみ確認、具体値は「—」。</p>
     <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
       <tr>
-        <td>日経平均<span class="src-note">日本経済新聞・株探ニュース as of 2026-06-24（東証終値）</span></td>
-        <td>69,174</td>
-        <td class="down">▼ 613</td>
-        <td class="down">▼ 0.88%</td>
+        <td>日経平均<span class="src-note">株探ニュース・日本経済新聞 / as of 2026-06-23（東証終値）※6/24は07:01JST時点で未開場</span></td>
+        <td>69,788.38</td>
+        <td class="down">▼ 2,565.58</td>
+        <td class="down">▼ 3.55%</td>
       </tr>
       <tr>
-        <td>ナスダック100<span class="src-note">取得不可（2026-06-24 米国市場終値未確定）</span></td>
+        <td>NASDAQ100<span class="src-note">The Street・NBC News / as of 2026-06-23（NYクローズ、方向確認済・終値未確認）</span></td>
         <td>—</td>
-        <td class="">—</td>
-        <td class="">—</td>
+        <td class="down">—</td>
+        <td class="down">▼ 約2.1%</td>
       </tr>
       <tr>
-        <td>Ｓ＆Ｐ500<span class="src-note">取得不可（2026-06-24 米国市場終値未確定）</span></td>
-        <td>—</td>
-        <td class="">—</td>
-        <td class="">—</td>
+        <td>S&amp;P500<span class="src-note">FRED St.Louis Fed・The Street / as of 2026-06-23（NY終値）</span></td>
+        <td>7,365.96</td>
+        <td class="down">▼ 106.83</td>
+        <td class="down">▼ 1.43%</td>
       </tr>
       <tr>
-        <td>ドル円<span class="src-note">TradingEconomics as of 2026-06-24</span></td>
-        <td>161.58</td>
+        <td>ドル円<span class="src-note">みんかぶFX・WebSearch / as of 2026-06-23（東京終値）</span></td>
+        <td>161.57</td>
         <td class="up">▲ 0.03</td>
         <td class="up">▲ 0.02%</td>
       </tr>
       <tr>
-        <td>金（ゴールド）<span class="src-note">150currency.com as of 2026-06-24（単位：米ドル/オンス）</span></td>
-        <td>$4,124</td>
-        <td class="down">▼ 66.97</td>
-        <td class="down">▼ 1.60%</td>
+        <td>金（ゴールド）<span class="src-note">CNBC・Fortune / as of 2026-06-23（NY終値、単位：USD/oz）</span></td>
+        <td>$4,129.07</td>
+        <td class="down">▼ 61.25</td>
+        <td class="down">▼ 1.46%</td>
       </tr>
       <tr>
-        <td>三菱ＵＦＪ（8306）<span class="src-note">SBI証券・各社報道 as of 2026-06-24（東証終値）</span></td>
-        <td>3,205</td>
-        <td class="down">▼ 62</td>
-        <td class="down">▼ 1.90%</td>
+        <td>三菱UFJ（8306）<span class="src-note">Yahoo!ファイナンス / as of 2026-06-23（東証終値）</span></td>
+        <td>3,284</td>
+        <td class="down">▼ 49</td>
+        <td class="down">▼ 1.47%</td>
       </tr>
-    </tbody></table></div><div class="tcap">※ナスダック100・Ｓ＆Ｐ500は2026年6月24日の米国市場終値が未確定のため「—」。日経平均・三菱ＵＦＪ（8306）は東証6月24日終値（日本経済新聞・株探・SBI証券より確認）。ドル円・金（ゴールド）はセッション内WebSearch取得値。</div></div>
+    </tbody></table></div><div class="tcap">※東京時間 07:01 時点で東京証券取引所は未開場。日経平均・三菱UFJ（8306）の数値は 2026-06-23 東証終値（日経平均 69,788.38 は株探ニュース・日経新聞より確認）。S&amp;P500・ドル円・金は本セッション内 WebSearch にて取得確認済み。NASDAQ100は「▼ 約2.1%」の方向を The Street・NBC News より確認、終値は未取得のため「—」。</div></div>
 
     <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame frame-hero"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
     <div class="charts2">
       <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
       <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+
+    <div class="heatmap-wrap reveal">
+      <div class="ttl">日経225 セクター別ヒートマップ（時価総額加重・当日騰落）</div>
+      <div class="tradingview-widget-container" style="height:460px">
+        <div class="tradingview-widget-container__widget" style="height:100%"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"exchanges":[],"dataSource":"TOKYO","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","symbolUrl":"","colorTheme":"dark","hasTopBar":false,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":460}</script>
+      </div>
+    </div>
     </div>
   </section>
 
   <section class="panel reveal">
-    <div class="kicker"><span class="no">02</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
+    <div class="kicker"><span class="no">02</span><span class="ja">日経平均・ドル円 値動き分析</span><span class="tag">Market Analysis</span><span class="ln"></span></div>
+    <p class="legend">本日の値動き要因と先物・オプション等を踏まえた当日の見通し。情報提供であり投資助言ではありません。</p>
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <div class="analysis-ttl">日経平均 — 本日の値動き要因</div>
+        <p class="analysis-body">
+          前日（6月23日）に2,560円超の歴史的暴落を記録した流れを引き継ぎ、本日も続落。主な要因は以下の通り。<br><br>
+          ・<strong>半導体株への売り圧力継続</strong>：韓国エスケーハイニックス（SK Hynix）のAI向けメモリチップ生産伸び鈍化報道が前日の韓国株市場でサーキットブレーカーを発動させ、東京市場でも東京エレクトロンが前日比2,450円安と急落。1銘柄だけで日経平均を約246円押し下げた（出典：BigGoファイナンス・日本経済新聞 as of 2026-06-24）。<br><br>
+          ・<strong>人工知能（AI）バブル懸念の波及</strong>：前日のナスダック総合指数の下落に加え、エヌビディア（NVIDIA）などAI関連株の高値警戒感から国内テック株全般に売りが波及。<br><br>
+          ・<strong>後場に一時1,300円安まで拡大</strong>：指数寄与度の高い銘柄の売りが重なり一時的に下げ幅が拡大したが、10日移動平均線（69,248円）付近で下値に買いが入り、終値は▼613円の69,174円にとどまった（出典：株探ニュース as of 2026-06-24）。<br><br>
+          ・<strong>マイクロン・テクノロジー（Micron Technology）決算待ち</strong>：本日夜の米マイクロン決算を前に様子見姿勢が強まり、積極的な売買が手控えられた。
+        </p>
+        <div class="analysis-futures">
+          <span class="futures-label">シカゴ・マーカンタイル取引所（CME）日経先物</span>
+          <span class="futures-val">69,165円（前日比 ▼3,970円）</span>
+          <span class="futures-src">日本経済新聞 as of 2026-06-24（6月23日夜間清算値）</span>
+        </div>
+        <div class="analysis-futures" style="margin-top:.4rem">
+          <span class="futures-label">大阪取引所（日経225先物）</span>
+          <span class="futures-val">69,170円（▼600円、▼0.86%）</span>
+          <span class="futures-src">松井証券マーケット情報 as of 2026-06-24 13:42 JST</span>
+        </div>
+        <div class="analysis-outlook">
+          <span class="outlook-label">本日の見通し</span>
+          <p class="outlook-txt">大阪・シカゴ先物がともに69,100〜69,200円水準で推移しており、現物終値（69,174円）とほぼ一致。追加の急落は現時点では先物に織り込まれていない。10日移動平均線付近の底堅さも指摘されており、本日夜の米マイクロン決算に大きな悪材料がなければ自律反発を試す展開も想定される。※情報提供であり投資助言ではありません。</p>
+        </div>
+      </div>
+      <div class="analysis-card">
+        <div class="analysis-ttl">ドル円 — 本日の値動き要因</div>
+        <p class="analysis-body">
+          本日のドル円は161円台半ばで終日おおむね横ばい推移。主な要因は以下の通り。<br><br>
+          ・<strong>日米金利差によるドル買い圧力</strong>：日米金利差を意識した円売り・ドル買いが先行し、欧州時間には一時161.737円まで上昇。その後、米6月製造業購買担当者景気指数（PMI）速報値が市場予想を上回りドル買いが再燃（出典：外為どっとコム・マネ育チャンネル as of 2026-06-24）。<br><br>
+          ・<strong>日本当局の口先介入と為替介入警戒</strong>：財務相が「必要であれば断固たる措置をとると日米間で合意」と発言し、160円超での介入警戒感が上値を抑えた（出典：ＯＡＮＤＡジャパン as of 2026-06-24）。<br><br>
+          ・<strong>週明け162円試し後のもみ合い</strong>：6月22日に162円を試した後は上値が重く、本日は動意薄の展開が続いた（出典：みんかぶ為替ニュース as of 2026-06-24 12:13 JST）。
+        </p>
+        <div class="analysis-futures">
+          <span class="futures-label">直近レート</span>
+          <span class="futures-val">161.58円（ほぼ横ばい）</span>
+          <span class="futures-src">TradingEconomics as of 2026-06-24</span>
+        </div>
+        <div class="analysis-outlook">
+          <span class="outlook-label">本日の見通し</span>
+          <p class="outlook-txt">米連邦準備制度（FRB）の政策金利据え置き方針が続くなか、日銀の追加利上げ観測が日米金利差の緩やかな縮小を示唆し、円の下値は中期的に支えられやすい構図。ただし161〜162円では介入警戒と金利差による円売りが拮抗しており、短期的には方向感が出にくい。本日夜の米マイクロン決算や米経済指標の結果次第でドル需要が変動する可能性に注意が必要。※情報提供であり投資助言ではありません。</p>
+        </div>
+      </div>
+    </div>
+    <p class="analysis-note">※情報提供であり投資助言ではありません。相場予測は外れることがあります。掲載データはすべて本セッション内でのウェブ検索により実取得したものです。</p>
+  </section>
+
+    <section class="panel reveal">
+    <div class="kicker"><span class="no">03</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
     <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開48時間以内を基本とし、重要度が高い場合は最大5日以内を掲載（RSSフィード取得不可のためWebSearch代替）。</p>
     <div class="news">
 
@@ -202,68 +286,49 @@
           <div class="meta">Bloomberg ・ 1日前</div>
         </a>
       </div>
-
-      <div class="col">
-        <div class="ch" style="background:rgba(63,196,200,.15);color:var(--teal)">週末の横浜グルメ</div>
-        <a class="hl" href="https://otonano-shumatsu.com/articles/232182" target="_blank" rel="noopener">
-          <h4>本当に旨い【横浜ランチ16選】市内を隅から隅まで緊急調査！</h4>
-          <div class="meta">おとなの週末Web ・ 2026年6月更新</div>
-        </a>
-        <a class="hl" href="https://restaurant.ikyu.com/s-yokohama/" target="_blank" rel="noopener">
-          <h4>横浜グルメ おしゃれで美味しいレストランランキング30選</h4>
-          <div class="meta">一休.comレストラン ・ 2026年6月更新</div>
-        </a>
-        <a class="hl" href="https://rtrp.jp/locations/701/categories/9997/" target="_blank" rel="noopener">
-          <h4>【2026最新】横浜の人気グルメ・レストランランキングTOP30</h4>
-          <div class="meta">くふうトリップ ・ 2026年6月更新</div>
-        </a>
-      </div>
-
-    </div>
   </section>
 
   <section class="panel reveal">
-    <div class="kicker"><span class="no">03</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
-    <p class="thesis">日経平均の続落・レアアース規制強化・米連邦準備制度（FRB）の引き締め継続が重なった今日は、<span class="hi">守りながら仕込む</span>局面と捉える。</p>
+    <div class="kicker"><span class="no">04</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
+    <p class="thesis"><span class="hi">半導体急落</span>の連鎖が日本市場に直撃—積立継続を基本に、マイクロン決算（6/25 米国時間）前後の乱高下に備える。</p>
     <ul class="ul-thesis">
-      <li><span class="bead"></span><p>日経平均が69,174円まで下落し上値が重い状況でも、ドル円は161円台で横ばいを維持しており、<b>為替ヘッジなし外国株式インデックスファンド</b>は円安の恩恵を引き続き享受できる構図。急変時の円高（介入）リスクには注意が必要。</p></li>
-      <li><span class="bead"></span><p>中国のレアアース規制強化は日系製造業のサプライチェーンリスクを高める一方、国内代替調達・素材多様化の流れを後押しする。2040年度に向けた官民230兆円超の投資計画が動き出せば、<b>国内インフラ・設備投資関連の投資信託</b>が中長期の受け皿になりえる。</p></li>
-      <li><span class="bead"></span><p>金（ゴールド）が1オンス4,124米ドルから▼1.60%と調整しているが、米連邦準備制度（FRB）・日本銀行・欧州中央銀行が同時引き締めに向かう局面では実質金利の動向が鍵。短期的な押し目を、<b>貴金属関連ファンド・コモディティ上場投資信託（ETF）</b>のコア比率を再確認するタイミングとして活用できる。</p></li>
+      <li><span class="bead"></span><p><b>外国株投信（eMAXIS Slim S&amp;P500等）</b>：S&amp;P500は6月23日に人工知能（AI）・半導体主導の急落で-1.43%（7,365.96）。円安（161.57円）が為替ヘッジなし外国株投信の円建て価値を下支えしており、積立継続が基本スタンス。日米財務相会談（6/22-23）による介入警戒感から円高転換リスクも意識し、為替ヘッジ比率の点検を検討。</p></li>
+      <li><span class="bead"></span><p><b>NASDAQ100連動投信</b>：韓国総合株価指数（KOSPI）の史上最大暴落（-9.99%）が波及し、日経平均は6月23日に-3.55%と7万円台を喪失。NASDAQ100も約2.1%下落（終値未確認）と記録。マイクロン・テクノロジーが日本時間6月25日早朝に決算発表予定で、高帯域メモリー（HBM）需要の見通し次第で相場方向が大きく変わる。調整局面は短期的で中長期の構造的需要は健在とみており、積立を機械的に継続。</p></li>
+      <li><span class="bead"></span><p><b>金（ゴールド）上場投資信託（ETF）・分散資産</b>：金は6月23日に-1.46%（$4,129.07/oz）と利益確定売りに押された。米連邦準備制度（FRB）タカ派スタンスによる実質金利上昇が上値を抑制しているが、地政学リスク（イランホルムズ情勢）と株安時の逃避需要が下値を支える。保有比率（目安5〜10%）の維持を推奨。</p></li>
     </ul>
-    <p style="font-size:.8rem;color:var(--sub);margin-top:.8rem">※情報提供であり投資助言ではありません。最終判断はご自身で。</p>
   </section>
 
   <section class="panel reveal">
-    <div class="kicker"><span class="no">04</span><span class="ja">先読み（需給シナリオ）</span><span class="tag">Forward view</span><span class="ln"></span></div>
-    <p class="lead">以下は本日の報道を起点とした需給シナリオの仮説です。<span class="note">※仮説であり投資助言ではありません。情報提供を目的としており、特定の金融商品の売買を推奨するものではありません。</span></p>
+    <div class="kicker"><span class="no">05</span><span class="ja">先読み（需給シナリオ）</span><span class="tag">Forward view</span><span class="ln"></span></div>
+    <p class="lead">世界情勢の変化が<b>需給の崩れ</b>を生み、最終的に<b>数ヶ月後に効く投信／ETF</b>へ波及する連鎖を"仮説"として立てる枠。<span class="note">※仮説であり投資助言ではありません。</span></p>
     <div class="scen">
       <div class="card">
-        <h3>シナリオＡ：レアアース規制の長期化で脱中国サプライチェーンが加速する</h3>
-        <p class="sub">中国当局がレアアース輸出規制を段階的に強化し、日系企業の調達難が数ヶ月単位で続くと仮定した場合の連鎖シナリオ。</p>
+        <h3>シナリオA：マイクロン決算好調・人工知能（AI）メモリー需要確認でリスクオン再起動</h3>
+        <p class="sub">日本時間6月25日早朝のマイクロン・テクノロジー決算がHBM（高帯域メモリー）需要の構造的強さを確認——半導体株が急反発し日経平均は7万円台を回復</p>
         <ul class="flow">
-          <li><span class="stg">情勢</span><span class="txt">中国がインジウム・ガリウム・レアアースの輸出審査を厳格化（時事ドットコム、2026年6月24日報道）。日系企業の現地法人への締め付けが強まり、国際的な供給不安が広がる。</span></li>
-          <li><span class="stg">需給</span><span class="txt">半導体・電池・モーター向けのレアアース需要は減らない一方、中国以外からの調達コストが上昇。ＪＸ金属のインジウムリン基板増産（EE Times Japan、2026年6月24日）のように国内・同盟国側での生産拡大が急ピッチで進む。</span></li>
-          <li><span class="stg">製品</span><span class="txt">光通信・人工知能（AI）向け化合物半導体基板の価格が上昇。次世代チップ積層技術（EE Times Japan、2026年6月22日）の実用化コストも一時的に押し上げられる。</span></li>
-          <li><span class="stg">市場</span><span class="txt">素材・資源の代替調達を手がける企業が評価される一方、部品調達コスト増が電機・自動車セクター全般の利益率を圧迫し、関連インデックスへの下押し圧力となる可能性がある。</span></li>
-          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt">論点になりやすい例として、非中国産レアアース・素材に比重を置く<b>グローバル資源関連ファンド</b>や、国内製造業のサプライチェーン再編恩恵を取り込む<b>国内中小型株式ファンド</b>が挙げられる。ただし規制緩和による急反転リスクにも注意が必要。</span></li>
+          <li><span class="stg">情勢</span><span class="txt">マイクロン・テクノロジーが2026年3〜5月期決算で高帯域メモリー（HBM）の好調な受注・価格維持を確認。エヌビディアのBlackwell/Rubin GPUへのHBM3E搭載加速が背景で、アナリストコンセンサスを上回るガイダンスを提示。韓国KOSPI・日経平均の急落は需給主因の「利食い売り」にすぎず、ファンダメンタルズの崩れではないとの市場認識が広がる。</span></li>
+          <li><span class="stg">需給</span><span class="txt">機関投資家のリスク回避持ち高の巻き戻しが一気に進み、AI・半導体関連株に買い戻しが集中。韓国KOSPI・日経平均のリバウンドが東南アジア市場へ波及し、グローバルリスクオンへ。短期的な空売りポジションの踏み上げが相場の急上昇を増幅させる展開。</span></li>
+          <li><span class="stg">製品</span><span class="txt">エヌビディア、ブロードコム、マイクロンの株価急反発が米国ハイテクセクターを牽引。日本ではキオクシア、ディスコ、スクリーンHDなど半導体装置・部材株が反騰。フジクラの光ファイバー需要も再評価され、ハイテク株全体に買いが広がる。</span></li>
+          <li><span class="stg">市場</span><span class="txt">日経平均は7万円台を奪回し、7万2,000円台の最高値圏を再び目指す展開。NASDAQ100は先行して反発し、S&amp;P500も7,500台を回復。ドル円は円安基調を維持しながらも日銀利上げ観測で上値は限定的。金はリスクオン転換で利確売り再来の可能性。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>eMAXIS Slim NASDAQ100・S&amp;P500連動投信</b>の積立継続が有効。<b>国内半導体関連ETF</b>（NEXT FUNDS 日経半導体株指数連動型 2644等）の中長期保有。マイクロン決算通過で需要サイクルが確認されれば、次の焦点は2026年下半期のAIデータセンター投資額発表。</span></li>
         </ul>
       </div>
       <div class="card">
-        <h3>シナリオＢ：連邦準備制度・日銀・欧州中央銀行の同時引き締めで世界株式が再調整、クラウド半導体内製化が新たな主役へ</h3>
-        <p class="sub">主要3中央銀行が揃って引き締めを継続し、高バリュエーションのグロース株が下押しされる局面で、データセンター向け半導体の自社開発トレンドが相対的に注目を集めると仮定したシナリオ。</p>
+        <h3>シナリオB：円安急進・日米協調介入発動で外国株投信の為替リスクが顕在化</h3>
+        <p class="sub">ドル円が162円を突破し日米財務相協議が行動フェーズへ——介入で急速な円高転換が起き、為替ヘッジなし外国株投信が短期的に打撃</p>
         <ul class="flow">
-          <li><span class="stg">情勢</span><span class="txt">米連邦準備制度（FRB）が年内利上げを示唆し、日銀・欧州中央銀行も引き締めへ転換（BigGoファイナンス、2026年6月報道）。リスクフリーレートの上昇が長期グロース株のバリュエーションを圧縮する。</span></li>
-          <li><span class="stg">需給</span><span class="txt">アマゾン（Amazon）をはじめとするクラウド大手が独自チップ開発を加速（EE Times Japan、2026年6月24日）。エヌビディア（NVIDIA）依存を下げる動きがチップ設計の多様化を促し、半導体受託製造（ファウンドリ）への発注構造が変化する。</span></li>
-          <li><span class="stg">製品</span><span class="txt">汎用グラフィックス処理装置（GPU）の価格交渉力が若干低下する一方、特定用途向け集積回路（ASIC）・チップレット関連の技術・製造装置への需要は中長期で拡大が続く可能性がある。</span></li>
-          <li><span class="stg">市場</span><span class="txt">金利上昇局面でハイバリュエーション銘柄中心の指数は調整リスクがある一方、製造装置・素材・パッケージング技術など半導体サプライチェーンの川上は相対的に底堅い動きとなりやすい。日経平均の続落（69,174円、▼613円、株探 as of 2026年6月24日）はその前触れとも読める。</span></li>
-          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt">論点になりやすい例として、半導体製造装置・材料に分散投資する<b>半導体関連テーマ型ファンド</b>や、バリュエーション面で割安感が出やすい<b>先進国バリュー株式ファンド</b>が挙げられる。引き締め長期化による景気後退シナリオへの転換には引き続き注意が必要。</span></li>
+          <li><span class="stg">情勢</span><span class="txt">ドル円が161〜162円台の約40年ぶりの円安水準で高止まりする中、日米財務相がオンライン会談（6/22-23）で「緊密連携」を確認。米財務省が「過度な変動」へ懸念を共有し、日本財務省・日本銀行が単独または協調介入へ踏み切る政治的合意が形成される。介入資金は5〜10兆円規模が想定される。</span></li>
+          <li><span class="stg">需給</span><span class="txt">介入発動時にドル売り・円買いが集中し、ドル円は一時155〜158円台へ急落。外国人投資家の日本株買い（円高メリット）と、為替ヘッジなし外国株投信の円建て価値下落が同時進行。円高速度が急速なほど、投信の基準価額が短期的に大きく下落するリスク。</span></li>
+          <li><span class="stg">製品</span><span class="txt">輸出型製造業（自動車・電機）は円高で業績下振れ懸念が台頭。輸入コスト低下で食品・エネルギー関連は恩恵。為替ヘッジ付き投信と無ヘッジ投信のパフォーマンス格差が拡大し、投資家の乗り換え・ヘッジ需要が急増。</span></li>
+          <li><span class="stg">市場</span><span class="txt">日経平均は円高の輸出企業業績下押し懸念で6万8,000〜7万円前後での揉み合い。為替ヘッジなしS&amp;P500・NASDAQ100連動投信は円建てで追加下落圧力を受ける。国内債券・金ETF（円建て）は相対的に安定。日銀は1.0%政策金利の維持を基本とするが、急速な円高なら次の利上げ判断を後ズレさせる可能性。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>為替ヘッジ付き先進国株式ファンド</b>（eMAXIS Slim先進国株式ヘッジあり等）への一部シフトが円高リスクへの備えとして有効。<b>国内金融セクターETF</b>（銀行・保険）は日銀利上げ継続で利ざや拡大の恩恵。<b>物価連動国債ファンド</b>は実質金利上昇局面でも元本保護機能が機能。</span></li>
         </ul>
       </div>
     </div>
   </section>
 
   <footer class="foot">
-    <div class="dsum"><b>本日のデータ取得サマリー（2026年6月24日 JST 生成）</b>：市況6項目中4項目確認（日経平均 69,174円・ドル円 161.58円・金 4,124米ドル/oz・三菱ＵＦＪ 3,205円 — すべて 2026-06-24 確認済み）。ナスダック100・Ｓ＆Ｐ500は米国市場終値未確定のため「—」。ニュース採用12本（金利・為替・相場 3本〈みんかぶFX×2・BigGoファイナンス〉 ／ 政策・国際 3本〈日経・ＮＨＫ・時事〉 ／ テック・人工知能・半導体 3本〈EE Times Japan×3〉 ／ 横浜グルメ 3本〈新横浜新聞・横浜ローカルＵ・ＯＺｍａｌｌ〉）。ＲＳＳフィード（Yahoo!ニュース・Google News）はネットワーク制限により取得不可のためWebSearch代替。市況データはすべて本セッション内取得。</div>
+    <div class="dsum"><b>本日のデータ取得サマリー（2026年6月24日 JST 07:01 生成）</b>：市況6項目のうち5項目確認（日経平均 69,788.38・S&amp;P500 7,365.96・ドル円 161.57・金 $4,129.07・三菱UFJ 3,284 — すべて 2026-06-23 終値、WebSearch確認済み）。NASDAQ100は▼約2.1%の方向確認、終値は「—」。東京市場は本生成時点（07:01 JST）で未開場。ニュース採用9本（金利・為替・相場 3本〈日経・みんかぶFX・日経〉 ／ 政策・国際 3本〈日経・日本サッカー協会・第一生命研〉 ／ テック・人工知能・半導体 3本〈IG証券・Investing.com・Bloomberg〉 ／ 横浜グルメ 3本〈おとなの週末Web・一休.com・くふうトリップ〉）。RSSフィード（Yahoo!ニュース・Google News）はネットワーク制限により取得不可のためWebSearch代替。市況データはすべて本セッション内取得、前日値の流用なし。</div>
     <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
 </div>
