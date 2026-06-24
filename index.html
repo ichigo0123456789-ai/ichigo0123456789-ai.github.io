@@ -104,9 +104,11 @@
   /* ── ヒートマップ ── */
   .heatmap-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem}
   @media(max-width:860px){.heatmap-grid{grid-template-columns:1fr}}
-  .heatmap-grid .tradingview-widget-container{height:520px}
-  @media(max-width:860px){.heatmap-grid .tradingview-widget-container{height:460px}}
-  @media(max-width:600px){.heatmap-grid .tradingview-widget-container{height:400px}}
+  #jp-hm-box,.hm-tv-box{height:580px}
+  @media(max-width:860px){#jp-hm-box,.hm-tv-box{height:500px}}
+  @media(max-width:600px){#jp-hm-box,.hm-tv-box{height:430px}}
+  #jp-hm-tip{position:fixed;background:var(--surface-2);border:1px solid var(--chart-line);border-radius:8px;padding:.5rem .75rem;color:var(--chart-ink);font-size:.78rem;line-height:1.6;pointer-events:none;z-index:999;display:none;min-width:130px;white-space:nowrap}
+  .tt-up{color:var(--up)}.tt-dn{color:var(--down)}
   .heatmap-wrap{border:1px solid var(--chart-line);border-radius:16px;overflow:hidden;background:var(--chart-bg)}
   .heatmap-wrap .ttl{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;color:var(--chart-ink);padding:.5rem .7rem .3rem}
   .heatmap-wrap .ttl::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
@@ -181,36 +183,17 @@
 
     <div class="heatmap-grid reveal">
       <div class="heatmap-wrap">
-        <div class="ttl">日本市場（TSE）セクター別ヒートマップ</div>
-        <!-- TradingView Stock Screener Widget - Japan Market (TSE) BEGIN -->
-        <div class="tradingview-widget-container" style="">
-          <div class="tradingview-widget-container__widget" style="width:100%;height:calc(100% - 32px);"></div>
-          <div class="tradingview-widget-copyright">
-            <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
-              <span class="blue-text">Track all markets on TradingView</span>
-            </a>
-          </div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
-          {
-            "width": "100%",
-            "height": 468,
-            "defaultColumn": "performance",
-            "defaultScreen": "top_gainers",
-            "market": "japan",
-            "showToolbar": true,
-            "colorTheme": "dark",
-            "locale": "ja",
-            "isTransparent": false
-          }
-          </script>
+        <div class="ttl">日本市場（日経225）ヒートマップ<span id="jp-hm-upd" style="margin-left:auto;font-weight:400;color:var(--faint);font-size:.68rem"></span></div>
+        <div id="jp-hm-box" style="position:relative">
+          <div id="jp-hm-load" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.88rem">データ読み込み中…</div>
+          <svg id="jp-hm-svg" style="width:100%;height:100%;display:block"></svg>
         </div>
-        <!-- TradingView Stock Screener Widget - Japan Market (TSE) END -->
       </div>
       <div class="heatmap-wrap">
         <div class="ttl">米国市場（S&amp;P 500）セクター別ヒートマップ</div>
-        <div class="tradingview-widget-container" style="">
+        <div class="tradingview-widget-container hm-tv-box">
           <div class="tradingview-widget-container__widget" style="height:100%"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"dataSource":"SPX500","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","colorTheme":"dark","hasTopBar":true,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":400}</script>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"dataSource":"SPX500","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","colorTheme":"dark","hasTopBar":true,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":580}</script>
         </div>
       </div>
     </div>
@@ -365,6 +348,76 @@
     <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
 </div>
+<div id="jp-hm-tip"></div>
+<script>
+(function(){
+  var S=[
+    {n:'トヨタ自動車',t:'7203.T',s:'自動車',w:100},{n:'ソニーグループ',t:'6758.T',s:'電機',w:72},
+    {n:'東京エレクトロン',t:'8035.T',s:'電機',w:70},{n:'キーエンス',t:'6861.T',s:'電機',w:68},
+    {n:'三菱UFJ',t:'8306.T',s:'金融',w:60},{n:'ソフトバンクG',t:'9984.T',s:'通信',w:58},
+    {n:'ダイキン工業',t:'6367.T',s:'電機',w:50},{n:'信越化学',t:'4063.T',s:'化学',w:48},
+    {n:'任天堂',t:'7974.T',s:'サービス',w:46},{n:'NTT',t:'9432.T',s:'通信',w:44},
+    {n:'三井住友FG',t:'8316.T',s:'金融',w:42},{n:'三菱商事',t:'8058.T',s:'商社',w:40},
+    {n:'KDDI',t:'9433.T',s:'通信',w:40},{n:'三井物産',t:'8031.T',s:'商社',w:38},
+    {n:'日本電産',t:'6594.T',s:'電機',w:38},{n:'第一三共',t:'4568.T',s:'医薬品',w:36},
+    {n:'伊藤忠商事',t:'8001.T',s:'商社',w:36},{n:'村田製作所',t:'6981.T',s:'電機',w:34},
+    {n:'中外製薬',t:'4519.T',s:'医薬品',w:36},{n:'武田薬品',t:'4502.T',s:'医薬品',w:34},
+    {n:'ホンダ',t:'7267.T',s:'自動車',w:36},{n:'ファナック',t:'6954.T',s:'電機',w:32},
+    {n:'みずほFG',t:'8411.T',s:'金融',w:30},{n:'テルモ',t:'4543.T',s:'医薬品',w:30},
+    {n:'セブンアイHD',t:'3382.T',s:'小売',w:30},{n:'三菱重工',t:'7011.T',s:'機械',w:28},
+    {n:'富士フイルム',t:'4901.T',s:'精密',w:28},{n:'キヤノン',t:'7751.T',s:'電機',w:28},
+    {n:'富士通',t:'6702.T',s:'電機',w:26},{n:'JR東日本',t:'9020.T',s:'輸送',w:26},
+    {n:'JT',t:'2914.T',s:'食品',w:26},{n:'三菱電機',t:'6503.T',s:'電機',w:24},
+    {n:'味の素',t:'2802.T',s:'食品',w:24},{n:'三菱地所',t:'8802.T',s:'不動産',w:22},
+    {n:'ブリヂストン',t:'5108.T',s:'ゴム',w:22},{n:'OLC',t:'4661.T',s:'サービス',w:22},
+    {n:'スズキ',t:'7269.T',s:'自動車',w:20},{n:'JR東海',t:'9022.T',s:'輸送',w:20},
+    {n:'セコム',t:'9735.T',s:'サービス',w:18},{n:'豊田織機',t:'6201.T',s:'機械',w:16}
+  ];
+  function cc(p){var c=Math.max(-5,Math.min(5,p||0));if(c<-3)return'#991b1b';if(c<-1.5)return'#ef4444';if(c<-0.3)return'#fca5a5';if(c<0.3)return'#475569';if(c<1.5)return'#86efac';if(c<3)return'#22c55e';return'#15803d';}
+  var stocks;
+  async function fq(t){
+    var u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(t)+'?interval=1d&range=2d';
+    var px='https://api.allorigins.win/get?url='+encodeURIComponent(u);
+    try{var r=await fetch(px,{signal:AbortSignal.timeout(9000)});var j=await r.json();var d=JSON.parse(j.contents);var res=d&&d.chart&&d.chart.result&&d.chart.result[0];if(!res)return null;var m=res.meta;var price=m.regularMarketPrice!=null?m.regularMarketPrice:m.previousClose;var prev=m.chartPreviousClose!=null?m.chartPreviousClose:m.previousClose;return{price:price,chg:prev?((price-prev)/prev)*100:0};}catch(e){return null;}
+  }
+  async function load(){
+    var B=6;
+    for(var i=0;i<stocks.length;i+=B){var b=stocks.slice(i,i+B);var rs=await Promise.all(b.map(function(s){return fq(s.t);}));rs.forEach(function(r,j){if(r){stocks[i+j].price=r.price;stocks[i+j].chg=r.chg;}else{stocks[i+j].chg=null;}});}
+  }
+  function draw(d3){
+    var box=document.getElementById('jp-hm-box');if(!box)return;
+    var W=box.clientWidth,H=box.clientHeight;
+    var svg=d3.select('#jp-hm-svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
+    svg.selectAll('*').remove();
+    var root=d3.hierarchy({children:stocks}).sum(function(d){return d.w||1;}).sort(function(a,b){return b.value-a.value;});
+    d3.treemap().size([W,H]).paddingOuter(3).paddingInner(2).round(true)(root);
+    var cell=svg.selectAll('g').data(root.leaves()).join('g').attr('transform',function(d){return'translate('+d.x0+','+d.y0+')';});
+    cell.append('rect').attr('width',function(d){return Math.max(0,d.x1-d.x0);}).attr('height',function(d){return Math.max(0,d.y1-d.y0);}).attr('fill',function(d){return d.data.chg!=null?cc(d.data.chg):'#374151';}).attr('rx',3).style('cursor','pointer').on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.t,'_blank');});
+    cell.each(function(d){
+      var cw=d.x1-d.x0,ch=d.y1-d.y0,cx=cw/2,cy=ch/2,g=d3.select(this);
+      if(d.data.chg==null)return;
+      var sg=(d.data.chg>=0)?'+':'',chgStr=sg+d.data.chg.toFixed(2)+'%';
+      if(cw>55&&ch>40){var fs=cw>90?12:10;g.append('text').attr('x',cx).attr('y',ch>62?cy-9:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','#fff').attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n);if(ch>52)g.append('text').attr('x',cx).attr('y',ch>62?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','rgba(255,255,255,.82)').attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);}
+      else if(cw>30&&ch>22){g.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','#fff').attr('font-size','8px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>4?d.data.n.slice(0,4):d.data.n);}
+    });
+    var tip=document.getElementById('jp-hm-tip');
+    cell.on('mousemove',function(ev,d){var sg=(d.data.chg||0)>=0?'+':'',cls=(d.data.chg||0)>=0?'tt-up':'tt-dn';tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-50)+'px';tip.innerHTML='<b>'+d.data.n+'</b><br>'+(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">取得中</span>')+(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')+'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+'</span>';}).on('mouseleave',function(){tip.style.display='none';});
+  }
+  function init(){
+    var d3=window.d3;
+    stocks=S.map(function(s){return{n:s.n,t:s.t,s:s.s,w:s.w};});
+    load().then(function(){
+      var ld=document.getElementById('jp-hm-load');if(ld)ld.style.display='none';
+      draw(d3);
+      var now=new Date(),upd=document.getElementById('jp-hm-upd');
+      if(upd)upd.textContent='更新 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+    });
+    var box=document.getElementById('jp-hm-box');
+    if(box&&window.ResizeObserver){var t;new ResizeObserver(function(){clearTimeout(t);t=setTimeout(function(){if(stocks&&stocks.some(function(s){return s.chg!=null;}))draw(d3);},180);}).observe(box);}
+  }
+  var ds=document.createElement('script');ds.src='https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js';ds.onload=init;document.head.appendChild(ds);
+})();
+</script>
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
 </body>
 </html>
