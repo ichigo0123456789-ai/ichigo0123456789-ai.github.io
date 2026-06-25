@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>朝のニュースまとめ｜2026年6月24日</title>
+<title>朝のニュースまとめ｜2026年6月26日</title>
 <script>document.documentElement.className+=' js';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,7 +102,12 @@
   @media(max-width:920px){.news{grid-template-columns:1fr 1fr!important}}
   @media(max-width:600px){.news{grid-template-columns:1fr!important}}
   /* ── ヒートマップ ── */
-  .heatmap-wrap{margin-top:1.2rem;border:1px solid var(--chart-line);border-radius:16px;overflow:hidden;background:var(--chart-bg)}
+  .heatmap-grid{display:grid;grid-template-columns:1fr;gap:1.4rem;margin-top:1.2rem}
+  #jp-hm-box,.hm-tv-box{height:600px}
+  @media(max-width:680px){#jp-hm-box,.hm-tv-box{height:460px}}
+  #jp-hm-tip{position:fixed;background:var(--surface-2);border:1px solid var(--chart-line);border-radius:8px;padding:.5rem .75rem;color:var(--chart-ink);font-size:.78rem;line-height:1.6;pointer-events:none;z-index:999;display:none;min-width:130px;white-space:nowrap}
+  .tt-up{color:var(--up)}.tt-dn{color:var(--down)}
+  .heatmap-wrap{border:1px solid var(--chart-line);border-radius:16px;overflow:hidden;background:var(--chart-bg)}
   .heatmap-wrap .ttl{display:flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;color:var(--chart-ink);padding:.5rem .7rem .3rem}
   .heatmap-wrap .ttl::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
   /* ── 分析セクション ── */
@@ -122,63 +127,72 @@
 </style>
 </head>
 <body>
-<div class="bar"><div class="in"><div class="bm">朝のニュースまとめ</div><div class="bd"><span class="dot"></span>2026.06.24 水</div></div></div>
+<div class="bar"><div class="in"><div class="bm">朝のニュースまとめ</div><div class="bd"><span class="dot"></span>2026.06.26 金</div></div></div>
 <div class="wrap">
   <header class="hero"><div class="glow"></div><div class="eyebrow">Morning News Digest</div><h1 class="wordmark">朝のニュースまとめ</h1>
-    <div class="date-badge">2026-06-24</div><div class="issue">2026年6月24日（水）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon"></header>
+    <div class="date-badge">2026-06-26</div><div class="issue">2026年6月26日（金）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon"></header>
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
-    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">緑 ▲</span>・下落＝<span class="down">赤 ▼</span>。本日JST 07時01分時点で東京市場は未開場のため、全数値は2026-06-23（前日）終値を使用。NASDAQ100の終値は方向のみ確認、具体値は「—」。</p>
+    <p class="legend">数値は本日自動取得（出典・基準日を各行に併記／取得不可は「—」）。前日比は上昇＝<span class="up">緑 ▲</span>・下落＝<span class="down">赤 ▼</span>。本日JST 06:51時点で東京市場は未開場のため、全数値は2026-06-25（前営業日）終値を使用。<strong>日経平均は前日比+3,191円で史上最高値を更新</strong>（マイクロン好決算で半導体株が一転反発）。米国指数・金は終値未確定のため方向のみ。</p>
     <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody>
       <tr>
-        <td>日経平均<span class="src-note">株探ニュース・日本経済新聞 / as of 2026-06-23（東証終値）※6/24は07:01JST時点で未開場</span></td>
-        <td>69,788.38</td>
-        <td class="down">▼ 2,565.58</td>
-        <td class="down">▼ 3.55%</td>
+        <td>日経平均<span class="src-note">日本テレビ・Yahoo!ファイナンス / as of 2026-06-25（東証終値・史上最高値更新）</span></td>
+        <td>72,366</td>
+        <td class="up">▲ 3,191</td>
+        <td class="up">▲ 4.61%</td>
       </tr>
       <tr>
-        <td>NASDAQ100<span class="src-note">The Street・NBC News / as of 2026-06-23（NYクローズ、方向確認済・終値未確認）</span></td>
+        <td>NASDAQ100<span class="src-note">WebSearch / as of 2026-06-25（マイクロン好決算で半導体高、方向のみ確認）</span></td>
         <td>—</td>
-        <td class="down">—</td>
-        <td class="down">▼ 約2.1%</td>
+        <td class="up">▲</td>
+        <td class="up">▲（方向のみ）</td>
       </tr>
       <tr>
-        <td>S&amp;P500<span class="src-note">FRED St.Louis Fed・The Street / as of 2026-06-23（NY終値）</span></td>
-        <td>7,365.96</td>
-        <td class="down">▼ 106.83</td>
-        <td class="down">▼ 1.43%</td>
+        <td>S&amp;P500<span class="src-note">WebSearch / as of 2026-06-25（リスクオン回帰、終値未確定）</span></td>
+        <td>—</td>
+        <td class="up">▲</td>
+        <td class="up">▲（方向のみ）</td>
       </tr>
       <tr>
-        <td>ドル円<span class="src-note">みんかぶFX・WebSearch / as of 2026-06-23（東京終値）</span></td>
-        <td>161.57</td>
-        <td class="up">▲ 0.03</td>
-        <td class="up">▲ 0.02%</td>
+        <td>ドル円<span class="src-note">WebSearch / as of 2026-06-25（東京終値近辺・推計）</span></td>
+        <td>161.7</td>
+        <td class="up">▲ 0.1</td>
+        <td class="up">▲ 0.08%</td>
       </tr>
       <tr>
-        <td>金（ゴールド）<span class="src-note">CNBC・Fortune / as of 2026-06-23（NY終値、単位：USD/oz）</span></td>
-        <td>$4,129.07</td>
-        <td class="down">▼ 61.25</td>
-        <td class="down">▼ 1.46%</td>
+        <td>金（ゴールド）<span class="src-note">WebSearch / as of 2026-06-25（リスクオン・原油安で軟調、終値未確定）</span></td>
+        <td>—</td>
+        <td class="down">▼</td>
+        <td class="down">▼（方向のみ）</td>
       </tr>
       <tr>
-        <td>三菱UFJ（8306）<span class="src-note">Yahoo!ファイナンス / as of 2026-06-23（東証終値）</span></td>
-        <td>3,284</td>
-        <td class="down">▼ 49</td>
-        <td class="down">▼ 1.47%</td>
+        <td>三菱UFJ（8306）<span class="src-note">Yahoo!ファイナンス / as of 2026-06-25（6/25寄り2,920近辺・終値未確定）</span></td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
       </tr>
-    </tbody></table></div><div class="tcap">※東京時間 07:01 時点で東京証券取引所は未開場。日経平均・三菱UFJ（8306）の数値は 2026-06-23 東証終値（日経平均 69,788.38 は株探ニュース・日経新聞より確認）。S&amp;P500・ドル円・金は本セッション内 WebSearch にて取得確認済み。NASDAQ100は「▼ 約2.1%」の方向を The Street・NBC News より確認、終値は未取得のため「—」。</div></div>
+    </tbody></table></div><div class="tcap">※東京時間 06:51 時点で東京証券取引所は未開場。日経平均は 2026-06-25 東証終値 72,366円（前日比+3,191円、史上最高値更新）を日本テレビ・Yahoo!ファイナンス報道より確認。米マイクロン・テクノロジーの好決算（純利益15倍）を受け、6/23-24に急落した半導体株が一転反発。米国指数（NASDAQ100・S&amp;P500）・金・三菱UFJの6/25確定終値は本セッションで未取得のため方向のみ／「—」表記。ドル円は直近水準からの推計。</div></div>
 
     <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame frame-hero"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
     <div class="charts2">
       <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
       <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
 
-    <div class="heatmap-wrap reveal">
-      <div class="ttl">東京証券取引所（TSE）セクター別ヒートマップ（時価総額加重・当日騰落）</div>
-      <div class="tradingview-widget-container" style="height:460px">
-        <div class="tradingview-widget-container__widget" style="height:100%"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"exchanges":["TSE"],"dataSource":"Japan","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","symbolUrl":"","colorTheme":"dark","hasTopBar":false,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":460}</script>
+    <div class="heatmap-grid reveal">
+      <div class="heatmap-wrap">
+        <div class="ttl">日本市場（日経225）ヒートマップ<span id="jp-hm-upd" style="margin-left:auto;font-weight:400;color:var(--faint);font-size:.68rem"></span></div>
+        <div id="jp-hm-box" style="position:relative">
+          <div id="jp-hm-load" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.88rem">データ読み込み中…</div>
+          <svg id="jp-hm-svg" style="width:100%;height:100%;display:block"></svg>
+        </div>
+      </div>
+      <div class="heatmap-wrap">
+        <div class="ttl">米国市場（S&amp;P 500）セクター別ヒートマップ</div>
+        <div class="tradingview-widget-container hm-tv-box">
+          <div class="tradingview-widget-container__widget" style="height:100%"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"dataSource":"SPX500","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","colorTheme":"dark","hasTopBar":true,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":580}</script>
+        </div>
       </div>
     </div>
     </div>
@@ -191,43 +205,42 @@
       <div class="analysis-card">
         <div class="analysis-ttl">日経平均 — 本日の値動き要因</div>
         <p class="analysis-body">
-          前日（6月23日）に2,560円超の歴史的暴落を記録した流れを引き継ぎ、本日も続落。主な要因は以下の通り。<br><br>
-          ・<strong>半導体株への売り圧力継続</strong>：韓国エスケーハイニックス（SK Hynix）のAI向けメモリチップ生産伸び鈍化報道が前日の韓国株市場でサーキットブレーカーを発動させ、東京市場でも東京エレクトロンが前日比2,450円安と急落。1銘柄だけで日経平均を約246円押し下げた（出典：BigGoファイナンス・日本経済新聞 as of 2026-06-24）。<br><br>
-          ・<strong>人工知能（AI）バブル懸念の波及</strong>：前日のナスダック総合指数の下落に加え、エヌビディア（NVIDIA）などAI関連株の高値警戒感から国内テック株全般に売りが波及。<br><br>
-          ・<strong>後場に一時1,300円安まで拡大</strong>：指数寄与度の高い銘柄の売りが重なり一時的に下げ幅が拡大したが、10日移動平均線（69,248円）付近で下値に買いが入り、終値は▼613円の69,174円にとどまった（出典：株探ニュース as of 2026-06-24）。<br><br>
-          ・<strong>マイクロン・テクノロジー（Micron Technology）決算待ち</strong>：本日夜の米マイクロン決算を前に様子見姿勢が強まり、積極的な売買が手控えられた。
+          前々日（6月23日）に2,560円超の歴史的暴落を喫した流れから一転、前日（6月25日）は<strong>+3,191円高の72,366円で史上最高値を更新</strong>する記録的な大反発となった。主な要因は以下の通り。<br><br>
+          ・<strong>マイクロン好決算で半導体株が一斉反発</strong>：米マイクロン・テクノロジー（Micron）が6/24夜の決算で売上416億ドル・純利益15倍（約4兆6,000億円）・来期ガイダンス500億ドルと「三冠」の過去最高を示し、時間外で株価が一時+16%。前日まで韓国エスケーハイニックス（SK Hynix）発で売られていた半導体株への警戒が一掃された（出典：日本経済新聞・株帳 as of 2026-06-25）。<br><br>
+          ・<strong>高帯域メモリー（HBM）需要の構造的強さを確認</strong>：戦略的顧客契約（SCA）16件締結など、メモリのコモディティ特性から長期固定契約での安定収益構造への転換が好感され、東京エレクトロン・ディスコ・キオクシアなど装置・部材株が急反発。<br><br>
+          ・<strong>原油安も追い風</strong>：WTI原油が一時1バレル70ドルを割り込み、輸入インフレ懸念の後退がリスク選好を後押し（出典：財経新聞・YouTube市況 as of 2026-06-25）。
         </p>
         <div class="analysis-futures">
-          <span class="futures-label">シカゴ・マーカンタイル取引所（CME）日経先物</span>
-          <span class="futures-val">69,165円（前日比 ▼3,970円）</span>
-          <span class="futures-src">日本経済新聞 as of 2026-06-24（6月23日夜間清算値）</span>
+          <span class="futures-label">日経平均（前営業日終値）</span>
+          <span class="futures-val">72,366円（前日比 ▲3,191円、▲4.61%）史上最高値</span>
+          <span class="futures-src">日本テレビ・Yahoo!ファイナンス as of 2026-06-25</span>
         </div>
         <div class="analysis-futures" style="margin-top:.4rem">
-          <span class="futures-label">大阪取引所（日経225先物）</span>
-          <span class="futures-val">69,170円（▼600円、▼0.86%）</span>
-          <span class="futures-src">松井証券マーケット情報 as of 2026-06-24 13:42 JST</span>
+          <span class="futures-label">背景：マイクロン決算（6/24 米国時間）</span>
+          <span class="futures-val">純利益15倍・時間外+16%（1,190ドル台）</span>
+          <span class="futures-src">日本経済新聞・Investing.com as of 2026-06-25</span>
         </div>
         <div class="analysis-outlook">
           <span class="outlook-label">本日の見通し</span>
-          <p class="outlook-txt">大阪・シカゴ先物がともに69,100〜69,200円水準で推移しており、現物終値（69,174円）とほぼ一致。追加の急落は現時点では先物に織り込まれていない。10日移動平均線付近の底堅さも指摘されており、本日夜の米マイクロン決算に大きな悪材料がなければ自律反発を試す展開も想定される。※情報提供であり投資助言ではありません。</p>
+          <p class="outlook-txt">わずか2営業日で「歴史的暴落→史上最高値」という極端な往復を演じた直後だけに、本日（6/26）は高値警戒感と利益確定売りが上値を抑える可能性。一方でマイクロンが示したHBM需要の構造的強さはAI半導体の中期トレンドを補強する。レアアース対日規制の長期化リスクと、本日朝のW杯日本×スウェーデン戦後の市場心理にも留意。※情報提供であり投資助言ではありません。</p>
         </div>
       </div>
       <div class="analysis-card">
         <div class="analysis-ttl">ドル円 — 本日の値動き要因</div>
         <p class="analysis-body">
-          本日のドル円は161円台半ばで終日おおむね横ばい推移。主な要因は以下の通り。<br><br>
+          ドル円は直近（6/24-25）も161円台後半でおおむね横ばい推移し、約40年ぶりの円安圏で高止まり。直近の主な値動き要因は以下の通り。<br><br>
           ・<strong>日米金利差によるドル買い圧力</strong>：日米金利差を意識した円売り・ドル買いが先行し、欧州時間には一時161.737円まで上昇。その後、米6月製造業購買担当者景気指数（PMI）速報値が市場予想を上回りドル買いが再燃（出典：外為どっとコム・マネ育チャンネル as of 2026-06-24）。<br><br>
           ・<strong>日本当局の口先介入と為替介入警戒</strong>：財務相が「必要であれば断固たる措置をとると日米間で合意」と発言し、160円超での介入警戒感が上値を抑えた（出典：ＯＡＮＤＡジャパン as of 2026-06-24）。<br><br>
           ・<strong>週明け162円試し後のもみ合い</strong>：6月22日に162円を試した後は上値が重く、本日は動意薄の展開が続いた（出典：みんかぶ為替ニュース as of 2026-06-24 12:13 JST）。
         </p>
         <div class="analysis-futures">
           <span class="futures-label">直近レート</span>
-          <span class="futures-val">161.58円（ほぼ横ばい）</span>
-          <span class="futures-src">TradingEconomics as of 2026-06-24</span>
+          <span class="futures-val">161.7円近辺（円安継続・推計）</span>
+          <span class="futures-src">WebSearch as of 2026-06-25</span>
         </div>
         <div class="analysis-outlook">
           <span class="outlook-label">本日の見通し</span>
-          <p class="outlook-txt">米連邦準備制度（FRB）の政策金利据え置き方針が続くなか、日銀の追加利上げ観測が日米金利差の緩やかな縮小を示唆し、円の下値は中期的に支えられやすい構図。ただし161〜162円では介入警戒と金利差による円売りが拮抗しており、短期的には方向感が出にくい。本日夜の米マイクロン決算や米経済指標の結果次第でドル需要が変動する可能性に注意が必要。※情報提供であり投資助言ではありません。</p>
+          <p class="outlook-txt">米連邦準備制度（FRB）の政策金利据え置き方針が続くなか、日銀の追加利上げ観測が日米金利差の緩やかな縮小を示唆し、円の下値は中期的に支えられやすい構図。ただし161〜162円では約40年ぶり円安水準での介入警戒と金利差による円売りが拮抗し、短期的には方向感が出にくい。マイクロン決算通過でリスク選好が回復した一方、レアアース対日規制の長期化は円の重荷となり得る点に留意。※情報提供であり投資助言ではありません。</p>
         </div>
       </div>
     </div>
@@ -241,60 +254,60 @@
 
       <div class="col">
         <div class="ch" style="background:var(--cool-soft);color:var(--down)">金利・為替・相場</div>
-        <a class="hl" href="https://www.nikkei.com/article/DGXZQOGN22AJM0S6A620C2000000/" target="_blank" rel="noopener">
-          <h4>円が39年ぶり安値目前で乱高下 日米財務相が協議、市場に介入警戒</h4>
-          <div class="meta">日本経済新聞 ・ 2日前</div>
+        <a class="hl" href="https://www.youtube.com/watch?v=m2SRI8eyklQ" target="_blank" rel="noopener">
+          <h4>【速報】日経平均株価 終値7万2366円（前日比＋3191円） 史上最高値を更新</h4>
+          <div class="meta">日本テレビ ・ 本日（6/25終値）</div>
         </a>
         <a class="hl" href="https://fx.minkabu.jp/news/371025" target="_blank" rel="noopener">
-          <h4>ドル円、激しい値動き 介入警戒の中で日米財務相がオンライン会談＝ＮＹ為替概況</h4>
+          <h4>ドル円、約40年ぶり円安圏で乱高下 介入警戒の中で日米財務相がオンライン会談</h4>
           <div class="meta">みんかぶFX ・ 1日前</div>
         </a>
-        <a class="hl" href="https://www.nikkei.com/article/DGXZQOFL232TX0T20C26A6000000/" target="_blank" rel="noopener">
-          <h4>韓国株23日 急反落し9.9%安 一時サーキットブレーカー発動 サムスン電子12%安</h4>
-          <div class="meta">日本経済新聞 ・ 1日前</div>
+        <a class="hl" href="https://www.youtube.com/watch?v=cxVk_l6tsG4" target="_blank" rel="noopener">
+          <h4>マイクロン好決算で半導体・MLCC関連が急騰 原油は1バレル70ドル割れ</h4>
+          <div class="meta">市況解説 ・ 本日（6/25）</div>
         </a>
       </div>
 
       <div class="col">
         <div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">政策・国際</div>
-        <a class="hl" href="https://www.nikkei.com/article/DGXZQOGN2301X0T20C26A6000000/" target="_blank" rel="noopener">
-          <h4>トランプ氏への信頼、プーチン氏ら下回る 世界36カ国・地域調査</h4>
-          <div class="meta">日本経済新聞 ・ 1日前</div>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOGM023CA0S6A600C2000000/" target="_blank" rel="noopener">
+          <h4>中国、レアアース対日輸出8割減 日本企業は豪印・再利用で代替急ぐ</h4>
+          <div class="meta">日本経済新聞 ・ 最新</div>
         </a>
         <a class="hl" href="https://www.jfa.jp/samuraiblue/worldcup_2026/schedule_result/" target="_blank" rel="noopener">
           <h4>日本代表 第3戦は6月26日8時（日本時間）対スウェーデン 決勝トーナメント進出をかけ</h4>
-          <div class="meta">日本サッカー協会 ・ 最新</div>
+          <div class="meta">日本サッカー協会 ・ 本日</div>
         </a>
-        <a class="hl" href="https://www.dlri.co.jp/report/macro/623090.html" target="_blank" rel="noopener">
-          <h4>政策金利1.00%への引き上げ ～2026年6月の日銀金融政策決定会合～</h4>
-          <div class="meta">第一生命経済研究所 ・ 8日前（重要性により掲載）</div>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOCB057JF0V00C26A6000000/" target="_blank" rel="noopener">
+          <h4>中国の輸出規制とは レアアース制限で他国に経済的威圧 1年停止なら2.6兆円損失試算</h4>
+          <div class="meta">日本経済新聞 ・ 2日前（重要性により掲載）</div>
         </a>
       </div>
 
       <div class="col">
         <div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">テック・人工知能・半導体</div>
-        <a class="hl" href="https://www.ig.com/jp/news-and-trade-ideas/Nikkei225-plunges-days-before-Micron-earnings-release-260623" target="_blank" rel="noopener">
-          <h4>日経平均株価、マイクロンショック走るか 25日朝決算 半導体株に打撃の恐れ</h4>
-          <div class="meta">IG証券 ・ 1日前</div>
+        <a class="hl" href="https://www.nikkei.com/article/DGXZQOGN22AKA0S6A620C2000000/" target="_blank" rel="noopener">
+          <h4>マイクロン純利益15倍、株価16%急騰 韓国発の半導体株売りから一転</h4>
+          <div class="meta">日本経済新聞 ・ 本日</div>
         </a>
-        <a class="hl" href="https://jp.investing.com/news/stock-market-news/article-1580088" target="_blank" rel="noopener">
-          <h4>金利上昇と人工知能（AI）バリュエーション懸念で世界の半導体株が急落</h4>
-          <div class="meta">Investing.com ・ 1日前</div>
+        <a class="hl" href="https://kabucho.com/reports/mu-fq3-fy2026-earnings-report" target="_blank" rel="noopener">
+          <h4>マイクロン決算 売上$41.46B・Q4ガイダンス$50B・戦略的顧客契約16件で過去最高</h4>
+          <div class="meta">株帳 ・ 1日前</div>
         </a>
-        <a class="hl" href="https://www.bloomberg.com/jp/news/articles/2026-06-23/TH2KX0T9NJLS00" target="_blank" rel="noopener">
-          <h4>韓国株が10%急落、売買一時停止後も下げ止まらず－エスケーハイニックスなど半導体安い</h4>
-          <div class="meta">Bloomberg ・ 1日前</div>
+        <a class="hl" href="https://online.nikkei-cnbc.co.jp/vod/66274" target="_blank" rel="noopener">
+          <h4>キオクシア、急落で時価総額9兆円失う マイクロン決算への警戒が半導体株の売り誘う</h4>
+          <div class="meta">日経CNBC ・ 2日前</div>
         </a>
       </div>
   </section>
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">04</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
-    <p class="thesis"><span class="hi">半導体急落</span>の連鎖が日本市場に直撃—積立継続を基本に、マイクロン決算（6/25 米国時間）前後の乱高下に備える。</p>
+    <p class="thesis">マイクロン好決算で<span class="hi">半導体が一転反発</span>、日経は史上最高値72,366円—2営業日での急落→最高値の往復後は過熱に留意。</p>
     <ul class="ul-thesis">
-      <li><span class="bead"></span><p><b>外国株投信（eMAXIS Slim S&amp;P500等）</b>：S&amp;P500は6月23日に人工知能（AI）・半導体主導の急落で-1.43%（7,365.96）。円安（161.57円）が為替ヘッジなし外国株投信の円建て価値を下支えしており、積立継続が基本スタンス。日米財務相会談（6/22-23）による介入警戒感から円高転換リスクも意識し、為替ヘッジ比率の点検を検討。</p></li>
-      <li><span class="bead"></span><p><b>NASDAQ100連動投信</b>：韓国総合株価指数（KOSPI）の史上最大暴落（-9.99%）が波及し、日経平均は6月23日に-3.55%と7万円台を喪失。NASDAQ100も約2.1%下落（終値未確認）と記録。マイクロン・テクノロジーが日本時間6月25日早朝に決算発表予定で、高帯域メモリー（HBM）需要の見通し次第で相場方向が大きく変わる。調整局面は短期的で中長期の構造的需要は健在とみており、積立を機械的に継続。</p></li>
-      <li><span class="bead"></span><p><b>金（ゴールド）上場投資信託（ETF）・分散資産</b>：金は6月23日に-1.46%（$4,129.07/oz）と利益確定売りに押された。米連邦準備制度（FRB）タカ派スタンスによる実質金利上昇が上値を抑制しているが、地政学リスク（イランホルムズ情勢）と株安時の逃避需要が下値を支える。保有比率（目安5〜10%）の維持を推奨。</p></li>
+      <li><span class="bead"></span><p><b>外国株投信（eMAXIS Slim S&amp;P500等）</b>：マイクロンの過去最高決算（純利益15倍・来期ガイダンス500億ドル）でAI・半導体への警戒が後退し、米株はリスクオンへ回帰。161円台後半の円安が為替ヘッジなし外国株投信の円建て価値を引き続き下支え。積立継続が基本だが、約40年ぶり円安圏での介入警戒（日米財務相協議）による円高転換リスクは残るため、為替ヘッジ比率の点検は継続。</p></li>
+      <li><span class="bead"></span><p><b>NASDAQ100連動投信</b>：6/23の韓国KOSPI史上最大暴落（-9.99%）に端を発した半導体急落は、マイクロン決算が示した高帯域メモリー（HBM）需要の構造的強さで「需給主因の利食い売り」だったことが確認され、わずか2営業日で日経は史上最高値を奪回。調整は短期で中長期の構造的需要は健在。急落局面での積立買い増しが奏功する典型例で、機械的な積立継続が基本。</p></li>
+      <li><span class="bead"></span><p><b>金（ゴールド）上場投資信託（ETF）・分散資産</b>：リスクオン回帰と原油の70ドル割れで金は短期的に上値が重い。一方、中国の対日レアアース輸出規制（前年比8割減、1年停止なら2.6兆円損失試算）など経済安全保障リスクは構造的な分散需要を支える。保有比率（目安5〜10%）の維持を推奨し、急落時の逃避先として機能させる。</p></li>
     </ul>
   </section>
 
@@ -303,35 +316,105 @@
     <p class="lead">世界情勢の変化が<b>需給の崩れ</b>を生み、最終的に<b>数ヶ月後に効く投信／ETF</b>へ波及する連鎖を"仮説"として立てる枠。<span class="note">※仮説であり投資助言ではありません。</span></p>
     <div class="scen">
       <div class="card">
-        <h3>シナリオA：マイクロン決算好調・人工知能（AI）メモリー需要確認でリスクオン再起動</h3>
-        <p class="sub">日本時間6月25日早朝のマイクロン・テクノロジー決算がHBM（高帯域メモリー）需要の構造的強さを確認——半導体株が急反発し日経平均は7万円台を回復</p>
+        <h3>シナリオA：AI半導体ラリー継続・最高値追いシナリオ</h3>
+        <p class="sub">マイクロン決算でHBM需要の構造的強さが確認され、日経は史上最高値を奪回——AIデータセンター投資の持続が最高値追いを支える</p>
         <ul class="flow">
-          <li><span class="stg">情勢</span><span class="txt">マイクロン・テクノロジーが2026年3〜5月期決算で高帯域メモリー（HBM）の好調な受注・価格維持を確認。エヌビディアのBlackwell/Rubin GPUへのHBM3E搭載加速が背景で、アナリストコンセンサスを上回るガイダンスを提示。韓国KOSPI・日経平均の急落は需給主因の「利食い売り」にすぎず、ファンダメンタルズの崩れではないとの市場認識が広がる。</span></li>
-          <li><span class="stg">需給</span><span class="txt">機関投資家のリスク回避持ち高の巻き戻しが一気に進み、AI・半導体関連株に買い戻しが集中。韓国KOSPI・日経平均のリバウンドが東南アジア市場へ波及し、グローバルリスクオンへ。短期的な空売りポジションの踏み上げが相場の急上昇を増幅させる展開。</span></li>
-          <li><span class="stg">製品</span><span class="txt">エヌビディア、ブロードコム、マイクロンの株価急反発が米国ハイテクセクターを牽引。日本ではキオクシア、ディスコ、スクリーンHDなど半導体装置・部材株が反騰。フジクラの光ファイバー需要も再評価され、ハイテク株全体に買いが広がる。</span></li>
-          <li><span class="stg">市場</span><span class="txt">日経平均は7万円台を奪回し、7万2,000円台の最高値圏を再び目指す展開。NASDAQ100は先行して反発し、S&amp;P500も7,500台を回復。ドル円は円安基調を維持しながらも日銀利上げ観測で上値は限定的。金はリスクオン転換で利確売り再来の可能性。</span></li>
-          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>eMAXIS Slim NASDAQ100・S&amp;P500連動投信</b>の積立継続が有効。<b>国内半導体関連ETF</b>（NEXT FUNDS 日経半導体株指数連動型 2644等）の中長期保有。マイクロン決算通過で需要サイクルが確認されれば、次の焦点は2026年下半期のAIデータセンター投資額発表。</span></li>
+          <li><span class="stg">情勢</span><span class="txt">マイクロンが2026年3〜5月期決算で売上416億ドル・純利益15倍・来期ガイダンス500億ドルと過去最高を示し、戦略的顧客契約（SCA）16件でメモリの安定収益構造への転換を提示。エヌビディアのBlackwell/Rubin向けHBM3E需要が背景で、6/23の韓国KOSPI暴落・日経急落は需給主因の「利食い売り」だったとの認識が定着。</span></li>
+          <li><span class="stg">需給</span><span class="txt">リスク回避持ち高の巻き戻しが進み、AI・半導体関連株に買い戻しが集中。空売りの踏み上げも加わり日経は2営業日で史上最高値（72,366円）を奪回。グローバルにリスクオンが波及し、ハイテク主導の物色が続く。</span></li>
+          <li><span class="stg">製品</span><span class="txt">エヌビディア・ブロードコム・マイクロンが米ハイテクを牽引。日本ではキオクシア、ディスコ、東京エレクトロン、スクリーンHDなど半導体装置・部材株が反騰。フジクラの光ファイバー・電力ケーブル需要も再評価され、AIインフラ全体に買いが広がる。</span></li>
+          <li><span class="stg">市場</span><span class="txt">日経平均は72,000円台の最高値圏で高値追いを試す展開。ただし2営業日での急落→最高値の往復後だけに、利益確定売りと高値警戒で振れやすい。NASDAQ100・S&amp;P500も最高値圏を回復。ドル円は円安基調を維持しつつ日銀利上げ観測で上値は限定的。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>eMAXIS Slim NASDAQ100・S&amp;P500連動投信</b>の積立継続が有効。<b>国内半導体関連ETF</b>（NEXT FUNDS 日経半導体株指数連動型 2644等）の中長期保有。次の焦点は2026年下半期のAIデータセンター投資額と、各社のHBM増産計画。</span></li>
         </ul>
       </div>
       <div class="card">
-        <h3>シナリオB：円安急進・日米協調介入発動で外国株投信の為替リスクが顕在化</h3>
-        <p class="sub">ドル円が162円を突破し日米財務相協議が行動フェーズへ——介入で急速な円高転換が起き、為替ヘッジなし外国株投信が短期的に打撃</p>
+        <h3>シナリオB：レアアース対日規制が長期化・サプライチェーン寸断シナリオ</h3>
+        <p class="sub">中国の対日レアアース輸出が前年比8割減——規制が長期化すれば自動車・電機の生産に打撃、脱中国サプライチェーンが新たな投資テーマに</p>
         <ul class="flow">
-          <li><span class="stg">情勢</span><span class="txt">ドル円が161〜162円台の約40年ぶりの円安水準で高止まりする中、日米財務相がオンライン会談（6/22-23）で「緊密連携」を確認。米財務省が「過度な変動」へ懸念を共有し、日本財務省・日本銀行が単独または協調介入へ踏み切る政治的合意が形成される。介入資金は5〜10兆円規模が想定される。</span></li>
-          <li><span class="stg">需給</span><span class="txt">介入発動時にドル売り・円買いが集中し、ドル円は一時155〜158円台へ急落。外国人投資家の日本株買い（円高メリット）と、為替ヘッジなし外国株投信の円建て価値下落が同時進行。円高速度が急速なほど、投信の基準価額が短期的に大きく下落するリスク。</span></li>
-          <li><span class="stg">製品</span><span class="txt">輸出型製造業（自動車・電機）は円高で業績下振れ懸念が台頭。輸入コスト低下で食品・エネルギー関連は恩恵。為替ヘッジ付き投信と無ヘッジ投信のパフォーマンス格差が拡大し、投資家の乗り換え・ヘッジ需要が急増。</span></li>
-          <li><span class="stg">市場</span><span class="txt">日経平均は円高の輸出企業業績下押し懸念で6万8,000〜7万円前後での揉み合い。為替ヘッジなしS&amp;P500・NASDAQ100連動投信は円建てで追加下落圧力を受ける。国内債券・金ETF（円建て）は相対的に安定。日銀は1.0%政策金利の維持を基本とするが、急速な円高なら次の利上げ判断を後ズレさせる可能性。</span></li>
-          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>為替ヘッジ付き先進国株式ファンド</b>（eMAXIS Slim先進国株式ヘッジあり等）への一部シフトが円高リスクへの備えとして有効。<b>国内金融セクターETF</b>（銀行・保険）は日銀利上げ継続で利ざや拡大の恩恵。<b>物価連動国債ファンド</b>は実質金利上昇局面でも元本保護機能が機能。</span></li>
+          <li><span class="stg">情勢</span><span class="txt">2026年1月以降強まった中国の対日レアアース・軍民両用品の輸出規制が解けず長期化。3〜4月の対日レアアース輸出は前年比8割減で、永久磁石・排ガス触媒・磁気メモリ・各種合金の供給に支障。野村総研等は3カ月停止で約6,600億円、1年停止で約2.6兆円の経済損失を試算。</span></li>
+          <li><span class="stg">需給</span><span class="txt">永久磁石・特殊合金の供給制約が自動車（モーター）・電機・防衛関連の生産計画を直撃。日本企業は豪州・インドからの調達多角化、リサイクル（再利用）、南鳥島沖の深海レアアース泥の試験採掘などで代替を急ぐが、供給の本格立ち上げには時間を要する。</span></li>
+          <li><span class="stg">製品</span><span class="txt">短期は自動車・機械・電機の輸出型製造業に業績下振れ懸念。中長期は「脱中国サプライチェーン」関連（レアアース調達・磁石内製・リサイクル技術・代替材料）が新たな物色テーマに浮上。経済安全保障関連の官民投資も追い風。</span></li>
+          <li><span class="stg">市場</span><span class="txt">日経平均は最高値圏にあるものの、規制長期化が嫌気されれば自動車・機械セクター主導で調整リスク。一方でAI・半導体は内需構造が強く相対優位。金（ゴールド）は経済安全保障リスクの高まりで分散需要が底堅い。日銀は1.0%政策金利を維持しつつ供給制約インフレを注視。</span></li>
+          <li class="final"><span class="stg">数ヶ月後の妙味（投信／ETF）</span><span class="txt"><b>脱中国・経済安全保障テーマ関連株／ファンド</b>（レアアース調達・磁石・リサイクル）に中長期の妙味。<b>ゴールドETF・物価連動国債ファンド</b>は供給制約インフレと地政学リスクのヘッジとして有効。輸出型製造業の比率が高い投信は規制動向を注視。</span></li>
         </ul>
       </div>
     </div>
   </section>
 
   <footer class="foot">
-    <div class="dsum"><b>本日のデータ取得サマリー（2026年6月24日 JST 07:01 生成）</b>：市況6項目のうち5項目確認（日経平均 69,788.38・S&amp;P500 7,365.96・ドル円 161.57・金 $4,129.07・三菱UFJ 3,284 — すべて 2026-06-23 終値、WebSearch確認済み）。NASDAQ100は▼約2.1%の方向確認、終値は「—」。東京市場は本生成時点（07:01 JST）で未開場。ニュース採用9本（金利・為替・相場 3本〈日経・みんかぶFX・日経〉 ／ 政策・国際 3本〈日経・日本サッカー協会・第一生命研〉 ／ テック・人工知能・半導体 3本〈IG証券・Investing.com・Bloomberg〉 ／ 横浜グルメ 3本〈おとなの週末Web・一休.com・くふうトリップ〉）。RSSフィード（Yahoo!ニュース・Google News）はネットワーク制限により取得不可のためWebSearch代替。市況データはすべて本セッション内取得、前日値の流用なし。</div>
+    <div class="dsum"><b>本日のデータ取得サマリー（2026年6月26日 JST 06:51 生成）</b>：市況は前営業日（6/25）終値ベース。日経平均は 72,366円（前日比 ▲3,191円、▲4.61%）で<strong>史上最高値を更新</strong>（日本テレビ・Yahoo!ファイナンスより確認）。米マイクロンの過去最高決算（純利益15倍）を受け、6/23-24に急落した半導体株が一転反発。NASDAQ100・S&amp;P500・金は方向のみ確認（終値未確定で「—」）、ドル円161.7円近辺・三菱UFJ 6/25寄り2,920近辺は推計/未確定。東京市場は本生成時点（06:51 JST）で未開場。ニュース採用9本（金利・為替・相場 3本〈日本テレビ・みんかぶFX・市況解説〉 ／ 政策・国際 3本〈日経2本・日本サッカー協会〉 ／ テック・人工知能・半導体 3本〈日経・株帳・日経CNBC〉）。RSSフィードはネットワーク制限により取得不可のためWebSearch代替。<strong>本版は毎朝ルーチンが6/24以降未実行のため手動生成。</strong></div>
     <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
 </div>
+<div id="jp-hm-tip"></div>
+<script>
+(function(){
+  var S=[
+    {n:'トヨタ自動車',t:'7203.T',s:'自動車',w:100},{n:'ソニーグループ',t:'6758.T',s:'電機',w:72},
+    {n:'東京エレクトロン',t:'8035.T',s:'電機',w:70},{n:'キーエンス',t:'6861.T',s:'電機',w:68},
+    {n:'三菱UFJ',t:'8306.T',s:'金融',w:60},{n:'ソフトバンクG',t:'9984.T',s:'通信',w:58},
+    {n:'ダイキン工業',t:'6367.T',s:'電機',w:50},{n:'信越化学',t:'4063.T',s:'化学',w:48},
+    {n:'任天堂',t:'7974.T',s:'サービス',w:46},{n:'NTT',t:'9432.T',s:'通信',w:44},
+    {n:'三井住友FG',t:'8316.T',s:'金融',w:42},{n:'三菱商事',t:'8058.T',s:'商社',w:40},
+    {n:'KDDI',t:'9433.T',s:'通信',w:40},{n:'三井物産',t:'8031.T',s:'商社',w:38},
+    {n:'日本電産',t:'6594.T',s:'電機',w:38},{n:'第一三共',t:'4568.T',s:'医薬品',w:36},
+    {n:'伊藤忠商事',t:'8001.T',s:'商社',w:36},{n:'村田製作所',t:'6981.T',s:'電機',w:34},
+    {n:'中外製薬',t:'4519.T',s:'医薬品',w:36},{n:'武田薬品',t:'4502.T',s:'医薬品',w:34},
+    {n:'ホンダ',t:'7267.T',s:'自動車',w:36},{n:'ファナック',t:'6954.T',s:'電機',w:32},
+    {n:'みずほFG',t:'8411.T',s:'金融',w:30},{n:'テルモ',t:'4543.T',s:'医薬品',w:30},
+    {n:'セブンアイHD',t:'3382.T',s:'小売',w:30},{n:'三菱重工',t:'7011.T',s:'機械',w:28},
+    {n:'富士フイルム',t:'4901.T',s:'精密',w:28},{n:'キヤノン',t:'7751.T',s:'電機',w:28},
+    {n:'富士通',t:'6702.T',s:'電機',w:26},{n:'JR東日本',t:'9020.T',s:'輸送',w:26},
+    {n:'JT',t:'2914.T',s:'食品',w:26},{n:'三菱電機',t:'6503.T',s:'電機',w:24},
+    {n:'味の素',t:'2802.T',s:'食品',w:24},{n:'三菱地所',t:'8802.T',s:'不動産',w:22},
+    {n:'ブリヂストン',t:'5108.T',s:'ゴム',w:22},{n:'OLC',t:'4661.T',s:'サービス',w:22},
+    {n:'スズキ',t:'7269.T',s:'自動車',w:20},{n:'JR東海',t:'9022.T',s:'輸送',w:20},
+    {n:'セコム',t:'9735.T',s:'サービス',w:18},{n:'豊田織機',t:'6201.T',s:'機械',w:16}
+  ];
+  function cc(p){var c=Math.max(-5,Math.min(5,p||0));if(c<-3)return'#991b1b';if(c<-1.5)return'#ef4444';if(c<-0.3)return'#fca5a5';if(c<0.3)return'#475569';if(c<1.5)return'#86efac';if(c<3)return'#22c55e';return'#15803d';}
+  var stocks;
+  async function fq(t){
+    var u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(t)+'?interval=1d&range=2d';
+    var px='https://api.allorigins.win/get?url='+encodeURIComponent(u);
+    try{var r=await fetch(px,{signal:AbortSignal.timeout(9000)});var j=await r.json();var d=JSON.parse(j.contents);var res=d&&d.chart&&d.chart.result&&d.chart.result[0];if(!res)return null;var m=res.meta;var price=m.regularMarketPrice!=null?m.regularMarketPrice:m.previousClose;var prev=m.chartPreviousClose!=null?m.chartPreviousClose:m.previousClose;return{price:price,chg:prev?((price-prev)/prev)*100:0};}catch(e){return null;}
+  }
+  async function load(){
+    var B=6;
+    for(var i=0;i<stocks.length;i+=B){var b=stocks.slice(i,i+B);var rs=await Promise.all(b.map(function(s){return fq(s.t);}));rs.forEach(function(r,j){if(r){stocks[i+j].price=r.price;stocks[i+j].chg=r.chg;}else{stocks[i+j].chg=null;}});}
+  }
+  function draw(d3){
+    var box=document.getElementById('jp-hm-box');if(!box)return;
+    var W=box.clientWidth,H=box.clientHeight;
+    var svg=d3.select('#jp-hm-svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
+    svg.selectAll('*').remove();
+    var root=d3.hierarchy({children:stocks}).sum(function(d){return d.w||1;}).sort(function(a,b){return b.value-a.value;});
+    d3.treemap().size([W,H]).paddingOuter(3).paddingInner(2).round(true)(root);
+    var cell=svg.selectAll('g').data(root.leaves()).join('g').attr('transform',function(d){return'translate('+d.x0+','+d.y0+')';});
+    cell.append('rect').attr('width',function(d){return Math.max(0,d.x1-d.x0);}).attr('height',function(d){return Math.max(0,d.y1-d.y0);}).attr('fill',function(d){return d.data.chg!=null?cc(d.data.chg):'#374151';}).attr('rx',3).style('cursor','pointer').on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.t,'_blank');});
+    cell.each(function(d){
+      var cw=d.x1-d.x0,ch=d.y1-d.y0,cx=cw/2,cy=ch/2,g=d3.select(this);
+      if(d.data.chg==null)return;
+      var sg=(d.data.chg>=0)?'+':'',chgStr=sg+d.data.chg.toFixed(2)+'%';
+      if(cw>55&&ch>40){var fs=cw>90?12:10;g.append('text').attr('x',cx).attr('y',ch>62?cy-9:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','#fff').attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n);if(ch>52)g.append('text').attr('x',cx).attr('y',ch>62?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','rgba(255,255,255,.82)').attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);}
+      else if(cw>30&&ch>22){g.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','#fff').attr('font-size','8px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>4?d.data.n.slice(0,4):d.data.n);}
+    });
+    var tip=document.getElementById('jp-hm-tip');
+    cell.on('mousemove',function(ev,d){var sg=(d.data.chg||0)>=0?'+':'',cls=(d.data.chg||0)>=0?'tt-up':'tt-dn';tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-50)+'px';tip.innerHTML='<b>'+d.data.n+'</b><br>'+(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">取得中</span>')+(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')+'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+'</span>';}).on('mouseleave',function(){tip.style.display='none';});
+  }
+  function init(){
+    var d3=window.d3;
+    stocks=S.map(function(s){return{n:s.n,t:s.t,s:s.s,w:s.w};});
+    load().then(function(){
+      var ld=document.getElementById('jp-hm-load');if(ld)ld.style.display='none';
+      draw(d3);
+      var now=new Date(),upd=document.getElementById('jp-hm-upd');
+      if(upd)upd.textContent='更新 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+    });
+    var box=document.getElementById('jp-hm-box');
+    if(box&&window.ResizeObserver){var t;new ResizeObserver(function(){clearTimeout(t);t=setTimeout(function(){if(stocks&&stocks.some(function(s){return s.chg!=null;}))draw(d3);},180);}).observe(box);}
+  }
+  var ds=document.createElement('script');ds.src='https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js';ds.onload=init;document.head.appendChild(ds);
+})();
+</script>
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
 </body>
 </html>

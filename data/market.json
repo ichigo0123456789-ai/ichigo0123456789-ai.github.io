@@ -1,46 +1,46 @@
 [
   {
-    "briefDate": "2026-06-24",
+    "briefDate": "2026-06-26",
     "tradingDate": {
-      "jp": "2026-06-24",
-      "us": "2026-06-24"
+      "jp": "2026-06-25",
+      "us": "2026-06-25"
     },
-    "note": "日本市場は6月24日終値確認。米国市場終値は未確定のため—。",
+    "note": "前営業日6/25終値。日経平均は+3,191円で史上最高値72,366円（マイクロン好決算で半導体が一転反発）。米指数・金は終値未確定のため方向のみ。",
     "nikkei": {
-      "value": 69174,
-      "change": -613,
-      "changePct": -0.88,
-      "src": "日本経済新聞・株探 as of 2026-06-24"
+      "value": 72366,
+      "change": 3191,
+      "changePct": 4.61,
+      "src": "日本テレビ・Yahoo!ファイナンス as of 2026-06-25（史上最高値更新）"
     },
     "nasdaq100": {
       "value": null,
       "change": null,
       "changePct": null,
-      "src": "取得不可（米国市場終値未確定）"
+      "src": "マイクロン好決算で上昇方向、終値未確定（WebSearch as of 2026-06-25）"
     },
     "sp500": {
       "value": null,
       "change": null,
       "changePct": null,
-      "src": "取得不可（米国市場終値未確定）"
+      "src": "リスクオン回帰で上昇方向、終値未確定（WebSearch as of 2026-06-25）"
     },
     "usdjpy": {
-      "value": 161.58,
-      "change": 0.03,
-      "changePct": 0.02,
-      "src": "TradingEconomics as of 2026-06-24"
+      "value": 161.7,
+      "change": 0.1,
+      "changePct": 0.08,
+      "src": "WebSearch as of 2026-06-25（東京終値近辺・推計）"
     },
     "gold": {
-      "value": 4124,
-      "change": -66.97,
-      "changePct": -1.6,
-      "src": "150currency.com as of 2026-06-24"
+      "value": null,
+      "change": null,
+      "changePct": null,
+      "src": "リスクオン・原油安で軟調方向、終値未確定（WebSearch as of 2026-06-25）"
     },
     "mufg8306": {
-      "value": 3205,
-      "change": -62,
-      "changePct": -1.9,
-      "src": "SBI証券・各社報道 as of 2026-06-24"
+      "value": null,
+      "change": null,
+      "changePct": null,
+      "src": "6/25寄り2,920近辺、終値未確定（Yahoo!ファイナンス as of 2026-06-25）"
     }
   }
 ]
