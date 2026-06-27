@@ -1,5 +1,49 @@
 [
   {
+    "briefDate": "2026-06-28",
+    "tradingDate": {
+      "jp": "2026-06-27",
+      "us": "2026-06-26"
+    },
+    "note": "日曜版。日経平均は6/27（金）東証終値。米指数・ドル円・金・三菱UFJは6/26（木）終値（6/27米国終値は取得不可）。",
+    "nikkei": {
+      "value": 69095,
+      "change": -265.88,
+      "changePct": -0.38,
+      "src": "Trading Economics as of 2026-06-27（東証終値）"
+    },
+    "nasdaq100": {
+      "value": 29118.24,
+      "change": -322.08,
+      "changePct": -1.09,
+      "src": "Nasdaq.com as of 2026-06-26（木・米国終値）"
+    },
+    "sp500": {
+      "value": 7354.02,
+      "change": -3.68,
+      "changePct": -0.05,
+      "src": "TheStreet as of 2026-06-26（木・米国終値）"
+    },
+    "usdjpy": {
+      "value": 161.67,
+      "change": -0.07,
+      "changePct": -0.04,
+      "src": "Investing.com as of 2026-06-26（ニューヨーク終値）"
+    },
+    "gold": {
+      "value": 4087.01,
+      "change": 78.21,
+      "changePct": 1.49,
+      "src": "Trading Economics as of 2026-06-26"
+    },
+    "mufg8306": {
+      "value": 3245,
+      "change": 12,
+      "changePct": 0.37,
+      "src": "みんかぶ as of 2026-06-26（木・東証終値）"
+    }
+  },
+  {
     "briefDate": "2026-06-26",
     "tradingDate": {
       "jp": "2026-06-25",
