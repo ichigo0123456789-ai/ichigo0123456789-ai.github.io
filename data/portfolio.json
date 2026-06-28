@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "base_currency": "JPY",
+    "broker": "SBI証券",
+    "start_date": "2026-06-29",
+    "initial_capital_jpy": 2000000,
+    "tsumitate_monthly_jpy": 100000,
+    "universe": "公募投資信託のみ（個別株・ETF・暗号現物は不可）",
+    "rules_ref": "編集部/仮想運用ルール.md",
+    "baseline_nav_index0_jpy": 5307968,
+    "disclaimer": "学習目的の仮想シミュレーション。実際の売買は行っていない。投資助言ではない。"
+  },
+  "as_of": "2026-06-29",
+  "valuation_note": "2回目評価。全NAVを運用開始確定値で継続（オルカン37,729円・FANG+89,761円・ゴールド23,347円）。検索取得値（オルカン33,351円 as of 2026-06-26）は同日確定値との乖離が11.6%と異常のため不採用。評価額変化なし。",
+  "cash_jpy": 48834,
+  "accounts": {
+    "nisa_tsumitate": {
+      "policy": "1銘柄・毎月定額・原則売却しない",
+      "monthly_jpy": 100000,
+      "annual_used_jpy": 100000,
+      "annual_limit_jpy": 1200000,
+      "fund": "eMAXIS Slim 全世界株式(オール・カントリー)",
+      "category": "全世界株式インデックス",
+      "sbi_available": true,
+      "current_nav": 37729,
+      "lots": [
+        { "buy_date": "2026-06-29", "amount_jpy": 100000, "nav_at_buy": 37729, "sellable_after": null }
+      ],
+      "market_value_jpy": 100000,
+      "cost_jpy": 100000,
+      "unrealized_pnl_jpy": 0
+    },
+    "nisa_growth": {
+      "policy": "成長投資枠・3ヶ月反対売買制限・年240万上限",
+      "annual_used_jpy": 2400000,
+      "annual_limit_jpy": 2400000,
+      "holdings": [
+        {
+          "fund_name": "eMAXIS Slim 全世界株式(オール・カントリー)",
+          "category": "全世界株式インデックス",
+          "sbi_available": true,
+          "current_nav": 37729,
+          "lots": [
+            { "buy_date": "2026-06-29", "amount_jpy": 2400000, "nav_at_buy": 37729, "sellable_after": "2026-09-29" }
+          ],
+          "market_value_jpy": 2400000,
+          "cost_jpy": 2400000,
+          "unrealized_pnl_jpy": 0,
+          "note": "新規資金の中核。FANG+米メガテック集中の最良カウンターウェイトとして成長枠上限まで広域分散コアを投入。"
+        }
+      ]
+    },
+    "tokutei": {
+      "policy": "特定口座(課税・約20.315%)・投資信託・3ヶ月反対売買制限",
+      "holdings": [
+        {
+          "fund_name": "iFreeNEXT FANG+インデックス",
+          "category": "米国メガテック集中インデックス(NYSE FANG+)",
+          "sbi_available": true,
+          "current_nav": 89761,
+          "lots": [
+            {
+              "buy_date": "2026-03-01",
+              "amount_jpy": 1651863,
+              "nav_at_buy": 67153.53,
+              "sellable_after": "2026-06-01",
+              "units_remaining": 245984,
+              "original_amount_jpy": 2400000,
+              "original_units": 357390,
+              "note": "原始357,390口/平均67,153.53円のうち111,406口を2026-06-29に¥1,000,000分売却(集中是正)。残245,984口。3ヶ月反対売買制限は経過済。"
+            }
+          ],
+          "market_value_jpy": 2207968,
+          "cost_jpy": 1651863,
+          "unrealized_pnl_jpy": 556105,
+          "note": "運用開始時の既存レガシー保有。特定口座(NISAではない)。本日¥1,000,000を一部利確し残部は保有継続。"
+        },
+        {
+          "fund_name": "SBI・iシェアーズ・ゴールドファンド(為替ヘッジなし)",
+          "category": "コモディティ(金)",
+          "sbi_available": true,
+          "current_nav": 23347,
+          "lots": [
+            { "buy_date": "2026-06-29", "amount_jpy": 500000, "nav_at_buy": 23347, "sellable_after": "2026-09-29" }
+          ],
+          "market_value_jpy": 500000,
+          "cost_jpy": 500000,
+          "unrealized_pnl_jpy": 0,
+          "note": "株式と低相関の分散資産。期待リターンは株式より低いためNISAは株式優先・本資産は特定に配置(資産ロケーション最適化)。"
+        }
+      ]
+    }
+  },
+  "valuation": {
+    "total_value_jpy": 5256802,
+    "invested_jpy": 4651863,
+    "cash_jpy": 48834,
+    "unrealized_pnl_jpy": 556105,
+    "realized_pnl_jpy": 251863,
+    "realized_tax_jpy": 51166,
+    "realized_pnl_after_tax_jpy": 200697,
+    "total_return_pct": -0.96,
+    "benchmark_return_pct": 0.0,
+    "excess_vs_benchmark_pct": -0.96,
+    "note": "起点baseline(index=0)=本日mark-to-market総額¥5,307,968(現金200万+積立10万+FANG+時価¥3,207,968)。レガシー含み益¥807,968(うち本日¥251,863を実現)は運用開始前の益のため戦略リターンに算入しない(憲法§0)。残存unrealized¥556,105も同様にレガシーで除外。一方、集中是正のための一部売却で生じた譲渡税¥51,166は『戦略判断の結果生じた実コスト』のため総額を減らし、戦略リターン−0.96%として透明に計上する。リスク削減便益は単日リターンに表れずhorizon全体で評価。"
+  },
+  "benchmark": {
+    "name": "eMAXIS Slim 全世界株式(オール・カントリー)",
+    "baseline_nav": 37729,
+    "baseline_date": "2026-06-26",
+    "note": "対オルカン超過が成功の定義。最新終値(6/26)を運用開始(6/29)の基準として日次騰落でbenchmark_cum_pctを算出。"
+  }
+}
