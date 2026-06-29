@@ -74,5 +74,19 @@
       "linked_prediction_id": "P-U04",
       "constraint_check": "投信のみ✓ SBI可✓ 積立1銘柄に影響なし✓ 3ヶ月制限✓(経過済) 特定口座✓"
     }
+    ,
+    {
+      "id": "T0006",
+      "date": "2026-06-30",
+      "account": "all",
+      "action": "hold",
+      "fund_name": "全銘柄（hold）",
+      "amount_jpy": 0,
+      "units": 0,
+      "nav": 0,
+      "reason": "全ポジション維持。現金¥48,834は次回NISAつみたて（7月分）の原資として温存。NISA成長枠満額使用済み・3ヶ月制限中（ゴールド・NISA成長枠2026-09-29まで）。FANG+は最高確信度の成長コア資産として継続保有方針を維持。",
+      "analysis_method": "ポートフォリオ制約セルフチェック＋規律的積立継続優先",
+      "constraint_check": "投信のみ✓ SBI可✓ 3ヶ月制限確認✓ NISA枠制限確認✓"
+    }
   ]
 }

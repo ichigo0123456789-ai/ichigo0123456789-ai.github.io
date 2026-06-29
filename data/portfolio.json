@@ -10,8 +10,8 @@
     "baseline_nav_index0_jpy": 5307968,
     "disclaimer": "学習目的の仮想シミュレーション。実際の売買は行っていない。投資助言ではない。"
   },
-  "as_of": "2026-06-29",
-  "valuation_note": "2回目評価。全NAVを運用開始確定値で継続（オルカン37,729円・FANG+89,761円・ゴールド23,347円）。検索取得値（オルカン33,351円 as of 2026-06-26）は同日確定値との乖離が11.6%と異常のため不採用。評価額変化なし。",
+  "as_of": "2026-06-30",
+  "valuation_note": "3回目評価（2026-06-30）。ゴールドNAV更新：23,347円→23,669円（as of 2026-06-29・SBIアセットマネジメント確認）。含み益+¥6,895発生。FANG+NAV・オルカンNAVは直近営業日2026-06-26値を継続使用。全銘柄hold。",
   "cash_jpy": 48834,
   "accounts": {
     "nisa_tsumitate": {
@@ -79,29 +79,29 @@
           "fund_name": "SBI・iシェアーズ・ゴールドファンド(為替ヘッジなし)",
           "category": "コモディティ(金)",
           "sbi_available": true,
-          "current_nav": 23347,
+          "current_nav": 23669,
           "lots": [
             { "buy_date": "2026-06-29", "amount_jpy": 500000, "nav_at_buy": 23347, "sellable_after": "2026-09-29" }
           ],
-          "market_value_jpy": 500000,
+          "market_value_jpy": 506895,
           "cost_jpy": 500000,
-          "unrealized_pnl_jpy": 0,
+          "unrealized_pnl_jpy": 6895,
           "note": "株式と低相関の分散資産。期待リターンは株式より低いためNISAは株式優先・本資産は特定に配置(資産ロケーション最適化)。"
         }
       ]
     }
   },
   "valuation": {
-    "total_value_jpy": 5256802,
+    "total_value_jpy": 5263697,
     "invested_jpy": 4651863,
     "cash_jpy": 48834,
-    "unrealized_pnl_jpy": 556105,
+    "unrealized_pnl_jpy": 563000,
     "realized_pnl_jpy": 251863,
     "realized_tax_jpy": 51166,
     "realized_pnl_after_tax_jpy": 200697,
-    "total_return_pct": -0.96,
+    "total_return_pct": -0.834,
     "benchmark_return_pct": 0.0,
-    "excess_vs_benchmark_pct": -0.96,
+    "excess_vs_benchmark_pct": -0.834,
     "note": "起点baseline(index=0)=本日mark-to-market総額¥5,307,968(現金200万+積立10万+FANG+時価¥3,207,968)。レガシー含み益¥807,968(うち本日¥251,863を実現)は運用開始前の益のため戦略リターンに算入しない(憲法§0)。残存unrealized¥556,105も同様にレガシーで除外。一方、集中是正のための一部売却で生じた譲渡税¥51,166は『戦略判断の結果生じた実コスト』のため総額を減らし、戦略リターン−0.96%として透明に計上する。リスク削減便益は単日リターンに表れずhorizon全体で評価。"
   },
   "benchmark": {
