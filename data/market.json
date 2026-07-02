@@ -1,5 +1,49 @@
 [
   {
+    "briefDate": "2026-07-02",
+    "tradingDate": {
+      "jp": "2026-07-02",
+      "us": "2026-07-01"
+    },
+    "note": "木曜版（手動生成）。日経平均は7/2東証終値（米半導体安でキオクシア等が値崩れ、前日7/1は70,474.96円と節目7万円回復後の急反落）。米指数・ドル円は7/1終値、金スポットは7/1。金スポットの前日比は確定終値ソース取得不可のため—。",
+    "nikkei": {
+      "value": 68733.15,
+      "change": -1741.81,
+      "changePct": -2.47,
+      "src": "日本経済新聞 as of 2026-07-02（東証終値）"
+    },
+    "nasdaq100": {
+      "value": 29809.13,
+      "change": -467.22,
+      "changePct": -1.54,
+      "src": "Investing.com as of 2026-07-01（米国終値）"
+    },
+    "sp500": {
+      "value": 7483.23,
+      "change": -16.13,
+      "changePct": -0.22,
+      "src": "Investing.com/CNBC as of 2026-07-01（米国終値）"
+    },
+    "usdjpy": {
+      "value": 162.69,
+      "change": 0.11,
+      "changePct": 0.07,
+      "src": "TradingEconomics as of 2026-07-01（NY終値）"
+    },
+    "gold": {
+      "value": 3967,
+      "change": null,
+      "changePct": null,
+      "src": "Vantage Markets as of 2026-07-01（前日比は確定終値ソース取得不可）"
+    },
+    "mufg8306": {
+      "value": 3306,
+      "change": 59,
+      "changePct": 1.82,
+      "src": "Yahoo!ファイナンス as of 2026-07-02（東証終値・前日終値3,247円から算出）"
+    }
+  },
+  {
     "briefDate": "2026-06-28",
     "tradingDate": {
       "jp": "2026-06-27",

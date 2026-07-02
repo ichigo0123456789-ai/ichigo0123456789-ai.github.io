@@ -10,8 +10,8 @@
     "baseline_nav_index0_jpy": 5307968,
     "disclaimer": "学習目的の仮想シミュレーション。実際の売買は行っていない。投資助言ではない。"
   },
-  "as_of": "2026-06-30",
-  "valuation_note": "3回目評価（2026-06-30）。ゴールドNAV更新：23,347円→23,669円（as of 2026-06-29・SBIアセットマネジメント確認）。含み益+¥6,895発生。FANG+NAV・オルカンNAVは直近営業日2026-06-26値を継続使用。全銘柄hold。",
+  "as_of": "2026-07-02",
+  "valuation_note": "4回目評価（2026-07-02・手動生成）。全ファンドのNAVを2026-07-02値へ更新（出典：みんかぶ投信）：オルカン37,729→38,267、FANG+89,761→93,722、ゴールド23,669→23,782。売買なし（様子見）。ポート合計¥5,263,697→¥5,399,418。戦略リターン▼0.834%→+1.723%、対オルカン超過▼0.834%pt→+0.297%pt。7月つみたては次回定例実行時に判断。",
   "cash_jpy": 48834,
   "accounts": {
     "nisa_tsumitate": {
@@ -22,13 +22,13 @@
       "fund": "eMAXIS Slim 全世界株式(オール・カントリー)",
       "category": "全世界株式インデックス",
       "sbi_available": true,
-      "current_nav": 37729,
+      "current_nav": 38267,
       "lots": [
         { "buy_date": "2026-06-29", "amount_jpy": 100000, "nav_at_buy": 37729, "sellable_after": null }
       ],
-      "market_value_jpy": 100000,
+      "market_value_jpy": 101434,
       "cost_jpy": 100000,
-      "unrealized_pnl_jpy": 0
+      "unrealized_pnl_jpy": 1434
     },
     "nisa_growth": {
       "policy": "成長投資枠・3ヶ月反対売買制限・年240万上限",
@@ -39,13 +39,13 @@
           "fund_name": "eMAXIS Slim 全世界株式(オール・カントリー)",
           "category": "全世界株式インデックス",
           "sbi_available": true,
-          "current_nav": 37729,
+          "current_nav": 38267,
           "lots": [
             { "buy_date": "2026-06-29", "amount_jpy": 2400000, "nav_at_buy": 37729, "sellable_after": "2026-09-29" }
           ],
-          "market_value_jpy": 2400000,
+          "market_value_jpy": 2434424,
           "cost_jpy": 2400000,
-          "unrealized_pnl_jpy": 0,
+          "unrealized_pnl_jpy": 34424,
           "note": "新規資金の中核。FANG+米メガテック集中の最良カウンターウェイトとして成長枠上限まで広域分散コアを投入。"
         }
       ]
@@ -57,7 +57,7 @@
           "fund_name": "iFreeNEXT FANG+インデックス",
           "category": "米国メガテック集中インデックス(NYSE FANG+)",
           "sbi_available": true,
-          "current_nav": 89761,
+          "current_nav": 93722,
           "lots": [
             {
               "buy_date": "2026-03-01",
@@ -70,44 +70,47 @@
               "note": "原始357,390口/平均67,153.53円のうち111,406口を2026-06-29に¥1,000,000分売却(集中是正)。残245,984口。3ヶ月反対売買制限は経過済。"
             }
           ],
-          "market_value_jpy": 2207968,
+          "market_value_jpy": 2305411,
           "cost_jpy": 1651863,
-          "unrealized_pnl_jpy": 556105,
-          "note": "運用開始時の既存レガシー保有。特定口座(NISAではない)。本日¥1,000,000を一部利確し残部は保有継続。"
+          "unrealized_pnl_jpy": 653548,
+          "note": "運用開始時の既存レガシー保有。特定口座(NISAではない)。6/29に¥1,000,000を一部利確し残部は保有継続。"
         },
         {
           "fund_name": "SBI・iシェアーズ・ゴールドファンド(為替ヘッジなし)",
           "category": "コモディティ(金)",
           "sbi_available": true,
-          "current_nav": 23669,
+          "current_nav": 23782,
           "lots": [
             { "buy_date": "2026-06-29", "amount_jpy": 500000, "nav_at_buy": 23347, "sellable_after": "2026-09-29" }
           ],
-          "market_value_jpy": 506895,
+          "market_value_jpy": 509315,
           "cost_jpy": 500000,
-          "unrealized_pnl_jpy": 6895,
+          "unrealized_pnl_jpy": 9315,
           "note": "株式と低相関の分散資産。期待リターンは株式より低いためNISAは株式優先・本資産は特定に配置(資産ロケーション最適化)。"
         }
       ]
     }
   },
   "valuation": {
-    "total_value_jpy": 5263697,
+    "total_value_jpy": 5399418,
     "invested_jpy": 4651863,
     "cash_jpy": 48834,
-    "unrealized_pnl_jpy": 563000,
+    "unrealized_pnl_jpy": 698721,
     "realized_pnl_jpy": 251863,
     "realized_tax_jpy": 51166,
     "realized_pnl_after_tax_jpy": 200697,
-    "total_return_pct": -0.834,
-    "benchmark_return_pct": 0.0,
-    "excess_vs_benchmark_pct": -0.834,
-    "note": "起点baseline(index=0)=本日mark-to-market総額¥5,307,968(現金200万+積立10万+FANG+時価¥3,207,968)。レガシー含み益¥807,968(うち本日¥251,863を実現)は運用開始前の益のため戦略リターンに算入しない(憲法§0)。残存unrealized¥556,105も同様にレガシーで除外。一方、集中是正のための一部売却で生じた譲渡税¥51,166は『戦略判断の結果生じた実コスト』のため総額を減らし、戦略リターン−0.96%として透明に計上する。リスク削減便益は単日リターンに表れずhorizon全体で評価。"
+    "total_return_pct": 1.723,
+    "benchmark_return_pct": 1.426,
+    "excess_vs_benchmark_pct": 0.297,
+    "note": "起点baseline(index=0)=¥5,307,968。戦略リターン=(現在総額−baseline)/baseline=(5,399,418−5,307,968)/5,307,968=+1.723%。ベンチマーク=オルカン基準価額37,729(as of 6/26)→38,267(as of 7/2)=+1.426%。超過=+0.297%pt。レガシー含み益(FANG+ ¥653,548)は運用開始前の益のため戦略評価から除外、集中是正の譲渡税¥51,166は実コストとして反映済み。"
   },
   "benchmark": {
     "name": "eMAXIS Slim 全世界株式(オール・カントリー)",
     "baseline_nav": 37729,
     "baseline_date": "2026-06-26",
-    "note": "対オルカン超過が成功の定義。最新終値(6/26)を運用開始(6/29)の基準として日次騰落でbenchmark_cum_pctを算出。"
+    "current_nav": 38267,
+    "current_date": "2026-07-02",
+    "benchmark_cum_pct": 1.426,
+    "note": "対オルカン超過が成功の定義。最新基準価額(38,267 as of 7/2)を運用開始基準(37,729 as of 6/26)と比較しbenchmark_cum_pctを算出。"
   }
 }
