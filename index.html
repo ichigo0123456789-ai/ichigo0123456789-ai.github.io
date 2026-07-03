@@ -323,6 +323,68 @@
     <div class="kicker"><span class="no">06</span><span class="ja">仮想運用シミュレーション</span><span class="tag">Virtual Portfolio</span><span class="ln"></span></div>
     <p style="font-size:.82rem;color:var(--gold-ink);margin:0 0 1rem;padding:.5rem .8rem;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:8px">※学習目的の仮想シミュレーション。実際の売買は行っていません。投資助言ではありません。</p>
 
+    <!-- ▼資産推移チャート（クライアント側でdata/*.jsonを読み描画・自己更新） -->
+    <figure id="pfchart" class="pfchart" style="margin:.2rem 0 1.2rem">
+      <figcaption style="font-size:.9rem;font-weight:600;color:var(--gold-ink);margin-bottom:.5rem">資産推移（仮想PF評価額）</figcaption>
+      <div class="pfchart-canvas" style="width:100%;overflow-x:auto"></div>
+      <div class="pfchart-cap" style="font-size:.74rem;color:var(--faint);margin-top:.5rem"></div>
+    </figure>
+    <script>
+    (function(){
+      var fig=document.getElementById('pfchart'); if(!fig) return;
+      var canvas=fig.querySelector('.pfchart-canvas'), cap=fig.querySelector('.pfchart-cap');
+      var yen=function(n){return '¥'+Math.round(n).toLocaleString('ja-JP');};
+      var mmdd=function(d){var p=d.split('-');return (+p[1])+'/'+(+p[2]);};
+      Promise.all([
+        fetch('data/nav_history.json').then(function(r){return r.json();}).catch(function(){return null;}),
+        fetch('data/counterfactual.json').then(function(r){return r.json();}).catch(function(){return null;})
+      ]).then(function(res){
+        var nav=res[0], cf=res[1];
+        if(!nav||!nav.history||!nav.history.length){ fig.style.display='none'; return; }
+        var byDate={}; nav.history.forEach(function(h){ byDate[h.date]=h; }); // 同日重複は後勝ちで統合
+        var dates=Object.keys(byDate).sort();
+        var real=dates.map(function(d){return byDate[d].total_value_jpy;});
+        var fz={};
+        if(cf&&cf.frozen_initial&&cf.frozen_initial.daily){ cf.frozen_initial.daily.forEach(function(x){fz[x.date]=x.total_value_jpy;}); }
+        var frozen=dates.map(function(d){return fz[d]!=null?fz[d]:null;});
+        // scales
+        var W=760,H=340,pl=66,pr=16,pt=22,pb=40, pw=W-pl-pr, ph=H-pt-pb;
+        var vals=real.concat(frozen.filter(function(v){return v!=null;}));
+        var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+        var pad=(mx-mn)*0.12||mx*0.02; mn-=pad; mx+=pad;
+        var X=function(i){return pl + (dates.length===1?pw/2:pw*i/(dates.length-1));};
+        var Y=function(v){return pt + ph*(1-(v-mn)/(mx-mn));};
+        var poly=function(arr){var pts=[];arr.forEach(function(v,i){if(v!=null)pts.push(X(i).toFixed(1)+','+Y(v).toFixed(1));});return pts.join(' ');};
+        // y ticks
+        var ticks=4, tg='';
+        for(var t=0;t<=ticks;t++){ var v=mn+(mx-mn)*t/ticks, y=Y(v);
+          tg+='<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="rgba(255,255,255,.07)" stroke-width="1"/>';
+          tg+='<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#8b98ad">'+('¥'+Math.round(v/10000)+'万')+'</text>';
+        }
+        // x labels
+        var xl='';
+        dates.forEach(function(d,i){ xl+='<text x="'+X(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="11" fill="#8b98ad">'+mmdd(d)+'</text>'; });
+        // dots real
+        var dots=''; real.forEach(function(v,i){ dots+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" fill="#e3b866"/>'; });
+        var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:420px;display:block" role="img" aria-label="仮想ポートフォリオの資産推移">'
+          +tg+xl
+          +'<polyline points="'+poly(frozen)+'" fill="none" stroke="#7b88a0" stroke-width="1.5" stroke-dasharray="5 4"/>'
+          +'<polyline points="'+poly(real)+'" fill="none" stroke="#e3b866" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'
+          +dots
+          +'<g font-size="11.5"><rect x="'+pl+'" y="2" width="12" height="3" fill="#e3b866"/><text x="'+(pl+18)+'" y="7" fill="#c9b48a">実PF評価額</text>'
+          +'<rect x="'+(pl+120)+'" y="2" width="12" height="3" fill="#7b88a0"/><text x="'+(pl+138)+'" y="7" fill="#9aa7bd">凍結初期PF（無裁量ベース）</text></g>'
+          +'</svg>';
+        canvas.innerHTML=svg;
+        var last=byDate[dates[dates.length-1]];
+        var ex=(last.excess_pct!=null)?((last.excess_pct>=0?'+':'')+last.excess_pct.toFixed(2)+'%pt'):'—';
+        cap.innerHTML='最新評価額 <b style="color:var(--gold-ink)">'+yen(last.total_value_jpy)+'</b>（'+last.date+'）／対オルカン超過 '+ex
+          +'。実PFと凍結初期PF（6/29配分のまま無裁量で保有し続けた場合）の差＝日々の運用判断が生んだ付加価値。※つみたて新規拠出分を含むため、累積リターン％は資金流入で嵩上げされる点に留意（詳細は運用判断ノート参照）。';
+      });
+    })();
+    </script>
+    <!-- ▲資産推移チャート -->
+
+
     <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>項目</th><th>金額</th><th>備考</th></tr></thead><tbody>
       <tr><td>運用資産合計</td><td>¥5,450,584</td><td>現金¥0（前回7/2比 ＋¥51,166、7月分つみたて拠出）</td></tr>
       <tr><td>評価損益（戦略）</td><td class="up">▲ ¥142,616</td><td>レガシー含み益¥653,548は除外</td></tr>
