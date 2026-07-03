@@ -22,12 +22,12 @@
 
 ## 進行（日次）：
 0.【前処理＋PDCA答え合わせ】clone・既存data/テンプレ読込などニュース不要の下ごしらえを先に済ませつつ、**検証部**を Task で起動し、(a)予測のうち検証期日が到来した分を実績と突合・採点（Brier記録）、(b)昨日〜今朝の重大事象が既存の considered_scenarios の内か外か（サプライズ監査）、(c)凍結初期PF・却下代替枝の評価額を当日NAVで更新、をさせ教訓を蓄積する。
-1.【1回目取材＝分析の土台】次の5部を Task で"1メッセージ内に同時記述"して並列起動し市況・ニュースを実取得：**マーケット課**(①＋regimeタグ＋Tier1/2 NAV)／**経済部**(③金利・為替・相場＋イベントカレンダー維持)／政治部(③政策・国際)／テック部(③テック・AI・半導体)／生活部(③週末の横浜グルメ)。
-2.【統合・結論】5部の成果を Task の**投資部**に渡し、④今日の結論 と ⑤先読み2枚、および本日の予測（thesis 0〜1本＋**イベント予測 event 週2〜5本ペース**）を予測プロトコルv2で書かせる。
+1.【1回目取材＝分析の土台】次の4部を Task で"1メッセージ内に同時記述"して並列起動し市況・ニュースを実取得：**マーケット課**(①＋regimeタグ＋Tier1/2 NAV)／**経済部**(③金利・為替・相場＋イベントカレンダー維持)／政治部(③政策・国際)／テック部(③テック・AI・半導体)。
+2.【統合・結論】4部の成果を Task の**投資部**に渡し、④今日の結論 と ⑤先読み2枚、および本日の予測（thesis 0〜1本＋**イベント予測 event 週2〜5本ペース**）を予測プロトコルv2で書かせる。
 2.5【仮想運用】④⑤が固まったら Task の**運用部**を起動し、投資信託のみの仮想ポートフォリオを運用させ ⑥仮想運用 セクションと各 json 反映断片（rejected_alternative・cite_lessons・リスク点検1行を含む）を作らせる。
 2.7【反対尋問】★NEW★ ④⑤（と2.5の判断）を Task の**反対尋問役**に渡し、(1)最強の反対ケース3点 (2)「今週何が見えたら転換か」 (3)シナリオ漏れ点検 を出させる。投資部・運用部はこれを受けて修正 or 理由付き却下し、生成したシナリオ集合を considered_scenarios として予測に記録する。反対尋問は自己批判が弱いので必ず独立Taskで1回回す。
 3.【校閲】統合稿全体を Task の校閲部に渡し判定を受ける。差し戻し(重大NG)なら該当部を Task で再起動し修正。条件付き合格・合格なら進む。軽微指摘は組版時に編集長が反映。
-3.5【最終リフレッシュ＝2回目取材】★組版の直前に、マーケット課と経済/政治/テック/生活の各部を Task で軽く再起動し、①市況の最新値と③ニュースの"新着のみ"を再取得して差し替える。1段目から重要な急変があれば④結論に一文だけ追記。変化が無ければ1段目のまま。
+3.5【最終リフレッシュ＝2回目取材】★組版の直前に、マーケット課と経済/政治/テックの各部を Task で軽く再起動し、①市況の最新値と③ニュースの"新着のみ"を再取得して差し替える。1段目から重要な急変があれば④結論に一文だけ追記。変化が無ければ1段目のまま。
 4.【組版・検証・公開】既存 template.html を正本に index.html を生成し、data/*.json を更新し、自己検証して push。**最後に runlog.json へ本run(date/trigger/status/published/commit)を1行追記してから push に含める。**
 （日曜は進行4の前に**週次処理**、毎月1日は**月次処理**を挿入。詳細は末尾「週次・月次処理」参照。）
 
@@ -47,7 +47,7 @@
 返り値：table.mktの6つ<tr>群 ＋ regime.json用オブジェクト ＋ bench_navs.json用NAV群。
 
 ### 経済部（③金利・為替・相場＋イベントカレンダー）
-(A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から公開48時間以内の見出し3本。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → date -d で48h以内の先頭3件。各本 <a class="hl" href="実URL" target="_blank" rel="noopener"><h4>媒体の日本語見出し</h4><div class="meta">出典名 ・ 相対時刻</div></a> 形式。画像不要。
+(A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から**公開24時間以内を優先**した見出し3本（新しい順）。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → **date -d でpubDateが新しい順にソートし、24h以内を優先して先頭3件を採る（24h以内が3本に満たない時のみ最大48hまで許容）**。★「1日前」ばかりにならないよう、可能な限り当日〜数時間前の最新記事を選ぶこと。各本 <a class="hl" href="実URL" target="_blank" rel="noopener"><h4>媒体の日本語見出し</h4><div class="meta">出典名 ・ 相対時刻</div></a> 形式。画像不要。
 (B) ★NEW★ **イベントカレンダー維持**：calendar.json を読み、(1)期日を過ぎたイベントを archived へ移し実際の結果(actual)を記録、(2)今後2週間の予定イベント（日銀会合・FOMC・米雇用統計/CPI・日本CPI/短観・主要決算・政治日程）を WebSearch で実取得し upcoming に追加。日付・内容は実取得したもののみ。未確認は date:null / status:'要調査'。捏造禁止。各イベントに related_prediction_ids を紐づけ。
 返り値：3本のhl群 ＋ calendar.json更新差分。
 
@@ -57,11 +57,8 @@ RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.j
 ### テック部（③テック・AI・半導体）
 RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。
 
-### 生活部（③週末の横浜グルメ）
-https://news.google.com/rss/search?q=横浜%20グルメ&hl=ja&gl=JP&ceid=JP:ja のうち見出しに『横浜』を含むもの3本。無ければ『週末に横浜グルメを掲載します』の1枚。同フォーマット。
-
 ### 投資部（④今日の結論・⑤先読み＋予測プロトコルv2）
-5部の成果（①の数値・regimeタグ・③各カテゴリの見出し・calendarの予定イベント）を必ず踏まえて書く。**書く前に playbook.md（検証済み原則）と data/lessons.json（直近教訓）を読み、適用した原則を明示的にcite**する。
+4部の成果（①の数値・regimeタグ・③各カテゴリの見出し・calendarの予定イベント）を必ず踏まえて書く。**書く前に playbook.md（検証済み原則）と data/lessons.json（直近教訓）を読み、適用した原則を明示的にcite**する。
 - ④ p.thesis に1行の『今日の指針』（強調1語を <span class="hi">…</span> で囲む。クラスは hi であって hl ではない）＋ ul.ul-thesis に箇条書き3点（中長期・投信/ETF観点、個別株推奨なし）。
 - ⑤ div.scen 内の2枚の div.card（各 ul.flow に 情勢/需給/製品/市場/最終 li.final）を『世界情勢の変化→需給の崩れ→製品価格・セクター→数ヶ月後に効く投信/ETF』の"仮説"として中立・教育的に提示。『仮説であり投資助言ではありません』を明記。
 - ★NEW★ **予測プロトコルv2**（末尾§予測プロトコル参照）で本日の予測を data/predictions.json 追記用に返す：
@@ -141,7 +138,7 @@ https://news.google.com/rss/search?q=横浜%20グルメ&hl=ja&gl=JP&ceid=JP:ja �
 売買対象は《投資信託・ETF中心》。個別株は売買不可のため個別銘柄の売買推奨はしない（例外＝三菱UFJ自社株は持株会）。時間軸＝中長期。ウォッチリスト：eMAXIS Slim S&P500 / 日経平均 / NASDAQ100 / ドル円 / 金 / 三菱UFJ(8306)＋Tier2候補(bench_navs.json)。『情報提供であり投資助言でない』と明記。
 
 ## ページ構成（この順序・名称を厳守）
-名称『朝のニュースまとめ』。セクション順：① マーケット → ②（既存の値動き分析チャート）→ ③ ニュース（経済/政治/テック/生活グルメ）→ ④ 今日の結論 → ⑤ 先読み → ⑥ 仮想運用シミュレーション（→ 日曜は「今週の通信簿」を⑥直下に追加）。既存の template.html / index.html のデザイン（暗色『夜明けのデスク』テーマ、Shippori Mincho B1/Noto Sans JP/Space Grotesk、.bar/.hero/.panel/.kicker/.thesis/.ul-thesis/.scen/.card/.flow/.mkt/.tbl-shell/.chart/.charts2/.news/.col/.hl/.foot、TradingView advanced-chart、revealアニメ、スマホ対応CSS）を厳密に踏襲し、置換するのは (A)<title>・.bar .bd・.hero .issue の日付【JST】 (B)table.mkt の6行 (C)ニュース各列 (D).thesis と .ul-thesis の3点 (E)2枚の .scen .card (F)⑥仮想運用セクション (G)フッター .dsum、(H)日曜のみ通信簿1枚 のみ。CSS・既存構造・class名・チャート設定・高さは改変しない。
+名称『朝のニュースまとめ』。セクション順：① マーケット → ②（既存の値動き分析チャート）→ ③ ニュース（経済/政治/テック）→ ④ 今日の結論 → ⑤ 先読み → ⑥ 仮想運用シミュレーション（→ 日曜は「今週の通信簿」を⑥直下に追加）。既存の template.html / index.html のデザイン（暗色『夜明けのデスク』テーマ、Shippori Mincho B1/Noto Sans JP/Space Grotesk、.bar/.hero/.panel/.kicker/.thesis/.ul-thesis/.scen/.card/.flow/.mkt/.tbl-shell/.chart/.charts2/.news/.col/.hl/.foot、TradingView advanced-chart、revealアニメ、スマホ対応CSS）を厳密に踏襲し、置換するのは (A)<title>・.bar .bd・.hero .issue の日付【JST】 (B)table.mkt の6行 (C)ニュース各列 (D).thesis と .ul-thesis の3点 (E)2枚の .scen .card (F)⑥仮想運用セクション (G)フッター .dsum、(H)日曜のみ通信簿1枚 のみ。CSS・既存構造・class名・チャート設定・高さは改変しない。
 ★⑥仮想運用セクション：⑤先読みの直後・フッターの直前に、既存 .panel/.kicker クラスで配置。構造＝(i)固定免責1行『※学習目的の仮想シミュレーション。実際の売買は行っていません。投資助言ではありません。』 **(i.5)★資産推移チャート＝`<figure id="pfchart">`＋直後の`<script>`。data/nav_history.json と data/counterfactual.json をクライアント側で読みインラインSVGで折れ線描画（実PF評価額＝実線・凍結初期PF＝破線）する自己完結ブロック。ルーチンはこのブロックを毎run"そのまま保持"する（中身を書き換えない・削除しない・data更新だけで自動反映される）。template.htmlに恒久設置済み。** (ii)サマリー表（運用資産合計/評価損益/戦略リターン/対オルカン超過、table.mkt 流用） (iii)保有一覧表（口座=NISAつみたて/NISA成長枠/特定、ファンド名・評価額・損益、3ヶ月制限日付の注記） (iv)『本日の運用判断』カード(.card)。運用部が返したHTML断片をそのまま組み込む。数値は運用部の更新値を使う。
 
 ## 保存・検証・公開
@@ -156,7 +153,7 @@ index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index
 - 進行0で検証部（採点＋サプライズ監査＋カウンターファクチュアル更新）、進行2.5で運用部、**進行2.7で反対尋問**を必ず回す。data/*.json を毎run更新してpushする。
 - **予測はv2プロトコル**（type/p/scoring_spec/falsifiable、eventを週2〜5本、thesisはcheckpoints）。confidence廃止。
 - 日付はJSTで確定（UTCの前日にしない）。ファクト原則最優先（未確認は『—』・捏造/前日値流用/推測禁止）。
-- ニュースは媒体カテゴリRSSから実取得、各カテゴリ3本、公開48h以内、実URL（画像なし）。本文に英語を生で混ぜない。
+- ニュースは媒体カテゴリRSSから実取得、3カテゴリ（経済/政治/テック）×各3本、**公開24h以内を優先（新しい順・不足時のみ最大48h）**、実URL（画像なし）。「1日前」ばかりを避け最新記事を厳選。本文に英語を生で混ぜない。
 - 個別株の売買推奨はしない（投信/ETF＋三菱UFJ自社株のみ）。中長期視点。情報提供であり助言でない。
 - 仮想運用は投信のみ・SBI可・つみたて1銘柄・つみたて以外3ヶ月反対売買禁止・NISA枠上限を厳守。違反案は出さない。裁量判断時は rejected_alternative を counterfactual に枝として残す。
 - ページにPII（氏名・勤務先・コース・学校）を出さない。記事本文を転載しない（見出し・リンクのみ）。

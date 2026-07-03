@@ -98,7 +98,7 @@
   /* ── 日付バッジ ── */
   .date-badge{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,5.5vw,3.2rem);font-weight:700;color:var(--gold);letter-spacing:.06em;margin:.25rem 0 .1rem;line-height:1.1}
   /* ── ニュース4列 ── */
-  .news{grid-template-columns:1fr 1fr 1fr 1fr!important}
+  .news{grid-template-columns:1fr 1fr 1fr!important}
   @media(max-width:1020px){.news{grid-template-columns:1fr 1fr!important}}
   @media(max-width:600px){.news{grid-template-columns:1fr!important}}
   /* ── ヒートマップ ── */
@@ -242,7 +242,7 @@
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">03</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
-    <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開48時間以内を基本（ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得）。</p>
+    <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開24時間以内を優先（新しい順に厳選）（ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得）。</p>
     <div class="news">
 
       <div class="col">
@@ -266,12 +266,6 @@
         <a class="hl" href="https://www.itmedia.co.jp/news/articles/2607/03/news067.html" target="_blank" rel="noopener"><h4>マイクロソフト（Microsoft）、AI導入支援組織「マイクロソフト フロンティア カンパニー」設立　6000人体制で顧客企業を支援</h4><div class="meta">ＩＴｍｅｄｉａ ＮＥＷＳ ・ 1日前（as of 2026-07-04）</div></a>
       </div>
 
-      <div class="col">
-        <div class="ch" style="background:rgba(63,196,200,.15);color:var(--teal)">週末の横浜グルメ</div>
-        <a class="hl" href="https://prtimes.jp/main/html/rd/p/000000471.000034658.html" target="_blank" rel="noopener"><h4>「YOKOHAMA SAKE SQUARE 2026」で楽しめる59銘柄を発表！7月4日(土)・5日(日)に横浜赤レンガ倉庫で開催の日本酒試飲イベント</h4><div class="meta">PR TIMES ・ 開催中（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://prtimes.jp/main/html/rd/p/000000018.000147795.html" target="_blank" rel="noopener"><h4>横浜七夕祭り2026　横浜の名店が続々集結！【公式第三弾リリース】</h4><div class="meta">PR TIMES ・ as of 2026-07-04</div></a>
-        <a class="hl" href="https://prtimes.jp/main/html/rd/p/000000003.000179789.html" target="_blank" rel="noopener"><h4>2026年夏、横浜中華街34店舗が参加する大型グルメ企画「うなぎ、新発見。in 横浜中華街」開催</h4><div class="meta">PR TIMES ・ 4日前（as of 2026-07-04）</div></a>
-      </div>
 
     </div>
   </section>
@@ -344,41 +338,51 @@
         var byDate={}; nav.history.forEach(function(h){ byDate[h.date]=h; }); // 同日重複は後勝ちで統合
         var dates=Object.keys(byDate).sort();
         var real=dates.map(function(d){return byDate[d].total_value_jpy;});
+        // 凍結初期PF（無裁量ベース）
         var fz={};
         if(cf&&cf.frozen_initial&&cf.frozen_initial.daily){ cf.frozen_initial.daily.forEach(function(x){fz[x.date]=x.total_value_jpy;}); }
         var frozen=dates.map(function(d){return fz[d]!=null?fz[d]:null;});
+        // オルカン等価（同じ資金を初日から全額オルカンに入れた場合）
+        var bc=dates.map(function(d){return byDate[d].benchmark_cum_pct!=null?byDate[d].benchmark_cum_pct:0;});
+        var ext=(cf&&cf.external_contributions)?cf.external_contributions:[];
+        var base=real[0];
+        var orukan=dates.map(function(d,i){
+          var v=base*(1+bc[i]/100);
+          ext.forEach(function(c){ if(c.date<=d){ var bcc=byDate[c.date]?(byDate[c.date].benchmark_cum_pct||0):0; v+=c.amount_jpy*(1+(bc[i]-bcc)/100); } });
+          return v;
+        });
         // scales
-        var W=760,H=340,pl=66,pr=16,pt=22,pb=40, pw=W-pl-pr, ph=H-pt-pb;
-        var vals=real.concat(frozen.filter(function(v){return v!=null;}));
+        var W=760,H=340,pl=66,pr=16,pt=28,pb=40, pw=W-pl-pr, ph=H-pt-pb;
+        var vals=real.concat(frozen.filter(function(v){return v!=null;})).concat(orukan);
         var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
         var pad=(mx-mn)*0.12||mx*0.02; mn-=pad; mx+=pad;
         var X=function(i){return pl + (dates.length===1?pw/2:pw*i/(dates.length-1));};
         var Y=function(v){return pt + ph*(1-(v-mn)/(mx-mn));};
         var poly=function(arr){var pts=[];arr.forEach(function(v,i){if(v!=null)pts.push(X(i).toFixed(1)+','+Y(v).toFixed(1));});return pts.join(' ');};
-        // y ticks
         var ticks=4, tg='';
         for(var t=0;t<=ticks;t++){ var v=mn+(mx-mn)*t/ticks, y=Y(v);
           tg+='<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="rgba(255,255,255,.07)" stroke-width="1"/>';
           tg+='<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#8b98ad">'+('¥'+Math.round(v/10000)+'万')+'</text>';
         }
-        // x labels
         var xl='';
         dates.forEach(function(d,i){ xl+='<text x="'+X(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="11" fill="#8b98ad">'+mmdd(d)+'</text>'; });
-        // dots real
         var dots=''; real.forEach(function(v,i){ dots+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" fill="#e3b866"/>'; });
-        var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:420px;display:block" role="img" aria-label="仮想ポートフォリオの資産推移">'
+        var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:440px;display:block" role="img" aria-label="仮想ポートフォリオの資産推移">'
           +tg+xl
           +'<polyline points="'+poly(frozen)+'" fill="none" stroke="#7b88a0" stroke-width="1.5" stroke-dasharray="5 4"/>'
+          +'<polyline points="'+poly(orukan)+'" fill="none" stroke="#5fb3c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
           +'<polyline points="'+poly(real)+'" fill="none" stroke="#e3b866" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'
           +dots
-          +'<g font-size="11.5"><rect x="'+pl+'" y="2" width="12" height="3" fill="#e3b866"/><text x="'+(pl+18)+'" y="7" fill="#c9b48a">実PF評価額</text>'
-          +'<rect x="'+(pl+120)+'" y="2" width="12" height="3" fill="#7b88a0"/><text x="'+(pl+138)+'" y="7" fill="#9aa7bd">凍結初期PF（無裁量ベース）</text></g>'
+          +'<g font-size="11"><rect x="'+pl+'" y="2" width="12" height="3" fill="#e3b866"/><text x="'+(pl+17)+'" y="7" fill="#c9b48a">実PF評価額</text>'
+          +'<rect x="'+(pl+108)+'" y="2" width="12" height="3" fill="#5fb3c9"/><text x="'+(pl+125)+'" y="7" fill="#9fcdd9">オルカン等価</text>'
+          +'<rect x="'+(pl+218)+'" y="2" width="12" height="3" fill="#7b88a0"/><text x="'+(pl+235)+'" y="7" fill="#9aa7bd">凍結初期PF（無裁量）</text></g>'
           +'</svg>';
         canvas.innerHTML=svg;
         var last=byDate[dates[dates.length-1]];
         var ex=(last.excess_pct!=null)?((last.excess_pct>=0?'+':'')+last.excess_pct.toFixed(2)+'%pt'):'—';
-        cap.innerHTML='最新評価額 <b style="color:var(--gold-ink)">'+yen(last.total_value_jpy)+'</b>（'+last.date+'）／対オルカン超過 '+ex
-          +'。実PFと凍結初期PF（6/29配分のまま無裁量で保有し続けた場合）の差＝日々の運用判断が生んだ付加価値。※つみたて新規拠出分を含むため、累積リターン％は資金流入で嵩上げされる点に留意（詳細は運用判断ノート参照）。';
+        var diff=Math.round(real[real.length-1]-orukan[orukan.length-1]);
+        cap.innerHTML='最新評価額 <b style="color:var(--gold-ink)">'+yen(last.total_value_jpy)+'</b>（'+last.date+'）／対オルカン超過 '+ex+'（¥換算 '+(diff>=0?'+':'')+yen(diff).replace('¥','¥')+'）。'
+          +'<b>オルカン等価</b>＝同じ資金を初日から全額オルカンに入れた場合。実PFがこれを上回れば戦略が機能している証拠。<b>凍結初期PF</b>＝6/29配分のまま無裁量で保有し続けた場合で、実PFとの差＝日々の運用判断の付加価値。※つみたて新規拠出を含むため累積リターン％は資金流入で嵩上げされる点に留意。';
       });
     })();
     </script>
@@ -456,7 +460,7 @@
   </section>
 
   <footer class="foot">
-    <div class="dsum"><b>本日のデータ取得サマリー（2026年7月4日 JST 生成）</b>：市況は日本が7月3日（金）東証終値、米国指数は7月3日が独立記念日振替休場のため7月2日（木）確定終値ベース。日経平均69,744.07円（▲1.47%）は日本経済新聞（米6月雇用統計の下振れで米利上げ観測が後退しリスク選好回復）、ナスダック100（29,329.21・▼1.61%）はYahoo!ファイナンス、Ｓ＆Ｐ500（7,483.24・▲0.00%）はInvesting.com、ドル円（160.80円・▼0.22%）はザイFX！（米雇用統計を受けたドル売り）、金スポット（$4,123.61・▲2.45%）はCNBC、三菱ＵＦＪ（3,326円・▲0.60%）はみんかぶ。ニュース採用12本（金利・為替・相場 3本〈時事通信・共同通信・Yahoo!ニュース エキスパート〉／政策・国際 3本〈時事通信・FNNプライムオンライン・共同通信〉／テック・人工知能・半導体 3本〈ＩＴｍｅｄｉａ ＮＥＷＳ×3〉／週末の横浜グルメ 3本〈PR TIMES×3〉）。ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得。仮想運用第5評価：ファンドNAVは確定ソースでの再取得ができず前回7/2値を据置き、7月分ＮＩＳＡつみたて（¥100,000）を規律的に実行、ポート合計¥5,450,584・戦略リターン▲2.69%（資金調整後は+1.71%相当、対オルカン超過▲1.26%pt）。ＰＤＣＡ＝本日検証期日が到来した予測なし（status:open全件のhorizonは2026-09-30以降）。</div>
+    <div class="dsum"><b>本日のデータ取得サマリー（2026年7月4日 JST 生成）</b>：市況は日本が7月3日（金）東証終値、米国指数は7月3日が独立記念日振替休場のため7月2日（木）確定終値ベース。日経平均69,744.07円（▲1.47%）は日本経済新聞（米6月雇用統計の下振れで米利上げ観測が後退しリスク選好回復）、ナスダック100（29,329.21・▼1.61%）はYahoo!ファイナンス、Ｓ＆Ｐ500（7,483.24・▲0.00%）はInvesting.com、ドル円（160.80円・▼0.22%）はザイFX！（米雇用統計を受けたドル売り）、金スポット（$4,123.61・▲2.45%）はCNBC、三菱ＵＦＪ（3,326円・▲0.60%）はみんかぶ。ニュース採用9本（金利・為替・相場 3本〈時事通信・共同通信・Yahoo!ニュース エキスパート〉／政策・国際 3本〈時事通信・FNNプライムオンライン・共同通信〉／テック・人工知能・半導体 3本〈ＩＴｍｅｄｉａ ＮＥＷＳ×3〉）。ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得。仮想運用第5評価：ファンドNAVは確定ソースでの再取得ができず前回7/2値を据置き、7月分ＮＩＳＡつみたて（¥100,000）を規律的に実行、ポート合計¥5,450,584・戦略リターン▲2.69%（資金調整後は+1.71%相当、対オルカン超過▲1.26%pt）。ＰＤＣＡ＝本日検証期日が到来した予測なし（status:open全件のhorizonは2026-09-30以降）。</div>
     <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
 </div>
