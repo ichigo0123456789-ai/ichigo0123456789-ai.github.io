@@ -1,0 +1,19 @@
+{
+  "schema": "bench_navs v2",
+  "purpose": "Tier1(保有)＋Tier2(ベンチ候補)投信のNAVを日次記録し、乗換判断時にデータが揃っている状態を常時維持する。衝動的組換えの防止。マーケット課が取得できた分を記録（取得不可はcarry-forward＋flag）。Tier2の日次取得はP2で本格化。",
+  "tier1": [
+    { "fund": "eMAXIS Slim 全世界株式(オール・カントリー)", "role": "コア＋ベンチ1", "navs": [ { "date": "2026-07-02", "nav": 38267, "src": "みんかぶ投信 as of 2026-07-02" } ] },
+    { "fund": "iFreeNEXT FANG+インデックス", "role": "成長サテライト(42%)", "navs": [ { "date": "2026-07-02", "nav": 93722, "src": "みんかぶ投信 as of 2026-07-02" } ] },
+    { "fund": "SBI・iシェアーズ・ゴールドファンド(為替ヘッジなし)", "role": "分散資産", "navs": [ { "date": "2026-07-02", "nav": 23782, "src": "みんかぶ投信 as of 2026-07-02" } ] }
+  ],
+  "tier2": [
+    { "fund": "eMAXIS Slim S&P500", "role": "米大型コア(米集中度調整弁)", "adopt_trigger": "米例外主義シナリオ強化時のコア置換候補", "navs": [] },
+    { "fund": "ニッセイNASDAQ100インデックス", "role": "米グロース(FANG+より分散)", "adopt_trigger": "FANG+の集中リスク顕在化時の乗換先", "navs": [] },
+    { "fund": "eMAXIS Slim 国内株式(日経225 or TOPIX)", "role": "日本株・円資産", "adopt_trigger": "円高レジーム転換(介入/利上げ)時のヘッジ、日銀正常化の国内リフレ", "navs": [] },
+    { "fund": "iFreeNEXT インド株インデックス", "role": "人口動態成長・対中デリスキング受け皿", "adopt_trigger": "日印経済安保の実装進展(2026-07-02宣言はチェックポイント)、中国リスク再燃", "navs": [] },
+    { "fund": "eMAXIS Slim 先進国債券(為替ヘッジあり)", "role": "金利ピーク後のディフェンシブ", "adopt_trigger": "日銀利上げ完了シグナル＋米利下げ開始", "navs": [] },
+    { "fund": "ニッセイSOX指数インデックス", "role": "半導体テーマ", "adopt_trigger": "AI capex再加速かつFANG+と役割分担できる場合のみ", "navs": [] },
+    { "fund": "eMAXIS Slim バランス(8資産均等)", "role": "最終防衛リファレンス(参照値のみ・採用は原則しない)", "adopt_trigger": "—", "navs": [] }
+  ],
+  "note": "Tier2の取扱有無(SBI)は採用検討時に実確認。各候補は『if X then consider』を事前登録済み＝データを持たずに“組換え可”と言うだけの状態を解消。憲法(投信のみ・SBI可・つみたて1銘柄・3ヶ月反対売買禁止・NISA枠上限・対オルカン超過が成功)は不変。"
+}

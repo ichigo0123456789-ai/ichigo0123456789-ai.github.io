@@ -1,0 +1,51 @@
+{
+  "schema": "scorecard v2",
+  "purpose": "評価軸v2（4族 A予測力/B意思決定品質/C運用成果/D システム健全性）の週次メトリクス時系列。ページの通信簿セクションはこのファイルから機械生成する。散文でなくデータから計算する。",
+  "growth_definition": "A・Bが月次で改善（Brier↓・機序的中率↑・反復ミス率↓・較正誤差↓）し、Cが四半期で非負を維持しつつ判断効果が漸増すること。序盤（〜四半期）はA/B（プロセス指標）で成長を判断し、C（リターン）は遅行するため日次で一喜一憂しない。",
+  "metric_families": {
+    "A_predictive": ["的中率(horizon別)", "Brierスコア(rolling)", "較正誤差(バケット別|p−実現率|)", "機序的中率=方向○かつ機序○÷方向○", "サプライズ率=想定外事象の割合"],
+    "B_decision_quality": ["対・却下代替デルタ", "前提生存率", "反復ミス率=既知カテゴリでの再失敗÷全失敗", "教訓引用率", "制約遵守率"],
+    "C_returns": ["対オルカン超過(rolling 20d/60d/四半期)", "対凍結初期デルタ=判断効果", "リスク調整(実現ボラ・最大DD)"],
+    "D_system_health": ["稼働率(runs/7)", "採点遅延(horizon到来→verifiedの日数)", "教訓の昇格数/引退数", "スキーマ逸脱件数"]
+  },
+  "snapshots": [
+    {
+      "week_ending": "2026-07-05",
+      "stage": "土台構築直後（v2運用開始週）",
+      "A_predictive": {
+        "verified_count": 0,
+        "brier_rolling": null,
+        "calibration_error": null,
+        "mechanism_hit_rate": null,
+        "surprise_rate": null,
+        "note": "検証済み予測ゼロ。既存8本(thesis)の最短horizonは2026-09-30。イベント予測(type:event)はP1で運用開始し、以後Brier/較正が測定可能になる。"
+      },
+      "B_decision_quality": {
+        "counterfactual_delta_jpy": 0,
+        "counterfactual_note": "凍結初期PFに対する判断効果≈0（6/29以降 hold＋規律的つみたてのみで裁量的組換えなし）。却下枝B0001/B0002は前向き評価をP1で開始。",
+        "assumption_survival_rate": null,
+        "repeat_mistake_rate": null,
+        "lesson_citation_rate": 0.0,
+        "constraint_compliance_rate": 1.0,
+        "constraint_note": "全トレード(T0001-T0009)が constraint_check を通過＝100%遵守。"
+      },
+      "C_returns": {
+        "excess_vs_orukan_pct_cum": 1.261,
+        "excess_vs_orukan_pct_fund_adjusted": 0.280,
+        "excess_note": "累積超過+1.261%だが上昇の大半は7/4つみたての新規拠出。資金調整後の実力ベース超過は+0.280%pt（価格変動起因はほぼ横ばい）。四半期まで統計的有意には至らない。",
+        "judgment_effect_vs_frozen_jpy": 0,
+        "realized_vol": null,
+        "max_drawdown": null
+      },
+      "D_system_health": {
+        "uptime_pct": 40.0,
+        "uptime_note": "6/30-7/3の書込プロキシ障害で定例2/5成功。7/4に恒久修正完了。次週から100%目標。",
+        "scoring_latency_days": null,
+        "lessons_promoted": 0,
+        "lessons_retired": 0,
+        "schema_violations": 0
+      },
+      "read": "序盤の読み：上4つ(A/B系)で成長を測るフェーズだが、A系はまだ検証データ待ち。当面の最重要はD(稼働率100%回復＝毎朝確実に走る土台)と、B(裁量判断が出た時に凍結初期を上回るか)。C(リターン)は四半期まで判断保留。"
+    }
+  ]
+}
