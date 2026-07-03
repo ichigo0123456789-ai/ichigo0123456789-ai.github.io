@@ -98,7 +98,7 @@
   /* ── 日付バッジ ── */
   .date-badge{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,5.5vw,3.2rem);font-weight:700;color:var(--gold);letter-spacing:.06em;margin:.25rem 0 .1rem;line-height:1.1}
   /* ── ニュース4列 ── */
-  .news{grid-template-columns:1fr 1fr 1fr 1fr!important}
+  .news{grid-template-columns:1fr 1fr 1fr!important}
   @media(max-width:1020px){.news{grid-template-columns:1fr 1fr!important}}
   @media(max-width:600px){.news{grid-template-columns:1fr!important}}
   /* ── ヒートマップ ── */
@@ -155,10 +155,10 @@
         <td class="up">▲ 0.00%</td>
       </tr>
       <tr>
-        <td>ドル円（米ドル／円）<span class="src-note">ザイFX！（トレーダーズ・ウェブ） / as of 2026-07-03（金・17時 東京外国為替市場）</span></td>
+        <td>ドル円（米ドル／円）<span class="src-note">日本経済新聞 / as of 2026-07-03（金・17時 東京外国為替市場）</span></td>
         <td>160.80</td>
-        <td class="down">▼ 0.35</td>
-        <td class="down">▼ 0.22%</td>
+        <td class="down">▼ 0.63</td>
+        <td class="down">▼ 0.39%</td>
       </tr>
       <tr>
         <td>金（ゴールド、スポット ＸＡＵ／ＵＳＤ）<span class="src-note">CNBC / as of 2026-07-02（木・NY市場9時ET時点）</span></td>
@@ -172,7 +172,7 @@
         <td class="up">▲ 20.0</td>
         <td class="up">▲ 0.60%</td>
       </tr>
-    </tbody></table></div><div class="tcap">※2026年7月4日（土曜日）生成。日本は7月3日（金）東証終値、米国指数は7月3日が独立記念日振替休場のため7月2日（木）確定終値。日経平均69,744.07円（前日比▲1,010.92円、▲1.47%）は日本経済新聞（米6月雇用統計の下振れで米利上げ観測が後退しリスク選好が回復、キオクシア急伸も寄与）。ナスダック100（29,329.21・▼1.61%）はYahoo!ファイナンス、Ｓ＆Ｐ500（7,483.24・▲0.00%）はInvesting.com（いずれも7/2終値）。ドル円（160.80円・▼0.22%）はザイFX！（米雇用統計を受けたドル売り・円買い）。金スポット（$4,123.61・▲2.45%）はCNBC（利上げ観測後退で安全資産需要が拡大）。三菱ＵＦＪ3,326円（▲0.60%）はみんかぶ。前日比▲＝上昇（緑）、▼＝下落（赤）。</div></div>
+    </tbody></table></div><div class="tcap">※2026年7月4日（土曜日）生成。日本は7月3日（金）東証終値、米国指数は7月3日が独立記念日振替休場のため7月2日（木）確定終値。日経平均69,744.07円（前日比▲1,010.92円、▲1.47%）は日本経済新聞（米6月雇用統計の下振れで米利上げ観測が後退しリスク選好が回復、キオクシア急伸も寄与）。ナスダック100（29,329.21・▼1.61%）はYahoo!ファイナンス、Ｓ＆Ｐ500（7,483.24・▲0.00%）はInvesting.com（いずれも7/2終値）。ドル円（160.80円・▼0.39%）は日本経済新聞（米雇用統計を受けたドル売り・円買い）。金スポット（$4,123.61・▲2.45%）はCNBC（利上げ観測後退で安全資産需要が拡大）。三菱ＵＦＪ3,326円（▲0.60%）はみんかぶ。前日比▲＝上昇（緑）、▼＝下落（赤）。</div></div>
 
     <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame frame-hero"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#16203b","gridColor":"rgba(120,140,180,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
     <div class="charts2">
@@ -242,48 +242,43 @@
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">03</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
-    <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開48時間以内を基本（ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得）。</p>
+    <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開24時間以内を優先（新しい順に厳選）（ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得）。</p>
     <div class="news">
 
       <div class="col">
         <div class="ch" style="background:var(--cool-soft);color:var(--down)">金利・為替・相場</div>
-        <a class="hl" href="https://news.yahoo.co.jp/articles/daa0dd3a870d05f45f9b8ffee3307a30863605c7" target="_blank" rel="noopener"><h4>日経平均、1010円92銭高の6万9744円07銭で終了＝東京株式</h4><div class="meta">時事通信 ・ 1日前（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://news.yahoo.co.jp/articles/0755a9fbda87e247b9933cab2de4a543570c1e5d" target="_blank" rel="noopener"><h4>NY円、160円台半ば　米雇用統計受けドル売り</h4><div class="meta">共同通信 ・ 2日前（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://news.yahoo.co.jp/expert/articles/3b8605dc2006a9c2cbdaad0e346d9afa43fdcd07" target="_blank" rel="noopener"><h4>10年国債入札は低調、長期債・超長期債が下落　本日の債券市況（引け後）2026年7月2日</h4><div class="meta">Yahoo!ニュース エキスパート 債券市況コラム ・ 2日前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/e24a583d74ed15fdd8caa0e311540238af9ed016" target="_blank" rel="noopener"><h4>日経平均は「69,744.07円」と1,000円超の大幅反発…投資ファンドの大量保有判明で急伸した〈東証プライム・値上がり1位銘柄〉【7月3日の国内株式市場概況】</h4><div class="meta">THE GOLD ONLINE（Yahoo!ニュース） ・ 約17時間前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/6adc115c06a79e2deb6e4bae5bc99ead70a87aec" target="_blank" rel="noopener"><h4>【速報】米6月雇用統計 ＋5万7000人 市場予想を大きく下回る</h4><div class="meta">TBS NEWS DIG（Yahoo!ニュース） ・ 1日と10時間前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/cbd08d2e9f3f2b5ea11e5f71fc201272557a0b84" target="_blank" rel="noopener"><h4>キオクシア、次世代メモリー出荷開始 岩手・北上工場の新棟公開</h4><div class="meta">時事通信（Yahoo!ニュース） ・ 1日前（as of 2026-07-04）</div></a>
       </div>
 
       <div class="col">
         <div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">政策・国際</div>
-        <a class="hl" href="https://news.yahoo.co.jp/articles/fdbdb882252c9f63ff78cbf79d741c88ea324f38" target="_blank" rel="noopener"><h4>外国人の在留手数料、最大7万5千円に引き上げ　永住許可は1万円から20万円に増額　政府改定案・10月施行方針</h4><div class="meta">時事通信 ・ 1日前（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://news.yahoo.co.jp/articles/44f6e11144e4331add6d9137af1d0796fc92d668" target="_blank" rel="noopener"><h4>ニューヨークで気温42℃を観測　アメリカ東部に記録的熱波　当局は警報を出して猛暑への警戒呼びかける</h4><div class="meta">FNNプライムオンライン（フジテレビ系） ・ 1日前（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://news.yahoo.co.jp/articles/dfd7ff7d948938b9f0b76021d713f1778aad9cf7" target="_blank" rel="noopener"><h4>キーウに大規模攻撃、27人死亡　91人負傷、救援物資倉庫も破壊</h4><div class="meta">共同通信 ・ 2日前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/f98bc67d1dafdcd71d62cdd7f76a6423670635e4" target="_blank" rel="noopener"><h4>【スクープ】高市早苗首相に公選法違反疑惑　1枚2000円のタオルを「地元有権者に無償配布」の疑い　事務所は関与を否定</h4><div class="meta">NEWSポストセブン（Yahoo!ニュース） ・ 1日前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/5e23e57948da556280a9e05b5335b08e93e5449e" target="_blank" rel="noopener"><h4>「高市さん、国会に出てきてください」中道・小川代表が「公開要求」</h4><div class="meta">日刊スポーツ（Yahoo!ニュース） ・ 1日前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/5a2ef23dafa753ad5447bdcd1268470b99af8b8f" target="_blank" rel="noopener"><h4>キーウ大規模攻撃　死者30人に　ウクライナ国防省「侵攻以来最大規模」と非難</h4><div class="meta">TBS NEWS DIG（Yahoo!ニュース） ・ 1日前（as of 2026-07-04）</div></a>
       </div>
 
       <div class="col">
         <div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">テック・人工知能・半導体</div>
-        <a class="hl" href="https://www.itmedia.co.jp/news/articles/2607/03/news101.html" target="_blank" rel="noopener"><h4>アンソロピック（Anthropic）、サムスン（Samsung）と独自AIチップで協議か　報道受けエヌビディア（NVIDIA）など半導体関連株が下落</h4><div class="meta">ＩＴｍｅｄｉａ ＮＥＷＳ ・ 1日前（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://www.itmedia.co.jp/news/articles/2607/03/news077.html" target="_blank" rel="noopener"><h4>エヌビディア（NVIDIA）、AIインフラ調達の新ビジネスモデル発表　収益分配で新興企業を支援</h4><div class="meta">ＩＴｍｅｄｉａ ＮＥＷＳ ・ 1日前（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://www.itmedia.co.jp/news/articles/2607/03/news067.html" target="_blank" rel="noopener"><h4>マイクロソフト（Microsoft）、AI導入支援組織「マイクロソフト フロンティア カンパニー」設立　6000人体制で顧客企業を支援</h4><div class="meta">ＩＴｍｅｄｉａ ＮＥＷＳ ・ 1日前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/b5d03d9d93c34c3031ec1f08720dc72860862d15" target="_blank" rel="noopener"><h4>中国で「リアル過ぎる」アンドロイド…端正な容姿や細やかな表情で「伴侶となり得る」</h4><div class="meta">読売新聞オンライン（Yahoo!ニュース） ・ 11時間前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/d8e1ab279940f78c3b469a69f10357ba0323b116" target="_blank" rel="noopener"><h4>SpaceXが「謎のAIデバイス」を投資家に披露か、イーロン・マスク氏は完全否定</h4><div class="meta">CNET Japan（Yahoo!ニュース） ・ 17時間前（as of 2026-07-04）</div></a>
+        <a class="hl" href="https://news.yahoo.co.jp/articles/4994963c228166d68e5007a10c94504cad4eeb1d" target="_blank" rel="noopener"><h4>ドコモ回線契約13件で本人確認不備、エディオンと兼松に是正命令--ドコモ本体にも指導 総務省</h4><div class="meta">CNET Japan（Yahoo!ニュース） ・ 12時間前（as of 2026-07-04）</div></a>
       </div>
 
-      <div class="col">
-        <div class="ch" style="background:rgba(63,196,200,.15);color:var(--teal)">週末の横浜グルメ</div>
-        <a class="hl" href="https://prtimes.jp/main/html/rd/p/000000471.000034658.html" target="_blank" rel="noopener"><h4>「YOKOHAMA SAKE SQUARE 2026」で楽しめる59銘柄を発表！7月4日(土)・5日(日)に横浜赤レンガ倉庫で開催の日本酒試飲イベント</h4><div class="meta">PR TIMES ・ 開催中（as of 2026-07-04）</div></a>
-        <a class="hl" href="https://prtimes.jp/main/html/rd/p/000000018.000147795.html" target="_blank" rel="noopener"><h4>横浜七夕祭り2026　横浜の名店が続々集結！【公式第三弾リリース】</h4><div class="meta">PR TIMES ・ as of 2026-07-04</div></a>
-        <a class="hl" href="https://prtimes.jp/main/html/rd/p/000000003.000179789.html" target="_blank" rel="noopener"><h4>2026年夏、横浜中華街34店舗が参加する大型グルメ企画「うなぎ、新発見。in 横浜中華街」開催</h4><div class="meta">PR TIMES ・ 4日前（as of 2026-07-04）</div></a>
-      </div>
 
     </div>
   </section>
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">04</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
-    <p class="thesis">米雇用統計の下振れで利上げ観測が後退し円高・金反発が進んだ本日は、中長期投資家にとって<span class="hi">分散</span>の徹底を再確認すべき局面。</p>
+    <p class="thesis">米6月雇用統計の下振れ（非農業部門+5.7万人、予想+11万人を大幅未達）で利下げ観測が強まり円高・金高が進む一方、日経平均は反発し高値圏を維持――資産間でまちまちな値動きが交錯する今こそ、中長期投資家には<span class="hi">冷静</span>な分散継続が問われる局面。</p>
     <ul class="ul-thesis">
-      <li><span class="bead"></span><p><b>為替ヘッジの再点検を</b>：ドル円は160.80円（前日比▼0.22%、ザイFX！as of 2026-07-03）と、6月末の162円台から円高方向へ反転が続く。米6月雇用統計の下振れによる米利上げ観測後退（共同通信・2026-07-04）が背景で、方向転換の局面ほど外貨建て投信・ETFの為替ヘッジコストと実質リターンを定期的に見直すことが重要。</p></li>
-      <li><span class="bead"></span><p><b>金は分散の要、配分は適正水準で</b>：金は4,123.61ドル（前日比▲2.45%、CNBC as of 2026-07-02）と急反発。利上げ観測後退を背景に分散効果を発揮しているが、無配当資産である点を踏まえ、投信・ETFでの組入れ比率は株式・債券との代替コストを比較のうえ適正水準に留めたい。</p></li>
-      <li><span class="bead"></span><p><b>AI関連テーマ集中には注意を</b>：アンソロピック（Anthropic）とサムスン（Samsung）の独自AIチップ協議報道でエヌビディア（NVIDIA）など半導体関連株が下落した一方、エヌビディアは新たな収益分配モデル、マイクロソフト（Microsoft）はAI導入支援組織を発表するなど成長投資自体は継続（ＩＴｍｅｄｉａ ＮＥＷＳ・2026-07-04）。特定テーマに偏った投信・ETFは思惑報道で振れやすく、中長期では全世界株式など広域分散でのAI関連エクスポージャー確保が望ましい。</p></li>
+      <li><span class="bead"></span><p><b>為替ヘッジの再点検を継続</b>：ドル円は160.80円（前日比▼0.63円/▼0.39%、日本経済新聞 as of 2026-07-03）と円高方向へ進んだ。米6月雇用統計の下振れによるＦＲＢ早期利下げ観測後退がその主因。方向転換局面では外貨建て投信・ＥＴＦの為替ヘッジコストと実質リターンを定期的に見直したい（教訓：為替リスク管理・2026-06-30）。</p></li>
+      <li><span class="bead"></span><p><b>金は分散の要、比率は代替コストで判断</b>：金スポットは4,123.61ドル（前日比+$98.51/+2.45%、CNBC as of 2026-07-02）と続伸。利下げ観測後退局面での分散効果を再確認しつつ、金は無配当資産である点を踏まえ、投信・ＥＴＦでの組入れ比率は株式・債券との代替コストを比較のうえ適正水準に留めたい（教訓：分散投資・コモディティ・2026-06-30）。</p></li>
+      <li><span class="bead"></span><p><b>日本株の底堅さを踏まえ広域株式を中核に</b>：日経平均は69,744.07円（前日比+1,010.92円/+1.47%、日本経済新聞 as of 2026-07-03）と高値圏を維持した一方、米国はナスダック100が▼1.61%（Yahoo!ファイナンス as of 2026-07-02、半導体株安主導）、Ｓ＆Ｐ500はほぼ横ばい（+0.00%、Investing.com as of 2026-07-02）と資産間でまちまち。特定地域・テーマへの偏りを避け、全世界株式インデックスなど広域分散を中長期の中核に据え置きたい。</p></li>
     </ul>
+    <p class="note" style="margin-top:.6rem;font-size:.85rem;color:var(--faint)">反対尋問メモ：本稿は「米利下げ観測→円高・金高、日本株底堅い」を軸に置くが、①雇用統計の他指標（失業率・平均時給・改定値）が底堅ければＣＰＩ前に観測が剥落し反転するリスク、②日銀が国内インフレ再加速でタカ派化すれば「米利下げ×日利上げ」の複合で円が非連続的に急伸するリスク、③半導体株安が3営業日超・値幅2%超に拡大すれば日本株にも波及し「日本のみ底堅い」の前提が崩れるリスク、の3点に留意したい。転換シグナルはドル円158円/162〜163円のレンジ突破、日経平均70,000円の攻防、米半導体関連指数の3日連続安などを注視。</p>
     <p class="lead" style="margin-top:1rem"><span class="note">※上記は情報提供目的であり、投資助言ではありません。最終判断はご自身でお願いします。</span></p>
   </section>
 
@@ -293,42 +288,115 @@
     <div class="scen">
 
       <div class="card">
-        <h3>シナリオＡ：AIチップ争奪戦の行方</h3>
-        <p class="sub">米テック大手による自前AIチップ開発の動きが半導体サプライチェーンに波及する仮説として提示するものであり、投資助言ではありません。</p>
+        <h3>シナリオＡ：米雇用統計下振れが金利・為替を通じて波及する時</h3>
+        <p class="sub">米6月雇用統計の下振れが利下げ観測・為替・金価格に波及する仮説として提示するものであり、投資助言ではありません。</p>
         <ul class="flow">
-          <li><span class="stg">情勢</span><span class="txt">アンソロピック（Anthropic）がサムスン（Samsung）と独自AIチップの開発協議に入ったと報じられ（ＩＴｍｅｄｉａ ＮＥＷＳ・2026-07-04）、ハイパースケーラー各社が外部GPU依存からの脱却を模索する動きが意識される。</span></li>
-          <li><span class="stg">需給</span><span class="txt">自社設計チップ（ASIC）の生産委託が広がれば、汎用GPUへの需要一極集中が緩み、特定サプライヤーへの依存構造が変化しうる。</span></li>
-          <li><span class="stg">製品</span><span class="txt">ファウンドリ・先端パッケージング・高帯域メモリ（HBM）等の周辺工程で受注構造が変化し、恩恵を受ける工程・企業群が入れ替わる可能性。</span></li>
-          <li><span class="stg">市場</span><span class="txt">半導体関連株全体のボラティリティ（価格変動幅）が短期的に高まりやすく、指数への寄与度が偏る局面が想定される（本日のナスダック100は▼1.61%）。</span></li>
-          <li class="final"><span class="stg">最終</span><span class="txt">数ヶ月後、特定企業へのAI関連テーマ集中型投信よりも、半導体・情報技術セクターに広く分散するETFの方が値動きの振れを抑えられるかが検証点となる。あくまで仮説であり投資助言ではありません。</span></li>
+          <li><span class="stg">情勢</span><span class="txt">米6月雇用統計が非農業部門+5.7万人と予想+11万人を大幅に下回り、失業率も4.2%へ上昇。ＦＲＢの早期利下げ観測が急速に強まった。</span></li>
+          <li><span class="stg">需給</span><span class="txt">ドル売り・円買いが進行し（ドル円160.80円、前日比▼0.39%、日本経済新聞 as of 2026-07-03）、実質金利低下観測を背景に安全資産としての金へ資金がシフトした（金は前日比+2.45%、CNBC as of 2026-07-02）。</span></li>
+          <li><span class="stg">製品</span><span class="txt">為替ヘッジありの外国株式・債券ファンドと、ヘッジなし商品との基準価額の差が今後拡大しやすい局面が生じうる。金連動ファンド・ＥＴＦの需要も相対的に高まりやすい。</span></li>
+          <li><span class="stg">市場</span><span class="txt">円高進行・利下げ観測を好感し日経平均は反発し高値圏を維持（+1.47%、日本経済新聞 as of 2026-07-03）した一方、米国株はナスダック100が半導体株安主導で軟調（▼1.61%）、Ｓ＆Ｐ500は横ばいと資産間で方向感が分かれた。</span></li>
+          <li class="final"><span class="stg">最終</span><span class="txt">数ヶ月後、為替ヘッジ比率を選べるバランス型投信や金連動ＥＴＦの基準価額の推移が、利下げ観測の定着度合いを映す試金石となる。あくまで仮説であり投資助言ではありません。反対尋問での指摘：ＣＰＩ(7/14)が上振れすれば観測は即座に巻き戻り得る。</span></li>
         </ul>
       </div>
 
       <div class="card">
-        <h3>シナリオＢ：米利上げ観測後退の広がり</h3>
-        <p class="sub">米雇用統計の下振れが金利・為替を通じて資産価格に波及する仮説として提示するものであり、投資助言ではありません。</p>
+        <h3>シナリオＢ：国内政治の不確実性とＡＩ関連思惑が交差する時</h3>
+        <p class="sub">政局の不透明感とＡＩ・半導体関連の思惑報道が同時に生じた土曜を起点とする仮説であり、投資助言ではありません。</p>
         <ul class="flow">
-          <li><span class="stg">情勢</span><span class="txt">6月の米雇用統計が市場予想を下回り米利上げ観測が後退（共同通信・2026-07-04）。10年国債入札も低調で長期・超長期債利回りが不安定な値動きとなった（Yahoo!ニュース エキスパート債券市況コラム・2026-07-02）。</span></li>
-          <li><span class="stg">需給</span><span class="txt">ドル売り・円買いが進み（ドル円160.80円、前日比▼0.22%）、安全資産としての金への資金シフトが強まった（金は前日比▲2.45%）。</span></li>
-          <li><span class="stg">製品</span><span class="txt">為替ヘッジありの外国株式・債券ファンドと、ヘッジなし商品との基準価額の差が拡大しやすい局面が生じうる。</span></li>
-          <li><span class="stg">市場</span><span class="txt">円高一服・利上げ観測後退を好感し日経平均は反発（▲1.47%）した一方、米国株はナスダック100中心に軟調（▼1.61%）と方向感が分かれた。</span></li>
-          <li class="final"><span class="stg">最終</span><span class="txt">数ヶ月後、為替ヘッジ比率を選べるバランス型投信や金連動ETFの基準価額の推移が、金利・為替観測の変化を映す試金石となる。あくまで仮説であり投資助言ではありません。</span></li>
+          <li><span class="stg">情勢</span><span class="txt">高市早苗首相の公選法違反疑惑報道（NEWSポストセブン）と、野党・中道の小川代表による国会出席の公開要求（日刊スポーツ）で政局の不透明感が意識される一方、中国製アンドロイドの高度化報道（読売新聞オンライン）やＳｐａｃｅＸの「謎のＡＩデバイス」報道とマスク氏の否定（ＣＮＥＴ Ｊａｐａｎ）が海外テック筋でも話題となった。</span></li>
+          <li><span class="stg">需給</span><span class="txt">政治的不確実性は国内株式の短期的なリスクプレミアムを、ＡＩデバイス関連の思惑は半導体・テック関連銘柄群の需給を、それぞれ独立に揺さぶりうる思惑材料が同じ週末に並存している。</span></li>
+          <li><span class="stg">製品</span><span class="txt">国内株式インデックスファンドは政局要因、ＡＩ関連テーマ型投信・半導体セクターＥＴＦはテック思惑要因と、影響経路の異なる価格変動要因が併存する構図。</span></li>
+          <li><span class="stg">市場</span><span class="txt">現時点で日経平均は疑惑報道後も反発し高値圏を維持（+1.47%）、ナスダック100の軟調（▼1.61%）は雇用統計・半導体株安が主因とみられ、政治・ＡＩデバイス思惑そのものが目立った価格インパクトを与えた形跡はまだ見られない。</span></li>
+          <li class="final"><span class="stg">最終</span><span class="txt">数ヶ月後、政局（進退・国会審議）の帰趨とＡＩデバイス報道の真偽が明確化した際に、国内株式インデックスファンドとＡＩ関連テーマ型／半導体セクター分散型投信のどちらがより安定した値動きを示したかが検証点となる。あくまで仮説であり投資助言ではありません。</span></li>
         </ul>
       </div>
 
     </div>
+    <p class="note" style="margin-top:.8rem;font-size:.85rem;color:var(--faint)">反対尋問による補足：上記シナリオは市場要因を中心に構成しており、①高市早苗首相を巡る公選法違反疑惑の帰趨（辞任・内閣改造等に発展した場合の政策空白リスク）、②ウクライナ情勢の急激な悪化・鎮静化が金・エネルギー価格や欧州防衛関連に与える影響、は市場変数と独立した重要な観測点として別途注視するに留め、本稿では投資助言に直結する政治予測は行いません。</p>
   </section>
 
   <section class="panel reveal" id="unyou">
     <div class="kicker"><span class="no">06</span><span class="ja">仮想運用シミュレーション</span><span class="tag">Virtual Portfolio</span><span class="ln"></span></div>
     <p style="font-size:.82rem;color:var(--gold-ink);margin:0 0 1rem;padding:.5rem .8rem;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:8px">※学習目的の仮想シミュレーション。実際の売買は行っていません。投資助言ではありません。</p>
 
+    <!-- ▼資産推移チャート（クライアント側でdata/*.jsonを読み描画・自己更新） -->
+    <figure id="pfchart" class="pfchart" style="margin:.2rem 0 1.2rem">
+      <figcaption style="font-size:.9rem;font-weight:600;color:var(--gold-ink);margin-bottom:.5rem">資産推移（仮想PF評価額）</figcaption>
+      <div class="pfchart-canvas" style="width:100%;overflow-x:auto"></div>
+      <div class="pfchart-cap" style="font-size:.74rem;color:var(--faint);margin-top:.5rem"></div>
+    </figure>
+    <script>
+    (function(){
+      var fig=document.getElementById('pfchart'); if(!fig) return;
+      var canvas=fig.querySelector('.pfchart-canvas'), cap=fig.querySelector('.pfchart-cap');
+      var yen=function(n){return '¥'+Math.round(n).toLocaleString('ja-JP');};
+      var mmdd=function(d){var p=d.split('-');return (+p[1])+'/'+(+p[2]);};
+      Promise.all([
+        fetch('data/nav_history.json').then(function(r){return r.json();}).catch(function(){return null;}),
+        fetch('data/counterfactual.json').then(function(r){return r.json();}).catch(function(){return null;})
+      ]).then(function(res){
+        var nav=res[0], cf=res[1];
+        if(!nav||!nav.history||!nav.history.length){ fig.style.display='none'; return; }
+        var byDate={}; nav.history.forEach(function(h){ byDate[h.date]=h; }); // 同日重複は後勝ちで統合
+        var dates=Object.keys(byDate).sort();
+        var real=dates.map(function(d){return byDate[d].total_value_jpy;});
+        // 凍結初期PF（無裁量ベース）
+        var fz={};
+        if(cf&&cf.frozen_initial&&cf.frozen_initial.daily){ cf.frozen_initial.daily.forEach(function(x){fz[x.date]=x.total_value_jpy;}); }
+        var frozen=dates.map(function(d){return fz[d]!=null?fz[d]:null;});
+        // オルカン等価（同じ資金を初日から全額オルカンに入れた場合）
+        var bc=dates.map(function(d){return byDate[d].benchmark_cum_pct!=null?byDate[d].benchmark_cum_pct:0;});
+        var ext=(cf&&cf.external_contributions)?cf.external_contributions:[];
+        var base=real[0];
+        var orukan=dates.map(function(d,i){
+          var v=base*(1+bc[i]/100);
+          ext.forEach(function(c){ if(c.date<=d){ var bcc=byDate[c.date]?(byDate[c.date].benchmark_cum_pct||0):0; v+=c.amount_jpy*(1+(bc[i]-bcc)/100); } });
+          return v;
+        });
+        // scales
+        var W=760,H=340,pl=66,pr=16,pt=28,pb=40, pw=W-pl-pr, ph=H-pt-pb;
+        var vals=real.concat(frozen.filter(function(v){return v!=null;})).concat(orukan);
+        var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+        var pad=(mx-mn)*0.12||mx*0.02; mn-=pad; mx+=pad;
+        var X=function(i){return pl + (dates.length===1?pw/2:pw*i/(dates.length-1));};
+        var Y=function(v){return pt + ph*(1-(v-mn)/(mx-mn));};
+        var poly=function(arr){var pts=[];arr.forEach(function(v,i){if(v!=null)pts.push(X(i).toFixed(1)+','+Y(v).toFixed(1));});return pts.join(' ');};
+        var ticks=4, tg='';
+        for(var t=0;t<=ticks;t++){ var v=mn+(mx-mn)*t/ticks, y=Y(v);
+          tg+='<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="rgba(255,255,255,.07)" stroke-width="1"/>';
+          tg+='<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#8b98ad">'+('¥'+Math.round(v/10000)+'万')+'</text>';
+        }
+        var xl='';
+        dates.forEach(function(d,i){ xl+='<text x="'+X(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="11" fill="#8b98ad">'+mmdd(d)+'</text>'; });
+        var dots=''; real.forEach(function(v,i){ dots+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" fill="#e3b866"/>'; });
+        var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:440px;display:block" role="img" aria-label="仮想ポートフォリオの資産推移">'
+          +tg+xl
+          +'<polyline points="'+poly(frozen)+'" fill="none" stroke="#7b88a0" stroke-width="1.5" stroke-dasharray="5 4"/>'
+          +'<polyline points="'+poly(orukan)+'" fill="none" stroke="#5fb3c9" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+          +'<polyline points="'+poly(real)+'" fill="none" stroke="#e3b866" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'
+          +dots
+          +'<g font-size="11"><rect x="'+pl+'" y="2" width="12" height="3" fill="#e3b866"/><text x="'+(pl+17)+'" y="7" fill="#c9b48a">実PF評価額</text>'
+          +'<rect x="'+(pl+108)+'" y="2" width="12" height="3" fill="#5fb3c9"/><text x="'+(pl+125)+'" y="7" fill="#9fcdd9">オルカン等価</text>'
+          +'<rect x="'+(pl+218)+'" y="2" width="12" height="3" fill="#7b88a0"/><text x="'+(pl+235)+'" y="7" fill="#9aa7bd">凍結初期PF（無裁量）</text></g>'
+          +'</svg>';
+        canvas.innerHTML=svg;
+        var last=byDate[dates[dates.length-1]];
+        var ex=(last.excess_pct!=null)?((last.excess_pct>=0?'+':'')+last.excess_pct.toFixed(2)+'%pt'):'—';
+        var diff=Math.round(real[real.length-1]-orukan[orukan.length-1]);
+        cap.innerHTML='最新評価額 <b style="color:var(--gold-ink)">'+yen(last.total_value_jpy)+'</b>（'+last.date+'）／対オルカン超過 '+ex+'（¥換算 '+(diff>=0?'+':'')+yen(diff).replace('¥','¥')+'）。'
+          +'<b>オルカン等価</b>＝同じ資金を初日から全額オルカンに入れた場合。実PFがこれを上回れば戦略が機能している証拠。<b>凍結初期PF</b>＝6/29配分のまま無裁量で保有し続けた場合で、実PFとの差＝日々の運用判断の付加価値。※つみたて新規拠出を含むため累積リターン％は資金流入で嵩上げされる点に留意。';
+      });
+    })();
+    </script>
+    <!-- ▲資産推移チャート -->
+
+
     <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>項目</th><th>金額</th><th>備考</th></tr></thead><tbody>
-      <tr><td>運用資産合計</td><td>¥5,450,584</td><td>現金¥0（前回7/2比 ＋¥51,166、7月分つみたて拠出）</td></tr>
-      <tr><td>評価損益（戦略）</td><td class="up">▲ ¥142,616</td><td>レガシー含み益¥653,548は除外</td></tr>
-      <tr><td>戦略累積リターン</td><td class="up">▲ 2.69%</td><td>vs 運用開始基準（¥5,307,968）。資金調整後は+1.71%相当</td></tr>
-      <tr><td>対ベンチマーク超過</td><td class="up">▲ 1.26%pt</td><td>オルカン基準価額 37,729→38,267（＋1.43%、7/2値据置）。資金調整後は+0.28%pt相当</td></tr>
-      <tr><td>現金</td><td>¥0</td><td>7月分ＮＩＳＡつみたてに全額充当済み</td></tr>
+      <tr><td>運用資産合計</td><td>¥5,452,662</td><td>現金¥0（本日ゴールドNAV反映により7/4朝比 ＋¥2,078、売買なし）</td></tr>
+      <tr><td>評価損益（戦略）</td><td class="up">▲ ¥144,694</td><td>vs 運用開始基準（¥5,307,968）。レガシー含み益¥653,548は除外</td></tr>
+      <tr><td>戦略累積リターン</td><td class="up">▲ 2.73%</td><td>vs 運用開始基準。資金調整後は+1.75%相当</td></tr>
+      <tr><td>対ベンチマーク超過</td><td class="up">▲ 1.30%pt</td><td>オルカン基準価額 37,729→38,267（＋1.43%、7/2値据置・未更新）。資金調整後は+0.32%pt相当</td></tr>
+      <tr><td>現金</td><td>¥0</td><td>7月分ＮＩＳＡつみたてに全額充当済み（本日追加拠出なし）</td></tr>
     </tbody></table></div></div>
 
     <div class="tbl-shell" style="margin-top:1rem"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>口座</th><th>ファンド</th><th>口数</th><th>基準価額</th><th>評価額</th><th>制限</th></tr></thead><tbody>
@@ -336,7 +404,7 @@
         <td>ＮＩＳＡつみたて</td>
         <td>イーマクシス・スリム全世界株式（オール・カントリー）</td>
         <td>52,639口</td>
-        <td>38,267円<br><small style="color:var(--faint)">as of 2026-07-02（みんかぶ投信・据置）</small></td>
+        <td>38,267円<br><small style="color:var(--faint)">as of 2026-07-02（みんかぶ投信・据置／本日新規値取得できず）</small></td>
         <td>¥201,434</td>
         <td>制限なし</td>
       </tr>
@@ -354,47 +422,47 @@
         <td>245,984口</td>
         <td>93,722円<br><small style="color:var(--faint)">as of 2026-07-02（みんかぶ投信・据置）</small></td>
         <td>¥2,305,411</td>
-        <td>経過済み（売却可）</td>
+        <td>経過済み（反対売買＝買付は6/29売却分の制限で〜2026-09-29不可）</td>
       </tr>
       <tr>
         <td>特定②</td>
         <td>ＳＢＩ・iシェアーズ・ゴールドファンド（為替ヘッジなし）</td>
         <td>214,160口</td>
-        <td>23,782円<br><small style="color:var(--faint)">as of 2026-07-02（みんかぶ投信・据置）</small></td>
-        <td>¥509,315</td>
+        <td>23,879円<br><small style="color:var(--faint)">as of 2026-07-03（WebSearch集計/みんかぶ系・要検証/確度やや低）</small></td>
+        <td>¥511,393</td>
         <td>売却不可〜2026-09-29</td>
       </tr>
     </tbody></table></div></div>
 
     <div class="card" style="margin-top:1rem">
-      <h3>本日の運用判断（2026-07-04）</h3>
-      <p class="sub">種別：ＮＩＳＡつみたて実行＋その他は様子見</p>
+      <h3>本日の運用判断（2026-07-04・同日再評価）</h3>
+      <p class="sub">種別：様子見（ゴールドNAVのみ反映・売買なし）</p>
       <ul class="flow">
         <li>
           <span class="stg">判断</span>
-          <span class="txt">7月分ＮＩＳＡつみたて（¥100,000）を規律的に実行し、オルカンを買付（既存現金¥48,834＋新規拠出¥51,166を充当）。ＮＩＳＡ成長枠・FANG+・ゴールドは全て保有継続（売買なし）。前回（7/2）は全面様子見だったが、つみたては市場タイミングを図らず毎月定額で実行するのが規律であるため、今回は実行を判断した。</span>
+          <span class="txt">全銘柄・全口座とも保有継続（hold）。7月分ＮＩＳＡつみたて（T0008）は本日朝の時点で実行済みのため本判断では追加アクションなし。同日中にゴールドファンドの新規データ点（基準価額23,879円／前日比+97円・+0.41%、WebSearch集計/みんかぶ系 as of 2026-07-03）が入手できたため評価額のみ再計算した（T0010）。</span>
         </li>
         <li>
           <span class="stg">制約確認</span>
-          <span class="txt">① ＮＩＳＡつみたて枠：オルカン単独を継続、年間使用¥200,000／上限¥1,200,000。② ＮＩＳＡ成長枠：年間上限¥2,400,000使用済み・追加不可。③ ゴールド・ＮＩＳＡ成長枠は3ヶ月制限（〜2026-09-29）中で売却不可。④ FANG+は制限解除済みだが方針継続保有。（投信のみ✓ ＳＢＩ可✓ つみたて1銘柄✓ 3ヶ月制限✓ ＮＩＳＡ枠✓）</span>
+          <span class="txt">①ＮＩＳＡ成長枠は年間上限¥2,400,000使用済みで追加購入不可。②ゴールド・ＮＩＳＡ成長枠(オルカン)は2026-06-29約定分の3ヶ月反対売買制限中（〜2026-09-29）で反対売買不可。③FANG+は6/29の一部売却により、その反対売買（買付）が同じく〜2026-09-29制限対象。④つみたては1銘柄（オルカン）・月内実行済み。以上により、そもそも本日追加で取り得る裁量的アクションは存在せず、holdが唯一の適合解（投信のみ✓ ＳＢＩ可✓ つみたて1銘柄✓ 3ヶ月制限✓ ＮＩＳＡ枠✓）。</span>
         </li>
         <li>
-          <span class="stg">本日の変化</span>
-          <span class="txt">新規基準価額の取得を試みたが確定ソースで裏取りできず、前回確定値（2026-07-02・みんかぶ投信）を据え置いた。つみたて拠出によりポート合計は¥5,399,418→¥5,450,584（＋¥51,166）、現金は¥48,834→¥0。</span>
+          <span class="stg">本日の変化・データ検証</span>
+          <span class="txt">オルカン・FANG+は本セッションでもWebSearchを実行したが、検索結果は公式・証券会社サイトのURL一覧のみで具体的な基準価額の数値を返さなかったため新規取得できず、前回確定値（2026-07-02・みんかぶ投信）を据え置いた。ゴールドは前回確定値23,782円との差分+97円が入手データ点の「前日比+97円」表記と完全一致し内的整合性を確認できたため、確度は「やや低」のフラグを維持しつつ採用。評価額は¥509,315→¥511,393（+¥2,078）、ポート合計は¥5,450,584→¥5,452,662。</span>
         </li>
         <li class="final">
-          <span class="stg">評価</span>
-          <span class="txt">本日は米6月雇用統計の下振れで利上げ観測が後退し、ドル安・円高（160.80円）、金が急反発（＋2.45%・4,123.61ドル）する一方、日経平均＋1.47%（69,744.07円）・ナスダック100▼1.61%と資産間でまちまちの地合い。海外資産型ファンドのＮＡＶ反映はＴ+1ラグのため本日のポート評価には未反映。戦略リターンの上昇（+1.72%→+2.69%）の大半は新規つみたて拠出¥51,166によるものであり、資金調整後では+1.71%相当とほぼ横ばい＝価格変動起因の実力は横ばい。単日の指数変動でつみたてタイミングや中長期の資産配置方針（分散コア＋成長エンジン＋金ヘッジ）を変える根拠はなく、つみたて以外は様子見継続が妥当。</span>
+          <span class="stg">評価・リスクチェック</span>
+          <span class="txt">米6月雇用統計の下振れを起点に利下げ観測が強まり、ドル安・円高（160.80円）、金スポット+2.45%（4,123.61ドル）という地合いが継続。分散資産（金）・分散コア（オルカン）・成長エンジン（FANG+）という中長期の資産配置方針を変える根拠は本日も生じていない。今週の主な脅威は、7/14公表の米CPIが7/16にかけて市場予想を上振れし利下げ観測が後退した場合、ドル高・円安／金反落に転じ、本日の据え置き判断の前提（円高・金高継続）が崩れること。手法（規律的hold＋制約セルフチェック）はT0009から変更なし。裁量的なtrim/switch/組換えは行っていないため、却下代替案（rejected_alternative）およびcounterfactual新規branchはなし（frozen_initialとの判断効果は本日も0）。追記（反対尋問）：ＮＩＳＡ成長枠上限到達・FANG+/ゴールドは3ヶ月反対売買制限中（〜2026-09-29）のため、急変動（急落・急騰いずれも）が起きても機動的な調整ができない「身動きが取れないリスク」を負っている点を明示。</span>
         </li>
       </ul>
-      <p style="font-size:.75rem;color:var(--faint);margin-top:.8rem">ＮＡＶ出典（いずれもみんかぶ投信 as of 2026-07-02・本日は取得不能のため据置）：iFreeNEXT FANG+インデックス 93,722円／イーマクシス・スリム全世界株式（オール・カントリー） 38,267円／ＳＢＩ・iシェアーズ・ゴールドファンド（為替ヘッジなし） 23,782円。</p>
+      <p style="font-size:.75rem;color:var(--faint);margin-top:.8rem">ＮＡＶ出典：イーマクシス・スリム全世界株式（オール・カントリー） 38,267円・iFreeNEXT FANG+インデックス 93,722円（いずれもみんかぶ投信 as of 2026-07-02・本日新規値取得できず据置）／ＳＢＩ・iシェアーズ・ゴールドファンド（為替ヘッジなし） 23,879円（WebSearch集計/みんかぶ系 as of 2026-07-03・要検証／確度やや低）。参照教訓：2026-06-30「為替リスク管理」／2026-06-30「分散投資・コモディティ」。関連予測：P-U03（金ヘッジ仮説）／P-U05（新規・v2スキーマ）／投資部P-E01・P-E02（ドル円・金の反応watch）。</p>
     </div>
 
     <p style="font-size:.75rem;color:var(--faint);margin-top:1rem">※学習目的の仮想シミュレーション。実際の売買は一切行っていません。投資助言ではありません。数値はすべて仮想の教育用モデルです。</p>
   </section>
 
   <footer class="foot">
-    <div class="dsum"><b>本日のデータ取得サマリー（2026年7月4日 JST 生成）</b>：市況は日本が7月3日（金）東証終値、米国指数は7月3日が独立記念日振替休場のため7月2日（木）確定終値ベース。日経平均69,744.07円（▲1.47%）は日本経済新聞（米6月雇用統計の下振れで米利上げ観測が後退しリスク選好回復）、ナスダック100（29,329.21・▼1.61%）はYahoo!ファイナンス、Ｓ＆Ｐ500（7,483.24・▲0.00%）はInvesting.com、ドル円（160.80円・▼0.22%）はザイFX！（米雇用統計を受けたドル売り）、金スポット（$4,123.61・▲2.45%）はCNBC、三菱ＵＦＪ（3,326円・▲0.60%）はみんかぶ。ニュース採用12本（金利・為替・相場 3本〈時事通信・共同通信・Yahoo!ニュース エキスパート〉／政策・国際 3本〈時事通信・FNNプライムオンライン・共同通信〉／テック・人工知能・半導体 3本〈ＩＴｍｅｄｉａ ＮＥＷＳ×3〉／週末の横浜グルメ 3本〈PR TIMES×3〉）。ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得。仮想運用第5評価：ファンドNAVは確定ソースでの再取得ができず前回7/2値を据置き、7月分ＮＩＳＡつみたて（¥100,000）を規律的に実行、ポート合計¥5,450,584・戦略リターン▲2.69%（資金調整後は+1.71%相当、対オルカン超過▲1.26%pt）。ＰＤＣＡ＝本日検証期日が到来した予測なし（status:open全件のhorizonは2026-09-30以降）。</div>
+    <div class="dsum"><b>本日のデータ取得サマリー（2026年7月4日 JST 生成）</b>：市況は日本が7月3日（金）東証終値、米国指数は7月3日が独立記念日振替休場のため7月2日（木）確定終値ベース（本日7/4は土曜のため日米とも休場）。日経平均69,744.07円（▲1.47%）・三菱ＵＦＪ3,326円（▲0.60%）は日本経済新聞・みんかぶ（米6月雇用統計の下振れで米利上げ観測が後退しリスク選好回復）、ナスダック100（29,329.21・▼1.61%）はYahoo!ファイナンス、Ｓ＆Ｐ500（7,483.24・▲0.00%）はInvesting.com、ドル円（160.80円・▼0.39%）は日本経済新聞（米雇用統計を受けたドル売り）、金スポット（$4,123.61・▲2.45%）はCNBC。ニュース採用9本（金利・為替・相場3本〈THE GOLD ONLINE・TBS NEWS DIG・時事通信〉／政策・国際3本〈NEWSポストセブン・日刊スポーツ・TBS NEWS DIG〉／テック・人工知能・半導体3本〈読売新聞オンライン・CNET Japan×2〉、いずれもYahoo!ニュース経由）。ＲＳＳフィードはネットワーク制限によりウェブ検索で代替取得、進行3.5の軽量再取材でも新たな急変・速報なしを確認。イベントカレンダーを更新（日銀短観6月調査・米6月雇用統計を確定実績としてarchivedへ、米CPI7/14・米小売売上高7/16等を新規追加）。ＰＤＣＡ＝本日検証期日が到来した予測なし（status:open全件のhorizonは2026-09-30以降）、サプライズ監査・カウンターファクチュアル更新を実施し等結果性に関する教訓候補2件を検証部が提示。投資部が新規予測3本（P-E01・P-E02・P-T07）をv2プロトコルで追加、反対尋問（進行2.7）を経てconsidered_scenariosへ反映。仮想運用第6回評価：ゴールドファンドの新規基準価額（23,879円・確度やや低）のみ反映（¥5,450,584→¥5,452,662）、ＮＩＳＡつみたては本日朝実行済みにつき追加売買なし・様子見（戦略リターン+2.73%、対オルカン超過+1.30%pt、資金調整後+1.75%相当）。校閲部は条件付き合格（フッター数値同期の指摘を反映済み）。</div>
     <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
   </footer>
 </div>

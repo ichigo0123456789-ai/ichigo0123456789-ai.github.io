@@ -15,7 +15,8 @@
     { "date": "2026-07-01", "trigger": "scheduled", "status": "failed", "published": false, "commit": null, "note": "無人publish停止(1日目)。6/30のクラウド書込プロキシ導入でDrive-PAT方式が破綻。" },
     { "date": "2026-07-02", "trigger": "manual", "status": "success", "published": true, "commit": "News digest 2026-07-02 (手動生成・Git Data API)", "note": "編集部エージェントで手動生成→Git Data APIで公開(commit 4acb8fa)。Pages一時不調を.nojekyllで堅牢化。" },
     { "date": "2026-07-03", "trigger": "scheduled", "status": "failed", "published": false, "commit": null, "note": "定例runは04:32 JST発火記録あり・だがpush不発。書込プロキシがトークン埋込push/API PUTを全ブロック。真因特定。" },
-    { "date": "2026-07-04", "trigger": "scheduled", "status": "success", "published": true, "commit": "News digest 2026-07-04", "note": "B完全決着。GitHub Appにリポ付与＋ルーチンでリポ選択→native git push origin main(トークンゼロ)で自動publish復旧。ライブ日付2026-07-04確認。" }
+    { "date": "2026-07-04", "trigger": "scheduled", "status": "success", "published": true, "commit": "News digest 2026-07-04", "note": "B完全決着。GitHub Appにリポ付与＋ルーチンでリポ選択→native git push origin main(トークンゼロ)で自動publish復旧。ライブ日付2026-07-04確認。" },
+    { "date": "2026-07-04", "trigger": "scheduled", "status": "success", "published": true, "commit": "News digest 2026-07-04 (v2フル編集フロー再生成)", "note": "同日2回目run。編集体制v2(マルチエージェント全部署+2段階取材+PDCA(進行0)+反対尋問(進行2.7)+校閲(条件付き合格→フッター同期で解消))をフル実行し③④⑤⑥・footer・data/*.jsonを再統合。新規予測3本(P-E01/P-E02/P-T07)+運用部P-U05追加、considered_scenariosへ反対尋問所見を反映、ゴールドNAV更新(¥5,450,584→¥5,452,662)。エージェントの一部(経済部・運用部)がdata/*.json・index.htmlへ直接書込む挙動を確認・内容検証のうえ採用。" }
   ],
   "weekly_uptime": [
     { "week_ending": "2026-07-05", "runs_scheduled": 5, "runs_succeeded_scheduled": 2, "manual_rescues": 1, "uptime_pct": 40.0, "note": "6/30-7/3の書込プロキシ障害で定例2/5成功(7/1・7/3失敗、6/28・6/30・7/4成功のうち週内は6/30・7/4)。7/2は手動救済。7/4に恒久修正完了。次週から100%を目標。" }
