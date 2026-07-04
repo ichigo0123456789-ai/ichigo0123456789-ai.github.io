@@ -30,14 +30,16 @@
       { "date": "2026-06-29", "navs": { "orukan": 37729, "fangplus": 89761, "gold": 23347 }, "total_value_jpy": 5257017, "note": "口数固定・現金¥48,834。orukan¥2,500,207+FANG+¥2,207,977+金¥499,999+現金¥48,834。" },
       { "date": "2026-06-30", "navs": { "orukan": 37729, "fangplus": 89761, "gold": 23669 }, "total_value_jpy": 5263913, "note": "金NAVのみ更新(23,347→23,669)。" },
       { "date": "2026-07-02", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23782 }, "total_value_jpy": 5399418, "note": "全NAV 7/2値へ更新。実PF(hold)と完全一致＝裁量判断ゼロを裏付け。" },
-      { "date": "2026-07-04", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23879 }, "total_value_jpy": 5452662, "note": "つみたて¥100,000を既定どおりオルカンへ機械投入(688,807口)。同日中にゴールドNAVの新規データ点(23,782→23,879、as of 2026-07-03・確度やや低)が入手できたため実PFと同一NAVで反映(オルカン・FANG+は取得不能のため据置)。実PFも同一NAV・同一つみたてのため一致。" }
+      { "date": "2026-07-04", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23879 }, "total_value_jpy": 5452662, "note": "つみたて¥100,000を既定どおりオルカンへ機械投入(688,807口)。同日中にゴールドNAVの新規データ点(23,782→23,879、as of 2026-07-03・確度やや低)が入手できたため実PFと同一NAVで反映(オルカン・FANG+は取得不能のため据置)。実PFも同一NAV・同一つみたてのため一致。" },
+      { "date": "2026-07-05", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23879 }, "total_value_jpy": 5452662, "note": "日曜・市場休場かつマーケット課報告のオルカン新値38,009円が一次ソース未確認のため前日と同一NAVを据え置き(T0011)。拠出なし。実PFと完全一致。" }
     ]
   },
   "judgment_effect_daily": [
     { "date": "2026-06-29", "real_total_jpy": 5256802, "frozen_total_jpy": 5257017, "judgment_effect_jpy": -215, "note": "端数(評価額丸め)差のみ。裁量判断なし＝実質0。" },
     { "date": "2026-06-30", "real_total_jpy": 5263697, "frozen_total_jpy": 5263913, "judgment_effect_jpy": -216, "note": "同上。" },
     { "date": "2026-07-02", "real_total_jpy": 5399418, "frozen_total_jpy": 5399418, "judgment_effect_jpy": 0, "note": "完全一致。" },
-    { "date": "2026-07-04", "real_total_jpy": 5452662, "frozen_total_jpy": 5452662, "judgment_effect_jpy": 0, "note": "完全一致（同日中のゴールドNAV更新を実PF・凍結初期の双方に同一値で反映したため差は生じない）。6/29以降は hold＋規律的つみたてのみで裁量的組換えが無いため判断効果0。今後、裁量的な組換え(switch/trim)が発生した時点で凍結初期との差が開き、その判断の巧拙が測られる。" }
+    { "date": "2026-07-04", "real_total_jpy": 5452662, "frozen_total_jpy": 5452662, "judgment_effect_jpy": 0, "note": "完全一致（同日中のゴールドNAV更新を実PF・凍結初期の双方に同一値で反映したため差は生じない）。6/29以降は hold＋規律的つみたてのみで裁量的組換えが無いため判断効果0。今後、裁量的な組換え(switch/trim)が発生した時点で凍結初期との差が開き、その判断の巧拙が測られる。" },
+    { "date": "2026-07-05", "real_total_jpy": 5452662, "frozen_total_jpy": 5452662, "judgment_effect_jpy": 0, "note": "完全一致。休場・NAV据え置きのためhold(T0011)、判断効果は引き続き0。" }
   ],
   "branches": [
     {
