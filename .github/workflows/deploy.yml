@@ -1,0 +1,47 @@
+name: Deploy to GitHub Pages
+
+on:
+  # 朝のニュースまとめ等、main への push でデプロイ
+  push:
+    branches: [main]
+  # 手動再実行用
+  workflow_dispatch:
+
+# GITHUB_TOKEN に Pages デプロイ権限を付与
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# ここが今回の修正の核心:
+# デプロイを "pages" グループで直列化し、進行中のデプロイと衝突しないようにする。
+# 短時間に複数 push が来ても後続はキュー待ちになり、
+# "Deployment request failed ... due to in progress deployment" を防ぐ。
+# cancel-in-progress: false = 進行中の本番デプロイは中断せず完走させ、後続を待たせる。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 静的サイト(index.html / data / archive 等)をそのまま配信。
+          # .nojekyll があるため Jekyll 処理は行われない。
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
