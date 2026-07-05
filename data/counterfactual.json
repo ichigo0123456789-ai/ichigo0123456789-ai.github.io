@@ -2,7 +2,11 @@
   "schema": "counterfactual v2",
   "purpose": "意思決定の付加価値を測るための反実仮想。ベンチ2＝凍結初期PF（2026-06-29の初期配分から一切の裁量売買をしなかった場合）と、主要な却下代替枝を日次評価し『実PF−凍結初期＝判断効果』を可視化する。",
   "external_contributions": [
-    { "date": "2026-07-04", "amount_jpy": 51166, "note": "7月つみたて¥100,000のうち外部からの新規入金分（既存現金¥48,834を除く）。オルカン等価ライン（同じ資金を初日から全額オルカンに入れた場合）の計算に使う。運用部は毎月のつみたてで既存現金を超える新規入金があった分だけここに追記する。" }
+    {
+      "date": "2026-07-04",
+      "amount_jpy": 51166,
+      "note": "7月つみたて¥100,000のうち外部からの新規入金分（既存現金¥48,834を除く）。オルカン等価ライン（同じ資金を初日から全額オルカンに入れた場合）の計算に使う。運用部は毎月のつみたてで既存現金を超える新規入金があった分だけここに追記する。"
+    }
   ],
   "orukan_equivalent_method": "オルカン等価値[i] = 実PF初日評価額 × (1 + benchmark_cum_pct[i]/100) + Σ(external_contributions[j] × (1 + (benchmark_cum_pct[i]−benchmark_cum_pct[入金日])/100))。実PFがこの線を上回れば対オルカンで勝っている。チャートがnav_history.jsonのbenchmark_cum_pctと本フィールドからクライアント側で計算する。",
   "method": {
@@ -24,22 +28,121 @@
       "cash_jpy": 48834
     },
     "contributions": [
-      { "date": "2026-07-04", "amount_jpy": 100000, "into": "orukan", "nav": 38267, "units_added": 26132, "note": "7月分つみたてを既定ファンド(オルカン)へ機械投入。既存現金¥48,834充当＋新規拠出¥51,166。" }
+      {
+        "date": "2026-07-04",
+        "amount_jpy": 100000,
+        "into": "orukan",
+        "nav": 38267,
+        "units_added": 26132,
+        "note": "7月分つみたてを既定ファンド(オルカン)へ機械投入。既存現金¥48,834充当＋新規拠出¥51,166。"
+      }
     ],
     "daily": [
-      { "date": "2026-06-29", "navs": { "orukan": 37729, "fangplus": 89761, "gold": 23347 }, "total_value_jpy": 5257017, "note": "口数固定・現金¥48,834。orukan¥2,500,207+FANG+¥2,207,977+金¥499,999+現金¥48,834。" },
-      { "date": "2026-06-30", "navs": { "orukan": 37729, "fangplus": 89761, "gold": 23669 }, "total_value_jpy": 5263913, "note": "金NAVのみ更新(23,347→23,669)。" },
-      { "date": "2026-07-02", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23782 }, "total_value_jpy": 5399418, "note": "全NAV 7/2値へ更新。実PF(hold)と完全一致＝裁量判断ゼロを裏付け。" },
-      { "date": "2026-07-04", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23879 }, "total_value_jpy": 5452662, "note": "つみたて¥100,000を既定どおりオルカンへ機械投入(688,807口)。同日中にゴールドNAVの新規データ点(23,782→23,879、as of 2026-07-03・確度やや低)が入手できたため実PFと同一NAVで反映(オルカン・FANG+は取得不能のため据置)。実PFも同一NAV・同一つみたてのため一致。" },
-      { "date": "2026-07-05", "navs": { "orukan": 38267, "fangplus": 93722, "gold": 23879 }, "total_value_jpy": 5452662, "note": "日曜・市場休場かつマーケット課報告のオルカン新値38,009円が一次ソース未確認のため前日と同一NAVを据え置き(T0011)。拠出なし。実PFと完全一致。" }
+      {
+        "date": "2026-06-29",
+        "navs": {
+          "orukan": 37729,
+          "fangplus": 89761,
+          "gold": 23347
+        },
+        "total_value_jpy": 5257017,
+        "note": "口数固定・現金¥48,834。orukan¥2,500,207+FANG+¥2,207,977+金¥499,999+現金¥48,834。"
+      },
+      {
+        "date": "2026-06-30",
+        "navs": {
+          "orukan": 37729,
+          "fangplus": 89761,
+          "gold": 23669
+        },
+        "total_value_jpy": 5263913,
+        "note": "金NAVのみ更新(23,347→23,669)。"
+      },
+      {
+        "date": "2026-07-02",
+        "navs": {
+          "orukan": 38267,
+          "fangplus": 93722,
+          "gold": 23782
+        },
+        "total_value_jpy": 5399418,
+        "note": "全NAV 7/2値へ更新。実PF(hold)と完全一致＝裁量判断ゼロを裏付け。"
+      },
+      {
+        "date": "2026-07-04",
+        "navs": {
+          "orukan": 38267,
+          "fangplus": 93722,
+          "gold": 23879
+        },
+        "total_value_jpy": 5452662,
+        "note": "つみたて¥100,000を既定どおりオルカンへ機械投入(688,807口)。同日中にゴールドNAVの新規データ点(23,782→23,879、as of 2026-07-03・確度やや低)が入手できたため実PFと同一NAVで反映(オルカン・FANG+は取得不能のため据置)。実PFも同一NAV・同一つみたてのため一致。"
+      },
+      {
+        "date": "2026-07-05",
+        "navs": {
+          "orukan": 38267,
+          "fangplus": 93722,
+          "gold": 23879
+        },
+        "total_value_jpy": 5452662,
+        "note": "日曜・市場休場かつマーケット課報告のオルカン新値38,009円が一次ソース未確認のため前日と同一NAVを据え置き(T0011)。拠出なし。実PFと完全一致。"
+      },
+      {
+        "date": "2026-07-06",
+        "navs": {
+          "orukan": 38267,
+          "fangplus": 93722,
+          "gold": 23879
+        },
+        "total_value_jpy": 5452662,
+        "note": "週明け月曜だが早朝(04:30 JST)起動時点で東証開場前のため新規NAV未取得。前日と同一NAVを据え置き(T0012)。拠出なし。実PFと完全一致。"
+      }
     ]
   },
   "judgment_effect_daily": [
-    { "date": "2026-06-29", "real_total_jpy": 5256802, "frozen_total_jpy": 5257017, "judgment_effect_jpy": -215, "note": "端数(評価額丸め)差のみ。裁量判断なし＝実質0。" },
-    { "date": "2026-06-30", "real_total_jpy": 5263697, "frozen_total_jpy": 5263913, "judgment_effect_jpy": -216, "note": "同上。" },
-    { "date": "2026-07-02", "real_total_jpy": 5399418, "frozen_total_jpy": 5399418, "judgment_effect_jpy": 0, "note": "完全一致。" },
-    { "date": "2026-07-04", "real_total_jpy": 5452662, "frozen_total_jpy": 5452662, "judgment_effect_jpy": 0, "note": "完全一致（同日中のゴールドNAV更新を実PF・凍結初期の双方に同一値で反映したため差は生じない）。6/29以降は hold＋規律的つみたてのみで裁量的組換えが無いため判断効果0。今後、裁量的な組換え(switch/trim)が発生した時点で凍結初期との差が開き、その判断の巧拙が測られる。" },
-    { "date": "2026-07-05", "real_total_jpy": 5452662, "frozen_total_jpy": 5452662, "judgment_effect_jpy": 0, "note": "完全一致。休場・NAV据え置きのためhold(T0011)、判断効果は引き続き0。" }
+    {
+      "date": "2026-06-29",
+      "real_total_jpy": 5256802,
+      "frozen_total_jpy": 5257017,
+      "judgment_effect_jpy": -215,
+      "note": "端数(評価額丸め)差のみ。裁量判断なし＝実質0。"
+    },
+    {
+      "date": "2026-06-30",
+      "real_total_jpy": 5263697,
+      "frozen_total_jpy": 5263913,
+      "judgment_effect_jpy": -216,
+      "note": "同上。"
+    },
+    {
+      "date": "2026-07-02",
+      "real_total_jpy": 5399418,
+      "frozen_total_jpy": 5399418,
+      "judgment_effect_jpy": 0,
+      "note": "完全一致。"
+    },
+    {
+      "date": "2026-07-04",
+      "real_total_jpy": 5452662,
+      "frozen_total_jpy": 5452662,
+      "judgment_effect_jpy": 0,
+      "note": "完全一致（同日中のゴールドNAV更新を実PF・凍結初期の双方に同一値で反映したため差は生じない）。6/29以降は hold＋規律的つみたてのみで裁量的組換えが無いため判断効果0。今後、裁量的な組換え(switch/trim)が発生した時点で凍結初期との差が開き、その判断の巧拙が測られる。"
+    },
+    {
+      "date": "2026-07-05",
+      "real_total_jpy": 5452662,
+      "frozen_total_jpy": 5452662,
+      "judgment_effect_jpy": 0,
+      "note": "完全一致。休場・NAV据え置きのためhold(T0011)、判断効果は引き続き0。"
+    },
+    {
+      "date": "2026-07-06",
+      "real_total_jpy": 5452662,
+      "frozen_total_jpy": 5452662,
+      "judgment_effect_jpy": 0,
+      "note": "完全一致。NAV据え置きのためhold(T0012)、判断効果は引き続き0。"
+    }
   ],
   "branches": [
     {
@@ -47,7 +150,12 @@
       "decision_ref": "T0001/T0005",
       "created": "2026-06-29",
       "description": "6/29にFANG+を『一部利確(¥1,000,000)』ではなく『全売却(残245,984口も売却)』していた場合。全売却時の実現益¥807,968に譲渡税¥164,139が課され、税引後の追加ネット proceeds をオルカンへ振替。",
-      "units_delta_vs_frozen": { "fangplus": -245984, "orukan_approx_added": 555264, "gold": 0, "cash_jpy": 0 },
+      "units_delta_vs_frozen": {
+        "fangplus": -245984,
+        "orukan_approx_added": 555264,
+        "gold": 0,
+        "cash_jpy": 0
+      },
       "method_note": "追加売却245,984口×NAV89,761=¥2,207,968、追加実現益¥556,105、追加税¥112,973、追加ネット¥2,094,995をオルカン(NAV37,729)へ→約555,264口追加。口座上限(NISA成長枠240万)超過分は特定口座扱いとみなし評価のみ行う。",
       "hypothesis": "税¥164,139の即時ドラッグを、FANG+集中の完全排除による左裾リスク低減が3年horizonで上回るか。frozen(部分保有42%)がこの全売却枝を上回れば『部分保有の判断が正しかった』証拠。",
       "daily": [],
@@ -58,7 +166,12 @@
       "decision_ref": "T0001/T0005",
       "created": "2026-06-29",
       "description": "6/29にFANG+を一切売却せず60.4%集中を維持していた場合（無売却）。譲渡税ゼロだがテック集中の左裾リスクを全量保持。",
-      "units_delta_vs_frozen": { "fangplus": 111406, "orukan_approx_removed": -251340, "gold": 0, "cash_jpy": 0 },
+      "units_delta_vs_frozen": {
+        "fangplus": 111406,
+        "orukan_approx_removed": -251340,
+        "gold": 0,
+        "cash_jpy": 0
+      },
       "method_note": "frozenに対しFANG+を111,406口戻し（=売却しなかった分）、その原資として振り向けたオルカン相当(¥948,834ネット proceeds→NAV37,729で約251,340口)を除く。税¥51,166は支払わない前提。",
       "hypothesis": "集中維持がリターンを最大化するか。frozen(部分是正)がこの無売却枝を下回れば『是正が機会損失だった』、上回れば『リスク調整後で是正が正解だった』。是正判断(T0001)の直接的な答え合わせ。",
       "daily": [],

@@ -49,8 +49,8 @@
       "status": "予定",
       "category": "主要企業決算",
       "title": "米大手金融機関2026年4-6月期決算発表（バンク・オブ・アメリカ、ゴールドマン・サックス、ウェルズ・ファーゴ、シティグループ／JPモルガンと同日）",
-      "related_prediction_ids": [],
-      "note": "出典：各社IR発表・businesswire・投資情報サイト複数（2026-07-04時点取得、WebSearch）。JPモルガン（EV-20260714-JPM）と同日に米銀決算が集中する見通し。"
+      "related_prediction_ids": ["P-E03"],
+      "note": "出典：各社IR発表・businesswire・投資情報サイト複数（2026-07-04時点取得、WebSearch）。JPモルガン（EV-20260714-JPM）と同日に米銀決算が集中する見通し。2026-07-06時点でpredictions.jsonのP-E03（米金融セクターETF vs S&P500、horizon 2026-07-16）と紐づけ。"
     },
     {
       "id": "EV-20260716-USRETAIL",
@@ -58,8 +58,8 @@
       "status": "予定",
       "category": "米経済指標",
       "title": "米小売売上高2026年6月分（速報値）発表（米国時間8:30ET）",
-      "related_prediction_ids": [],
-      "note": "出典：米国勢調査局(Census Bureau)公表予定（2026-07-03時点取得）。"
+      "related_prediction_ids": ["P-E04"],
+      "note": "出典：米国勢調査局(Census Bureau)公表予定（2026-07-03時点取得）。2026-07-06時点でP-E04（ナスダック100 vs S&P500、horizon 2026-07-20）と紐づけ。"
     },
     {
       "id": "EV-20260716-NETFLIX",
@@ -67,17 +67,17 @@
       "status": "予定",
       "category": "主要企業決算",
       "title": "ネットフリックス2026年4-6月期決算発表",
-      "related_prediction_ids": [],
-      "note": "出典：投資情報サイト複数（2026-07-04時点取得、WebSearch）。正式IR発表文での日時再確認要。"
+      "related_prediction_ids": ["P-E04"],
+      "note": "出典：投資情報サイト複数（2026-07-04時点取得、WebSearch）。正式IR発表文での日時再確認要。同日の米小売売上高発表(EV-20260716-USRETAIL)とP-E04で機序共有。"
     },
     {
-      "id": "EV-NULL-TSMC",
-      "date": null,
-      "status": "要調査",
+      "id": "EV-20260716-TSMC",
+      "date": "2026-07-16",
+      "status": "予定",
       "category": "主要企業決算",
-      "title": "台湾セミコンダクター・マニュファクチャリング（TSMC）2026年4-6月期決算説明会",
-      "related_prediction_ids": [],
-      "note": "出典：TSMC投資家向けIRカレンダー・複数報道（2026-07-04時点取得、WebSearch）。2026年7月16日または17日との情報が混在し確定日を特定できず date:null。前年（2025年）は7月17日開催。直前に公式IRカレンダー（investor.tsmc.com）で再確認要。"
+      "title": "台湾セミコンダクター・マニュファクチャリング（TSMC）2026年4-6月期決算発表・投資家向け説明会（台湾時間14:00＝日本時間15:00、台北Mandarin Oriental）",
+      "related_prediction_ids": ["P-T08"],
+      "note": "出典：BigGo Finance「TSMC Sets July 16 Investor Conference to Unveil Q2 Results and Q3 Outlook」、TSMC投資家向けIRカレンダー（2026-07-06時点取得、WebSearch）。四半期業績発表と第3四半期見通しを公表。quiet period（沈黙期間）は2026-07-06〜07-15。前回要調査だった日程（EV-NULL-TSMC、7/16か7/17かで情報混在）が7/16で確定したため置き換え。半導体サプライチェーン関連のP-T08（日本の半導体サプライチェーン露出 vs オルカン、horizon 2027-01-05）の中間観測点として紐づけ。"
     },
     {
       "id": "EV-NULL-JPINSEC",
@@ -86,7 +86,7 @@
       "category": "政治・地政学日程",
       "title": "日印経済安全保障協力イニシアティブ（半導体・重要鉱物・情報通信・クリーンエネルギー・科学協力・医薬品の6分野）の実装進捗フォローアップ",
       "related_prediction_ids": [],
-      "note": "2026年7月初旬の日印首脳会談に合わせた共同宣言（半導体・重要鉱物協力等）のフォローアップ観測点。具体的な次回会合・進捗発表の確定日程は未確認のため date:null。インド株Tier2採用トリガー観測点として引き続き監視。"
+      "note": "2026年7月初旬の日印首脳会談に合わせた共同宣言（半導体・重要鉱物協力等）のフォローアップ観測点。具体的な次回会合・進捗発表の確定日程は未確認のため date:null。インド株Tier2採用トリガー観測点として引き続き監視。追加確認（2026-07-06時点、WebSearch）：首脳会談自体は2026-07-02にインドで開催済みとみられ、高市総理とモディ首相が約130件・2兆円規模の企業間協力文書に合意した旨の報道あり（出典：NHKニュース等）。ただし本項目が監視する『実装進捗の次回フォローアップ』の具体的日程は依然未確認。"
     }
   ],
   "archived": [
