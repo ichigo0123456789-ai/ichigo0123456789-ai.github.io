@@ -647,64 +647,55 @@
 <div id="jp-hm-tip"></div>
 <script>
 /* ==== 日経225ヒートマップ（全225銘柄・恒久ブロック：ルーチンは書き換えない） ====
-   一次データ＝nikkei225jp.com の公開フィード（script読込・構成率/前日比/寄与度つき・出典表示）。
-   取得不可時＝Yahoo spark バッチ（主要40銘柄）へ自動フォールバック。
-   表示＝業種グループ化ツリーマップ（面積=指数構成率・色=前日比%）＋凡例。クリックでYahooファイナンス銘柄頁へ。 */
+   構成銘柄表（コード/業種/構成率）＝nikkei225jp.com公開フィードのスナップショットを静的内蔵。
+   騰落率＝一次: nikkei225jp.comフィード（script読込・寄与度つき）／
+           二次: Yahoo spark バッチ（20銘柄×12・プロキシ輪番）。全滅時も銘柄名つきで構造表示。
+   表示＝業種グループ化ツリーマップ（面積=指数構成率・色=前日比%）＋凡例。クリックでYahooファイナンスへ。
+   ?hmfb=1 でフォールバック経路を強制（動作確認用）。 */
 (function(){
   var SEC={10:'水産・農林',20:'鉱業',30:'建設',40:'食料品',50:'繊維',60:'パルプ・紙',70:'化学',80:'医薬品',90:'石油・石炭',100:'ゴム',110:'ガラス・土石',120:'鉄鋼',130:'非鉄金属',140:'金属製品',150:'機械',160:'電気機器',170:'輸送用機器',180:'精密機器',190:'その他製品',200:'電気・ガス',210:'陸運',220:'海運',230:'空運',240:'倉庫・運輸',250:'情報・通信',260:'卸売',270:'小売',280:'銀行',290:'証券',300:'保険',310:'その他金融',320:'不動産',330:'サービス'};
+  var STATIC225=[["1332",10,0.06,"ニッスイ"],["1605",20,0.06,"ＩＮＰＥＸ"],["1721",30,0.27,"コムシスホールディングス"],["1801",30,0.15,"大成建設"],["1802",30,0.17,"大林組"],["1803",30,0.13,"清水建設"],["1808",30,0.03,"長谷工コーポレーション"],["1812",30,0.15,"鹿島建設"],["1925",30,0.22,"大和ハウス工業"],["1928",30,0.17,"積水ハウス"],["1963",30,0.12,"日揮"],["2002",40,0.1,"日清製粉グループ本社"],["2269",40,0.08,"明治ホールディングス"],["2282",40,0.16,"日本ハム"],["2413",330,0.23,"エムスリー"],["2432",330,0.04,"ディー・エヌ・エー"],["2501",40,0.1,"サッポロホールディングス"],["2502",40,0.24,"アサヒグループＨＤ"],["2503",40,0.14,"キリンホールディングス"],["2768",260,0.03,"双日"],["2801",40,0.41,"キッコーマン"],["2802",40,0.57,"味の素"],["285A",160,2.49,"キオクシアホールディングス"],["2871",40,0.11,"ニチレイ"],["2914",40,0.31,"ＪＴ"],["3086",270,0.08,"Ｊ．フロント リテイリング"],["3092",270,0.17,"ＺＯＺＯ"],["3099",270,0.18,"三越伊勢丹ホールディングス"],["3289",320,0.07,"東急不動産ＨＤ"],["3382",270,0.3,"７＆ｉＨＤ"],["3401",50,0.02,"帝人"],["3402",50,0.06,"東レ"],["3405",50,0.08,"クラレ"],["3407",70,0.09,"旭化成"],["3436",140,0.02,"ＳＵＭＣＯ"],["3659",250,0.23,"ネクソン"],["3697",250,0.03,"ＳＨＩＦＴ"],["3861",60,0.04,"王子ホールディングス"],["4004",70,0.08,"レゾナック・ホールディングス"],["4005",70,0.03,"住友化学"],["4021",70,0.41,"日産化学工業"],["4042",70,0.07,"東ソー"],["4043",70,0.05,"トクヤマ"],["4061",70,0.04,"デンカ"],["4062",160,1.95,"イビデン"],["4063",70,1.76,"信越化学工業"],["4151",80,0.13,"協和キリン"],["4183",70,0.04,"三井化学"],["4188",70,0.03,"三菱ケミカルＨＤ"],["4208",70,0.02,"ＵＢＥ"],["4307",250,0.25,"野村総合研究所"],["4324",330,0.16,"電通"],["4385",250,0.22,"メルカリ"],["4452",70,0.32,"花王"],["4502",80,0.27,"武田薬品工業"],["4503",80,0.53,"アステラス製薬"],["4506",80,0.07,"住友ファーマ"],["4507",80,0.43,"塩野義製薬"],["4519",80,1.12,"中外製薬"],["4523",80,0.21,"エーザイ"],["4543",180,0.91,"テルモ"],["4568",80,0.4,"第一三共"],["4578",80,0.57,"大塚ホールディングス"],["4661",330,0.13,"オリエンタルランド"],["4689",250,0.01,"LINEヤフー"],["4704",250,0.31,"トレンドマイクロ"],["4751",330,0.06,"サイバーエージェント"],["4755",330,0.04,"楽天"],["4901",70,0.54,"富士フイルムＨＤ"],["4902",160,0.03,"コニカミノルタＨＤ"],["4911",70,0.14,"資生堂"],["5019",90,0.12,"出光興産"],["5020",90,0.06,"ENEOSホールディングス"],["5101",100,0.19,"横浜ゴム"],["5108",100,0.36,"ブリヂストン"],["5201",110,0.06,"ＡＧＣ"],["5214",110,0.09,"日本電気硝子"],["5233",110,0.02,"太平洋セメント"],["5301",110,0.08,"東海カーボン"],["5332",110,0.21,"ＴＯＴＯ"],["5333",110,0.35,"日本碍子"],["5401",120,0.01,"日本製鉄"],["5406",120,0.01,"神戸製鋼所"],["5411",120,0.01,"ＪＦＥホールディングス"],["543A",170,0.02,"ＡＲＣＨＩＯＮ "],["5631",150,0.08,"日本製鋼所"],["5706",130,0.18,"三井金属鉱業"],["5711",130,0.02,"三菱マテリアル"],["5713",130,0.18,"住友金属鉱山"],["5714",130,0.08,"ＤＯＷＡホールディングス"],["5801",130,0.18,"古河電気工業"],["5802",130,0.48,"住友電気工業"],["5803",130,1.49,"フジクラ"],["5831",280,0.16,"しずおかﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["6098",330,1.81,"リクルートホールディングス"],["6103",150,0.1,"オークマ"],["6113",150,0.15,"アマダ"],["6146",150,0.71,"ディスコ"],["6178",330,0.12,"日本郵政"],["6273",150,0.36,"ＳＭＣ"],["6301",150,0.33,"小松製作所"],["6302",150,0.05,"住友重機械工業"],["6305",150,0.27,"日立建機"],["6326",150,0.14,"クボタ"],["6361",150,0.29,"荏原製作所"],["6367",150,1.28,"ダイキン工業"],["6471",150,0.06,"日本精工"],["6472",150,0.02,"ＮＴＮ"],["6473",150,0.1,"ジェイテクト"],["6479",160,0.21,"ミネベアミツミ"],["6501",160,0.24,"日立製作所"],["6503",160,0.29,"三菱電機"],["6504",160,0.13,"富士電機"],["6506",160,0.34,"安川電機"],["6526",160,0.13,"ソシオネクスト"],["6532",330,0.34,"ベイカレント"],["6645",160,0.29,"オムロン"],["6701",160,0.11,"ＮＥＣ"],["6702",160,0.17,"富士通"],["6723",160,0.23,"ルネサスエレクトロニクス"],["6724",160,0.28,"セイコーエプソン"],["6752",160,0.22,"パナソニック"],["6753",160,0.03,"シャープ"],["6758",160,0.86,"ソニー"],["6762",160,2.47,"ＴＤＫ"],["6770",160,0.1,"アルプスアルパイン"],["6841",160,0.28,"横河電機"],["6857",160,10.22,"アドバンテスト"],["6861",160,0.38,"キーエンス"],["6902",170,0.39,"デンソー"],["6920",160,0.87,"レーザーテック"],["6954",160,1.74,"ファナック"],["6963",160,0.26,"ローム"],["6971",160,1.47,"京セラ"],["6976",160,0.8,"太陽誘電"],["6981",160,1.09,"村田製作所"],["6988",70,0.79,"日東電工"],["7004",150,0.01,"カナデビア"],["7011",150,0.2,"三菱重工業"],["7012",170,0.07,"川崎重工業"],["7013",150,0.1,"ＩＨＩ"],["7186",280,0.09,"コンコルディアﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["7201",170,0.02,"日産自動車"],["7202",170,0.06,"いすゞ自動車"],["7203",170,0.72,"トヨタ自動車"],["7211",170,0.02,"三菱自動車工業"],["7261",170,0.01,"マツダ"],["7267",170,0.46,"本田技研工業"],["7269",170,0.42,"スズキ"],["7270",170,0.13,"ＳＵＢＡＲＵ"],["7272",170,0.19,"ヤマハ発動機"],["7453",270,0.37,"良品計画"],["7532",270,0.04,"パン・パシフィックＩＨ"],["7731",180,0.11,"ニコン"],["7733",180,0.35,"オリンパス"],["7735",160,0.67,"SCREENホールディングス"],["7741",180,0.63,"ＨＯＹＡ"],["7751",160,0.32,"キヤノン"],["7752",160,0.07,"リコー"],["7832",190,0.6,"バンダイナムコHD"],["7911",190,0.13,"ＴＯＰＰＡＮホールディングス"],["7912",190,0.15,"大日本印刷"],["7951",190,0.18,"ヤマハ"],["7974",190,0.35,"任天堂"],["8001",260,0.47,"伊藤忠商事"],["8002",260,0.25,"丸紅"],["8015",260,0.92,"豊田通商"],["8031",260,0.46,"三井物産"],["8035",160,10.24,"東京エレクトロン"],["8053",260,0.32,"住友商事"],["8058",260,0.66,"三菱商事"],["8233",270,0.11,"高島屋"],["8252",270,0.15,"丸井グループ"],["8253",310,0.23,"クレディセゾン"],["8267",270,0.22,"イオン"],["8304",280,0.01,"あおぞら銀行"],["8306",280,0.17,"三菱ＵＦＪﾌｨﾅﾝｼｬﾙ･ｸﾞﾙｰﾌﾟ"],["8308",280,0.01,"りそなホールディングス"],["8309",280,0.06,"三井住友ﾄﾗｽﾄ･ＨＤ"],["8316",280,0.1,"三井住友ﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["8331",280,0.14,"千葉銀行"],["8354",280,0.07,"ふくおかﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["8411",280,0.04,"みずほフィナンシャルｸﾞﾙｰﾌﾟ"],["8591",280,0.32,"オリックス"],["8601",290,0.09,"大和証券グループ本社"],["8604",290,0.08,"野村ホールディングス"],["8630",300,0.2,"ＳＯＭＰＯホールディングス"],["8697",290,0.21,"日本取引所グループ"],["8725",300,0.2,"ＭＳ＆ＡＤインシュアランスＧＨＤ"],["8750",300,0.04,"第一生命ホールディングス"],["8766",300,0.57,"東京海上ホールディングス"],["8795",300,0.05,"Ｔ&Ｄホールディングス"],["8801",320,0.23,"三井不動産"],["8802",320,0.21,"三菱地所"],["8804",320,0.08,"東京建物"],["8830",320,0.38,"住友不動産"],["9001",210,0.03,"東武鉄道"],["9005",210,0.04,"東急"],["9007",210,0.04,"小田急電鉄"],["9008",210,0.04,"京王電鉄"],["9009",210,0.09,"京成電鉄"],["9020",210,0.05,"東日本旅客鉄道"],["9021",210,0.03,"西日本旅客鉄道"],["9022",210,0.09,"東海旅客鉄道"],["9064",210,0.1,"ヤマトホールディングス"],["9101",220,0.08,"日本郵船"],["9104",220,0.08,"商船三井"],["9107",220,0.11,"川崎汽船"],["9147",210,0.08,"NIPPON EXPRESS HD"],["9201",230,0.15,"日本航空"],["9202",230,0.02,"ANAホールディングス"],["9432",250,0.07,"日本電信電話"],["9433",250,1.64,"ＫＤＤＩ"],["9434",250,0.1,"ソフトバンク"],["9501",200,0.02,"東京電力"],["9502",200,0.02,"中部電力"],["9503",200,0.01,"関西電力"],["9531",200,0.06,"東京ガス"],["9532",200,0.05,"大阪ガス"],["9602",250,0.03,"東宝"],["9735",330,0.65,"セコム"],["9766",250,0.92,"コナミ"],["9843",270,0.3,"ニトリ"],["9983",270,10.36,"ファーストリテイリング"],["9984",250,6.8,"ソフトバンクグループ"]];
   function cc(p){var c=Math.max(-5,Math.min(5,p||0));if(c<-3)return'#991b1b';if(c<-1.5)return'#ef4444';if(c<-0.3)return'#fca5a5';if(c<0.3)return'#475569';if(c<1.5)return'#86efac';if(c<3)return'#22c55e';return'#15803d';}
   var LIGHT={'#fca5a5':1,'#86efac':1};
-  var stocks=null, updTime=null, srcLabel='';
+  var stocks=STATIC225.map(function(r){return{code:r[0],s:SEC[r[1]]||'その他',n:r[3],w:r[2]>0?r[2]:0.02,chg:null,price:null,kiyo:null};});
+  var updTime=null, srcLabel='', forceFB=location.search.indexOf('hmfb=1')>=0;
 
-  /* --- 一次：nikkei225jp.com フィード（全225銘柄） --- */
-  function parseN2(){
-    if(typeof N2==='undefined'||!N2||!N2.length) return null;
-    var out=[];
+  /* --- 一次：nikkei225jp.com フィード --- */
+  function applyN2(){
+    if(typeof N2==='undefined'||!N2||!N2.length) return 0;
+    var n=0;
     for(var i=0;i<N2.length;i++){
       var f=String(N2[i]).split('__'); if(f.length<9) continue;
-      var w=parseFloat(f[5]),chg=parseFloat(f[6]),pr=parseFloat(f[3]),ky=parseFloat(f[8]);
-      out.push({code:f[0],s:SEC[+f[1]]||'その他',n:f[2],price:isFinite(pr)?pr:null,w:(isFinite(w)&&w>0)?w:0.02,chg:isFinite(chg)?chg:null,kiyo:isFinite(ky)?ky:null});
+      var chg=parseFloat(f[6]),pr=parseFloat(f[3]),ky=parseFloat(f[8]),w=parseFloat(f[5]);
+      for(var k=0;k<stocks.length;k++){
+        if(stocks[k].code===f[0]){
+          if(isFinite(chg)) stocks[k].chg=chg;
+          if(isFinite(pr)) stocks[k].price=pr;
+          if(isFinite(ky)) stocks[k].kiyo=ky;
+          if(isFinite(w)&&w>0) stocks[k].w=w;
+          n++; break;
+        }
+      }
     }
-    return out.length>50?out:null;
+    return n;
   }
   function loadN2(cb){
+    if(forceFB){cb(0);return;}
     var done=false,fin=function(v){if(!done){done=true;cb(v);}};
     var s=document.createElement('script');
     s.src='https://nikkei225jp.com/_data/_nfsDATA/min/country_jp_nk225N.js?'+Date.now();
-    s.onload=function(){fin(parseN2());};
-    s.onerror=function(){fin(null);};
+    s.onload=function(){fin(applyN2());};
+    s.onerror=function(){fin(0);};
     document.head.appendChild(s);
     var s2=document.createElement('script');
     s2.src='https://nikkei225jp.com/_data/_nfsDATA/min/country_jp_kiyo10N.js?'+Date.now();
     s2.onload=function(){try{if(typeof LastTime2!=='undefined')updTime=LastTime2;}catch(e){}};
     s2.onerror=function(){};
     document.head.appendChild(s2);
-    setTimeout(function(){fin(null);},12000);
+    setTimeout(function(){fin(0);},6000);
   }
 
-  /* --- フォールバック：Yahoo spark バッチ（主要40銘柄） --- */
-  var FB=[
-    {n:'トヨタ自動車',t:'7203.T',s:'輸送用機器',w:100},{n:'ソニーグループ',t:'6758.T',s:'電気機器',w:72},
-    {n:'東京エレクトロン',t:'8035.T',s:'電気機器',w:70},{n:'キーエンス',t:'6861.T',s:'電気機器',w:68},
-    {n:'三菱UFJ',t:'8306.T',s:'銀行',w:60},{n:'ソフトバンクG',t:'9984.T',s:'情報・通信',w:58},
-    {n:'ダイキン工業',t:'6367.T',s:'機械',w:50},{n:'信越化学',t:'4063.T',s:'化学',w:48},
-    {n:'任天堂',t:'7974.T',s:'その他製品',w:46},{n:'NTT',t:'9432.T',s:'情報・通信',w:44},
-    {n:'三井住友FG',t:'8316.T',s:'銀行',w:42},{n:'三菱商事',t:'8058.T',s:'卸売',w:40},
-    {n:'KDDI',t:'9433.T',s:'情報・通信',w:40},{n:'三井物産',t:'8031.T',s:'卸売',w:38},
-    {n:'日本電産',t:'6594.T',s:'電気機器',w:38},{n:'第一三共',t:'4568.T',s:'医薬品',w:36},
-    {n:'伊藤忠商事',t:'8001.T',s:'卸売',w:36},{n:'村田製作所',t:'6981.T',s:'電気機器',w:34},
-    {n:'中外製薬',t:'4519.T',s:'医薬品',w:36},{n:'武田薬品',t:'4502.T',s:'医薬品',w:34},
-    {n:'ホンダ',t:'7267.T',s:'輸送用機器',w:36},{n:'ファナック',t:'6954.T',s:'電気機器',w:32},
-    {n:'みずほFG',t:'8411.T',s:'銀行',w:30},{n:'テルモ',t:'4543.T',s:'精密機器',w:30},
-    {n:'セブンアイHD',t:'3382.T',s:'小売',w:30},{n:'三菱重工',t:'7011.T',s:'機械',w:28},
-    {n:'富士フイルム',t:'4901.T',s:'化学',w:28},{n:'キヤノン',t:'7751.T',s:'電気機器',w:28},
-    {n:'富士通',t:'6702.T',s:'電気機器',w:26},{n:'JR東日本',t:'9020.T',s:'陸運',w:26},
-    {n:'JT',t:'2914.T',s:'食料品',w:26},{n:'三菱電機',t:'6503.T',s:'電気機器',w:24},
-    {n:'味の素',t:'2802.T',s:'食料品',w:24},{n:'三菱地所',t:'8802.T',s:'不動産',w:22},
-    {n:'ブリヂストン',t:'5108.T',s:'ゴム',w:22},{n:'OLC',t:'4661.T',s:'サービス',w:22},
-    {n:'スズキ',t:'7269.T',s:'輸送用機器',w:20},{n:'JR東海',t:'9022.T',s:'陸運',w:20},
-    {n:'セコム',t:'9735.T',s:'サービス',w:18},{n:'豊田織機',t:'6201.T',s:'機械',w:16}
-  ];
+  /* --- 二次：Yahoo spark バッチ（20×12・プロキシ輪番・並行2） --- */
   var PROX=[
     function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
     function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);},
@@ -729,11 +720,12 @@
     }
     return list.length?list:null;
   }
-  async function fetchSpark(syms){
+  async function fetchSpark(syms,seed){
     var u='https://query1.finance.yahoo.com/v8/finance/spark?interval=1d&range=5d&symbols='+syms.join(',');
     for(var p=0;p<PROX.length;p++){
+      var px=PROX[p];
       try{
-        var r=await fetch(PROX[p](u),{signal:AbortSignal.timeout(10000)});
+        var r=await fetch(px(u),{signal:AbortSignal.timeout(10000)});
         if(!r.ok) continue;
         var list=normSpark(await r.json());
         if(list) return list;
@@ -741,21 +733,38 @@
     }
     return null;
   }
-  async function loadFB(){
-    var st=FB.map(function(s){return{code:s.t.replace('.T',''),n:s.n,s:s.s,w:s.w,chg:null,price:null,kiyo:null,t:s.t};});
-    var B=20,chunks=[];
-    for(var i=0;i<st.length;i+=B) chunks.push(st.slice(i,i+B).map(function(s){return s.t;}));
-    for(var c=0;c<chunks.length;c++){
-      var list=await fetchSpark(chunks[c]);
-      if(list) list.forEach(function(it){
+  function applySpark(list){
+    if(!list) return 0; var n=0;
+    list.forEach(function(it){
+      try{
+        var code=String(it.symbol).replace('.T','');
         var cl=(it.close||[]).filter(function(v){return v!=null;});
         var price=it.rmp!=null?it.rmp:(cl.length?cl[cl.length-1]:null);
         var prev=cl.length>1?cl[cl.length-2]:(it.cpc!=null?it.cpc:it.pc);
         if(price==null) return;
-        for(var k=0;k<st.length;k++){ if(st[k].t===it.symbol){ st[k].price=price; st[k].chg=(prev&&prev!==0)?((price-prev)/prev)*100:0; break; } }
-      });
+        for(var k=0;k<stocks.length;k++){
+          if(stocks[k].code===code){ stocks[k].price=price; stocks[k].chg=(prev&&prev!==0)?((price-prev)/prev)*100:0; n++; break; }
+        }
+      }catch(e){}
+    });
+    return n;
+  }
+  async function loadSpark225(progress){
+    var B=20,chunks=[];
+    for(var i=0;i<stocks.length;i+=B) chunks.push(stocks.slice(i,i+B).map(function(s){return s.code+'.T';}));
+    var idx=0,done=0;
+    async function worker(w){
+      while(idx<chunks.length){
+        var my=idx++;
+        applySpark(await fetchSpark(chunks[my],my));
+        done++; if(progress) progress(done,chunks.length);
+      }
     }
-    return st;
+    await Promise.all([worker(0),worker(1),worker(2)]);
+    var miss=stocks.filter(function(s){return s.chg==null;}).map(function(s){return s.code+'.T';});
+    if(miss.length&&miss.length<stocks.length){
+      for(var m=0;m<miss.length;m+=B){ applySpark(await fetchSpark(miss.slice(m,m+B),m)); }
+    }
   }
 
   /* --- 描画：業種グループ化ツリーマップ --- */
@@ -768,11 +777,10 @@
     var bySec={};stocks.forEach(function(s){(bySec[s.s]=bySec[s.s]||[]).push(s);});
     var data={children:Object.keys(bySec).map(function(k){return {name:k,children:bySec[k]};})};
     var root=d3.hierarchy(data).sum(function(d){return d.w||0.02;}).sort(function(a,b){return b.value-a.value;});
-    var many=stocks.length>60;
-    d3.treemap().size([W,H-LEG]).paddingOuter(2).paddingTop(many?13:16).paddingInner(many?1:2).round(true)(root);
+    d3.treemap().size([W,H-LEG]).paddingOuter(2).paddingTop(13).paddingInner(1).round(true)(root);
     svg.selectAll('text.sec').data(root.children||[]).join('text')
       .attr('x',function(d){return d.x0+3;}).attr('y',function(d){return d.y0+10;})
-      .attr('font-size',many?'8px':'9px').attr('font-weight','700').attr('fill','#8fae9c').attr('pointer-events','none')
+      .attr('font-size','8px').attr('font-weight','700').attr('fill','#8fae9c').attr('pointer-events','none')
       .text(function(d){var w=d.x1-d.x0;return w>36?(w>70?d.data.name:d.data.name.slice(0,4)):'';});
     var cell=svg.selectAll('g.leaf').data(root.leaves()).join('g')
       .attr('transform',function(d){return 'translate('+d.x0+','+d.y0+')';});
@@ -818,17 +826,23 @@
 
   function init(){
     var d3=window.d3;
+    var ld=document.getElementById('jp-hm-load');
     var finish=function(){
-      var ld=document.getElementById('jp-hm-load');if(ld)ld.style.display='none';
+      if(ld)ld.style.display='none';
       draw(d3);
       var now=new Date(),upd=document.getElementById('jp-hm-upd');
-      if(upd)upd.textContent='更新 '+(updTime||(now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')))+' ・ '+srcLabel;
+      var miss=stocks.filter(function(s){return s.chg==null;}).length;
+      if(upd)upd.textContent='更新 '+(updTime||(now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')))+' ・ '+srcLabel+(miss?('・未取得'+miss):'');
       var box=document.getElementById('jp-hm-box');
       if(box&&window.ResizeObserver){var t;new ResizeObserver(function(){clearTimeout(t);t=setTimeout(function(){if(stocks)draw(d3);},180);}).observe(box);}
     };
-    loadN2(function(data){
-      if(data){ stocks=data; srcLabel='データ: nikkei225jp.com（全'+data.length+'銘柄）'; finish(); }
-      else{ loadFB().then(function(st){ stocks=st; srcLabel='データ: Yahoo Finance（主要40銘柄）'; finish(); }); }
+    loadN2(function(n){
+      if(n>50){ srcLabel='データ: nikkei225jp.com（全225銘柄）'; finish(); }
+      else{
+        loadSpark225(function(dn,total){ if(ld)ld.textContent='データ取得中… '+dn+'/'+total; })
+          .then(function(){ srcLabel='騰落率: Yahoo Finance／構成: 日経225（225銘柄）'; finish(); })
+          .catch(function(){ srcLabel='騰落率取得不可（構成のみ表示）'; finish(); });
+      }
     });
   }
   var ds=document.createElement('script');ds.src='https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js';ds.onload=init;document.head.appendChild(ds);
