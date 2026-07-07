@@ -33,6 +33,7 @@
   img,iframe,table,.frame,.chart,.tradingview-widget-container,.tradingview-widget-container__widget{max-width:100%}
 
   /* ---- ambient ---- */
+  #na-rain{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5}
   .na-grid-bg,.na-scan{position:fixed;inset:0;pointer-events:none;z-index:0}
   .na-grid-bg{background-image:linear-gradient(rgba(110,235,175,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(110,235,175,.05) 1px,transparent 1px);background-size:46px 46px;
     -webkit-mask-image:radial-gradient(130% 90% at 50% 0%,#000 35%,transparent 85%);mask-image:radial-gradient(130% 90% at 50% 0%,#000 35%,transparent 85%)}
@@ -65,8 +66,8 @@
   /* ---- 目次（デスクトップ=左レール固定／モバイル=上部チップ） ---- */
   .na-toc{z-index:55}
   .na-toc ol{list-style:none;margin:0;padding:0}
-  .na-toc a{font-family:var(--mono);text-decoration:none;color:var(--faint);display:flex;align-items:baseline;gap:.55rem;transition:color .2s}
-  .na-toc a .no{font-size:.62rem}
+  .na-toc a{font-family:var(--mono);text-decoration:none;color:var(--sub);display:flex;align-items:baseline;gap:.55rem;transition:color .2s}
+  .na-toc a .no{font-size:.62rem;color:var(--gold);opacity:.75}
   .na-toc a:hover{color:var(--ink)}
   .na-toc a.active{color:var(--gold)}
   .na-toc a:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
@@ -86,8 +87,8 @@
     .na-toc .tt{display:none}
     .na-toc ol{display:flex;gap:.45rem;overflow-x:auto;scrollbar-width:none;max-width:1040px;margin:0 auto}
     .na-toc ol::-webkit-scrollbar{display:none}
-    .na-toc a{font-size:.72rem;padding:.28rem .7rem;border:1px solid var(--line);background:var(--surface);white-space:nowrap;letter-spacing:.05em}
-    .na-toc a.active{border-color:var(--gold-line);box-shadow:var(--glow-line)}
+    .na-toc a{font-size:.74rem;font-weight:500;color:var(--ink);padding:.3rem .75rem;border:1px solid rgba(110,235,175,.3);background:rgba(18,36,26,.92);white-space:nowrap;letter-spacing:.05em}
+    .na-toc a.active{color:var(--gold);border-color:var(--gold);box-shadow:var(--glow-line);background:rgba(53,224,160,.12)}
   }
 
   /* ---- layout / hero ---- */
@@ -139,6 +140,7 @@
   .na-kpi .dl.down{color:var(--down);border-color:rgba(255,93,104,.4);background:rgba(255,93,104,.07)}
   .na-kpi .dl.flat{color:var(--faint);border-color:var(--line)}
   .na-kpi .as{margin-top:.45rem;font-family:var(--mono);font-size:.58rem;color:var(--faint);letter-spacing:.04em;line-height:1.5}
+  .na-kpi canvas.na-spark{display:block;width:100%;height:34px;margin-top:.5rem}
   details.na-mkt-detail{margin:.4rem 0 1rem}
   details.na-mkt-detail>summary{cursor:pointer;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--faint);padding:.35rem .2rem;user-select:none}
   details.na-mkt-detail>summary:hover{color:var(--gold-ink)}
@@ -260,6 +262,7 @@
 </style>
 </head>
 <body>
+<canvas id="na-rain" aria-hidden="true"></canvas>
 <div class="na-grid-bg" aria-hidden="true"></div>
 <div class="na-scan" aria-hidden="true"></div>
 
@@ -643,6 +646,9 @@
 </div>
 <div id="jp-hm-tip"></div>
 <script>
+/* ==== 日経225ヒートマップ（セクターグループ化・恒久ブロック：ルーチンは書き換えない） ====
+   データ＝Yahoo spark バッチAPI（20銘柄/1リクエスト・プロキシ3段フォールバック）。
+   表示＝業種グループ＋銘柄名/前日比ラベル＋凡例。クリックでYahooファイナンス銘柄頁へ。 */
 (function(){
   var S=[
     {n:'トヨタ自動車',t:'7203.T',s:'自動車',w:100},{n:'ソニーグループ',t:'6758.T',s:'電機',w:72},
@@ -667,6 +673,7 @@
     {n:'セコム',t:'9735.T',s:'サービス',w:18},{n:'豊田織機',t:'6201.T',s:'機械',w:16}
   ];
   function cc(p){var c=Math.max(-5,Math.min(5,p||0));if(c<-3)return'#991b1b';if(c<-1.5)return'#ef4444';if(c<-0.3)return'#fca5a5';if(c<0.3)return'#475569';if(c<1.5)return'#86efac';if(c<3)return'#22c55e';return'#15803d';}
+  var LIGHT={'#fca5a5':1,'#86efac':1};
   var stocks;
   var PROX=[
     function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
@@ -674,7 +681,6 @@
     function(u){return 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u);}
   ];
   function normSpark(j){
-    // Yahoo spark は {spark:{result:[…]}} と {SYMBOL:{close:[…],…}} の2形式がある
     if(!j||typeof j!=='object') return null;
     if(j.contents){ try{ return normSpark(JSON.parse(j.contents)); }catch(e){ return null; } }
     var list=[];
@@ -711,8 +717,7 @@
       try{
         var cl=(it.close||[]).filter(function(v){return v!=null;});
         var price=it.rmp!=null?it.rmp:(cl.length?cl[cl.length-1]:null);
-        // 前日比の基準は終値配列の直近2本を最優先（range=5dで週末・休場をまたいでも正しい前営業日比になる）
-        var prev=(cl.length>1)?cl[cl.length-2]:(it.cpc!=null?it.cpc:it.pc);
+        var prev=cl.length>1?cl[cl.length-2]:(it.cpc!=null?it.cpc:it.pc);
         if(price==null) return;
         for(var k=0;k<stocks.length;k++){ if(stocks[k].t===it.symbol){ stocks[k].price=price; stocks[k].chg=(prev&&prev!==0)?((price-prev)/prev)*100:0; n++; break; } }
       }catch(e){}
@@ -729,20 +734,56 @@
   function draw(d3){
     var box=document.getElementById('jp-hm-box');if(!box)return;
     var W=box.clientWidth,H=box.clientHeight;
+    var LEG=26;
     var svg=d3.select('#jp-hm-svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
     svg.selectAll('*').remove();
-    var root=d3.hierarchy({children:stocks}).sum(function(d){return d.w||1;}).sort(function(a,b){return b.value-a.value;});
-    d3.treemap().size([W,H]).paddingOuter(3).paddingInner(2).round(true)(root);
-    var cell=svg.selectAll('g').data(root.leaves()).join('g').attr('transform',function(d){return'translate('+d.x0+','+d.y0+')';});
-    cell.append('rect').attr('width',function(d){return Math.max(0,d.x1-d.x0);}).attr('height',function(d){return Math.max(0,d.y1-d.y0);}).attr('fill',function(d){return d.data.chg!=null?cc(d.data.chg):'#374151';}).attr('rx',3).style('cursor','pointer').on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.t,'_blank');});
+    var bySec={};stocks.forEach(function(s){(bySec[s.s]=bySec[s.s]||[]).push(s);});
+    var data={children:Object.keys(bySec).map(function(k){return {name:k,children:bySec[k]};})};
+    var root=d3.hierarchy(data).sum(function(d){return d.w||1;}).sort(function(a,b){return b.value-a.value;});
+    d3.treemap().size([W,H-LEG]).paddingOuter(2).paddingTop(16).paddingInner(2).round(true)(root);
+    // 業種ヘッダー
+    svg.selectAll('text.sec').data(root.children||[]).join('text')
+      .attr('x',function(d){return d.x0+4;}).attr('y',function(d){return d.y0+11;})
+      .attr('font-size','9px').attr('font-weight','700').attr('fill','#8fae9c').attr('pointer-events','none')
+      .text(function(d){return (d.x1-d.x0)>30?d.data.name:'';});
+    // 銘柄タイル
+    var cell=svg.selectAll('g.leaf').data(root.leaves()).join('g')
+      .attr('transform',function(d){return 'translate('+d.x0+','+d.y0+')';});
+    cell.append('rect')
+      .attr('width',function(d){return Math.max(0,d.x1-d.x0);})
+      .attr('height',function(d){return Math.max(0,d.y1-d.y0);})
+      .attr('fill',function(d){return d.data.chg!=null?cc(d.data.chg):'#374151';})
+      .attr('rx',2).style('cursor','pointer')
+      .on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.t,'_blank');});
     cell.each(function(d){
       var cw=d.x1-d.x0,ch=d.y1-d.y0,cx=cw/2,cy=ch/2,g=d3.select(this);
+      var fill=d.data.chg!=null?cc(d.data.chg):'#374151';
+      var main=LIGHT[fill]?'#13231a':'#fff';
+      var sub=LIGHT[fill]?'rgba(19,35,26,.8)':'rgba(255,255,255,.82)';
       var chgStr=(d.data.chg==null)?'—':(((d.data.chg>=0)?'+':'')+d.data.chg.toFixed(2)+'%');
-      if(cw>55&&ch>40){var fs=cw>90?12:10;g.append('text').attr('x',cx).attr('y',ch>62?cy-9:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','#fff').attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n);if(ch>52)g.append('text').attr('x',cx).attr('y',ch>62?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','rgba(255,255,255,.82)').attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);}
-      else if(cw>30&&ch>22){g.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill','#fff').attr('font-size','8px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>4?d.data.n.slice(0,4):d.data.n);}
+      if(cw>55&&ch>40){
+        var fs=cw>90?12:10;
+        g.append('text').attr('x',cx).attr('y',ch>62?cy-9:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n);
+        if(ch>52)g.append('text').attr('x',cx).attr('y',ch>62?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',sub).attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);
+      }else if(cw>30&&ch>22){
+        g.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size','8px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>4?d.data.n.slice(0,4):d.data.n);
+      }
     });
+    // 凡例（TVウィジェット風）
+    var LCOL=['#991b1b','#ef4444','#fca5a5','#475569','#86efac','#22c55e','#15803d'];
+    var LLBL=['-3%','-1.5%','-0.3%','+0.3%','+1.5%','+3%'];
+    var sw=Math.min(46,(W-40)/7),gap=3,lx=(W-(sw*7+gap*6))/2,ly=H-16;
+    LCOL.forEach(function(c,i){
+      svg.append('rect').attr('x',lx+i*(sw+gap)).attr('y',ly).attr('width',sw).attr('height',7).attr('rx',1.5).attr('fill',c);
+      if(i<6){svg.append('text').attr('x',lx+(i+1)*(sw+gap)-gap/2).attr('y',ly+16).attr('text-anchor','middle').attr('font-size','8px').attr('fill','#6d8878').text(LLBL[i]);}
+    });
+    // ツールチップ
     var tip=document.getElementById('jp-hm-tip');
-    cell.on('mousemove',function(ev,d){var sg=(d.data.chg||0)>=0?'+':'',cls=(d.data.chg||0)>=0?'tt-up':'tt-dn';tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-50)+'px';tip.innerHTML='<b>'+d.data.n+'</b><br>'+(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">データ取得不可</span>')+(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')+'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+'</span>';}).on('mouseleave',function(){tip.style.display='none';});
+    cell.on('mousemove',function(ev,d){
+      var sg=(d.data.chg||0)>=0?'+':'',cls=(d.data.chg||0)>=0?'tt-up':'tt-dn';
+      tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-50)+'px';
+      tip.innerHTML='<b>'+d.data.n+'</b><br>'+(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">データ取得不可</span>')+(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')+'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+'</span>';
+    }).on('mouseleave',function(){tip.style.display='none';});
   }
   function init(){
     var d3=window.d3;
@@ -830,7 +871,7 @@
     var rows=shell?[].slice.call(shell.querySelectorAll('table.mkt tbody tr')):[];
     if(sec1&&shell&&rows.length){
       var grid=document.createElement('div'); grid.className='na-kpis';
-      var built=0;
+      var built=0; var tiles=[];
       rows.forEach(function(tr){
         var td=tr.querySelectorAll('td'); if(td.length<4) return;
         var nameCell=td[0].cloneNode(true);
@@ -851,7 +892,7 @@
         tile.querySelector('.dl').textContent=deltaTxt;
         tile.querySelector('.as').textContent=srcTxt?('《'+(m?m[0]:srcTxt.split('/')[0].trim())+'》'):'';
         if(srcTxt) tile.title=srcTxt;
-        grid.appendChild(tile); built++;
+        grid.appendChild(tile); built++; tiles.push({name:name,cls:cls,el:tile});
       });
       if(built){
         shell.parentNode.insertBefore(grid,shell);
@@ -860,6 +901,112 @@
         shell.parentNode.insertBefore(det,shell);
         det.appendChild(shell);
       }
+    }
+  }catch(e){}
+
+  /* 01マーケット：KPIタイルに直近1ヶ月スパークライン（Yahoo spark実データ・取得失敗時は非表示） */
+  try{
+    if(typeof tiles!=='undefined'&&tiles&&tiles.length&&window.fetch){
+      var symOf=function(n){
+        if(/日経/.test(n))return '^N225';
+        if(/ナスダック/.test(n))return '^NDX';
+        if(/[SＳ][&＆]/.test(n))return '^GSPC';
+        if(/ドル円/.test(n))return 'JPY=X';
+        if(/金|ゴールド/.test(n))return 'GC=F';
+        if(/三菱|8306/.test(n))return '8306.T';
+        return null;
+      };
+      var sPROX=[
+        function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
+        function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);},
+        function(u){return 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u);}
+      ];
+      var sNorm=function(j){
+        if(!j||typeof j!=='object') return null;
+        if(j.contents){ try{ return sNorm(JSON.parse(j.contents)); }catch(e){ return null; } }
+        var list=[];
+        if(j.spark&&j.spark.result){
+          j.spark.result.forEach(function(it){
+            var r=(it.response&&it.response[0])||{};
+            var q=(r.indicators&&r.indicators.quote&&r.indicators.quote[0])||{};
+            list.push({symbol:it.symbol,close:q.close||[]});
+          });
+        }else{
+          Object.keys(j).forEach(function(k){var v=j[k];if(v&&v.symbol&&v.close)list.push({symbol:v.symbol,close:v.close});});
+        }
+        return list.length?list:null;
+      };
+      var sFetch=async function(syms){
+        var u='https://query1.finance.yahoo.com/v8/finance/spark?interval=1d&range=1mo&symbols='+syms.join(',');
+        for(var p=0;p<sPROX.length;p++){
+          try{
+            var r=await fetch(sPROX[p](u),{signal:AbortSignal.timeout(10000)});
+            if(!r.ok) continue;
+            var list=sNorm(await r.json());
+            if(list) return list;
+          }catch(e){}
+        }
+        return null;
+      };
+      var sparkJobs=[];
+      var drawSpark=function(t,cl){
+        var c=t.el.querySelector('canvas.na-spark');
+        if(!c){c=document.createElement('canvas');c.className='na-spark';c.setAttribute('role','img');c.setAttribute('aria-label','直近1ヶ月の推移');c.title='直近1ヶ月の推移（Yahoo Finance・日次終値）';t.el.appendChild(c);}
+        var dpr=Math.min(devicePixelRatio||1,2),w=c.clientWidth||200,h=34;
+        c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);
+        var x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+        var mn=Math.min.apply(null,cl),mx=Math.max.apply(null,cl),sp=(mx-mn)||1,pad=4;
+        var X=function(i){return pad+(w-pad*2)*i/(cl.length-1);},Y=function(v){return h-pad-(h-pad*2)*(v-mn)/sp;};
+        x.clearRect(0,0,w,h);
+        x.beginPath();cl.forEach(function(v,i){i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v));});
+        x.strokeStyle='rgba(42,169,104,.9)';x.lineWidth=2;x.lineJoin='round';x.stroke();
+        var col=t.cls==='up'?'#4ade80':(t.cls==='down'?'#ff5d68':'#6d8878');
+        var li=cl.length-1;
+        x.beginPath();x.arc(X(li),Y(cl[li]),4.2,0,Math.PI*2);x.fillStyle='#0c1712';x.fill();
+        x.beginPath();x.arc(X(li),Y(cl[li]),2.8,0,Math.PI*2);x.fillStyle=col;x.fill();
+      };
+      var want=[];tiles.forEach(function(t){t.sym=symOf(t.name);if(t.sym&&want.indexOf(t.sym)<0)want.push(t.sym);});
+      if(want.length){
+        sFetch(want).then(function(list){
+          if(!list)return;
+          var map={};list.forEach(function(it){var cl=(it.close||[]).filter(function(v){return v!=null;});if(cl.length>2)map[it.symbol]=cl;});
+          tiles.forEach(function(t){var cl=t.sym&&map[t.sym];if(cl){sparkJobs.push({t:t,cl:cl});drawSpark(t,cl);}});
+        }).catch(function(){});
+        var srt;addEventListener('resize',function(){clearTimeout(srt);srt=setTimeout(function(){sparkJobs.forEach(function(j){drawSpark(j.t,j.cl);});},180);});
+      }
+    }
+  }catch(e){}
+
+  /* 背景：Matrix風グリフレイン（reduced-motion時・非対応時は静かに無効） */
+  try{
+    var rc=document.getElementById('na-rain');
+    if(rc&&!reduced&&rc.getContext){
+      var rctx=rc.getContext('2d');
+      var GL='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン0123456789ABCDEFGHJKLMNPQRSTUVWXYZ¥$+-<>*/';
+      var rW,rH,rcols,rdrops,rfs=13;
+      var rsz=function(){rW=rc.width=innerWidth;rH=rc.height=innerHeight;rcols=Math.max(8,Math.floor(rW/(rfs*1.6)));rdrops=[];for(var i=0;i<rcols;i++)rdrops.push(Math.random()*-rH/rfs);};
+      rsz();addEventListener('resize',rsz);
+      var rlast=0;
+      var rframe=function(ts){
+        requestAnimationFrame(rframe);
+        if(ts-rlast<70)return;rlast=ts;
+        if(document.hidden)return;
+        rctx.globalCompositeOperation='destination-out';
+        rctx.fillStyle='rgba(0,0,0,0.10)';
+        rctx.fillRect(0,0,rW,rH);
+        rctx.globalCompositeOperation='source-over';
+        rctx.font=rfs+'px monospace';
+        for(var i=0;i<rcols;i++){
+          var y=rdrops[i]*rfs;
+          if(y>0&&y<rH+rfs){
+            rctx.fillStyle=Math.random()<0.08?'rgba(141,242,196,0.5)':'rgba(53,224,160,0.26)';
+            rctx.fillText(GL[(Math.random()*GL.length)|0],i*rfs*1.6,y);
+          }
+          if(y>rH&&Math.random()>0.976)rdrops[i]=Math.random()*-60;
+          rdrops[i]++;
+        }
+      };
+      requestAnimationFrame(rframe);
     }
   }catch(e){}
 
