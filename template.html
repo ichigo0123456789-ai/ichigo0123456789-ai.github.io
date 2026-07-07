@@ -646,35 +646,65 @@
 </div>
 <div id="jp-hm-tip"></div>
 <script>
-/* ==== 日経225ヒートマップ（セクターグループ化・恒久ブロック：ルーチンは書き換えない） ====
-   データ＝Yahoo spark バッチAPI（20銘柄/1リクエスト・プロキシ3段フォールバック）。
-   表示＝業種グループ＋銘柄名/前日比ラベル＋凡例。クリックでYahooファイナンス銘柄頁へ。 */
+/* ==== 日経225ヒートマップ（全225銘柄・恒久ブロック：ルーチンは書き換えない） ====
+   一次データ＝nikkei225jp.com の公開フィード（script読込・構成率/前日比/寄与度つき・出典表示）。
+   取得不可時＝Yahoo spark バッチ（主要40銘柄）へ自動フォールバック。
+   表示＝業種グループ化ツリーマップ（面積=指数構成率・色=前日比%）＋凡例。クリックでYahooファイナンス銘柄頁へ。 */
 (function(){
-  var S=[
-    {n:'トヨタ自動車',t:'7203.T',s:'自動車',w:100},{n:'ソニーグループ',t:'6758.T',s:'電機',w:72},
-    {n:'東京エレクトロン',t:'8035.T',s:'電機',w:70},{n:'キーエンス',t:'6861.T',s:'電機',w:68},
-    {n:'三菱UFJ',t:'8306.T',s:'金融',w:60},{n:'ソフトバンクG',t:'9984.T',s:'通信',w:58},
-    {n:'ダイキン工業',t:'6367.T',s:'電機',w:50},{n:'信越化学',t:'4063.T',s:'化学',w:48},
-    {n:'任天堂',t:'7974.T',s:'サービス',w:46},{n:'NTT',t:'9432.T',s:'通信',w:44},
-    {n:'三井住友FG',t:'8316.T',s:'金融',w:42},{n:'三菱商事',t:'8058.T',s:'商社',w:40},
-    {n:'KDDI',t:'9433.T',s:'通信',w:40},{n:'三井物産',t:'8031.T',s:'商社',w:38},
-    {n:'日本電産',t:'6594.T',s:'電機',w:38},{n:'第一三共',t:'4568.T',s:'医薬品',w:36},
-    {n:'伊藤忠商事',t:'8001.T',s:'商社',w:36},{n:'村田製作所',t:'6981.T',s:'電機',w:34},
-    {n:'中外製薬',t:'4519.T',s:'医薬品',w:36},{n:'武田薬品',t:'4502.T',s:'医薬品',w:34},
-    {n:'ホンダ',t:'7267.T',s:'自動車',w:36},{n:'ファナック',t:'6954.T',s:'電機',w:32},
-    {n:'みずほFG',t:'8411.T',s:'金融',w:30},{n:'テルモ',t:'4543.T',s:'医薬品',w:30},
-    {n:'セブンアイHD',t:'3382.T',s:'小売',w:30},{n:'三菱重工',t:'7011.T',s:'機械',w:28},
-    {n:'富士フイルム',t:'4901.T',s:'精密',w:28},{n:'キヤノン',t:'7751.T',s:'電機',w:28},
-    {n:'富士通',t:'6702.T',s:'電機',w:26},{n:'JR東日本',t:'9020.T',s:'輸送',w:26},
-    {n:'JT',t:'2914.T',s:'食品',w:26},{n:'三菱電機',t:'6503.T',s:'電機',w:24},
-    {n:'味の素',t:'2802.T',s:'食品',w:24},{n:'三菱地所',t:'8802.T',s:'不動産',w:22},
-    {n:'ブリヂストン',t:'5108.T',s:'ゴム',w:22},{n:'OLC',t:'4661.T',s:'サービス',w:22},
-    {n:'スズキ',t:'7269.T',s:'自動車',w:20},{n:'JR東海',t:'9022.T',s:'輸送',w:20},
-    {n:'セコム',t:'9735.T',s:'サービス',w:18},{n:'豊田織機',t:'6201.T',s:'機械',w:16}
-  ];
+  var SEC={10:'水産・農林',20:'鉱業',30:'建設',40:'食料品',50:'繊維',60:'パルプ・紙',70:'化学',80:'医薬品',90:'石油・石炭',100:'ゴム',110:'ガラス・土石',120:'鉄鋼',130:'非鉄金属',140:'金属製品',150:'機械',160:'電気機器',170:'輸送用機器',180:'精密機器',190:'その他製品',200:'電気・ガス',210:'陸運',220:'海運',230:'空運',240:'倉庫・運輸',250:'情報・通信',260:'卸売',270:'小売',280:'銀行',290:'証券',300:'保険',310:'その他金融',320:'不動産',330:'サービス'};
   function cc(p){var c=Math.max(-5,Math.min(5,p||0));if(c<-3)return'#991b1b';if(c<-1.5)return'#ef4444';if(c<-0.3)return'#fca5a5';if(c<0.3)return'#475569';if(c<1.5)return'#86efac';if(c<3)return'#22c55e';return'#15803d';}
   var LIGHT={'#fca5a5':1,'#86efac':1};
-  var stocks;
+  var stocks=null, updTime=null, srcLabel='';
+
+  /* --- 一次：nikkei225jp.com フィード（全225銘柄） --- */
+  function parseN2(){
+    if(typeof N2==='undefined'||!N2||!N2.length) return null;
+    var out=[];
+    for(var i=0;i<N2.length;i++){
+      var f=String(N2[i]).split('__'); if(f.length<9) continue;
+      var w=parseFloat(f[5]),chg=parseFloat(f[6]),pr=parseFloat(f[3]),ky=parseFloat(f[8]);
+      out.push({code:f[0],s:SEC[+f[1]]||'その他',n:f[2],price:isFinite(pr)?pr:null,w:(isFinite(w)&&w>0)?w:0.02,chg:isFinite(chg)?chg:null,kiyo:isFinite(ky)?ky:null});
+    }
+    return out.length>50?out:null;
+  }
+  function loadN2(cb){
+    var done=false,fin=function(v){if(!done){done=true;cb(v);}};
+    var s=document.createElement('script');
+    s.src='https://nikkei225jp.com/_data/_nfsDATA/min/country_jp_nk225N.js?'+Date.now();
+    s.onload=function(){fin(parseN2());};
+    s.onerror=function(){fin(null);};
+    document.head.appendChild(s);
+    var s2=document.createElement('script');
+    s2.src='https://nikkei225jp.com/_data/_nfsDATA/min/country_jp_kiyo10N.js?'+Date.now();
+    s2.onload=function(){try{if(typeof LastTime2!=='undefined')updTime=LastTime2;}catch(e){}};
+    s2.onerror=function(){};
+    document.head.appendChild(s2);
+    setTimeout(function(){fin(null);},12000);
+  }
+
+  /* --- フォールバック：Yahoo spark バッチ（主要40銘柄） --- */
+  var FB=[
+    {n:'トヨタ自動車',t:'7203.T',s:'輸送用機器',w:100},{n:'ソニーグループ',t:'6758.T',s:'電気機器',w:72},
+    {n:'東京エレクトロン',t:'8035.T',s:'電気機器',w:70},{n:'キーエンス',t:'6861.T',s:'電気機器',w:68},
+    {n:'三菱UFJ',t:'8306.T',s:'銀行',w:60},{n:'ソフトバンクG',t:'9984.T',s:'情報・通信',w:58},
+    {n:'ダイキン工業',t:'6367.T',s:'機械',w:50},{n:'信越化学',t:'4063.T',s:'化学',w:48},
+    {n:'任天堂',t:'7974.T',s:'その他製品',w:46},{n:'NTT',t:'9432.T',s:'情報・通信',w:44},
+    {n:'三井住友FG',t:'8316.T',s:'銀行',w:42},{n:'三菱商事',t:'8058.T',s:'卸売',w:40},
+    {n:'KDDI',t:'9433.T',s:'情報・通信',w:40},{n:'三井物産',t:'8031.T',s:'卸売',w:38},
+    {n:'日本電産',t:'6594.T',s:'電気機器',w:38},{n:'第一三共',t:'4568.T',s:'医薬品',w:36},
+    {n:'伊藤忠商事',t:'8001.T',s:'卸売',w:36},{n:'村田製作所',t:'6981.T',s:'電気機器',w:34},
+    {n:'中外製薬',t:'4519.T',s:'医薬品',w:36},{n:'武田薬品',t:'4502.T',s:'医薬品',w:34},
+    {n:'ホンダ',t:'7267.T',s:'輸送用機器',w:36},{n:'ファナック',t:'6954.T',s:'電気機器',w:32},
+    {n:'みずほFG',t:'8411.T',s:'銀行',w:30},{n:'テルモ',t:'4543.T',s:'精密機器',w:30},
+    {n:'セブンアイHD',t:'3382.T',s:'小売',w:30},{n:'三菱重工',t:'7011.T',s:'機械',w:28},
+    {n:'富士フイルム',t:'4901.T',s:'化学',w:28},{n:'キヤノン',t:'7751.T',s:'電気機器',w:28},
+    {n:'富士通',t:'6702.T',s:'電気機器',w:26},{n:'JR東日本',t:'9020.T',s:'陸運',w:26},
+    {n:'JT',t:'2914.T',s:'食料品',w:26},{n:'三菱電機',t:'6503.T',s:'電気機器',w:24},
+    {n:'味の素',t:'2802.T',s:'食料品',w:24},{n:'三菱地所',t:'8802.T',s:'不動産',w:22},
+    {n:'ブリヂストン',t:'5108.T',s:'ゴム',w:22},{n:'OLC',t:'4661.T',s:'サービス',w:22},
+    {n:'スズキ',t:'7269.T',s:'輸送用機器',w:20},{n:'JR東海',t:'9022.T',s:'陸運',w:20},
+    {n:'セコム',t:'9735.T',s:'サービス',w:18},{n:'豊田織機',t:'6201.T',s:'機械',w:16}
+  ];
   var PROX=[
     function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
     function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);},
@@ -711,65 +741,61 @@
     }
     return null;
   }
-  function applySpark(list){
-    if(!list) return 0; var n=0;
-    list.forEach(function(it){
-      try{
+  async function loadFB(){
+    var st=FB.map(function(s){return{code:s.t.replace('.T',''),n:s.n,s:s.s,w:s.w,chg:null,price:null,kiyo:null,t:s.t};});
+    var B=20,chunks=[];
+    for(var i=0;i<st.length;i+=B) chunks.push(st.slice(i,i+B).map(function(s){return s.t;}));
+    for(var c=0;c<chunks.length;c++){
+      var list=await fetchSpark(chunks[c]);
+      if(list) list.forEach(function(it){
         var cl=(it.close||[]).filter(function(v){return v!=null;});
         var price=it.rmp!=null?it.rmp:(cl.length?cl[cl.length-1]:null);
         var prev=cl.length>1?cl[cl.length-2]:(it.cpc!=null?it.cpc:it.pc);
         if(price==null) return;
-        for(var k=0;k<stocks.length;k++){ if(stocks[k].t===it.symbol){ stocks[k].price=price; stocks[k].chg=(prev&&prev!==0)?((price-prev)/prev)*100:0; n++; break; } }
-      }catch(e){}
-    });
-    return n;
+        for(var k=0;k<st.length;k++){ if(st[k].t===it.symbol){ st[k].price=price; st[k].chg=(prev&&prev!==0)?((price-prev)/prev)*100:0; break; } }
+      });
+    }
+    return st;
   }
-  async function load(){
-    var B=20,chunks=[];
-    for(var i=0;i<stocks.length;i+=B) chunks.push(stocks.slice(i,i+B).map(function(s){return s.t;}));
-    for(var c=0;c<chunks.length;c++){ applySpark(await fetchSpark(chunks[c])); }
-    var miss=stocks.filter(function(s){return s.chg==null;}).map(function(s){return s.t;});
-    if(miss.length&&miss.length<stocks.length){ await new Promise(function(r){setTimeout(r,1200);}); applySpark(await fetchSpark(miss)); }
-  }
+
+  /* --- 描画：業種グループ化ツリーマップ --- */
   function draw(d3){
-    var box=document.getElementById('jp-hm-box');if(!box)return;
+    var box=document.getElementById('jp-hm-box');if(!box||!stocks)return;
     var W=box.clientWidth,H=box.clientHeight;
     var LEG=26;
     var svg=d3.select('#jp-hm-svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
     svg.selectAll('*').remove();
     var bySec={};stocks.forEach(function(s){(bySec[s.s]=bySec[s.s]||[]).push(s);});
     var data={children:Object.keys(bySec).map(function(k){return {name:k,children:bySec[k]};})};
-    var root=d3.hierarchy(data).sum(function(d){return d.w||1;}).sort(function(a,b){return b.value-a.value;});
-    d3.treemap().size([W,H-LEG]).paddingOuter(2).paddingTop(16).paddingInner(2).round(true)(root);
-    // 業種ヘッダー
+    var root=d3.hierarchy(data).sum(function(d){return d.w||0.02;}).sort(function(a,b){return b.value-a.value;});
+    var many=stocks.length>60;
+    d3.treemap().size([W,H-LEG]).paddingOuter(2).paddingTop(many?13:16).paddingInner(many?1:2).round(true)(root);
     svg.selectAll('text.sec').data(root.children||[]).join('text')
-      .attr('x',function(d){return d.x0+4;}).attr('y',function(d){return d.y0+11;})
-      .attr('font-size','9px').attr('font-weight','700').attr('fill','#8fae9c').attr('pointer-events','none')
-      .text(function(d){return (d.x1-d.x0)>30?d.data.name:'';});
-    // 銘柄タイル
+      .attr('x',function(d){return d.x0+3;}).attr('y',function(d){return d.y0+10;})
+      .attr('font-size',many?'8px':'9px').attr('font-weight','700').attr('fill','#8fae9c').attr('pointer-events','none')
+      .text(function(d){var w=d.x1-d.x0;return w>36?(w>70?d.data.name:d.data.name.slice(0,4)):'';});
     var cell=svg.selectAll('g.leaf').data(root.leaves()).join('g')
       .attr('transform',function(d){return 'translate('+d.x0+','+d.y0+')';});
     cell.append('rect')
       .attr('width',function(d){return Math.max(0,d.x1-d.x0);})
       .attr('height',function(d){return Math.max(0,d.y1-d.y0);})
       .attr('fill',function(d){return d.data.chg!=null?cc(d.data.chg):'#374151';})
-      .attr('rx',2).style('cursor','pointer')
-      .on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.t,'_blank');});
+      .attr('rx',1.5).style('cursor','pointer')
+      .on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.code+'.T','_blank');});
     cell.each(function(d){
       var cw=d.x1-d.x0,ch=d.y1-d.y0,cx=cw/2,cy=ch/2,g=d3.select(this);
       var fill=d.data.chg!=null?cc(d.data.chg):'#374151';
       var main=LIGHT[fill]?'#13231a':'#fff';
       var sub=LIGHT[fill]?'rgba(19,35,26,.8)':'rgba(255,255,255,.82)';
       var chgStr=(d.data.chg==null)?'—':(((d.data.chg>=0)?'+':'')+d.data.chg.toFixed(2)+'%');
-      if(cw>55&&ch>40){
-        var fs=cw>90?12:10;
-        g.append('text').attr('x',cx).attr('y',ch>62?cy-9:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n);
-        if(ch>52)g.append('text').attr('x',cx).attr('y',ch>62?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',sub).attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);
-      }else if(cw>30&&ch>22){
+      if(cw>55&&ch>38){
+        var fs=cw>95?12:10;
+        g.append('text').attr('x',cx).attr('y',ch>58?cy-8:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>8?d.data.n.slice(0,8):d.data.n);
+        if(ch>48)g.append('text').attr('x',cx).attr('y',ch>58?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',sub).attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);
+      }else if(cw>32&&ch>18){
         g.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size','8px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>4?d.data.n.slice(0,4):d.data.n);
       }
     });
-    // 凡例（TVウィジェット風）
     var LCOL=['#991b1b','#ef4444','#fca5a5','#475569','#86efac','#22c55e','#15803d'];
     var LLBL=['-3%','-1.5%','-0.3%','+0.3%','+1.5%','+3%'];
     var sw=Math.min(46,(W-40)/7),gap=3,lx=(W-(sw*7+gap*6))/2,ly=H-16;
@@ -777,25 +803,33 @@
       svg.append('rect').attr('x',lx+i*(sw+gap)).attr('y',ly).attr('width',sw).attr('height',7).attr('rx',1.5).attr('fill',c);
       if(i<6){svg.append('text').attr('x',lx+(i+1)*(sw+gap)-gap/2).attr('y',ly+16).attr('text-anchor','middle').attr('font-size','8px').attr('fill','#6d8878').text(LLBL[i]);}
     });
-    // ツールチップ
     var tip=document.getElementById('jp-hm-tip');
     cell.on('mousemove',function(ev,d){
       var sg=(d.data.chg||0)>=0?'+':'',cls=(d.data.chg||0)>=0?'tt-up':'tt-dn';
-      tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-50)+'px';
-      tip.innerHTML='<b>'+d.data.n+'</b><br>'+(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">データ取得不可</span>')+(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')+'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+'</span>';
+      var rows='<b>'+d.data.n+'</b>（'+d.data.code+'）<br>'
+        +(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">データ取得不可</span>')
+        +(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')
+        +(d.data.kiyo!=null?'<br><span style="color:var(--faint);font-size:.7rem">寄与度 '+(d.data.kiyo>=0?'+':'')+d.data.kiyo.toFixed(2)+'</span>':'')
+        +'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+(d.data.w?'・構成率'+d.data.w.toFixed(2)+'%':'')+'</span>';
+      tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-58)+'px';
+      tip.innerHTML=rows;
     }).on('mouseleave',function(){tip.style.display='none';});
   }
+
   function init(){
     var d3=window.d3;
-    stocks=S.map(function(s){return{n:s.n,t:s.t,s:s.s,w:s.w};});
-    load().then(function(){
+    var finish=function(){
       var ld=document.getElementById('jp-hm-load');if(ld)ld.style.display='none';
       draw(d3);
       var now=new Date(),upd=document.getElementById('jp-hm-upd');
-      if(upd)upd.textContent='更新 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+      if(upd)upd.textContent='更新 '+(updTime||(now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')))+' ・ '+srcLabel;
+      var box=document.getElementById('jp-hm-box');
+      if(box&&window.ResizeObserver){var t;new ResizeObserver(function(){clearTimeout(t);t=setTimeout(function(){if(stocks)draw(d3);},180);}).observe(box);}
+    };
+    loadN2(function(data){
+      if(data){ stocks=data; srcLabel='データ: nikkei225jp.com（全'+data.length+'銘柄）'; finish(); }
+      else{ loadFB().then(function(st){ stocks=st; srcLabel='データ: Yahoo Finance（主要40銘柄）'; finish(); }); }
     });
-    var box=document.getElementById('jp-hm-box');
-    if(box&&window.ResizeObserver){var t;new ResizeObserver(function(){clearTimeout(t);t=setTimeout(function(){if(stocks&&stocks.some(function(s){return s.chg!=null;}))draw(d3);},180);}).observe(box);}
   }
   var ds=document.createElement('script');ds.src='https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js';ds.onload=init;document.head.appendChild(ds);
 })();
