@@ -394,5 +394,49 @@
    "changePct": null,
    "src": "6/25寄り2,920近辺、終値未確定（Yahoo!ファイナンス as of 2026-06-25）"
   }
+ },
+ {
+  "briefDate": "2026-07-11",
+  "tradingDate": {
+   "jp": "2026-07-10",
+   "us": "2026-07-10"
+  },
+  "note": "土曜のため東証・米国市場とも休場。日経平均続伸(+1.20%)・S&P500上昇確定(+0.42%)の一方ドル円は円高(▼0.41%)。ナスダック100は金曜NY引け確定値取得不可。",
+  "nikkei": {
+   "value": 68557.73,
+   "change": 813.88,
+   "changePct": 1.2,
+   "src": "Yahoo!ファイナンス(ウエルスアドバイザー)/日本経済新聞/株探ニュース as of 2026-07-10"
+  },
+  "nasdaq100": {
+   "value": null,
+   "change": null,
+   "changePct": null,
+   "src": "取得不可(金曜NY引け確定値が取材時点で未公表)"
+  },
+  "sp500": {
+   "value": 7575.39,
+   "change": 31.75,
+   "changePct": 0.42,
+   "src": "CNBC (stock-market-today-live-updates, \"S&P 500 closes higher to notch a winning week\") / Yahoo Finance as of 2026-07-10 NY引け確定（前日7/9終値7,543.64との整合を計算で確認）"
+  },
+  "usdjpy": {
+   "value": 161.69,
+   "change": -0.66,
+   "changePct": -0.41,
+   "src": "ダイヤモンド・ザイ(Fisco)/Yahoo!ファイナンス as of 2026-07-10 17時"
+  },
+  "gold": {
+   "value": 4111.28,
+   "change": -12.37,
+   "changePct": -0.3,
+   "src": "Investing.com(XAU/USD) as of 2026-07-10（別ソースvietnam.vnは+12.9ドルと逆行し不整合あり）"
+  },
+  "mufg8306": {
+   "value": 3461,
+   "change": 47.0,
+   "changePct": 1.38,
+   "src": "Yahoo!ファイナンス as of 2026-07-10 15:30大引け確定値"
+  }
  }
 ]
