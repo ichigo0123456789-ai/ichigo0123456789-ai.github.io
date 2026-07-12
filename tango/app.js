@@ -9,12 +9,32 @@
 const LS = {
   known:  'tango_known_v1',      // 覚えた単語ID配列
   quiz:   'tango_quiz_hist_v1',  // クイズ履歴
+  user:   'tango_user_words_v1', // ユーザーがインポートした単語（この端末のみ）
 };
 const load = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
 let known = new Set(load(LS.known, []));
 let quizHist = load(LS.quiz, []);
+let userWords = load(LS.user, []); // [{word, ipa, pos, vt, ja, ex, exJa, level, cat}]
+
+/* ------------------------------------------------------------
+   有効な単語カタログ＝ 組み込み単語 ＋ ユーザーのインポート単語
+   ※ ユーザー単語は localStorage にのみ保存され、公開/送信されません
+   ------------------------------------------------------------ */
+const USER_ID_BASE = 100001;
+let CATALOG = [];
+function rebuildCatalog(){
+  const base  = WORDS.map(w => ({ ...w, src:'builtin' }));
+  const extra = userWords.map((w, i) => ({
+    id: USER_ID_BASE + i, src:'user',
+    word: w.word || '', ipa: w.ipa || '', pos: w.pos || 'noun', vt: w.vt || '',
+    ja: w.ja || '', ex: w.ex || '', exJa: w.exJa || '',
+    level: w.level || 600, cat: w.cat || 'マイ単語',
+  }));
+  CATALOG = base.concat(extra).map((w, i) => ({ ...w, no: i + 1 }));
+}
+rebuildCatalog();
 
 /* ---------- 状態 ---------- */
 let filterLevel = 'all';
@@ -64,7 +84,7 @@ const VT_JA  = { t:'他動詞', i:'自動詞', ti:'自/他動詞' };
    単語帳リスト描画
    ============================================================ */
 function filteredWords(){
-  return WORDS.filter(w => {
+  return CATALOG.filter(w => {
     if (filterLevel === 'known'   && !known.has(w.id)) return false;
     if (filterLevel === 'unknown' &&  known.has(w.id)) return false;
     if (['600','730','860','990'].includes(filterLevel) && String(w.level) !== filterLevel) return false;
@@ -83,7 +103,7 @@ function renderList(){
   const list = document.getElementById('list');
   const items = filteredWords();
   document.getElementById('count').textContent =
-    `${items.length}語　（覚えた ${known.size} / 全${WORDS.length}語）`;
+    `${items.length}語　（覚えた ${known.size} / 全${CATALOG.length}語）`;
 
   if (!items.length){
     list.innerHTML = '<div class="empty">該当する単語がありません。</div>';
@@ -136,7 +156,7 @@ document.getElementById('list').addEventListener('click', e => {
   if (!btn) return;
   const card = btn.closest('.card');
   const id = +card.dataset.id;
-  const w = WORDS.find(x => x.id === id);
+  const w = CATALOG.find(x => x.id === id);
   const act = btn.dataset.act;
 
   if (act === 'play'){ speak(w.word, btn); }
@@ -146,7 +166,7 @@ document.getElementById('list').addEventListener('click', e => {
     card.classList.toggle('known', known.has(id));
     btn.classList.toggle('on', known.has(id));
     document.getElementById('count').textContent =
-      `${filteredWords().length}語　（覚えた ${known.size} / 全${WORDS.length}語）`;
+      `${filteredWords().length}語　（覚えた ${known.size} / 全${CATALOG.length}語）`;
     if (filterLevel === 'known' || filterLevel === 'unknown') renderList();
   }
   else if (act === 'expand'){
@@ -158,7 +178,7 @@ document.getElementById('list').addEventListener('click', e => {
 
 /* カテゴリチップ生成 */
 function renderCats(){
-  const cats = [...new Set(WORDS.map(w => w.cat).filter(Boolean))];
+  const cats = [...new Set(CATALOG.map(w => w.cat).filter(Boolean))];
   const el = document.getElementById('catFilter');
   el.innerHTML = `<button class="chip ${filterCat==='all'?'on':''}" data-cat="all">全カテゴリ</button>` +
     cats.map(c => `<button class="chip ${filterCat===c?'on':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
@@ -250,7 +270,7 @@ function startQuiz(){
   const lv  = document.querySelector('#qLevel .on').dataset.lv;
   const n   = +document.querySelector('#qNum .on').dataset.n;
 
-  let pool = WORDS.slice();
+  let pool = CATALOG.slice();
   if (['600','730','860','990'].includes(lv)) pool = pool.filter(w => String(w.level)===lv);
   else if (lv === 'known') pool = pool.filter(w => known.has(w.id));
 
@@ -266,7 +286,7 @@ function renderQuestion(){
   const isE2J = quiz.dir === 'e2j';
 
   // 選択肢（正解 + 同じ形式のダミー3つ）
-  const distractPool = WORDS.filter(w => w.id !== q.id);
+  const distractPool = CATALOG.filter(w => w.id !== q.id);
   const opts = shuffle([q, ...shuffle(distractPool).slice(0,3)]);
   const label = o => isE2J ? o.ja : o.word;
 
@@ -393,13 +413,46 @@ function renderStats(){
 
     ${quizHist.length ? '<button class="linkbtn" id="clearHist" style="display:block;margin:.6rem auto 0">クイズ履歴を消去</button>' : ''}
 
+    <div class="sec-title">自分の単語をインポート（この端末だけに保存）</div>
+    <div class="panel" style="padding:1rem">
+      <p class="lead" style="margin:0 0 .8rem">
+        お手持ちの教材から<b>自分で作成したCSV/エクセル</b>の単語データを読み込めます。
+        読み込んだデータは<b>このブラウザ内だけ</b>に保存され、ネット上には公開・送信されません。
+      </p>
+      <div style="font-size:.78rem;color:var(--sub);background:var(--bg);border-radius:9px;padding:.6rem .75rem;margin-bottom:.8rem;line-height:1.7">
+        <b>列の順番</b>（1行目の見出し行は任意）：<br>
+        <code>単語, 発音記号, 品詞, 自他, 意味, 例文, 例文訳, レベル, カテゴリ</code><br>
+        ・必須は「単語」と「意味」だけ。あとは空でOK<br>
+        ・品詞＝名詞/動詞/形容詞/副詞/前置詞/接続詞/熟語<br>
+        ・自他＝他/自/自他（動詞のみ）　レベル＝600/730/860/990
+      </div>
+      <button class="btn-ghost" id="dlTemplate" style="margin:0 0 .7rem">CSVテンプレートをダウンロード</button>
+      <textarea id="csvBox" placeholder="ここにCSV/エクセルのセルを貼り付け（タブ区切りも可）&#10;例：&#10;abundant,/əˈbʌndənt/,形容詞,,豊富な,The region has abundant resources.,その地域は資源が豊富だ。,860,頻出形容詞"
+        style="width:100%;min-height:110px;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font-family:ui-monospace,monospace;font-size:.82rem;padding:.6rem;resize:vertical"></textarea>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
+        <button class="btn-primary" id="importText" style="flex:1;margin:0;min-width:130px">貼り付けた内容を追加</button>
+        <label class="btn-ghost" style="flex:1;margin:0;text-align:center;min-width:130px;cursor:pointer">
+          ファイルを選択
+          <input type="file" id="importFile" accept=".csv,.tsv,.txt" hidden>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.8rem;font-size:.8rem;color:var(--sub)">
+        <span>登録済みマイ単語：<b>${userWords.length}</b> 語</span>
+        <span>
+          ${userWords.length ? '<button class="linkbtn" id="exportUser" style="color:var(--blue)">CSV書き出し</button>' : ''}
+          ${userWords.length ? '<button class="linkbtn" id="clearUser">すべて削除</button>' : ''}
+        </span>
+      </div>
+    </div>
+
     <div class="sec-title">データ管理</div>
     <button class="btn-ghost" id="resetKnown">「覚えた」をすべてリセット</button>
 
     <p class="note">
-      学習データ（覚えた単語・クイズ履歴）は、このブラウザ内にのみ保存されます。<br>
-      端末やブラウザを変えると引き継がれません。<br><br>
-      ※ 本アプリはTOEIC頻出の一般語彙を独自に編集した学習用データを使用しています。<br>特定の市販書籍を複製したものではありません。
+      学習データ（覚えた単語・クイズ履歴・マイ単語）は、<b>このブラウザ内にのみ</b>保存されます。<br>
+      端末やブラウザを変えると引き継がれません（マイ単語はCSV書き出しでバックアップ・移行できます）。<br><br>
+      ※ 組み込みの語彙はTOEIC頻出の一般語を独自に編集した学習用データで、特定の市販書籍を複製したものではありません。<br>
+      インポート機能で追加した単語はあなた自身が用意したデータであり、この端末内での私的利用のためのものです。
     </p>`;
 
   const c = document.getElementById('clearHist');
@@ -409,6 +462,119 @@ function renderStats(){
   document.getElementById('resetKnown').addEventListener('click', () => {
     if (confirm('「覚えた」の記録をすべてリセットしますか？')){ known=new Set(); save(LS.known,[]); renderStats(); toast('リセットしました'); }
   });
+
+  // --- インポート関連 ---
+  document.getElementById('dlTemplate').addEventListener('click', downloadTemplate);
+  document.getElementById('importText').addEventListener('click', () => {
+    const txt = document.getElementById('csvBox').value;
+    doImport(txt);
+  });
+  document.getElementById('importFile').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => doImport(String(reader.result));
+    reader.readAsText(f, 'utf-8');
+  });
+  const ex = document.getElementById('exportUser');
+  if (ex) ex.addEventListener('click', exportUserWords);
+  const cu = document.getElementById('clearUser');
+  if (cu) cu.addEventListener('click', () => {
+    if (confirm('インポートしたマイ単語をすべて削除しますか？')){
+      userWords = []; save(LS.user, userWords); rebuildCatalog();
+      renderCats(); renderList(); renderStats(); toast('マイ単語を削除しました');
+    }
+  });
+}
+
+/* ============================================================
+   CSV / TSV インポート
+   ============================================================ */
+const POS_MAP = { '名詞':'noun','名':'noun','動詞':'verb','動':'verb','形容詞':'adj','形':'adj','副詞':'adv','副':'adv','前置詞':'prep','前':'prep','接続詞':'conj','接':'conj','熟語':'phrase','句':'phrase',
+  noun:'noun', verb:'verb', adj:'adj', adjective:'adj', adv:'adv', adverb:'adv', prep:'prep', conj:'conj', phrase:'phrase' };
+const VT_MAP = { '他':'t','他動詞':'t','vt':'t','t':'t','自':'i','自動詞':'i','vi':'i','i':'i','自他':'ti','両方':'ti','ti':'ti' };
+
+// 1行をフィールド配列に分解（"..."引用対応、区切りは , か tab を自動判定）
+function parseLine(line, delim){
+  const out = []; let cur = ''; let q = false;
+  for (let i=0;i<line.length;i++){
+    const ch = line[i];
+    if (q){
+      if (ch === '"'){ if (line[i+1]==='"'){ cur+='"'; i++; } else q=false; }
+      else cur += ch;
+    } else {
+      if (ch === '"') q = true;
+      else if (ch === delim){ out.push(cur); cur=''; }
+      else cur += ch;
+    }
+  }
+  out.push(cur);
+  return out.map(s => s.trim());
+}
+
+function doImport(text){
+  if (!text || !text.trim()){ toast('データが空です'); return; }
+  const rawLines = text.replace(/\r/g,'').split('\n').filter(l => l.trim().length);
+  if (!rawLines.length){ toast('データが空です'); return; }
+
+  const delim = rawLines[0].includes('\t') ? '\t' : ',';
+  const added = [];
+  rawLines.forEach((line, idx) => {
+    const c = parseLine(line, delim);
+    // 見出し行らしき最初の行はスキップ
+    if (idx === 0 && /単語|word/i.test(c[0]) && /意味|mean|ja/i.test((c[4]||''))) return;
+    const word = (c[0]||'').trim();
+    const ja   = (c[4]||'').trim();
+    if (!word || !ja) return;           // 必須欠けはスキップ
+    if (/^[ぁ-んァ-ン一-龥]/.test(word)) return; // 単語列が日本語なら誤形式としてスキップ
+    added.push({
+      word,
+      ipa:  (c[1]||'').trim(),
+      pos:  POS_MAP[(c[2]||'').trim()] || 'noun',
+      vt:   VT_MAP[(c[3]||'').trim()] || '',
+      ja,
+      ex:   (c[5]||'').trim(),
+      exJa: (c[6]||'').trim(),
+      level: (()=>{ const n=parseInt((c[7]||'').replace(/[^0-9]/g,''),10); return [600,730,860,990].includes(n)?n:600; })(),
+      cat:  (c[8]||'').trim() || 'マイ単語',
+    });
+  });
+
+  if (!added.length){ toast('取り込める行がありませんでした（形式をご確認ください）'); return; }
+  userWords = userWords.concat(added);
+  save(LS.user, userWords);
+  rebuildCatalog();
+  renderCats(); renderList(); renderStats();
+  toast(`${added.length}語を追加しました（計${userWords.length}語）`);
+}
+
+function csvEscape(v){ v = String(v==null?'':v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+
+function downloadCSV(filename, rows){
+  const bom = '﻿';
+  const csv = bom + rows.map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+function downloadTemplate(){
+  downloadCSV('単語帳テンプレート.csv', [
+    ['単語','発音記号','品詞','自他','意味','例文','例文訳','レベル','カテゴリ'],
+    ['abundant','/əˈbʌndənt/','形容詞','','豊富な','The region has abundant resources.','その地域は資源が豊富だ。','860','頻出形容詞'],
+    ['comply','/kəmˈplaɪ/','動詞','自','（規則に）従う','You must comply with the rules.','規則に従わなければならない。','730','ビジネス'],
+  ]);
+  toast('テンプレートを書き出しました');
+}
+
+function exportUserWords(){
+  const rows = [['単語','発音記号','品詞','自他','意味','例文','例文訳','レベル','カテゴリ']];
+  const posInv = { noun:'名詞', verb:'動詞', adj:'形容詞', adv:'副詞', prep:'前置詞', conj:'接続詞', phrase:'熟語' };
+  const vtInv = { t:'他', i:'自', ti:'自他' };
+  userWords.forEach(w => rows.push([w.word,w.ipa,posInv[w.pos]||w.pos,vtInv[w.vt]||'',w.ja,w.ex,w.exJa,w.level,w.cat]));
+  downloadCSV('マイ単語.csv', rows);
+  toast('マイ単語を書き出しました');
 }
 
 /* ============================================================
