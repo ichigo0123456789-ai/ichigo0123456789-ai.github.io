@@ -34,6 +34,7 @@
 ## 全部署共通の厳守ルール（各部プロンプト冒頭に必ず貼る）
 - 日付はJST。市況数値・ニュース・URL・要約は今セッションで実取得した実データのみ（記憶想起・前日値流用・推測穴埋め禁止）。取得不可は『—』。各数値に《出典名＋基準日(as of)》併記。
 - 本文に英語の略称・固有名詞を生で混ぜない（初出のみ和名併記：米連邦準備制度（FRB）等）。ニュース見出しは媒体の日本語見出しをそのまま使う。
+- ★ソース選別：**テックはImpress IT系（it.impress.co.jp）を主軸**。**Yahoo RSSは記事が薄いので優先度を下げ**入口に留め、実質は一次報道・原記事を優先。**政治経済は特定紙の論調に偏らない**（左派寄り＝朝日・毎日・東京 等／右派寄り＝産経 等のオピニオンに寄らず事実報道を中立に選ぶ）。
 - PII厳守：氏名・勤務先・部署/コース名・学校名など個人を特定する情報を一切出さない。読者を限定しない汎用の投資情報として書く。
 - 投資プロフィール：売買対象は投資信託・ETF中心、個別株の売買推奨はしない（例外＝三菱UFJ自社株は持株会のみ）、時間軸は中長期。『情報提供であり投資助言でない』。
 - 返すのは担当パートの整形済みHTML/データのみ（前置き・感想不要）。
@@ -48,14 +49,21 @@
 
 ### 経済部（③金利・為替・相場＋イベントカレンダー）
 (A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から**公開24時間以内を優先**した見出し3本（新しい順）。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → **date -d でpubDateが新しい順にソートし、24h以内を優先して先頭3件を採る（24h以内が3本に満たない時のみ最大48hまで許容）**。★「1日前」ばかりにならないよう、可能な限り当日〜数時間前の最新記事を選ぶこと。各本 <a class="hl" href="実URL" target="_blank" rel="noopener"><h4>媒体の日本語見出し</h4><div class="meta">出典名 ・ 相対時刻</div></a> 形式。画像不要。
+★**ソース選別**：Yahoo RSSは見出しの入口として使うが記事が薄いことが多いため優先度は低め。同一トピックなら一次報道・実質的な原記事（日本経済新聞・Reuters・Bloomberg・NHK・各社公式）へのリンクを優先して採る。★**政治経済の偏り注意**：経済政策・財政・金融政策の見出しでは特定紙の論調に引きずられない。左派寄りとされる新聞（朝日・毎日・東京新聞 等）と、右派寄りとされる新聞（産経 等）のどちらも論説（オピニオン）ではなく事実報道を優先し、論争的テーマは中立・両論に配慮して選ぶ（1媒体・1論調に偏らない）。
 (B) ★NEW★ **イベントカレンダー維持**：calendar.json を読み、(1)期日を過ぎたイベントを archived へ移し実際の結果(actual)を記録、(2)今後2週間の予定イベント（日銀会合・FOMC・米雇用統計/CPI・日本CPI/短観・主要決算・政治日程）を WebSearch で実取得し upcoming に追加。日付・内容は実取得したもののみ。未確認は date:null / status:'要調査'。捏造禁止。各イベントに related_prediction_ids を紐づけ。
 返り値：3本のhl群 ＋ calendar.json更新差分。
 
 ### 政治部（③政策・国際）
-RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.jp/rss/topics/world.xml から、経済部と同手順で計3本。
+RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.jp/rss/topics/world.xml から、経済部と同手順で計3本。★経済部と同じ**ソース選別・偏り注意**を厳守：Yahoo RSSは入口に留め、実質は一次報道・原記事（NHK・日本経済新聞・Reuters・時事・共同 等）を優先。★**政治の論調に注意**——左派寄りとされる新聞（朝日・毎日・東京新聞 等）／右派寄りとされる新聞（産経 等）のどちらの社説・オピニオンにも寄らず、事実ベースの見出しを中立に選ぶ。論争的テーマは特定の1論調に偏らないよう配慮する。
 
 ### テック部（③テック・AI・半導体）
-RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。
+★主要ソース＝**Impress IT（it.impress.co.jp）系**を優先。次のRDF/RSSを経済部と同手順（curl -s -A UA・改行除去・grep -oP '<item>.*?</item>'・title/link/dc:date(またはpubDate)抽出・date -d で新しい順ソート・24h以内優先／不足時のみ最大48h）で取得し、テック・AI・半導体に関する見出し3本を新しい順に厳選する。RSS 1.0(RDF)でも<item>抽出は同じ手順で動く。
+- INTERNET Watch（ネット・AI・サービス）: https://internet.watch.impress.co.jp/data/rss/1.0/iw/feed.rdf
+- PC Watch（半導体・ハード・GPU）: https://pc.watch.impress.co.jp/data/rss/1.0/pcw/feed.rdf
+- クラウド Watch（クラウド・AI基盤・エンタープライズ）: https://cloud.watch.impress.co.jp/data/rss/1.0/clw/feed.rdf
+- 横断ヘッドライン（保険）: https://www.watch.impress.co.jp/data/rss/1.0/wnh/feed.rdf
+出典名は各媒体名（INTERNET Watch / PC Watch / クラウド Watch 等）。あるフィードが取得不可（403/404）ならスキップし、取得できたフィードから3本を充足させる。
+★**Yahoo it.xml（https://news.yahoo.co.jp/rss/topics/it.xml）は記事内容が薄いため優先度を下げ、補助扱い**（Impress系で3本揃わない時のみ最大2本まで補完）。
 
 ### 投資部（④今日の結論・⑤先読み＋予測プロトコルv2）
 4部の成果（①の数値・regimeタグ・③各カテゴリの見出し・calendarの予定イベント）を必ず踏まえて書く。**書く前に playbook.md（検証済み原則）と data/lessons.json（直近教訓）を読み、適用した原則を明示的にcite**する。
@@ -154,6 +162,7 @@ index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index
 - **予測はv2プロトコル**（type/p/scoring_spec/falsifiable、eventを週2〜5本、thesisはcheckpoints）。confidence廃止。
 - 日付はJSTで確定（UTCの前日にしない）。ファクト原則最優先（未確認は『—』・捏造/前日値流用/推測禁止）。
 - ニュースは媒体カテゴリRSSから実取得、3カテゴリ（経済/政治/テック）×各3本、**公開24h以内を優先（新しい順・不足時のみ最大48h）**、実URL（画像なし）。「1日前」ばかりを避け最新記事を厳選。本文に英語を生で混ぜない。
+- **テックはImpress IT（it.impress.co.jp＝INTERNET Watch / PC Watch / クラウド Watch）を主軸**にする。**Yahoo RSSは記事が薄いため全カテゴリで優先度を下げ**、一次報道・原記事（日経・Reuters・Bloomberg・NHK 等）を優先する。**政治経済は特定紙の論調に偏らない**——左派寄りとされる新聞（朝日 等）／右派寄りとされる新聞（産経 等）のオピニオンに寄らず事実報道を中立に選ぶ。
 - 個別株の売買推奨はしない（投信/ETF＋三菱UFJ自社株のみ）。中長期視点。情報提供であり助言でない。
 - 仮想運用は投信のみ・SBI可・つみたて1銘柄・つみたて以外3ヶ月反対売買禁止・NISA枠上限を厳守。違反案は出さない。裁量判断時は rejected_alternative を counterfactual に枝として残す。
 - ページにPII（氏名・勤務先・コース・学校）を出さない。記事本文を転載しない（見出し・リンクのみ）。
