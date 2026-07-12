@@ -482,5 +482,49 @@
    "changePct": 1.38,
    "src": "Yahoo!ファイナンス as of 2026-07-10 15:30大引け確定値"
   }
+ },
+ {
+  "briefDate": "2026-07-13",
+  "tradingDate": {
+   "jp": "2026-07-10",
+   "us": "2026-07-10"
+  },
+  "note": "月曜だが生成時点(04:35 JST)で東証・米国市場とも取引時間外のため7/10金曜確定値を継続採用。週末にホルムズ海峡封鎖宣言・米イラン軍事衝突が発生、WTI原油が5週間ぶりの上げ幅で急伸。金は地政学ショックにも関わらず下落(▼0.65%、金-株相関の崩れ)。本日の東京市場開場後の反応は未確定。",
+  "nikkei": {
+   "value": 68557.73,
+   "change": 813.88,
+   "changePct": 1.2,
+   "src": "日経平均プロフィル/Yahoo!ファイナンス/日本経済新聞 as of 2026-07-10"
+  },
+  "nasdaq100": {
+   "value": 29825.11,
+   "change": 98.01,
+   "changePct": 0.33,
+   "src": "Yahoo Finance as of 2026-07-10"
+  },
+  "sp500": {
+   "value": 7575.39,
+   "change": 31.75,
+   "changePct": 0.42,
+   "src": "CNBC/Yahoo Finance as of 2026-07-10"
+  },
+  "usdjpy": {
+   "value": 161.68,
+   "change": -0.7,
+   "changePct": -0.43,
+   "src": "トレーダーズウェブ「NY為替概況」/Yahoo!ファイナンス as of 2026-07-10 NY引け"
+  },
+  "gold": {
+   "value": 4113.7,
+   "change": -27.1,
+   "changePct": -0.65,
+   "src": "Investing.com/日本経済新聞(COMEX金先物8月限) as of 2026-07-10"
+  },
+  "mufg8306": {
+   "value": 3461,
+   "change": 47.0,
+   "changePct": 1.38,
+   "src": "Yahoo!ファイナンス/株探 as of 2026-07-10大引け確定値"
+  }
  }
 ]
