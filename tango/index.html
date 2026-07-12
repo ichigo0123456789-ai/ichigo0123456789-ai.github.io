@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#c9a227">
+<title>金のフレーズ風 単語帳｜TOEIC 頻出ボキャブラリー</title>
+<meta name="description" content="音声・発音記号・自動詞/他動詞つき。TOEIC頻出単語をスコア別に学べる単語帳。クイズと学習履歴をブラウザに保存。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header class="top">
+  <div class="in">
+    <div class="brand">
+      <div class="mark">金</div>
+      <div>
+        <h1>金のフレーズ風 単語帳</h1>
+        <p class="sub">TOEIC 頻出ボキャブラリー</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 単語帳ビュー ============ -->
+<section id="view-list" class="view on">
+  <div class="controls">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="search" placeholder="英単語・意味で検索…" autocomplete="off">
+    </div>
+    <div class="tabs" id="levelTabs">
+      <button class="tab on" data-level="all">すべて</button>
+      <button class="tab" data-level="600">600点</button>
+      <button class="tab" data-level="730">730点</button>
+      <button class="tab" data-level="860">860点</button>
+      <button class="tab" data-level="990">990点</button>
+      <button class="tab" data-level="known">覚えた</button>
+      <button class="tab" data-level="unknown">未習得</button>
+    </div>
+  </div>
+  <div class="meta-row">
+    <span id="count">—</span>
+    <div class="cats" id="catFilter"></div>
+  </div>
+  <div class="wrap" id="list"></div>
+</section>
+
+<!-- ============ クイズビュー ============ -->
+<section id="view-quiz" class="view">
+  <div class="quiz-wrap" id="quizArea"></div>
+</section>
+
+<!-- ============ 履歴ビュー ============ -->
+<section id="view-history" class="view">
+  <div class="stats" id="statsArea"></div>
+</section>
+
+<!-- ============ ボトムナビ ============ -->
+<nav class="nav">
+  <div class="in">
+    <button data-view="list" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      単語帳
+    </button>
+    <button data-view="quiz">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+      クイズ
+    </button>
+    <button data-view="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      履歴
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="words.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
