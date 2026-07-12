@@ -1071,33 +1071,74 @@
     }
   }catch(e){}
 
-  /* 背景：Matrix風グリフレイン（reduced-motion時・非対応時は静かに無効） */
+  /* 背景：文字回廊レイン（両サイドの文字壁を雨が流れ、目次ジャンプで谷間をワープ。reduced-motion時・非対応時は静かに無効） */
   try{
     var rc=document.getElementById('na-rain');
     if(rc&&!reduced&&rc.getContext){
       var rctx=rc.getContext('2d');
-      var GL='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン0123456789ABCDEFGHJKLMNPQRSTUVWXYZ¥$+-<>*/';
-      var rW,rH,rcols,rdrops,rfs=13;
-      var rsz=function(){rW=rc.width=innerWidth;rH=rc.height=innerHeight;rcols=Math.max(8,Math.floor(rW/(rfs*1.6)));rdrops=[];for(var i=0;i<rcols;i++)rdrops.push(Math.random()*-rH/rfs);};
+      /* 多言語＋文字化けミックス（日本語は半角ｶﾅで3割弱に抑制） */
+      var GL='ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾙﾚﾛﾝ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZΔΘΛΞΠΣΦΨΩλπЖДБГЯФЩИЛЪЭЮЗЦ§†‡◊≡≠∴∵∂∇×÷Øøµ▓▒░█▚▞╬╪┼¥$€£₿#@%&*+-<>=/|'+String.fromCharCode(65533,65533,65533);
+      var rgl=function(){return GL[(Math.random()*GL.length)|0];};
+      var GAPW=3.4,WALLH=8,CYY=0.42,PZ=15;
+      var rW,rH,rcx,rcy,rfoc,rDPR,rlw=0,streams=[];
+      var rmk=function(){
+        var mob=innerWidth<640,NZ=mob?16:26,LN=mob?16:20;
+        streams=[];
+        for(var s=-1;s<=1;s+=2)for(var i=0;i<NZ;i++){
+          var g=[];for(var k=0;k<LN;k++)g.push(rgl());
+          streams.push({side:s,z:-0.6-Math.random()*PZ,gx:GAPW+Math.random()*1.6,hy:(Math.random()*2-1)*WALLH,sp:1.1+Math.random()*1.6,gl:g});
+        }
+      };
+      var rsz=function(){
+        rDPR=Math.min(1.75,window.devicePixelRatio||1);
+        rW=rc.width=Math.floor(innerWidth*rDPR);rH=rc.height=Math.floor(innerHeight*rDPR);
+        rc.style.width=innerWidth+'px';rc.style.height=innerHeight+'px';
+        rcx=rW/2;rcy=rH/2;rfoc=rH*0.82;
+        if(innerWidth!==rlw){rlw=innerWidth;rmk();}
+      };
       rsz();addEventListener('resize',rsz);
-      var rlast=0;
+      var rburst=0;
+      document.addEventListener('click',function(ev){
+        var t=ev.target;
+        var a=(t&&t.closest)?t.closest('.na-toc a[href^="#"]'):null;
+        if(a)rburst=performance.now();
+      });
+      var rlast=0,rdrew=0;
       var rframe=function(ts){
         requestAnimationFrame(rframe);
-        if(ts-rlast<70)return;rlast=ts;
-        if(document.hidden)return;
+        if(document.hidden){rlast=ts;return;}
+        if(!rburst&&ts-rdrew<42)return;
+        rdrew=ts;
+        var dt=Math.min(0.08,(ts-rlast)/1000)||0.016;rlast=ts;
+        var bell=0;
+        if(rburst){var bt=(ts-rburst)/900;if(bt>=1){rburst=0;}else{bell=Math.sin(Math.PI*bt);}}
+        var vel=bell*40;
         rctx.globalCompositeOperation='destination-out';
-        rctx.fillStyle='rgba(0,0,0,0.10)';
+        rctx.fillStyle='rgba(0,0,0,'+(bell>0?0.30:0.34)+')';
         rctx.fillRect(0,0,rW,rH);
         rctx.globalCompositeOperation='source-over';
-        rctx.font=rfs+'px monospace';
-        for(var i=0;i<rcols;i++){
-          var y=rdrops[i]*rfs;
-          if(y>0&&y<rH+rfs){
-            rctx.fillStyle=Math.random()<0.08?'rgba(141,242,196,0.5)':'rgba(53,224,160,0.26)';
-            rctx.fillText(GL[(Math.random()*GL.length)|0],i*rfs*1.6,y);
+        rctx.textAlign='center';
+        for(var i=0;i<streams.length;i++){
+          var st=streams[i];
+          st.hy-=st.sp*dt;
+          if(st.hy<-WALLH-1.5)st.hy=WALLH+Math.random()*WALLH;
+          st.z+=vel*dt;
+          if(st.z>-0.4)st.z-=PZ;
+          if(Math.random()<0.03)st.gl[(Math.random()*st.gl.length)|0]=rgl();
+          var depth=Math.max(0.4,-st.z);
+          var fog=(PZ-depth)/PZ;if(fog<=0)continue;if(fog>1)fog=1;
+          var sx=rcx+st.side*st.gx/depth*rfoc;
+          if(sx<-60||sx>rW+60)continue;
+          var fs=CYY/depth*rfoc;if(fs<5*rDPR)fs=5*rDPR;if(fs>22*rDPR)fs=22*rDPR;
+          rctx.font=fs+'px monospace';
+          for(var g2=0;g2<st.gl.length;g2++){
+            var sy=rcy-(st.hy+g2*CYY)/depth*rfoc;
+            if(sy<-30||sy>rH+30)continue;
+            var bri=g2===0?1:1-g2*0.06;if(bri<0.1)bri=0.1;
+            var al=Math.min(1,fog*bri*0.6+bell*0.3);
+            rctx.fillStyle=g2===0?'rgba(141,242,196,'+al.toFixed(3)+')':'rgba(53,224,160,'+(al*0.85).toFixed(3)+')';
+            rctx.fillText(st.gl[g2],sx,sy);
           }
-          if(y>rH&&Math.random()>0.976)rdrops[i]=Math.random()*-60;
-          rdrops[i]++;
         }
       };
       requestAnimationFrame(rframe);
