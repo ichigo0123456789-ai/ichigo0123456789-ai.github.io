@@ -127,6 +127,16 @@ function speak(text, btn){
   // Android Chrome: cancel()直後のspeakが無視される既知問題への対策で少し遅らせる
   setTimeout(() => speechSynthesis.speak(u), 60);
 }
+// 熟語を読み上げる。A/B/be/do等のプレースホルダは除いて自然な形で発音する
+function speakPhrase(ph, btn){
+  if (!ph) return;
+  const t = ph.replace(/\bbe\b/, '')
+              .replace(/\b[AB]\b/g, '')
+              .replace(/\bdoing\b/g, '')
+              .replace(/\bdo\b/g, '')
+              .replace(/\s+/g, ' ').trim();
+  speak(t || ph, btn);
+}
 
 /* ---------- トースト ---------- */
 let toastT;
@@ -181,6 +191,11 @@ function renderList(){
             <span class="en">${esc(w.word)}</span>
             <span class="ipa">${esc(w.ipa||'')}</span>
           </div>
+          ${w.ph ? `<div class="collo">
+            <button class="collo-word" data-act="phrase" title="熟語を再生"><span class="cbadge">熟</span>${esc(w.ph)}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7 6.4 8.3H3v7.4h3.4L11 19.3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            </button>
+          </div>` : ''}
           <div class="badges">
             <span class="badge b-pos">${POS_JA[w.pos]||w.pos}</span>
             ${vt}
@@ -220,6 +235,7 @@ document.getElementById('list').addEventListener('click', e => {
   const act = btn.dataset.act;
 
   if (act === 'play'){ speak(w.word, btn); }
+  else if (act === 'phrase'){ speakPhrase(w.ph, btn); }
   else if (act === 'know'){
     if (known.has(id)) known.delete(id); else { known.add(id); toast('覚えたに追加しました'); }
     save(LS.known, [...known]);
@@ -362,7 +378,7 @@ function renderQuestion(){
       <div class="q-word">
         <div class="prompt">${isE2J ? 'この単語の意味は？' : 'この意味の英単語は？'}</div>
         ${isE2J
-          ? `<div class="en">${esc(q.word)}</div><div class="ipa">${esc(q.ipa||'')}</div>`
+          ? `<div class="en">${esc(q.word)}</div><div class="ipa">${esc(q.ipa||'')}</div>${q.ph?`<div class="q-collo"><span class="cbadge">熟</span>${esc(q.ph)}</div>`:''}`
           : `<div class="ja">${esc(q.ja)}</div>`}
       </div>
       ${isE2J ? `<div class="q-audio"><button id="qPlay" aria-label="音声"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7 6.4 8.3H3v7.4h3.4L11 19.3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div>` : ''}
