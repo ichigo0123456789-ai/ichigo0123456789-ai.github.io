@@ -148,9 +148,15 @@ RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。**加
 名称『News & Analytics』（旧称：朝のニュースまとめ）。<title>は『News & Analytics｜YYYY年M月D日』とし日付を必ず含める。セクション順：① マーケット → ②（既存の値動き分析チャート）→ ③ ニュース（経済/政治/テック）→ ④ 今日の結論 → ⑤ 先読み → ⑥ 仮想運用シミュレーション（→ 日曜は「今週の通信簿」を⑥直下に追加）。既存の template.html / index.html のデザイン（暗色『電脳グリーンHUD』テーマ、JetBrains Mono/Noto Sans JP、.bar/.hero/.panel/.kicker/.thesis/.ul-thesis/.scen/.card/.flow/.mkt/.tbl-shell/.chart/.charts2/.news/.col/.hl/.foot、TradingView advanced-chart、revealアニメ、スマホ対応CSS）を厳密に踏襲し、置換するのは (A)<title>・.bar .bd・.hero .date-badge・.hero .issue の日付【JST】 (B)table.mkt の6行 (C)ニュース各列 (D).thesis と .ul-thesis の3点 (E)2枚の .scen .card (F)⑥仮想運用セクション (G)フッター .dsum、(H)日曜のみ通信簿1枚 のみ。CSS・既存構造・class名・チャート設定・高さは改変しない。★恒久JSブロック（書き換え・削除禁止、data更新だけで自動反映）：冒頭ステータスバーの時計／ニュース見出し連動ティッカー／目次ナビ（スクロール現在地表示）／文字回廊レイン（canvas#na-rain・両サイドの多言語文字壁を雨が流れ、目次ジャンプ時に谷間をワープする演出）／①のKPIタイル自動生成＋直近1ヶ月スパークライン（table.mkt をJSがパースして描画するため、ルーチンは従来どおり6行の<tr>だけ差し替えればよい）／日経225ヒートマップ（全225銘柄＝nikkei225jp.com公開フィード・取得不可時はYahoo spark主要40銘柄へ自動フォールバック・業種グループ化・凡例つき）／⑥の資産推移チャート（#pfchart）と資産配分バー（data/portfolio.json から自動描画）。
 ★⑥仮想運用セクション：⑤先読みの直後・フッターの直前に、既存 .panel/.kicker クラスで配置。構造＝(i)固定免責1行『※学習目的の仮想シミュレーション。実際の売買は行っていません。投資助言ではありません。』 **(i.5)★資産推移チャート＝`<figure id="pfchart">`＋直後の`<script>`。data/nav_history.json と data/counterfactual.json をクライアント側で読みインラインSVGで折れ線描画（実PF評価額＝実線・凍結初期PF＝破線）する自己完結ブロック。ルーチンはこのブロックを毎run"そのまま保持"する（中身を書き換えない・削除しない・data更新だけで自動反映される）。template.htmlに恒久設置済み。** (ii)サマリー表（運用資産合計/評価損益/戦略リターン/対オルカン超過、table.mkt 流用） (iii)保有一覧表（口座=NISAつみたて/NISA成長枠/特定、ファンド名・評価額・損益、3ヶ月制限日付の注記） (iv)『本日の運用判断』カード(.card)。運用部が返したHTML断片をそのまま組み込む。数値は運用部の更新値を使う。
 
+## ★デザイン／背景の変更手順（index.html巻き戻し事故の再発防止・絶対厳守）
+デザイン・背景・CSS・恒久JSブロック（文字回廊レイン等）の変更は **必ず template.html にのみ加える**。当日ページへ反映する際、**過去日の index.html スナップショットを土台に index.html を作り直してはならない**（当日のニュースを踏み潰し、公開ページが前日に巻き戻る事故の原因＝2026-07-13に実際に発生）。手順は必ず次のいずれか：
+- (A)【通常運用】日次ルーチンが進行4で「最新の template.html を正本」とし、当日ニュースを差し込んで index.html を生成する。
+- (B)【日中にデザインだけ差し替える場合】template.html を編集後、**現在の index.html に載っている当日ニュース（.date-badge・.hero .issue の日付／table.mkt の6行／③各列／④.thesis・.ul-thesis／⑤.scen .card／⑥仮想運用／フッター .dsum）をそのまま保持したまま**、template.html 側の差分（CSS・構造・class・チャート設定・恒久JSブロック）だけを index.html に適用する。ニュース内容は一切書き換えない。
+- どちらの場合も **push直前に index.html の .date-badge が JST当日** であることを必ず確認する（過去日になっていたら巻き戻し事故＝公開前に当日ニュースへ復元してから push）。template.html と index.html は日付・ニュース以外のデザイン部分が常に一致していること。
+
 ## 保存・検証・公開
 index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index.html 更新 / data/*.json（market/themes/predictions/lessons/portfolio/trades/nav_history＋v2の regime/calendar/bench_navs/counterfactual/scorecard/runlog、月次は playbook.md も）更新 / template.html を本デザイン（⑥含む）に更新。フッター .dsum に『本日のデータ取得サマリー』を記載。
-★push前の自己検証：生成index.htmlを読み返し、(a)出典/基準日のない市況数値 (b)古い基準日 (c)未来日付 (d)公開48h超のニュース (e)実在しないURL (f)PII (g)日付がJST当日か (h)④結論・⑤先読みの両方に『投資助言ではない』注記 (i)⑥仮想運用に『仮想・実売買なし・投資助言でない』注記 (j)data/*.json が妥当なJSONか (k)★新規予測がv2スキーマ(type/p/scoring_spec)を満たすか (l)★runlog.jsonに本run追記済みか を点検し『—』化／除外／修正してから push。
+★push前の自己検証：生成index.htmlを読み返し、(a)出典/基準日のない市況数値 (b)古い基準日 (c)未来日付 (d)公開48h超のニュース (e)実在しないURL (f)PII (g)日付がJST当日か (h)④結論・⑤先読みの両方に『投資助言ではない』注記 (i)⑥仮想運用に『仮想・実売買なし・投資助言でない』注記 (j)data/*.json が妥当なJSONか (k)★新規予測がv2スキーマ(type/p/scoring_spec)を満たすか (l)★runlog.jsonに本run追記済みか (m)★.date-badge がJST当日か（過去日なら巻き戻し事故＝当日ニュースへ復元）(n)★index.htmlとtemplate.htmlが日付・ニュース以外のデザイン部分で一致しているか を点検し『—』化／除外／修正してから push。
 ★clone・commit・push の認証方法は**呼び出し側プロンプトの指示に従う**（この仕様書には書かない）。commit メッセージは `News digest YYYY-MM-DD`（JST日付）。push は origin main。
 
 ## 厳守（要点）
@@ -164,4 +170,5 @@ index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index
 - 個別株の売買推奨はしない（投信/ETF＋三菱UFJ自社株のみ）。中長期視点。情報提供であり助言でない。
 - 仮想運用は投信のみ・SBI可・つみたて1銘柄・つみたて以外3ヶ月反対売買禁止・NISA枠上限を厳守。違反案は出さない。裁量判断時は rejected_alternative を counterfactual に枝として残す。
 - ページにPII（氏名・勤務先・コース・学校）を出さない。記事本文を転載しない（見出し・リンクのみ）。
+- **デザイン・背景・CSSの変更は template.html にのみ加える**。index.html は当日ニュースを保持したまま template 側の差分だけを適用し、**過去日HTMLからの再生成は禁止**（詳細は「★デザイン／背景の変更手順」参照）。
 - **最後に runlog.json へ本runを追記**してから push。
