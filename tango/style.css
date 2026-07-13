@@ -104,11 +104,12 @@ button{font-family:inherit;cursor:pointer}
 .wordline{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .wordline .en{font-size:1.28rem;font-weight:800;letter-spacing:.01em}
 .wordline .ipa{color:var(--sub);font-size:.9rem;font-family:"Times New Roman",Georgia,serif}
-.collo{margin-top:.2rem}
+.collo{margin-top:.2rem;display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .5rem}
 .collo-word{border:0;background:transparent;color:var(--gold-deep);font-size:.9rem;font-weight:700;
   padding:.05rem 0;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;letter-spacing:.01em}
 .collo-word:hover{text-decoration:underline}
 .collo-word svg{opacity:.7}
+.collo-ja{color:var(--sub);font-size:.82rem;font-weight:600}
 .cbadge{background:var(--gold-soft);color:var(--gold-deep);font-size:.62rem;font-weight:800;
   padding:.08rem .34rem;border-radius:5px;letter-spacing:.02em}
 .q-collo{margin-top:.4rem;color:var(--gold-deep);font-weight:700;font-size:1rem;
