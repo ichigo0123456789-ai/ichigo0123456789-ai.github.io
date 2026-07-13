@@ -128,10 +128,10 @@ function renderList(){
             ${w.cat?`<span class="badge b-cat">${esc(w.cat)}</span>`:''}
           </div>
           <p class="ja">${esc(w.ja)}</p>
-          <div class="ex" hidden>
-            <span class="en2">${esc(w.ex||'')}</span>
+          ${w.ex ? `<div class="ex" hidden>
+            <span class="en2">${esc(w.ex)}</span>
             <span class="ja2">${esc(w.exJa||'')}</span>
-          </div>
+          </div>` : ''}
           <div class="actions">
             <button class="iconbtn" data-act="play" title="音声を再生" aria-label="音声を再生">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7 6.4 8.3H3v7.4h3.4L11 19.3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
@@ -140,9 +140,9 @@ function renderList(){
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
               ${isKnown?'覚えた':'覚えた'}
             </button>
-            <button class="expandbtn" data-act="expand">例文
+            ${w.ex ? `<button class="expandbtn" data-act="expand">例文
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </button>
+            </button>` : ''}
           </div>
         </div>
       </div>
