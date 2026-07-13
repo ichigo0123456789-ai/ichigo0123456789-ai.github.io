@@ -148,7 +148,17 @@ function toast(msg){
 
 /* ---------- 品詞ラベル ---------- */
 const POS_JA = { noun:'名詞', verb:'動詞', adj:'形容詞', adv:'副詞', prep:'前置詞', conj:'接続詞', phrase:'熟語' };
-const VT_JA  = { t:'他動詞', i:'自動詞', ti:'自/他動詞' };
+const VT_JA  = { t:'他動詞', i:'自動詞', ti:'自動詞・他動詞' };
+
+// 品詞バッジ：動詞は「自動詞/他動詞」を品詞として表示（重複させない）
+function posBadge(w){
+  if (w.pos === 'verb' && w.vt) return { text: VT_JA[w.vt], cls: 'b-vt' };
+  return { text: POS_JA[w.pos] || w.pos, cls: 'b-pos' };
+}
+// 意味中の **…** を太字に（よりメジャーな語義の強調用）。先にHTMLエスケープ
+function jaHtml(ja){
+  return esc(ja).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
 
 /* ============================================================
    単語帳リスト描画
@@ -181,7 +191,7 @@ function renderList(){
   }
   list.innerHTML = items.map(w => {
     const isKnown = known.has(w.id);
-    const vt = w.pos === 'verb' && w.vt ? `<span class="badge b-vt">${VT_JA[w.vt]}</span>` : '';
+    const posLabel = posBadge(w);
     return `
     <article class="card ${isKnown?'known':''}" data-id="${w.id}">
       <div class="head">
@@ -197,12 +207,10 @@ function renderList(){
             </button>
           </div>` : ''}
           <div class="badges">
-            <span class="badge b-pos">${POS_JA[w.pos]||w.pos}</span>
-            ${vt}
+            <span class="badge ${posLabel.cls}">${posLabel.text}</span>
             <span class="badge b-lv">${w.level}点</span>
-            ${w.cat?`<span class="badge b-cat">${esc(w.cat)}</span>`:''}
           </div>
-          <p class="ja">${esc(w.ja)}</p>
+          <p class="ja">${jaHtml(w.ja)}</p>
           ${w.ex ? `<div class="ex" hidden>
             <span class="en2">${esc(w.ex)}</span>
             <span class="ja2">${esc(w.exJa||'')}</span>
@@ -379,11 +387,11 @@ function renderQuestion(){
         <div class="prompt">${isE2J ? 'この単語の意味は？' : 'この意味の英単語は？'}</div>
         ${isE2J
           ? `<div class="en">${esc(q.word)}</div><div class="ipa">${esc(q.ipa||'')}</div>${q.ph?`<div class="q-collo"><span class="cbadge">熟</span>${esc(q.ph)}</div>`:''}`
-          : `<div class="ja">${esc(q.ja)}</div>`}
+          : `<div class="ja">${jaHtml(q.ja)}</div>`}
       </div>
       ${isE2J ? `<div class="q-audio"><button id="qPlay" aria-label="音声"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7 6.4 8.3H3v7.4h3.4L11 19.3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div>` : ''}
       <div class="opts" id="qOpts">
-        ${opts.map(o => `<button class="opt" data-id="${o.id}">${esc(label(o))}</button>`).join('')}
+        ${opts.map(o => `<button class="opt" data-id="${o.id}">${isE2J ? jaHtml(o.ja) : esc(o.word)}</button>`).join('')}
       </div>
     </div>`;
 
@@ -440,7 +448,7 @@ function finishQuiz(){
           <div class="rrow">
             <span class="dot ${r.ok?'ok':'ng'}"></span>
             <span class="w">${esc(r.word)}</span>
-            <span class="m">${esc(r.ja)}</span>
+            <span class="m">${jaHtml(r.ja)}</span>
           </div>`).join('')}
       </div>
       <button class="btn-primary" id="qAgain">もう一度</button>
