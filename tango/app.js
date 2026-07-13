@@ -36,36 +36,96 @@ function rebuildCatalog(){
 }
 rebuildCatalog();
 
+/* ------------------------------------------------------------
+   旧100語版words.jsの「覚えた」IDを、単語つづり経由で新IDへ移行する
+   一回限りの処理（2026-07-14 words.js 1000語版への差し替えに伴う） */
+(function migrateKnownV1(){
+  const FLAG = 'tango_known_v1_to_v2_done';
+  try {
+    if (localStorage.getItem(FLAG)) return;
+    const OLD_ID_WORDS = [
+      'available','attend','receipt','apply','provide','increase','reduce','schedule','customer','employee',
+      'purchase','discount','deliver','require','department','appointment','confirm','invoice','colleague','expense',
+      'maintain','recommend','complete','available','reserve','local','repair','offer','contain','describe',
+      'efficient','install','negotiate','submit','budget','expand','approve','colleague','warranty','itinerary',
+      'colleague','renovate','inventory','promote','assemble','reimburse','vendor','deadline','facility','launch',
+      'outstanding','replace','proceed','acquire','complimentary','anticipate','beverage','prompt','distribute','venue',
+      'comprehensive','implement','streamline','consecutive','endorse','tentative','allocate','prospective','overhaul','mandatory',
+      'delegate','lucrative','compile','incentive','feasible','expedite','proficient','disclose','versatile','oversee',
+      'subsidiary','diligent','initiative','surpass','contingent','unprecedented','discrepancy','meticulous','contingency','prudent',
+      'consolidate','forfeit','scrutinize','impending','remittance','culminate','stringent','defer','quorum','amenity'
+    ];
+    const byWord = new Map(WORDS.map(w => [w.word, w.id]));
+    const next = new Set();
+    known.forEach(id => {
+      if (id >= USER_ID_BASE){ next.add(id); return; }
+      const nid = byWord.get(OLD_ID_WORDS[id - 1]);
+      if (nid) next.add(nid);
+    });
+    known = next;
+    save(LS.known, [...known]);
+    localStorage.setItem(FLAG, '1');
+  } catch (e) {}
+})();
+
 /* ---------- 状態 ---------- */
 let filterLevel = 'all';
 let filterCat = 'all';
 let searchQ = '';
 
-/* ---------- 音声 ---------- */
+/* ---------- 音声 ----------
+   端末によっては getVoices() がページ読込直後は空で、
+   そのまま話すと端末既定（日本語）ボイスで英単語が読まれてしまう。
+   対策: ①voiceschanged ②ポーリング ③speak() 直前 の3段階で英語ボイスを取得する */
 let enVoice = null;
 function pickVoice(){
   const vs = speechSynthesis.getVoices();
-  enVoice = vs.find(v => /en[-_]US/i.test(v.lang) && /Google|Samantha|Natural/i.test(v.name))
+  if (!vs.length) return;
+  enVoice = vs.find(v => /en[-_]US/i.test(v.lang) && /Google US English/i.test(v.name))
+         || vs.find(v => /en[-_]US/i.test(v.lang) && /Natural|Neural|Premium|Enhanced|Samantha|Aria|Jenny|Zira|David/i.test(v.name))
+         || vs.find(v => /en[-_]US/i.test(v.lang) && v.localService)
          || vs.find(v => /en[-_]US/i.test(v.lang))
-         || vs.find(v => /^en/i.test(v.lang)) || null;
+         || vs.find(v => /^en[-_]/i.test(v.lang))
+         || vs.find(v => /^en$/i.test(v.lang))
+         || null;
 }
 if ('speechSynthesis' in window){
   pickVoice();
-  speechSynthesis.onvoiceschanged = pickVoice;
+  if ('onvoiceschanged' in speechSynthesis){
+    speechSynthesis.addEventListener('voiceschanged', pickVoice);
+  }
+  let vTries = 0;
+  const vTimer = setInterval(() => {
+    if (enVoice || ++vTries > 20){ clearInterval(vTimer); return; }
+    pickVoice();
+  }, 250);
 }
 let speaking = null;
+let voiceWarned = false;
 function speak(text, btn){
   if (!('speechSynthesis' in window)){ toast('この端末は音声に対応していません'); return; }
+  if (!enVoice) pickVoice();
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US'; u.rate = 0.92; u.pitch = 1;
-  if (enVoice) u.voice = enVoice;
+  u.lang = (enVoice && enVoice.lang) || 'en-US';
+  u.rate = 0.92; u.pitch = 1;
+  if (enVoice){ u.voice = enVoice; }
+  else {
+    // iOSはボイス一覧が空でも lang 指定で英語再生されるため、
+    // 一覧が取得できているのに英語ボイスが無い場合のみ警告する
+    const vsNow = speechSynthesis.getVoices();
+    if (vsNow.length && !voiceWarned){
+      voiceWarned = true;
+      toast('英語音声が見つかりません。端末に英語TTSを追加すると正しく再生されます');
+    }
+  }
   if (btn){
     if (speaking) speaking.classList.remove('playing');
     btn.classList.add('playing'); speaking = btn;
     u.onend = u.onerror = () => { btn.classList.remove('playing'); if (speaking===btn) speaking=null; };
   }
-  speechSynthesis.speak(u);
+  // Android Chrome: cancel()直後のspeakが無視される既知問題への対策で少し遅らせる
+  setTimeout(() => speechSynthesis.speak(u), 60);
 }
 
 /* ---------- トースト ---------- */
@@ -197,8 +257,10 @@ document.getElementById('levelTabs').addEventListener('click', e => {
 });
 
 /* 検索 */
+let searchT;
 document.getElementById('search').addEventListener('input', e => {
-  searchQ = e.target.value.trim(); renderList();
+  clearTimeout(searchT);
+  searchT = setTimeout(() => { searchQ = e.target.value.trim(); renderList(); }, 200);
 });
 
 /* ============================================================
@@ -286,7 +348,7 @@ function renderQuestion(){
   const isE2J = quiz.dir === 'e2j';
 
   // 選択肢（正解 + 同じ形式のダミー3つ）
-  const distractPool = CATALOG.filter(w => w.id !== q.id);
+  const distractPool = CATALOG.filter(w => w.id !== q.id && w.ja !== q.ja && w.word !== q.word);
   const opts = shuffle([q, ...shuffle(distractPool).slice(0,3)]);
   const label = o => isE2J ? o.ja : o.word;
 
@@ -315,8 +377,10 @@ function renderQuestion(){
     pb.addEventListener('click', () => speak(q.word, null));
   }
 
+  let answered = false;
   document.getElementById('qOpts').addEventListener('click', e => {
-    const b = e.target.closest('.opt'); if (!b) return;
+    const b = e.target.closest('.opt'); if (!b || answered) return;
+    answered = true;
     const chosen = +b.dataset.id;
     const ok = chosen === q.id;
     document.querySelectorAll('#qOpts .opt').forEach(o => {
@@ -331,7 +395,7 @@ function renderQuestion(){
       if (quiz.i >= quiz.items.length) finishQuiz();
       else renderQuestion();
     }, ok ? 650 : 1150);
-  }, { once:true });
+  });
 }
 
 function finishQuiz(){

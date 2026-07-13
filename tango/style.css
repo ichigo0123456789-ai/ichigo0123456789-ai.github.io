@@ -252,3 +252,7 @@ button{font-family:inherit;cursor:pointer}
   opacity:0;pointer-events:none;transition:.25s;z-index:80;box-shadow:var(--shadow-lg);white-space:nowrap;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+
+/* 1000語リストの描画負荷対策：画面外カードのレンダリングを遅延 */
+.card{ content-visibility:auto; contain-intrinsic-size: 0 160px; }
