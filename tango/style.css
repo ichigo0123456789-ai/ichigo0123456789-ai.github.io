@@ -121,6 +121,11 @@ button{font-family:inherit;cursor:pointer}
 .b-lv{background:var(--line-2);color:var(--sub)}
 .b-cat{background:transparent;color:var(--faint);border:1px solid var(--line-2)}
 .card .ja{margin:.5rem 0 0;font-size:1rem;font-weight:600;color:var(--ink)}
+.senses{margin:.5rem 0 0;display:flex;flex-direction:column;gap:.22rem}
+.sense{display:flex;align-items:baseline;gap:.45rem}
+.pos-tag{flex:none;min-width:1.5rem;text-align:center;background:var(--blue-soft);color:var(--blue);
+  font-size:.66rem;font-weight:800;padding:.06rem .3rem;border-radius:5px;margin-top:.1rem}
+.sense-ja{font-size:1rem;font-weight:600;color:var(--ink)}
 .card .ex{
   margin:.55rem 0 0;padding:.55rem .7rem;background:var(--bg);border-radius:9px;
   font-size:.86rem;border-left:3px solid var(--gold);

@@ -213,7 +213,9 @@ function renderList(){
             <span class="badge ${posLabel.cls}">${posLabel.text}</span>
             <span class="badge b-lv">${w.level}点</span>
           </div>
-          <p class="ja">${jaHtml(w.ja)}</p>
+          ${w.senses ? `<div class="senses">${w.senses.map(s =>
+            `<div class="sense"><span class="pos-tag">${esc(s.p)}</span><span class="sense-ja">${jaHtml(s.ja)}</span></div>`).join('')}</div>`
+            : `<p class="ja">${jaHtml(w.ja)}</p>`}
           ${w.ex ? `<div class="ex" hidden>
             <span class="en2">${esc(w.ex)}</span>
             <span class="ja2">${esc(w.exJa||'')}</span>
