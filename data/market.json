@@ -526,5 +526,43 @@
    "changePct": 1.38,
    "src": "Yahoo!ファイナンス/株探 as of 2026-07-10大引け確定値"
   }
+ },
+ {
+  "briefDate": "2026-07-15",
+  "tradingDate": {
+   "jp": "2026-07-14",
+   "us": "2026-07-14"
+  },
+  "note": "水曜、生成時点(04:30台JST)で東証・米国市場とも取引時間外のため7/14火曜確定値を採用。米6月CPI鈍化(+3.5%)・大手金融機関好決算・半導体株反発を受け日米株そろって上昇するrisk-onへ転換。金は株高でヘッジ需要後退し逆行安。",
+  "nikkei": {
+   "value": 67743.5,
+   "change": 500.77,
+   "changePct": 0.74,
+   "src": "日本経済新聞/株探 as of 2026-07-14"
+  },
+  "nasdaq100": {
+   "value": 29578.26,
+   "change": 314.16,
+   "changePct": 1.07,
+   "src": "Investing.com/Nasdaq as of 2026-07-14"
+  },
+  "sp500": {
+   "value": 7550.66,
+   "change": 35.32,
+   "changePct": 0.47,
+   "src": "Yahoo Finance as of 2026-07-14"
+  },
+  "usdjpy": {
+   "value": 162.17,
+   "change": 0.2,
+   "changePct": 0.12,
+   "src": "みんかぶFX as of 2026-07-15 02:11"
+  },
+  "gold": {
+   "value": 22730,
+   "change": -345,
+   "changePct": -1.47,
+   "src": "田中貴金属工業(円建て小売/g) as of 2026-07-14"
+  }
  }
 ]

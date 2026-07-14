@@ -183,6 +183,18 @@
     "scenario_materialized_within_considered"
    ],
    "evidence": "日本経済新聞「日経平均株価、3日ぶり反落 終値は1315円安の6万7242円」(as of 2026-07-13)、財経新聞「後場の日経平均は1131円安でスタート」(as of 2026-07-13)、Trading Economics/RoboForex集計「Gold (XAUUSD) price forecast」(as of 2026-07-13)、外為どっとコム「ドル/円見通し」(as of 2026-07-13)、検証部WebSearch監査(as of 2026-07-14)"
+  },
+  {
+   "date": "2026-07-15",
+   "category": "データ品質",
+   "lesson": "マーケット課が報告したファンド基準価額(本日はSBI・iシェアーズ・ゴールドファンド¥44,625)が、前回確定値との連続性を欠く異常値だった場合、単に「不採用」とするだけでなく、bench_navs.json内の他ファンド(本件ではeMAXIS Slim S&P500、7/3:¥44,352・7/7:¥44,920)のNAVと数値が近接していないか照合し、商品取り違えの可能性を原因診断として明記する。反対尋問(2026-07-15)の指摘により発見。",
+   "regime_tags": [
+    "risk-on",
+    "rate_dir_down"
+   ],
+   "evidence": "trades.json T0020、portfolio.json accounts.tokutei gold nav_source、bench_navs.json Tier2 eMAXIS Slim S&P500",
+   "status": "仮説",
+   "adoption_count": 1
   }
  ]
 }
