@@ -10,6 +10,7 @@ const LS = {
   known:  'tango_known_v1',      // 覚えた単語ID配列
   quiz:   'tango_quiz_hist_v1',  // クイズ履歴
   user:   'tango_user_words_v1', // ユーザーがインポートした単語（この端末のみ）
+  filter: 'tango_filter_v1',     // 絞り込み状態（レベル/カテゴリ/検索）
 };
 const load = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -68,10 +69,12 @@ rebuildCatalog();
   } catch (e) {}
 })();
 
-/* ---------- 状態 ---------- */
-let filterLevel = 'all';
-let filterCat = 'all';
-let searchQ = '';
+/* ---------- 状態（リロードしても保持されるよう localStorage に保存） ---------- */
+const savedFilter = load(LS.filter, {});
+let filterLevel = savedFilter.level || 'all';
+let filterCat = savedFilter.cat || 'all';
+let searchQ = savedFilter.q || '';
+function saveFilter(){ save(LS.filter, { level: filterLevel, cat: filterCat, q: searchQ }); }
 
 /* ---------- 音声 ----------
    端末によっては getVoices() がページ読込直後は空で、
@@ -269,7 +272,7 @@ function renderCats(){
 }
 document.getElementById('catFilter').addEventListener('click', e => {
   const c = e.target.closest('[data-cat]'); if (!c) return;
-  filterCat = c.dataset.cat; renderCats(); renderList();
+  filterCat = c.dataset.cat; saveFilter(); renderCats(); renderList();
 });
 
 /* レベルタブ */
@@ -277,14 +280,14 @@ document.getElementById('levelTabs').addEventListener('click', e => {
   const t = e.target.closest('.tab'); if (!t) return;
   filterLevel = t.dataset.level;
   document.querySelectorAll('#levelTabs .tab').forEach(x => x.classList.toggle('on', x===t));
-  renderList();
+  saveFilter(); renderList();
 });
 
 /* 検索 */
 let searchT;
 document.getElementById('search').addEventListener('input', e => {
   clearTimeout(searchT);
-  searchT = setTimeout(() => { searchQ = e.target.value.trim(); renderList(); }, 200);
+  searchT = setTimeout(() => { searchQ = e.target.value.trim(); saveFilter(); renderList(); }, 200);
 });
 
 /* ============================================================
@@ -668,5 +671,12 @@ function exportUserWords(){
 /* ============================================================
    初期化
    ============================================================ */
+// 保存済みの絞り込み状態を UI に反映（リロード後も選択を維持）
+(function restoreFilterUI(){
+  document.querySelectorAll('#levelTabs .tab').forEach(t =>
+    t.classList.toggle('on', t.dataset.level === filterLevel));
+  const box = document.getElementById('search');
+  if (box && searchQ) box.value = searchQ;
+})();
 renderCats();
 renderList();
