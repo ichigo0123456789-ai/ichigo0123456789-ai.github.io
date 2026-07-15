@@ -195,6 +195,19 @@
    "evidence": "trades.json T0020、portfolio.json accounts.tokutei gold nav_source、bench_navs.json Tier2 eMAXIS Slim S&P500",
    "status": "仮説",
    "adoption_count": 1
+  },
+  {
+   "date": "2026-07-16",
+   "category": "運用ガバナンス・データ品質",
+   "lesson": "NAV取得不可によるcarry-forwardと、三重制約(NISA枠上限・3ヶ月反対売買制限・つみたて実行済み)によるhold-onlyを、同一の『hold』としてまとめて記録すると、意思決定の実績なのかデータ欠損による判断保留なのかが区別できなくなる(反対尋問2026-07-16の指摘)。今後はtrades.jsonのanalysis_methodに『制約由来のhold』か『データ欠損由来のhold』かを明記する運用とする。また新規テーマ予測(本件はP-T17案)を追加する前に、既存predictions(本件はP-U05のゴールドヘッジ仮説・P-T16の株高金安構図)との対象重複を必ず照合し、重複がある場合は新設せず既存予測のconsidered_scenariosへの追記で対応することとした。",
+   "regime_tags": [
+    "governance",
+    "data_quality",
+    "hold_vs_constraint",
+    "duplicate_prediction_risk"
+   ],
+   "evidence": "反対尋問レビュー(2026-07-16、投資部④⑤P-T17案・運用部T0021の批判的検証)",
+   "status": "仮説"
   }
  ]
 }
