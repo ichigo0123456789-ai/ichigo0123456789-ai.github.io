@@ -8,6 +8,7 @@
 /* ---------- ストレージ ---------- */
 const LS = {
   known:  'tango_known_v1',      // 覚えた単語ID配列
+  weak:   'tango_weak_v1',       // 覚えてない（要復習）単語ID配列
   quiz:   'tango_quiz_hist_v1',  // クイズ履歴
   user:   'tango_user_words_v1', // ユーザーがインポートした単語（この端末のみ）
   filter: 'tango_filter_v1',     // 絞り込み状態（レベル/カテゴリ/検索）
@@ -16,6 +17,7 @@ const load = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? d
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
 let known = new Set(load(LS.known, []));
+let weak = new Set(load(LS.weak, []));
 let quizHist = load(LS.quiz, []);
 let userWords = load(LS.user, []); // [{word, ipa, pos, vt, ja, ex, exJa, level, cat}]
 
@@ -169,7 +171,8 @@ function jaHtml(ja){
 function filteredWords(){
   return CATALOG.filter(w => {
     if (filterLevel === 'known'   && !known.has(w.id)) return false;
-    if (filterLevel === 'unknown' &&  known.has(w.id)) return false;
+    if (filterLevel === 'weak'    && !weak.has(w.id)) return false;
+    if (filterLevel === 'unknown' && (known.has(w.id) || weak.has(w.id))) return false;
     if (['600','730','860','990'].includes(filterLevel) && String(w.level) !== filterLevel) return false;
     if (filterCat !== 'all' && w.cat !== filterCat) return false;
     if (searchQ){
@@ -186,7 +189,7 @@ function renderList(){
   const list = document.getElementById('list');
   const items = filteredWords();
   document.getElementById('count').textContent =
-    `${items.length}語　（覚えた ${known.size} / 全${CATALOG.length}語）`;
+    `${items.length}語　（覚えた ${known.size}／覚えてない ${weak.size}／全${CATALOG.length}語）`;
 
   if (!items.length){
     list.innerHTML = '<div class="empty">該当する単語がありません。</div>';
@@ -194,9 +197,10 @@ function renderList(){
   }
   list.innerHTML = items.map(w => {
     const isKnown = known.has(w.id);
+    const isWeak = weak.has(w.id);
     const posLabel = posBadge(w);
     return `
-    <article class="card ${isKnown?'known':''}" data-id="${w.id}">
+    <article class="card ${isKnown?'known':''} ${isWeak?'weak':''}" data-id="${w.id}">
       <div class="head">
         <div class="no">${w.no}</div>
         <div class="core">
@@ -226,7 +230,11 @@ function renderList(){
             </button>
             <button class="knowbtn ${isKnown?'on':''}" data-act="know">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              ${isKnown?'覚えた':'覚えた'}
+              覚えた
+            </button>
+            <button class="weakbtn ${isWeak?'on':''}" data-act="weak">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/></svg>
+              覚えてない
             </button>
             ${w.ex ? `<button class="expandbtn" data-act="expand">例文
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -236,6 +244,20 @@ function renderList(){
       </div>
     </article>`;
   }).join('');
+}
+
+/* 覚えた/覚えてない の表示更新 */
+function updateMarkUI(card, id){
+  const isKnown = known.has(id), isWeak = weak.has(id);
+  card.classList.toggle('known', isKnown);
+  card.classList.toggle('weak', isWeak);
+  const kb = card.querySelector('.knowbtn'), wb = card.querySelector('.weakbtn');
+  if (kb) kb.classList.toggle('on', isKnown);
+  if (wb) wb.classList.toggle('on', isWeak);
+  document.getElementById('count').textContent =
+    `${filteredWords().length}語　（覚えた ${known.size}／覚えてない ${weak.size}／全${CATALOG.length}語）`;
+  // 絞り込み中のタブに影響する場合は一覧を作り直す
+  if (['known','weak','unknown'].includes(filterLevel)) renderList();
 }
 
 /* リストのクリック（イベント委譲） */
@@ -250,13 +272,16 @@ document.getElementById('list').addEventListener('click', e => {
   if (act === 'play'){ speak(w.word, btn); }
   else if (act === 'phrase'){ speakPhrase(w.ph, btn); }
   else if (act === 'know'){
-    if (known.has(id)) known.delete(id); else { known.add(id); toast('覚えたに追加しました'); }
-    save(LS.known, [...known]);
-    card.classList.toggle('known', known.has(id));
-    btn.classList.toggle('on', known.has(id));
-    document.getElementById('count').textContent =
-      `${filteredWords().length}語　（覚えた ${known.size} / 全${CATALOG.length}語）`;
-    if (filterLevel === 'known' || filterLevel === 'unknown') renderList();
+    if (known.has(id)){ known.delete(id); }
+    else { known.add(id); weak.delete(id); toast('覚えたに追加しました'); }  // 覚えた⇔覚えてないは排他
+    save(LS.known, [...known]); save(LS.weak, [...weak]);
+    updateMarkUI(card, id);
+  }
+  else if (act === 'weak'){
+    if (weak.has(id)){ weak.delete(id); }
+    else { weak.add(id); known.delete(id); toast('覚えてないに追加しました'); }
+    save(LS.known, [...known]); save(LS.weak, [...weak]);
+    updateMarkUI(card, id);
   }
   else if (act === 'expand'){
     const ex = card.querySelector('.ex');
@@ -334,6 +359,7 @@ function renderQuizSetup(){
           <button data-lv="860">860</button>
           <button data-lv="990">990</button>
           <button data-lv="known">覚えた</button>
+          <button data-lv="weak">覚えてない</button>
         </div>
       </div>
       <div class="field">
@@ -364,8 +390,12 @@ function startQuiz(){
   let pool = CATALOG.slice();
   if (['600','730','860','990'].includes(lv)) pool = pool.filter(w => String(w.level)===lv);
   else if (lv === 'known') pool = pool.filter(w => known.has(w.id));
+  else if (lv === 'weak') pool = pool.filter(w => weak.has(w.id));
 
-  if (pool.length < 4){ toast('出題できる単語が足りません（4語以上必要）'); return; }
+  if (pool.length < 4){
+    toast(lv === 'weak' ? '「覚えてない」の単語が4語以上必要です' : '出題できる単語が足りません（4語以上必要）');
+    return;
+  }
   const items = shuffle(pool).slice(0, Math.min(n, pool.length));
   quiz = { items, i:0, correct:0, dir, results:[] };
   renderQuestion();
@@ -484,7 +514,7 @@ function renderStats(){
   area.innerHTML = `
     <div class="stat-grid">
       <div class="stat"><div class="n">${known.size}</div><div class="l">覚えた単語</div></div>
-      <div class="stat"><div class="n">${quizHist.length}</div><div class="l">クイズ回数</div></div>
+      <div class="stat"><div class="n" style="color:var(--red)">${weak.size}</div><div class="l">覚えてない</div></div>
       <div class="stat"><div class="n">${avg}<span style="font-size:1rem">%</span></div><div class="l">平均正答率</div></div>
     </div>
 
@@ -540,6 +570,7 @@ function renderStats(){
 
     <div class="sec-title">データ管理</div>
     <button class="btn-ghost" id="resetKnown">「覚えた」をすべてリセット</button>
+    <button class="btn-ghost" id="resetWeak" style="margin-top:.5rem">「覚えてない」をすべてリセット</button>
 
     <p class="note">
       学習データ（覚えた単語・クイズ履歴・マイ単語）は、<b>このブラウザ内にのみ</b>保存されます。<br>
@@ -553,7 +584,10 @@ function renderStats(){
     if (confirm('クイズ履歴をすべて消去しますか？')){ quizHist=[]; save(LS.quiz, quizHist); renderStats(); toast('履歴を消去しました'); }
   });
   document.getElementById('resetKnown').addEventListener('click', () => {
-    if (confirm('「覚えた」の記録をすべてリセットしますか？')){ known=new Set(); save(LS.known,[]); renderStats(); toast('リセットしました'); }
+    if (confirm('「覚えた」の記録をすべてリセットしますか？')){ known=new Set(); save(LS.known,[]); renderList(); renderStats(); toast('リセットしました'); }
+  });
+  document.getElementById('resetWeak').addEventListener('click', () => {
+    if (confirm('「覚えてない」の記録をすべてリセットしますか？')){ weak=new Set(); save(LS.weak,[]); renderList(); renderStats(); toast('リセットしました'); }
   });
 
   // --- インポート関連 ---
