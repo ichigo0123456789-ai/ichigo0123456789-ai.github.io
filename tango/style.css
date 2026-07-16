@@ -94,6 +94,8 @@ button{font-family:inherit;cursor:pointer}
   transition:border-color .15s,box-shadow .15s;
 }
 .card.known{border-color:var(--green);background:linear-gradient(0deg,var(--green-soft),var(--surface) 60%)}
+.card.weak{border-color:var(--red);background:linear-gradient(0deg,var(--red-soft),var(--surface) 60%)}
+.card.known.weak{border-color:var(--red)}
 .card .head{display:flex;align-items:flex-start;gap:.7rem}
 .card .no{
   flex:none;min-width:2rem;height:1.55rem;padding:0 .45rem;border-radius:7px;
@@ -145,6 +147,12 @@ button{font-family:inherit;cursor:pointer}
   display:inline-flex;align-items:center;gap:.35rem;
 }
 .knowbtn.on{background:var(--green);border-color:var(--green);color:#fff}
+.weakbtn{
+  border:1px solid var(--line);background:var(--surface);color:var(--sub);
+  padding:.42rem .8rem;border-radius:9px;font-size:.8rem;font-weight:700;transition:.15s;
+  display:inline-flex;align-items:center;gap:.35rem;
+}
+.weakbtn.on{background:var(--red);border-color:var(--red);color:#fff}
 .expandbtn{
   margin-left:auto;border:0;background:transparent;color:var(--faint);font-size:.78rem;font-weight:700;
   display:inline-flex;align-items:center;gap:.25rem;
