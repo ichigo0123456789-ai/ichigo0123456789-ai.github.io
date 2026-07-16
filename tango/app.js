@@ -320,15 +320,22 @@ document.getElementById('search').addEventListener('input', e => {
 /* ============================================================
    ビュー切り替え（ボトムナビ）
    ============================================================ */
+let listScroll = 0;  // 単語帳のスクロール位置を保持
 document.querySelector('.nav .in').addEventListener('click', e => {
   const b = e.target.closest('button[data-view]'); if (!b) return;
   const v = b.dataset.view;
+  // 単語帳から離れるときは今のスクロール位置を覚えておく
+  const cur = document.querySelector('.view.on');
+  if (cur && cur.id === 'view-list') listScroll = window.scrollY;
+
   document.querySelectorAll('.nav button').forEach(x => x.classList.toggle('on', x===b));
   document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
   document.getElementById('view-'+v).classList.add('on');
-  window.scrollTo(0,0);
+
   if (v === 'quiz') renderQuizSetup();
   if (v === 'history') renderStats();
+  // 単語帳に戻るときは元の位置へ、それ以外は先頭へ
+  window.scrollTo(0, v === 'list' ? listScroll : 0);
 });
 
 /* ============================================================
