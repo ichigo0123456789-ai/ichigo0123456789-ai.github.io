@@ -1,0 +1,89 @@
+{
+ "schema": "asset-analysis v1",
+ "generated": "2026-07-17T21:45:00+09:00",
+ "runType": "seed",
+ "market": {
+  "funds": [
+   {"name":"eMAXIS Slim 米国株式（S&P500）","shortName":"S&P500","manager":"三菱UFJアセットマネジメント","benchmark":"S&P500指数(配当込み・円換算)","expenseRatio":0.0814,"fxHedge":"なし","leverage":1,"assetClass":"株式","region":"米国","confidence":"high"},
+   {"name":"eMAXIS Slim 全世界株式（オール・カントリー）","shortName":"オルカン","manager":"三菱UFJアセットマネジメント","benchmark":"MSCI ACWI(配当込み・円換算)","expenseRatio":0.05775,"fxHedge":"なし","leverage":1,"assetClass":"株式","region":"全世界","confidence":"high"},
+   {"name":"iFreeNEXT FANG+インデックス","shortName":"FANG+","manager":"大和アセットマネジメント","benchmark":"NYSE FANG+指数(円換算)","expenseRatio":0.7755,"fxHedge":"なし","leverage":1,"assetClass":"株式","region":"米国","confidence":"medium"},
+   {"name":"＜購入・換金手数料なし＞ニッセイNASDAQ100インデックスファンド","shortName":"ニッセイNASDAQ100","manager":"ニッセイアセットマネジメント","benchmark":"NASDAQ100指数(配当込み・円換算)","expenseRatio":0.2035,"fxHedge":"なし","leverage":1,"assetClass":"株式","region":"米国","confidence":"medium"},
+   {"name":"＜購入・換金手数料なし＞ニッセイSOX指数インデックスファンド","shortName":"ニッセイSOX","manager":"ニッセイアセットマネジメント","benchmark":"SOX指数(円換算)","expenseRatio":0.1958,"fxHedge":"なし","leverage":1,"assetClass":"株式","region":"米国","confidence":"medium"},
+   {"name":"iFreeレバレッジ NASDAQ100","shortName":"レバナス","manager":"大和アセットマネジメント","benchmark":"NASDAQ100指数の日次値動きの2倍を目標","expenseRatio":0.99,"fxHedge":"なし","leverage":2,"assetClass":"株式","region":"米国","confidence":"high"},
+   {"name":"Tracers S&P500ゴールドプラス","shortName":"ゴールドプラス","manager":"アモバ・アセットマネジメント","benchmark":"米国株先物100%+金先物100%(合計200%相当)の複合戦略","expenseRatio":0.44,"fxHedge":"なし","leverage":2,"assetClass":"複合","region":"米国+金","confidence":"medium"},
+   {"name":"eMAXIS Neo ロボット","shortName":"Neoロボット","manager":"三菱UFJアセットマネジメント","benchmark":"ロボット関連テーマ","expenseRatio":0.7975,"fxHedge":"なし","leverage":1,"assetClass":"株式","region":"グローバル","confidence":"medium"},
+   {"name":"SBI・iシェアーズ・ゴールドファンド（為替ヘッジなし）","shortName":"サクっと純金","manager":"SBIアセットマネジメント","benchmark":"LBMA金価格(円換算)","expenseRatio":0.45,"fxHedge":"なし","leverage":1,"assetClass":"金","region":"グローバル","confidence":"medium"}
+  ],
+  "summary": "投信9本の基礎データを整備。信託報酬は優先裏取り済(確度をhigh/mediumで明示)。"
+ },
+ "structure": {
+  "asOf": "2026-H1概算",
+  "indices": [
+   {"id":"fangplus","name":"NYSE FANG+","topHoldings":[{"ticker":"NVDA","name":"NVIDIA","weightPct":10.0},{"ticker":"META","name":"Meta Platforms","weightPct":10.0},{"ticker":"AAPL","name":"Apple","weightPct":10.0},{"ticker":"AMZN","name":"Amazon","weightPct":10.0},{"ticker":"GOOGL","name":"Alphabet","weightPct":10.0},{"ticker":"MSFT","name":"Microsoft","weightPct":10.0},{"ticker":"NFLX","name":"Netflix","weightPct":10.0},{"ticker":"TSLA","name":"Tesla","weightPct":10.0},{"ticker":"AVGO","name":"Broadcom","weightPct":10.0},{"ticker":"PLTR","name":"Palantir","weightPct":10.0}],"volAnnualPct":38,"maxDrawdown":{"year":"2022","pct":-41},"note":"10銘柄均等・四半期リバランスで単銘柄集中は抑制されるがテック一極集中は不変で値動きは指数中最大級"},
+   {"id":"nasdaq100","name":"NASDAQ100","topHoldings":[{"ticker":"NVDA","name":"NVIDIA","weightPct":9.5},{"ticker":"AAPL","name":"Apple","weightPct":7.5},{"ticker":"MSFT","name":"Microsoft","weightPct":5.5},{"ticker":"AMZN","name":"Amazon","weightPct":5.0},{"ticker":"GOOGL","name":"Alphabet","weightPct":5.0},{"ticker":"META","name":"Meta Platforms","weightPct":4.0},{"ticker":"AVGO","name":"Broadcom","weightPct":4.0},{"ticker":"TSLA","name":"Tesla","weightPct":3.0},{"ticker":"NFLX","name":"Netflix","weightPct":3.0},{"ticker":"COST","name":"Costco","weightPct":2.0},{"ticker":"OTHERS","name":"その他90銘柄","weightPct":51.5}],"volAnnualPct":24,"maxDrawdown":{"year":"2022","pct":-33},"note":"時価総額加重で上位10銘柄が指数の半分弱を占めメガテック依存が強い"},
+   {"id":"sp500","name":"S&P500","topHoldings":[{"ticker":"NVDA","name":"NVIDIA","weightPct":7.32},{"ticker":"AAPL","name":"Apple","weightPct":7.04},{"ticker":"GOOGL","name":"Alphabet","weightPct":5.89},{"ticker":"MSFT","name":"Microsoft","weightPct":4.5},{"ticker":"AMZN","name":"Amazon","weightPct":3.69},{"ticker":"AVGO","name":"Broadcom","weightPct":2.65},{"ticker":"META","name":"Meta Platforms","weightPct":1.99},{"ticker":"MU","name":"Micron","weightPct":1.71},{"ticker":"TSLA","name":"Tesla","weightPct":1.71},{"ticker":"LLY","name":"Eli Lilly","weightPct":1.49},{"ticker":"OTHERS","name":"その他490銘柄","weightPct":62.0}],"volAnnualPct":17,"maxDrawdown":{"year":"2022","pct":-25},"note":"500銘柄分散だが上位10銘柄で約38%を占め集中度は年々上昇傾向"},
+   {"id":"sox","name":"SOX(フィラデルフィア半導体)","topHoldings":[{"ticker":"NVDA","name":"NVIDIA","weightPct":9.0},{"ticker":"AVGO","name":"Broadcom","weightPct":8.5},{"ticker":"MU","name":"Micron","weightPct":7.5},{"ticker":"INTC","name":"Intel","weightPct":6.0},{"ticker":"MRVL","name":"Marvell","weightPct":5.5},{"ticker":"OTHERS","name":"その他25銘柄(AMD/AMAT/LRCX等)","weightPct":63.5}],"volAnnualPct":38,"maxDrawdown":{"year":"2022","pct":-37},"note":"半導体単独セクター集中で景気循環・地政学リスクに敏感、値動きはFANG+と並び最大級"}
+  ],
+  "overlaps": [
+   {"pair":["fangplus","nasdaq100"],"overlapPct":48.5,"note":"FANG+構成銘柄は原則すべてNASDAQ100にも採用されており重複度は4ペア中最大"},
+   {"pair":["fangplus","sp500"],"overlapPct":35.9,"note":"主力メガテックは共通するがNFLX・PLTRなどS&P500内ウェイトが小さい銘柄で重複度が下がる"},
+   {"pair":["nasdaq100","sp500"],"overlapPct":55,"note":"上位10銘柄はほぼ同一。NASDAQ100構成銘柄の大半がS&P500にも含まれ実質重複は上位10ベース概算より高い"},
+   {"pair":["sox","nasdaq100"],"overlapPct":14.7,"note":"半導体大手はNASDAQ100にも入るがウェイトは相対的に小さく重複度は4ペア中最小"}
+  ],
+  "summary": "FANG+×NASDAQ100の重複が最大(概算48.5%)。FANG+とSOXは年率σ38%級で値動き最大級。"
+ },
+ "leverage": {
+  "products": [
+   {"name":"iFreeレバレッジ NASDAQ100","leverage":2,"underlying":"NASDAQ100(E-mini先物)","expenseRatioPct":0.99,"structure":"日次リセット先物型","decayNote":"往来・高ボラ相場では長期リターンが原資産の単純2倍を下回りやすい(ボラティリティ・ディケイ)","dcaFit":"低: 減価が積み上がりやすく長期定額積立には理論上不向き。トレンド局面の短中期活用が中心","bankerRuleOk":true,"confidence":"high"},
+   {"name":"楽天レバレッジNASDAQ-100","leverage":2,"underlying":"NASDAQ100(E-mini先物)+円建債券","expenseRatioPct":0.77,"structure":"日次リセット先物+債券オーバーレイ型","decayNote":"先物部分のディケイ構造は同種と同様だが債券金利収益が一部相殺する設計","dcaFit":"低: 基本構造は日次リセット型で長期積立の目減りリスクは残る","bankerRuleOk":true,"confidence":"medium"},
+   {"name":"auAMレバレッジNASDAQ100","leverage":2,"underlying":"NASDAQ100(E-mini先物)","expenseRatioPct":0.4334,"structure":"日次リセット先物型","decayNote":"ディケイ構造は同種だが業界最低水準コストで信託報酬起因の目減りは相対的に小さい","dcaFit":"低〜中: コスト面のハンデが小さい分、同カテゴリ内では積立の足かせが軽い","bankerRuleOk":true,"confidence":"high"},
+   {"name":"iFreeレバレッジ FANG+","leverage":2,"underlying":"NYSE FANG+指数","expenseRatioPct":1.045,"structure":"日次リセット先物型","decayNote":"原資産自体が少数銘柄集中で高ボラのため、2倍化によるディケイがNASDAQ100連動型より顕著になりやすい","dcaFit":"低: 値動きの荒さとディケイが重なり定額積立での長期保有には不向き","bankerRuleOk":true,"confidence":"medium"},
+   {"name":"Tracers S&P500ゴールドプラス","leverage":"実質2倍(株100%+金100%ブースト型)","underlying":"S&P500(100%)+金先物(100%)","expenseRatioPct":0.2,"structure":"資産オーバーレイ型(日次の指数倍化リセットなし)","decayNote":"日次リセット特有の幾何ディケイは構造上小さいが、金先物ロールコストと株金相関変化がブレ要因","dcaFit":"中〜高: 分散効果がありレバ型の中では長期積立との親和性が高い","bankerRuleOk":true,"confidence":"medium"},
+   {"name":"NF・日経レバレッジ上場投信(1570)","leverage":2,"underlying":"日経平均(先物)","expenseRatioPct":0.88,"structure":"日次リセット先物型・東証上場ETF","decayNote":"ディケイは他商品同様。ETFのため流動性・売買コストは良好","dcaFit":"低: 機動売買向きで定額積立にはディケイ面で不向き","bankerRuleOk":true,"confidence":"high"}
+  ],
+  "mathNote": "日次リセット型k倍商品の幾何成長率は近似的に g_k ≈ k·μ − (k²σ²)/2。kが2乗で効くσ²項に対しμ項はkの1乗でしか効かないため、レンジ・高ボラ相場ほど『往復ビンタ』による目減りが不釣り合いに拡大する。原資産が横ばいでも高ボラ環境では2倍型は年率で有意なマイナスになり得る。",
+  "decayTable": [
+   {"sigmaPct":16,"decayPctPerYear":2.56,"label":"S&P500相当"},
+   {"sigmaPct":22,"decayPctPerYear":4.84,"label":"NASDAQ100相当"},
+   {"sigmaPct":32,"decayPctPerYear":10.24,"label":"SOX相当"}
+  ],
+  "summary": "レバ型6商品を比較。高ボラ原資産ほど日次リセットの減価が非線形に拡大する。"
+ },
+ "strategy": {
+  "rules": [
+   {"id":"fangplus-concentration-alert","condition":"fangWeight > 0.4","severity":"alert","title":"FANG+集中リスク","rationale":"単一テーマ型投信への配分が4割超で価格変動が集中しやすい","action":"S&P500等の分散型投信との比率を見直すことを検討"},
+   {"id":"fangplus-concentration-watch","condition":"fangWeight > 0.25 && fangWeight <= 0.4","severity":"watch","title":"FANG+比率やや高め","rationale":"テーマ集中型投信が資産の4分の1超を占めている","action":"今後の積立配分を分散型に振り分けることを検討"},
+   {"id":"nvda-lookthrough-alert","condition":"effNvdaPct > 15","severity":"alert","title":"NVIDIA実効集中","rationale":"複数投信の重複保有により単一銘柄の実効比率が15%を超過","action":"保有投信間の組入銘柄重複を確認し配分調整を検討"},
+   {"id":"nvda-lookthrough-watch","condition":"effNvdaPct > 8 && effNvdaPct <= 15","severity":"watch","title":"NVIDIA実効比率上昇","rationale":"ルックスルー後の単一銘柄実効比率が8%を超えている","action":"新規積立先を重複の少ない投信に分散することを検討"},
+   {"id":"top5-concentration-watch","condition":"effTop5Pct > 35","severity":"watch","title":"上位5銘柄集中","rationale":"実効ベースの上位5銘柄合計が資産の35%を超えている","action":"銘柄別の重複度を可視化し集中状況を確認することを検討"},
+   {"id":"cash-shortage-alert","condition":"cashWeight < 0.05","severity":"alert","title":"現金比率が過小","rationale":"生活防衛資金に相当する現金が不足している可能性がある","action":"生活費6ヶ月分を目安に現金確保を優先することを検討"},
+   {"id":"cash-excess-watch","condition":"cashWeight > 0.5","severity":"watch","title":"現金比率が過大","rationale":"資産の半分超が現金で運用機会を逃している可能性がある","action":"NISA枠を使った積立や一括投資の増額を検討"},
+   {"id":"usd-exposure-watch","condition":"usdExposure > 0.7","severity":"watch","title":"USD建て偏重","rationale":"資産の7割超が米ドル建てで為替変動の影響を受けやすい","action":"円建て資産や他通貨圏投信の組入れを検討"},
+   {"id":"expense-ratio-watch","condition":"avgExpenseRatioPct > 0.5","severity":"watch","title":"信託報酬コスト高","rationale":"加重平均信託報酬が0.5%を超え長期リターンを押し下げる可能性","action":"低コストインデックス投信への一部切替を検討"},
+   {"id":"leverage-weight-watch","condition":"levWeight > 0.1 && levWeight <= 0.25","severity":"watch","title":"レバレッジ型組入れ","rationale":"レバレッジ型投信は通常型の数倍のボラティリティを持ちうる","action":"下落時の評価額変動を試算し保有比率の妥当性を検討"},
+   {"id":"leverage-weight-alert","condition":"levWeight > 0.25","severity":"alert","title":"レバレッジ比率過大","rationale":"資産の4分の1超をレバレッジ型が占め急落時の毀損が大きい","action":"比率上限を定め超過分の段階的な圧縮を検討"},
+   {"id":"nisa-tsumitate-underuse","condition":"monthlyPlanYen > 0 && monthlyPlanYen < 100000","severity":"info","title":"NISA積立枠に余地","rationale":"月次積立額がつみたて投資枠上限(月10万円)に届いていない","action":"家計に無理のない範囲でNISA積立枠の追加活用を検討"},
+   {"id":"lump-sum-vs-dca-balance","condition":"monthlyPlanYen === 0 && totalAssets > 1000000","severity":"info","title":"積立未設定","rationale":"まとまった資産があるが定期積立が設定されていない","action":"時間分散のため定期積立の設定を検討"},
+   {"id":"volatility-buffer-thin","condition":"equityWeight > 0.8 && cashWeight < 0.1","severity":"watch","title":"ボラ耐性に懸念","rationale":"株式比率が8割超かつ現金が薄く下落時の耐性が低い可能性","action":"生活防衛資金と株式比率のバランス再確認を検討"},
+   {"id":"rebalance-flexibility-limited","condition":"cashWeight < 0.05 && (fangWeight > 0.3 || effNvdaPct > 10)","severity":"watch","title":"機動的調整余地小","rationale":"反対売買は3ヶ月制限があり現金薄だと即時の調整が困難","action":"新規資金や積立配分変更による段階的調整の余地確保を検討"}
+  ],
+  "principles": [
+   "NISA(つみたて/成長)枠の活用を優先し、コストと時間分散を意識した運用を基本とする",
+   "個別株・信用取引は不可のため、公募投信・ETFの分散配分を運用の軸に据える",
+   "生活防衛資金(生活費6ヶ月分目安)を現金で確保した上で、残りを投資に振り向ける",
+   "同一商品の反対売買には3ヶ月の制限があるため、集中が進む前の早めの軌道修正を心がける",
+   "本ルールは断定的な売買判断ではなく、自己点検を促す気づきとして位置づける"
+  ],
+  "summary": "10観点をカバーする条件付き提案ルール15本。評価はすべて端末内で実行される。"
+ },
+ "compliance": {
+  "verdict": "PASS",
+  "checks": [
+   {"item":"個人情報混入","result":"PASS","note":"公開4ファイルを氏名・メール・口座・実口数・実金額のパターンでスキャンし一致ゼロ件"},
+   {"item":"投資助言化","result":"PASS","note":"全ルール・解説が「検討」「特性解説」の範囲。断定的推奨表現なし"},
+   {"item":"銀行員自主規制","result":"PASS","note":"個別株・信用取引の推奨なし。公募投信・ETFの特性解説のみ"},
+   {"item":"免責表示","result":"PASS","note":"フッターに投資助言ではない旨・自己責任・localStorageのみの明記を確認"}
+  ],
+  "summary": "個人情報混入ゼロ・助言化なし・免責ありを確認し、公開判定PASS。"
+ }
+}
