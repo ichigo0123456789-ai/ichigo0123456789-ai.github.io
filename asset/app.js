@@ -15,6 +15,7 @@ const FUND_META = {
   'slim-acwi':       { name: 'eMAXIS Slim 全世界株式(オルカン)', short: 'オルカン', navKeys: ['オール・カントリー'], exposures: [{ idx: 'acwi', mult: 1 }], usdMult: 0.65, lev: 1, exp: 0.05775, bucket: 'other' },
   'ifree-fangplus':  { name: 'iFreeNEXT FANG+インデックス', short: 'FANG+', navKeys: ['ifreenext', 'fang+'], exposures: [{ idx: 'fangplus', mult: 1 }], usdMult: 1, lev: 1, exp: 0.7755, bucket: 'fang' },
   'nissei-nasdaq100':{ name: 'ニッセイNASDAQ100インデックス', short: 'NASDAQ100', navKeys: ['ニッセイ', 'nasdaq100'], exposures: [{ idx: 'nasdaq100', mult: 1 }], usdMult: 1, lev: 1, exp: 0.2035, bucket: 'nasdaq' },
+  'sbi-nasdaq100':   { name: 'SBI・NASDAQ100インデックス・ファンド', short: 'SBI NASDAQ100', navKeys: ['sbi', 'nasdaq100'], exposures: [{ idx: 'nasdaq100', mult: 1 }], usdMult: 1, lev: 1, exp: 0.0938, bucket: 'nasdaq' },
   'nissei-sox':      { name: 'ニッセイSOX指数インデックス', short: 'SOX', navKeys: ['sox'], exposures: [{ idx: 'sox', mult: 1 }], usdMult: 1, lev: 1, exp: 0.1958, bucket: 'other' },
   'iflev-nasdaq100': { name: 'iFreeレバレッジ NASDAQ100', short: 'レバナス', navKeys: ['レバレッジ', 'nasdaq100'], exposures: [{ idx: 'nasdaq100', mult: 2 }], usdMult: 2, lev: 2, exp: 0.99, bucket: 'nasdaq' },
   'tracers-spgold':  { name: 'Tracers S&P500ゴールドプラス', short: 'ゴールドプラス', navKeys: ['ゴールドプラス'], exposures: [{ idx: 'sp500', mult: 1 }, { idx: 'gold', mult: 1 }], usdMult: 2, lev: 2, exp: 0.44, bucket: 'sp500' },
@@ -128,9 +129,11 @@ function calcMetrics() {
     const navRec = NAVS[h.fundId];
     const nav = h.manualNav || (navRec && navRec.nav);
     if (!nav || !h.units) { if (h.units) rows.push({ ...h, m, value: 0, nav: null }); continue; }
-    rows.push({ ...h, m, nav, navDate: navRec ? navRec.date : '手動', value: h.units * nav / 10000 });
+    rows.push({ ...h, m, nav, navDate: navRec ? navRec.date : '手動', value: h.units * nav / 10000, cost: h.acqNav ? h.units * h.acqNav / 10000 : null });
   }
   const fundTotal = rows.reduce((a, r) => a + r.value, 0);
+  const pnlRows = rows.filter(r => r.cost != null);
+  const pnlSum = pnlRows.reduce((a, r) => a + (r.value - r.cost), 0);
   const total = fundTotal + cash;
   if (!total) return null;
   /* ルックスルー */
@@ -157,6 +160,7 @@ function calcMetrics() {
   const monthlyPlanYen = (HD.plans || []).reduce((a, p) => a + (+p.monthly || 0), 0);
   return {
     cash, fundTotal, total, rows, tickers, sorted, buckets, monthlyPlanYen,
+    pnlSum, pnlCount: pnlRows.length,
     vars: {
       totalAssets: total, cashWeight: cash / total, fangWeight: buckets.fang / total,
       sp500Weight: buckets.sp500 / total, nasdaqWeight: buckets.nasdaq / total,
@@ -192,6 +196,11 @@ function renderDash() {
     ['月次積立計画', v.monthlyPlanYen ? YEN(v.monthlyPlanYen) + '/月' : 'なし', (HD.plans && HD.plans[0]) ? esc(HD.plans[0].start + '〜') : ''],
     ['信託報酬(加重平均)', v.avgExpenseRatioPct.toFixed(3) + '%', '年' + YEN(M.fundTotal * v.avgExpenseRatioPct / 100)]
   ];
+  if (M.pnlCount) tiles.push([
+    '評価損益(取得単価入力分)',
+    `<span style="color:${M.pnlSum >= 0 ? 'var(--up)' : 'var(--down)'}">${M.pnlSum >= 0 ? '+' : ''}${Math.round(M.pnlSum).toLocaleString()}円</span>`,
+    `対象${M.pnlCount}銘柄・概算`
+  ]);
   $('dashTiles').innerHTML = tiles.map(t => `<div class="tile"><div class="k">${t[0]}</div><div class="v">${t[1]}</div><div class="s">${t[2]}</div></div>`).join('');
   /* ドーナツ: 固定順 [FANG+, 現金, NASDAQ100, S&P500系, その他] */
   const seg = [
