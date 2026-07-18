@@ -232,6 +232,19 @@
    ],
    "evidence": "反対尋問(2026-07-17)提出物。教訓2026-07-16(運用ガバナンス・データ品質)との継承関係",
    "status": "仮説"
+  },
+  {
+   "date": "2026-07-19",
+   "category": "テーマ分散・技術的競合ショック・予測機序の精緻化",
+   "lesson": "中国AIスタートアップMoonshot社が2026-07-17に発表した大規模モデル「Kimi K3」(2.8兆パラメータ・オープンウェイト)が米フロンティアモデルに性能面で肉薄したことを受け、『中国発AIモデルの急速な性能向上が米国AI覇権・巨額capex正当化の前提を揺るがす』という2025年1月のDeepSeekショックと同型の機序が再発し、フィラデルフィア半導体株指数(SOX)が弱気相場入り(6月末高値比▼20%超)、7/18には東京市場でもキオクシアがストップ安水準▼16.10%を記録した。既存の半導体・AI関連predictions(P-T05/P-T07/P-E08/P-T17/P-E22/P-E23/P-E24等)のconsidered_scenariosを全件確認したが、この『中国AI競合による需要前提毀損』軸はどれにも未収載だった。DeepSeekショックは既に一度経験済みの再発可能なリスククラスであったにも関わらず、事前に標準チェック項目化されていなかった。今後、半導体・AI関連テーマ型predictions新設時は『中国AI企業の新モデル発表』を標準considered_scenarios項目として明示的に追加する。",
+   "regime_tags": [
+    "ai_capex_rotation",
+    "tech_sector_dispersion",
+    "china_ai_competition",
+    "risk-off"
+   ],
+   "evidence": "検証部サプライズ監査(2026-07-19)。Moonshot Kimi K3発表とSOX弱気相場入り(cryptobriefing.com/Seeking Alpha/bankinfosecurity.com as of 2026-07-17)、キオクシアストップ安▼16.10%・時価総額約30兆円消失(日本経済新聞 as of 2026-07-18)。",
+   "status": "仮説"
   }
  ]
 }

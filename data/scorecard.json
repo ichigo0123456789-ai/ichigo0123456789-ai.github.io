@@ -115,6 +115,48 @@
     "schema_violations": 0
    },
    "read": "A系(予測力)は検証データ待ちが3週連続継続(最短horizon 7/16)。B系(判断品質)は制約遵守100%を維持しつつ、却下代替枝の機会費用追跡(B0003)がhold継続の正当性を裏付ける方向だが、反対尋問は17回連続holdのガバナンス懸念とサーキットブレーカー条項未検討を重ねて指摘。C系(リターン)は対オルカン超過が確定値+1.774pt(7/11)→+2.120pt(7/12)へ拡大したが、これは全銘柄のNAV上昇による相対効果でありrolling 20d/60dが算出可能になる7月下旬まで実力判断は保留。D系(稼働率)は71.4%(7/8欠測が主因)、runlog記録漏れ自体を検知する仕組みの整備が次週の優先課題。"
+  },
+  {
+   "week_ending": "2026-07-19",
+   "stage": "土台構築期（v2運用開始4週目）",
+   "A_predictive": {
+    "verified_count": 4,
+    "brier_rolling": 0.094,
+    "calibration_error": 0.15,
+    "mechanism_hit_rate": 0.5,
+    "surprise_rate": 0.25,
+    "note": "本日検証対象0件(次回horizon 2026-07-20)。累計検証済み4件(P-E01外れ/P-E03・P-E12・P-E14部分的中、いずれも2026-07-16採点)、rolling Brier=0.094。0.5-0.6バケット(n=4)で予測p平均0.525に対し実現率(verdict換算：的中1/部分的中0.5/外れ0)平均0.375、較正誤差0.15(やや過信気味、サンプル僅少)。機序的中率=方向○(P-E03,P-E14の2件)のうち機序○(P-E03のみ)=50%。サプライズ監査でMoonshot Kimi K3ショックがconsidered_scenarios外と判定、サプライズ率25%(4件中1件)。"
+   },
+   "B_decision_quality": {
+    "counterfactual_delta_jpy": 0,
+    "counterfactual_note": "判断効果(実PF-凍結初期)は07-17時点で¥0、6/29以降hold継続(裁量的組換えなし)。却下枝はB0001(全売却)-¥239,041/B0002(無売却)+¥108,793でfrozen優位継続、B0003(FANG+トリム機会費用)-¥36,202/B0004(ゴールド全量トリム機会費用)+¥549(いずれも低confidence参考値、07-17時点、週末のため更新なし)。",
+    "assumption_survival_rate": null,
+    "repeat_mistake_rate": null,
+    "lesson_citation_rate": null,
+    "constraint_compliance_rate": 1.0,
+    "constraint_note": "違反報告なし、100%継続（trades.json詳細は運用部確認事項）"
+   },
+   "C_returns": {
+    "excess_vs_orukan_pct_cum": 2.317,
+    "excess_vs_orukan_pct_cum_asof": "2026-07-17(確定値、NAV基準日2026-07-15)。07-18/19はNAV未発表のため更新なし",
+    "judgment_effect_vs_frozen_jpy": 0,
+    "slope_effect_vs_orukan100_jpy": 123733,
+    "attribution_note": "傾き効果+¥123,733は前週(07-12)+¥61,265から拡大(初期配分のFANG+/金傾斜が優位継続)。判断効果は¥0のまま(裁量売買なし)。",
+    "rolling_20d": null,
+    "rolling_60d": null,
+    "rolling_note": "運用開始2026-06-29から本日まで実質13営業日相当、20営業日到達は引き続き2026-07-27頃見込み。データ不足のため算出不可（—）。"
+   },
+   "D_system_health": {
+    "uptime_pct": 100.0,
+    "uptime_note": "直近記録7件(2026-07-11〜07-17)でruns succeeded/7=7/7=100%。前週の71.4%(07-08欠測)から回復。07-18(土)は定例runなし。",
+    "scoring_latency_days": null,
+    "lessons_promoted": 0,
+    "lessons_retired": 0,
+    "schema_violations": 0
+   },
+   "lessons_extracted": 1,
+   "retro": "①Moonshot Kimi K3のような『中国発AIモデル性能急伸ショック(DeepSeek型)』は既に一度経験済みの再発可能リスククラスだったにも関わらず、どのpredictionのconsidered_scenariosにも標準項目化されておらず後追いでのlessons化となった。②週末(07-18/19)は東証休場のためNAV反映に構造的な空白が生じるタイムラグの死角が残存。③v2スコアリング実績はまだ4件のみで較正誤差0.15の評価は時期尚早。④本日は検証対象0件が継続し、次の採点は07-20以降に集中する見込み。",
+   "uptime": "7/7 (100.0%)"
   }
  ]
 }
