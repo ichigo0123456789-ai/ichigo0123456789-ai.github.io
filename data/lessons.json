@@ -271,6 +271,19 @@
    ],
    "evidence": "反対尋問(進行2.7、2026-07-21)による指摘。data/portfolio.json valuation.note(2026-07-21、20回目評価)、data/bench_navs.json(Tier1直近更新日)。",
    "status": "仮説"
+  },
+  {
+   "date": "2026-07-22",
+   "category": "予測機序の精緻化",
+   "lesson": "P-E04(ネットフリックス決算/小売売上高)・P-E05(TSMC決算)・P-E13(TSMC決算+SKハイニックス上場)の3件連続で、『決算内容・ガイダンスの強弱』と『市場の受け止め方向』が逆行する事例が観測された。特にAI設備投資関連銘柄では、増額されたガイダンス(本来は需要拡大のポジティブシグナル)が『利益率・キャッシュフロー悪化懸念』とネガティブに解釈され株価が逆行安する『決算内容と株価反応の非対称』パターンが繰り返し発生している(TSMC「砲不発」等)。決算・ガイダンス連動型の予測を新設する際は、内容の強弱の方向だけでなく『市場が強気/弱気いずれのフレームで読むか』(需要拡大 vs コスト・マージン懸念)を独立した分岐としてconsidered_scenariosに標準項目化すべき。",
+   "regime_tags": [
+    "earnings_reaction_divergence",
+    "ai_capex",
+    "semiconductor",
+    "sell_the_news"
+   ],
+   "evidence": "検証部PDCA(2026-07-22、P-E04/P-E05/P-E13の採点結果)。財経新聞/Forbes JAPAN/MarketWatch AI「TSMC砲不発」as of 2026-07-16、日本経済新聞 as of 2026-07-17",
+   "status": "仮説"
   }
  ]
 }
