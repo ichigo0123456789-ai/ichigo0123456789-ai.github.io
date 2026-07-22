@@ -646,5 +646,43 @@
    "changePct": -1.47,
    "src": "田中貴金属工業(円建て小売/g) as of 2026-07-14"
   }
+ },
+ {
+  "briefDate": "2026-07-23",
+  "tradingDate": {
+   "jp": "2026-07-22",
+   "us": "2026-07-21"
+  },
+  "note": "木曜、生成時点(04時台JST)で米国市場は7/22取引時間中のため未引け、日本市場は7/22確定値・米国株は7/21確定値を採用。日経平均は前日急騰の反動で小幅反落、米国株・金・ドル円は上昇。",
+  "nikkei": {
+   "value": 66115.6,
+   "change": -116.59,
+   "changePct": -0.18,
+   "src": "日本経済新聞 as of 2026-07-22"
+  },
+  "nasdaq100": {
+   "value": 29155.18,
+   "change": null,
+   "changePct": 1.9,
+   "src": "ブルームバーグ/oanda系 as of 2026-07-21"
+  },
+  "sp500": {
+   "value": 7509.2,
+   "change": 65.92,
+   "changePct": 0.9,
+   "src": "AP通信/ワシントン・ポスト as of 2026-07-21"
+  },
+  "usdjpy": {
+   "value": 163.19,
+   "change": 0.6,
+   "changePct": 0.37,
+   "src": "Investing.com/TradingEconomics as of 2026-07-22"
+  },
+  "gold": {
+   "value": 4101.0,
+   "change": 78.54,
+   "changePct": 1.95,
+   "src": "CNBC/ロイター系 as of 2026-07-22"
+  }
  }
 ]
