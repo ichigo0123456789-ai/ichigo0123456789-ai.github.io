@@ -684,5 +684,49 @@
    "changePct": 1.95,
    "src": "CNBC/ロイター系 as of 2026-07-22"
   }
+ },
+ {
+  "briefDate": "2026-07-24",
+  "tradingDate": {
+   "jp": "2026-07-23",
+   "us": "2026-07-23"
+  },
+  "note": "金曜、生成時点(04時台JST)で日本市場は7/23確定値、米国市場も7/23 NY引け確定値を採用(日米の「前晩」が半日ずれる)。日経平均・三菱UFJは東京7/23日中に上昇。米国はアルファベット決算後のAI設備投資懸念でNASDAQ100・S&P500が下落、ドル円は約39年8ヶ月ぶり円安水準、金も下落。",
+  "nikkei": {
+   "value": 66422.6,
+   "change": 307.0,
+   "changePct": 0.46,
+   "src": "日本経済新聞/株探 as of 2026-07-23"
+  },
+  "nasdaq100": {
+   "value": 28417.44,
+   "change": -580.66,
+   "changePct": -2.0,
+   "src": "ロイター/ブルームバーグ/TradingEconomics集計 as of 2026-07-23"
+  },
+  "sp500": {
+   "value": 7406.0,
+   "change": -92.96,
+   "changePct": -1.24,
+   "src": "ブルームバーグ/TradingEconomics as of 2026-07-23"
+  },
+  "usdjpy": {
+   "value": 163.92,
+   "change": 0.76,
+   "changePct": 0.47,
+   "src": "トレーダーズウェブ/ダイヤモンド・ザイ as of 2026-07-23 NY24時"
+  },
+  "gold": {
+   "value": 4045.33,
+   "change": -85.1,
+   "changePct": -2.06,
+   "src": "TradingEconomics as of 2026-07-23"
+  },
+  "mufg8306": {
+   "value": 3769,
+   "change": 101.0,
+   "changePct": 2.75,
+   "src": "日本経済新聞 as of 2026-07-23大引け・上場来高値。持株会向け参考情報・売買推奨ではありません。"
+  }
  }
 ]
