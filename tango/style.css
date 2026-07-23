@@ -85,6 +85,9 @@ button{font-family:inherit;cursor:pointer}
 .meta-row .cats::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid var(--line-2);background:transparent;color:var(--sub);padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-weight:600}
 .chip.on{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+.hide-toggle{flex:none;display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--line);
+  background:var(--surface);color:var(--sub);padding:.28rem .6rem;border-radius:999px;font-size:.72rem;font-weight:700}
+.hide-toggle.on{background:var(--gold);border-color:var(--gold);color:#fff}
 
 /* ---------- word list ---------- */
 .wrap{max-width:760px;margin:0 auto;padding:.7rem 1rem 2rem}
@@ -129,6 +132,14 @@ button{font-family:inherit;cursor:pointer}
 .b-lv{background:var(--line-2);color:var(--sub)}
 .b-cat{background:transparent;color:var(--faint);border:1px solid var(--line-2)}
 .card .ja{margin:.5rem 0 0;font-size:1rem;font-weight:600;color:var(--ink)}
+/* 暗記モード: タップするまで意味・熟語を隠す */
+.reveal-hint{display:none;margin:.5rem 0 .1rem;color:var(--faint);font-size:.82rem;font-weight:700}
+.reveal-hint::before{content:"👆 "}
+#list.hide-mode .card{cursor:pointer}
+#list.hide-mode .card:not(.revealed) .senses,
+#list.hide-mode .card:not(.revealed) .ja,
+#list.hide-mode .card:not(.revealed) .collo{display:none}
+#list.hide-mode .card:not(.revealed) .reveal-hint{display:block}
 .senses{margin:.5rem 0 0;display:flex;flex-direction:column;gap:.22rem}
 .sense{display:flex;align-items:baseline;gap:.45rem}
 .pos-tag{flex:none;min-width:1.5rem;text-align:center;background:var(--blue-soft);color:var(--blue);

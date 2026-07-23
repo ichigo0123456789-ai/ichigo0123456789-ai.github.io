@@ -12,6 +12,7 @@ const LS = {
   quiz:   'tango_quiz_hist_v1',  // クイズ履歴
   user:   'tango_user_words_v1', // ユーザーがインポートした単語（この端末のみ）
   filter: 'tango_filter_v1',     // 絞り込み状態（レベル/カテゴリ/検索）
+  hide:   'tango_hidemode_v1',   // 意味を隠す暗記モード
 };
 const load = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } };
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -77,6 +78,7 @@ let filterLevel = savedFilter.level || 'all';
 let filterCat = savedFilter.cat || 'all';
 let searchQ = savedFilter.q || '';
 function saveFilter(){ save(LS.filter, { level: filterLevel, cat: filterCat, q: searchQ }); }
+let hideMeaning = load(LS.hide, true);  // 既定: 意味を隠す（暗記モードON）
 
 /* ---------- 音声 ----------
    端末によっては getVoices() がページ読込直後は空で、
@@ -217,6 +219,7 @@ function renderList(){
             <span class="badge ${posLabel.cls}">${posLabel.text}</span>
             <span class="badge b-lv">${w.level}点</span>
           </div>
+          <div class="reveal-hint">タップして意味を表示</div>
           ${w.senses ? `<div class="senses">${w.senses.map(s =>
             `<div class="sense"><span class="pos-tag">${esc(s.p)}</span><span class="sense-ja">${jaHtml(s.ja)}</span></div>`).join('')}</div>`
             : `<p class="ja">${jaHtml(w.ja)}</p>`}
@@ -259,12 +262,12 @@ function updateMarkUI(card, id){
 
 /* リストのクリック（イベント委譲） */
 document.getElementById('list').addEventListener('click', e => {
-  const btn = e.target.closest('[data-act]');
-  if (!btn) return;
-  const card = btn.closest('.card');
+  const card = e.target.closest('.card');
+  if (!card) return;
   const id = +card.dataset.id;
   const w = CATALOG.find(x => x.id === id);
-  const act = btn.dataset.act;
+  const btn = e.target.closest('[data-act]');
+  const act = btn && btn.dataset.act;
 
   if (act === 'play'){ speak(w.word, btn); }
   else if (act === 'phrase'){ speakPhrase(w.ph, btn); }
@@ -284,6 +287,12 @@ document.getElementById('list').addEventListener('click', e => {
     const ex = card.querySelector('.ex');
     ex.hidden = !ex.hidden;
     card.classList.toggle('open', !ex.hidden);
+  }
+
+  // 暗記モード: 意味の表示/非表示を切り替え（覚えた/覚えてないボタンでは変えない）
+  if (hideMeaning && act !== 'know' && act !== 'weak' && act !== 'expand'){
+    if (act === 'play' || act === 'phrase') card.classList.add('revealed'); // 発音時は表示
+    else card.classList.toggle('revealed');
   }
 });
 
@@ -312,6 +321,21 @@ let searchT;
 document.getElementById('search').addEventListener('input', e => {
   clearTimeout(searchT);
   searchT = setTimeout(() => { searchQ = e.target.value.trim(); saveFilter(); renderList(); }, 200);
+});
+
+/* 暗記モード（意味を隠す）トグル */
+function applyHideMode(){
+  document.getElementById('list').classList.toggle('hide-mode', hideMeaning);
+  const btn = document.getElementById('hideToggle');
+  btn.classList.toggle('on', hideMeaning);
+  btn.setAttribute('aria-pressed', String(hideMeaning));
+  btn.querySelector('.lbl').textContent = hideMeaning ? '意味を隠す：ON' : '意味を隠す：OFF';
+}
+document.getElementById('hideToggle').addEventListener('click', () => {
+  hideMeaning = !hideMeaning;
+  save(LS.hide, hideMeaning);
+  if (hideMeaning) document.querySelectorAll('.card.revealed').forEach(c => c.classList.remove('revealed'));
+  applyHideMode();
 });
 
 /* ============================================================
@@ -720,3 +744,4 @@ function exportUserWords(){
 })();
 renderCats();
 renderList();
+applyHideMode();
