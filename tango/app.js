@@ -360,6 +360,47 @@ document.querySelector('.nav .in').addEventListener('click', e => {
 });
 
 /* ============================================================
+   リロード時のスクロール位置維持（アンカー方式）
+   - 画面上部にあるカードのIDと、その表示位置を記録
+   - リロード後はそのカードが同じ位置に来るようスクロール
+   - 意味の表示状態でカード高さが変わっても位置がズレない
+   ============================================================ */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+const SC_KEY = 'tango_scroll_v1';
+const TOP_GAP = 56;  // 上部の基準位置（sticky帯の下あたり）
+
+function saveScrollAnchor(){
+  if (!document.getElementById('view-list').classList.contains('on')) return;
+  if (window.scrollY < 4){ try{ sessionStorage.removeItem(SC_KEY); }catch{} return; }
+  let anchor = null;
+  for (const c of document.querySelectorAll('#list .card')){
+    if (c.getBoundingClientRect().bottom > TOP_GAP){ anchor = c; break; }
+  }
+  if (!anchor) return;
+  try {
+    sessionStorage.setItem(SC_KEY, JSON.stringify({
+      id: anchor.dataset.id,
+      top: Math.round(anchor.getBoundingClientRect().top),
+    }));
+  } catch {}
+}
+function restoreScrollAnchor(){
+  let d;
+  try { d = JSON.parse(sessionStorage.getItem(SC_KEY)); } catch { return; }
+  if (!d || !d.id) return;
+  const card = document.querySelector('#list .card[data-id="'+d.id+'"]');
+  if (!card) return;
+  const absTop = card.getBoundingClientRect().top + window.scrollY;
+  window.scrollTo(0, Math.max(0, absTop - d.top));
+}
+let scSaveT;
+window.addEventListener('scroll', () => {
+  clearTimeout(scSaveT);
+  scSaveT = setTimeout(saveScrollAnchor, 150);
+}, { passive: true });
+window.addEventListener('pagehide', saveScrollAnchor);
+
+/* ============================================================
    クイズ
    ============================================================ */
 let quiz = null; // {items, i, correct, dir, results}
@@ -745,3 +786,7 @@ function exportUserWords(){
 renderCats();
 renderList();
 applyHideMode();
+// レイアウト確定後にスクロール位置を復元（フォント読み込みの再配置も考慮して二段構え）
+requestAnimationFrame(restoreScrollAnchor);
+setTimeout(restoreScrollAnchor, 300);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(restoreScrollAnchor);
