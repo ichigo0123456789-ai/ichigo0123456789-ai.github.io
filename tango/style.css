@@ -104,7 +104,13 @@ button{font-family:inherit;cursor:pointer}
 }
 .card .core{flex:1;min-width:0}
 .wordline{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.wordline .en{font-size:1.28rem;font-weight:800;letter-spacing:.01em}
+.wordline .en{font-size:1.28rem;font-weight:800;letter-spacing:.01em;
+  border:0;background:transparent;padding:0;margin:0;cursor:pointer;color:inherit;
+  font-family:inherit;text-align:left;display:inline-flex;align-items:center;gap:.28rem;transition:color .15s}
+.wordline .en::after{content:"🔊";font-size:.72rem;opacity:.35}
+.wordline .en:hover{color:var(--gold-deep)}
+.wordline .en:hover::after,.wordline .en.playing::after{opacity:.9}
+.wordline .en.playing{color:var(--gold-deep)}
 .wordline .ipa{color:var(--sub);font-size:.9rem;font-family:"Times New Roman",Georgia,serif}
 .collo{margin-top:.2rem;display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .5rem}
 .collo-word{border:0;background:transparent;color:var(--gold-deep);font-size:.9rem;font-weight:700;
@@ -141,17 +147,17 @@ button{font-family:inherit;cursor:pointer}
 }
 .iconbtn:hover{border-color:var(--gold);color:var(--gold-deep)}
 .iconbtn.playing{background:var(--gold);border-color:var(--gold);color:#fff}
-.knowbtn{
-  border:1px solid var(--line);background:var(--surface);color:var(--sub);
-  padding:.42rem .8rem;border-radius:9px;font-size:.8rem;font-weight:700;transition:.15s;
-  display:inline-flex;align-items:center;gap:.35rem;
+/* 右端の 覚えた/覚えてない マーク列（縦にコンパクト） */
+.marks{flex:none;display:flex;flex-direction:column;gap:.4rem}
+.markbtn{
+  border:1px solid var(--line);background:var(--surface);color:var(--faint);
+  width:3.1rem;border-radius:10px;transition:.15s;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12rem;
+  font-size:.58rem;font-weight:800;line-height:1.15;padding:.34rem 0;
 }
+.markbtn svg{opacity:.8}
 .knowbtn.on{background:var(--green);border-color:var(--green);color:#fff}
-.weakbtn{
-  border:1px solid var(--line);background:var(--surface);color:var(--sub);
-  padding:.42rem .8rem;border-radius:9px;font-size:.8rem;font-weight:700;transition:.15s;
-  display:inline-flex;align-items:center;gap:.35rem;
-}
+.knowbtn.on svg,.weakbtn.on svg{opacity:1}
 .weakbtn.on{background:var(--red);border-color:var(--red);color:#fff}
 .expandbtn{
   margin-left:auto;border:0;background:transparent;color:var(--faint);font-size:.78rem;font-weight:700;
