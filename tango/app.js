@@ -205,7 +205,7 @@ function renderList(){
         <div class="no">${w.no}</div>
         <div class="core">
           <div class="wordline">
-            <span class="en">${esc(w.word)}</span>
+            <button class="en" data-act="play" title="タップで発音">${esc(w.word)}</button>
             <span class="ipa">${esc(w.ipa||'')}</span>
           </div>
           ${w.ph ? `<div class="collo">
@@ -223,23 +223,20 @@ function renderList(){
           ${w.ex ? `<div class="ex" hidden>
             <span class="en2">${esc(w.ex)}</span>
             <span class="ja2">${esc(w.exJa||'')}</span>
-          </div>` : ''}
-          <div class="actions">
-            <button class="iconbtn" data-act="play" title="音声を再生" aria-label="音声を再生">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7 6.4 8.3H3v7.4h3.4L11 19.3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
-            </button>
-            <button class="knowbtn ${isKnown?'on':''}" data-act="know">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              覚えた
-            </button>
-            <button class="weakbtn ${isWeak?'on':''}" data-act="weak">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/></svg>
-              覚えてない
-            </button>
-            ${w.ex ? `<button class="expandbtn" data-act="expand">例文
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </button>` : ''}
           </div>
+          <button class="expandbtn" data-act="expand">例文
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>` : ''}
+        </div>
+        <div class="marks">
+          <button class="knowbtn markbtn ${isKnown?'on':''}" data-act="know" title="覚えた">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>覚えた</span>
+          </button>
+          <button class="weakbtn markbtn ${isWeak?'on':''}" data-act="weak" title="覚えてない">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <span>覚えて<br>ない</span>
+          </button>
         </div>
       </div>
     </article>`;
