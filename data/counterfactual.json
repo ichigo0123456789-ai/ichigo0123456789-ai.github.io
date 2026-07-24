@@ -242,6 +242,16 @@
     },
     "total_value_jpy": 5525887,
     "note": "6/29以降の保有口数(オルカン688,807口＋7/4つみたて拠出込み・FANG+245,984口・ゴールド214,160口・現金¥0)に本日Tier1 NAV(オルカン38,413円・FANG+95,920円、いずれもas of 7/22 carry-forward・ゴールド24,304円 as of 7/23新値)を反映。"
+   },
+   {
+    "date": "2026-07-25",
+    "navs": {
+     "orukan": 38413,
+     "fangplus": 95920,
+     "gold": 24304
+    },
+    "total_value_jpy": 5525887,
+    "note": "土曜休場のためTier1 NAVいずれも7/24値から変化なし(orukan/fangplusはas of 7/22 carry-forward、goldはas of 7/23で変化なし)。frozen総額は前日(7/24)と同一。"
    }
   ]
  },
@@ -383,6 +393,13 @@
    "frozen_total_jpy": 5525887,
    "judgment_effect_jpy": -210,
    "note": "実PF−凍結初期PF。端数丸めのみ、判断効果ほぼゼロ(hold継続T0027、27回連続)。"
+  },
+  {
+   "date": "2026-07-25",
+   "real_total_jpy": 5525677,
+   "frozen_total_jpy": 5525887,
+   "judgment_effect_jpy": -210,
+   "note": "実PF−凍結初期PF。NAV据置のため7/24値と同一。端数丸めのみ、判断効果ほぼゼロ(hold継続T0028、28回連続)。"
   }
  ],
  "branches": [
