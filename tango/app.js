@@ -187,21 +187,11 @@ function filteredWords(){
 
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-function renderList(){
-  const list = document.getElementById('list');
-  const items = filteredWords();
-  document.getElementById('count').textContent =
-    `${items.length}語　（覚えた ${known.size}／覚えてない ${weak.size}／全${CATALOG.length}語）`;
-
-  if (!items.length){
-    list.innerHTML = '<div class="empty">該当する単語がありません。</div>';
-    return;
-  }
-  list.innerHTML = items.map(w => {
-    const isKnown = known.has(w.id);
-    const isWeak = weak.has(w.id);
-    const posLabel = posBadge(w);
-    return `
+function cardHTML(w){
+  const isKnown = known.has(w.id);
+  const isWeak = weak.has(w.id);
+  const posLabel = posBadge(w);
+  return `
     <article class="card ${isKnown?'known':''} ${isWeak?'weak':''}" data-id="${w.id}">
       <div class="head">
         <div class="no">${w.no}</div>
@@ -243,7 +233,59 @@ function renderList(){
         </div>
       </div>
     </article>`;
-  }).join('');
+}
+
+/* 分割描画（無限スクロール）：一度に全カードを作らず、
+   画面に近づいたぶんだけ順次追加して描画負荷を抑える */
+const PAGE_SIZE = 60;
+let listItems = [];
+let listRendered = 0;
+let listSentinel = null;
+let listObserver = null;
+
+function appendPage(){
+  if (listRendered >= listItems.length) return;
+  const slice = listItems.slice(listRendered, listRendered + PAGE_SIZE);
+  const html = slice.map(cardHTML).join('');
+  if (listSentinel) listSentinel.insertAdjacentHTML('beforebegin', html);
+  listRendered += slice.length;
+  if (listRendered >= listItems.length && listSentinel){
+    if (listObserver) listObserver.unobserve(listSentinel);
+    listSentinel.remove();
+    listSentinel = null;
+  }
+}
+
+function renderList(){
+  const list = document.getElementById('list');
+  listItems = filteredWords();
+  listRendered = 0;
+  document.getElementById('count').textContent =
+    `${listItems.length}語　（覚えた ${known.size}／覚えてない ${weak.size}／全${CATALOG.length}語）`;
+
+  if (listObserver){ listObserver.disconnect(); listObserver = null; }
+  if (!listItems.length){
+    list.innerHTML = '<div class="empty">該当する単語がありません。</div>';
+    listSentinel = null;
+    return;
+  }
+  list.innerHTML = '<div class="list-sentinel" aria-hidden="true"></div>';
+  listSentinel = list.querySelector('.list-sentinel');
+  appendPage();
+  if (listSentinel){
+    listObserver = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) appendPage();
+    }, { rootMargin: '1500px 0px' });
+    listObserver.observe(listSentinel);
+  }
+}
+
+// 指定IDのカードが未描画なら、そこまでページを追加描画する（リロード位置復元用）
+function ensureRendered(id){
+  const idx = listItems.findIndex(w => String(w.id) === String(id));
+  if (idx < 0) return;
+  let guard = 0;
+  while (listRendered <= idx && listRendered < listItems.length && guard++ < 100) appendPage();
 }
 
 /* 覚えた/覚えてない の表示更新 */
@@ -394,6 +436,7 @@ function restoreScrollAnchor(){
   let d;
   try { d = JSON.parse(sessionStorage.getItem(SC_KEY)); } catch { return; }
   if (!d || !d.id) return;
+  ensureRendered(d.id);  // 分割描画で未生成なら、その位置まで描画してから復元
   const card = document.querySelector('#list .card[data-id="'+d.id+'"]');
   if (!card) return;
   const absTop = card.getBoundingClientRect().top + window.scrollY;
