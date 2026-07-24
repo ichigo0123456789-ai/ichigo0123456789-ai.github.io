@@ -369,13 +369,19 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const SC_KEY = 'tango_scroll_v1';
 const TOP_GAP = 56;  // 上部の基準位置（sticky帯の下あたり）
 
+// 画面上部付近にあるカードを O(1) で取得（全カード走査せず elementFromPoint）
+function topVisibleCard(){
+  for (const y of [TOP_GAP + 8, TOP_GAP + 80, TOP_GAP + 180, TOP_GAP + 320]){
+    const el = document.elementFromPoint(16, y);
+    const card = el && el.closest ? el.closest('#list .card') : null;
+    if (card) return card;
+  }
+  return null;
+}
 function saveScrollAnchor(){
   if (!document.getElementById('view-list').classList.contains('on')) return;
   if (window.scrollY < 4){ try{ sessionStorage.removeItem(SC_KEY); }catch{} return; }
-  let anchor = null;
-  for (const c of document.querySelectorAll('#list .card')){
-    if (c.getBoundingClientRect().bottom > TOP_GAP){ anchor = c; break; }
-  }
+  const anchor = topVisibleCard();
   if (!anchor) return;
   try {
     sessionStorage.setItem(SC_KEY, JSON.stringify({
