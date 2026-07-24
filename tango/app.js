@@ -289,10 +289,10 @@ document.getElementById('list').addEventListener('click', e => {
     card.classList.toggle('open', !ex.hidden);
   }
 
-  // 暗記モード: 意味の表示/非表示を切り替え（覚えた/覚えてないボタンでは変えない）
-  if (hideMeaning && act !== 'know' && act !== 'weak' && act !== 'expand'){
-    if (act === 'play' || act === 'phrase') card.classList.add('revealed'); // 発音時は表示
-    else card.classList.toggle('revealed');
+  // 暗記モード: カード本体（ボタン以外）のタップでのみ意味表示を切り替え
+  // 発音（単語・熟語）や 覚えた/覚えてない では意味を表示しない
+  if (hideMeaning && !act){
+    card.classList.toggle('revealed');
   }
 });
 
