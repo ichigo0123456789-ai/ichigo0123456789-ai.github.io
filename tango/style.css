@@ -294,7 +294,7 @@ button{font-family:inherit;cursor:pointer}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 
-/* 1000語リストの描画負荷対策：画面外カードのレンダリングを遅延。
-   contain-intrinsic-size は auto を付けて実寸を記憶させることで、
-   上スクロール時にカードの高さ推定がズレて発生するガクつきを防ぐ */
-.card{ content-visibility:auto; contain-intrinsic-size: auto 130px; }
+/* 描画負荷対策は JS の分割描画（無限スクロール）で行う。
+   content-visibility は画面再入時にカードを再描画して高速スクロールで
+   ガクつく原因になるため使わない。描画済みカードはそのまま保持され滑らかにスクロールする。 */
+.list-sentinel{height:1px}
