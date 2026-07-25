@@ -115,6 +115,49 @@
     "schema_violations": 0
    },
    "read": "A系(予測力)は検証データ待ちが3週連続継続(最短horizon 7/16)。B系(判断品質)は制約遵守100%を維持しつつ、却下代替枝の機会費用追跡(B0003)がhold継続の正当性を裏付ける方向だが、反対尋問は17回連続holdのガバナンス懸念とサーキットブレーカー条項未検討を重ねて指摘。C系(リターン)は対オルカン超過が確定値+1.774pt(7/11)→+2.120pt(7/12)へ拡大したが、これは全銘柄のNAV上昇による相対効果でありrolling 20d/60dが算出可能になる7月下旬まで実力判断は保留。D系(稼働率)は71.4%(7/8欠測が主因)、runlog記録漏れ自体を検知する仕組みの整備が次週の優先課題。"
+  },
+  {
+   "week_ending": "2026-07-26",
+   "stage": "土台構築期（v2運用開始4週目）",
+   "A_predictive": {
+    "verified_count": 0,
+    "brier_rolling": 0.099,
+    "calibration_error": null,
+    "mechanism_hit_rate": null,
+    "surprise_rate": 0.0,
+    "note": "本日検証対象0件(status:openかつhorizon本日以前の予測なし)。サプライズ監査は今週も「内」継続。status:verified(v2)19件のp値較正では0.5-0.6帯(n=19)の実現率42.1%・算出可能分のrolling Brier 0.099だが、p≥0.6の高確信予測が皆無で較正曲線がこの一帯でしか検証できていない構造的ギャップを教訓化した。"
+   },
+   "B_decision_quality": {
+    "counterfactual_delta_jpy": -209,
+    "counterfactual_note": "判断効果(実PF-凍結初期)は6/29以降ゼロ近傍で継続(裁量的組換えなし、hold×29回=T0001〜T0029)。B0008(FANG+一部→為替ヘッジ型先進国株ファンド振替)は振替先NAVの再取得を試行したが変化率が同期間のベンチマークと著しく非整合(▼41.7% vs オルカン+1.4%程度)で不採用、概念枝のまま。反対尋問は29回連続holdの三重制約下での実行可能性・B0008の儀式化リスクを継続指摘。",
+    "assumption_survival_rate": null,
+    "repeat_mistake_rate": null,
+    "lesson_citation_rate": null,
+    "constraint_compliance_rate": 1.0,
+    "constraint_note": "全トレード(T0001-T0029)がconstraint_check通過=100%遵守継続。"
+   },
+   "C_returns": {
+    "excess_vs_orukan_pct_cum": 1.221,
+    "excess_vs_orukan_pct_cum_asof": "2026-07-26(運用部確定値、NAV基準日2026-07-24)",
+    "judgment_effect_vs_frozen_jpy": -209,
+    "slope_effect_vs_orukan100_jpy": 70200,
+    "attribution_note": "判断効果(実PF-凍結初期)=概算-¥209(端数丸めのみ、裁量判断なし)。傾き効果(凍結初期-オルカン100%換算)=概算+¥70,100〜70,300で、超過リターンの牽引役は依然として6/29の初期配置判断(FANG+42%・金9.5%)であり、28〜29回連続holdという裁量判断そのものの寄与はゼロ。対オルカン超過は運用部の本日再評価により+2.289%pt(検証部20d相当値)→+1.221%pt(NAV確定後)へ縮小、FANG+・ゴールドの下落幅がオルカンを上回った相対効果であり戦略の実力低下ではない。",
+    "rolling_20d": 2.289,
+    "rolling_60d": null,
+    "rolling_note": "運用開始2026-06-29から本日2026-07-26まで実質19〜20営業日相当。真の20d窓到達は2026-07-27頃見込みのため、本日の20d値はsince-inception代用値。60dは2026年9月中旬以降まで算出不可。",
+    "realized_vol": null,
+    "max_drawdown": null,
+    "risk_note": "日次リターン系列は蓄積継続中。実現ボラ・最大DDは60d窓到達後に算出予定。"
+   },
+   "D_system_health": {
+    "uptime_pct": 100.0,
+    "uptime_note": "直近7日(2026-07-20〜2026-07-26)でruns succeeded/7=6/6(2026-07-26は本レポート作成中のため未計上)=100.0%。",
+    "scoring_latency_days": null,
+    "lessons_promoted": 0,
+    "lessons_retired": 0,
+    "schema_violations": 0
+   },
+   "read": "A系(予測力)は本日も検証対象0件が続くが、status:verified(v2)19件の較正分析からp値が0.5-0.55に偏在し高確信予測が皆無という構造的ギャップを新たに検出、教訓化した。B系(判断品質)は制約遵守100%を維持しつつ、29回連続holdの機会費用検証(B0008)を今回は実際のデータ再取得を伴う形で実施し儀式化懸念に定量的に応答した。C系(リターン)は対オルカン超過が+2.289%pt(20d相当)から運用部のNAV確定後+1.221%ptへ縮小したが、帰属分解では超過の実質100%が6/29の初期配置(傾き効果)によるもので、判断効果(hold継続)の寄与はゼロと明確化された。D系(稼働率)は直近7日100%を維持。"
   }
  ]
 }

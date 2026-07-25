@@ -728,5 +728,49 @@
    "changePct": 2.75,
    "src": "日本経済新聞 as of 2026-07-23大引け・上場来高値。持株会向け参考情報・売買推奨ではありません。"
   }
+ },
+ {
+  "briefDate": "2026-07-26",
+  "tradingDate": {
+   "jp": "2026-07-24",
+   "us": "2026-07-24"
+  },
+  "note": "日曜、東証・米国市場とも休場のため直近確定値(7/24・金)を採用。日経平均はアルファベット決算後のAI関連設備投資拡大懸念で大幅続落。S&P500はほぼ横ばい、ドル円・金もおおむね横ばい。ナスダック100・三菱UFJ(8306)は複数ソース間で終値が相互に矛盾し一次ソース確定不可のため掲載見送り。",
+  "nikkei": {
+   "value": 64611.15,
+   "change": -1811.45,
+   "changePct": -2.73,
+   "src": "日本経済新聞 as of 2026-07-24"
+  },
+  "nasdaq100": {
+   "value": null,
+   "change": null,
+   "changePct": null,
+   "src": "複数ソース間で終値・騰落率が相互に矛盾し一次ソースで確定不可のため不採用 (as of 2026-07-24)"
+  },
+  "sp500": {
+   "value": 7411.98,
+   "change": 3.68,
+   "changePct": 0.05,
+   "src": "CNBC/Yahoo Finance/The Motley Fool as of 2026-07-24"
+  },
+  "usdjpy": {
+   "value": 163.83,
+   "change": -0.03,
+   "changePct": -0.02,
+   "src": "トレーダーズ・ウェブ/日本経済新聞 as of 2026-07-24 NY引け"
+  },
+  "gold": {
+   "value": 4052.0,
+   "change": 2.44,
+   "changePct": 0.06,
+   "src": "Trading Economics as of 2026-07-24"
+  },
+  "mufg8306": {
+   "value": null,
+   "change": null,
+   "changePct": null,
+   "src": "複数ソース間で終値が相互に矛盾し一次ソースで確定不可のため不採用 (as of 2026-07-24)。持株会向け参考情報・売買推奨ではありません。"
+  }
  }
 ]

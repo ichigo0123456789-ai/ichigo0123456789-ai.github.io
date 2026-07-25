@@ -343,6 +343,31 @@
    ],
    "evidence": "反対尋問(2026-07-24)、trades.json T0027 rejected_alternative(非同型代替案B0008)",
    "status": "仮説"
+  },
+  {
+   "date": "2026-07-26",
+   "category": "運用ガバナンス・測定設計",
+   "lesson": "週次帰属分解が要求する60営業日ローリング窓は、運用開始(2026-06-29)からの実績が19〜20営業日相当に留まる本日時点では構造的に算出不可。20d窓についても真の到達は2026-07-27頃で、本日提示する『20d相当』はsince-inception値の代用に過ぎない。60d窓が意味を持つのは早くて2026年9月中旬以降であり、それまでの週次レポートは60d欄を『—』とし、20d欄も『代用値』である旨を明示する運用を標準化すべき。",
+   "regime_tags": [
+    "governance",
+    "data_quality",
+    "rolling_window_design",
+    "measurement_horizon"
+   ],
+   "evidence": "data/nav_history.json(2026-06-29〜2026-07-25、22観測)、data/counterfactual.json frozen_initial.daily(起点2026-06-29)、data/scorecard.json week_ending 2026-07-12のrolling_note",
+   "status": "仮説"
+  },
+  {
+   "date": "2026-07-26",
+   "category": "予測較正・プロセス設計",
+   "lesson": "status:verifiedかつv2スキーマの予測19件は、確率pが全て0.5〜0.55の範囲に集中しており(0.5:14件・0.55:5件)、p≥0.6の高確信予測が一件も存在しない。この帯の実現率(的中1/部分0.5/外れ0換算)は約42.1%(8/19)。予測作成プロセスが機序・反証条件の強さに応じてpをより広く(0.3台〜0.8台)割り当てない限り、較正曲線は0.5-0.6ビンでしか検証できず、モデルの真の予測力(高確信時の的中率)を測る較正誤差指標自体が機能しない構造的ギャップがある。",
+   "regime_tags": [
+    "calibration",
+    "prediction_confidence_range",
+    "governance"
+   ],
+   "evidence": "data/predictions.json(status:verified 19件のp値分布、検証部集計 as of 2026-07-26)",
+   "status": "仮説"
   }
  ]
 }
