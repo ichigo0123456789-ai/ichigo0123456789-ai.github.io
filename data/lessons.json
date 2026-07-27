@@ -393,6 +393,31 @@
    ],
    "evidence": "data/counterfactual.json(B0003〜B0006の2026-07-27一括更新、劣後幅の縮小傾向)、反対尋問メモ(2026-07-27)",
    "status": "仮説"
+  },
+  {
+   "date": "2026-07-28",
+   "category": "予測機序の精緻化・金利観測",
+   "lesson": "P-E26(米国債券・海外REIT予測、horizon 2026-07-28)は『PPI鈍化→早期利下げ観測→長期金利低下』という機序を想定したが、実際には中東エスカレーション由来の原油急騰がインフレ期待を強め、米10年国債利回りが2026年来高値(週内一時4.7%台、2025年1月以来の水準)へ明確に反発し falsifiable条件どおり『外れ』と判定された。considered_scenariosは『世界景気減速優勢ケース』『CPI/小売統計の上振れによる反転』は列挙していたが、『商品(原油)高インフレが金融政策のハト派材料を上書きする』という経路は未収載だった。金利・債券系予測のconsidered_scenariosには、需要指標(住宅・雇用等)発の金利シナリオとは独立して、商品価格(原油等)発のインフレ期待再燃シナリオを標準項目として追加すべき。",
+   "regime_tags": [
+    "rate_dir_reversal",
+    "oil_shock",
+    "inflation_expectations",
+    "bond_reit_prediction"
+   ],
+   "evidence": "Trading Economics/CNBC「Treasury Yields Hit 2026 Highs on Oil Price Spike」「10-Year Treasury Yield Hit 8-Month High」(as of 2026-07-24/27)、検証部PDCA(2026-07-28、P-E26採点)",
+   "status": "仮説"
+  },
+  {
+   "date": "2026-07-28",
+   "category": "運用ガバナンス・検証プロセス",
+   "lesson": "本日horizon=当日の予測5件(P-E21/P-E26/P-U12/P-E36/P-U14)は、JST早朝の検証部run時点で米国市場の当日引け(確定はJST翌未明)がまだ成立しておらず、7/27までの確定データによる判定しかできない構造的ギャップがあった。今後、horizon=当日の予測はscoring_specの強制判定条項をより積極的に活用し、判定不能な保留(P-U12のようなケース)を減らす設計を優先すべき。",
+   "regime_tags": [
+    "governance",
+    "scoring_timing",
+    "horizon_same_day_gap"
+   ],
+   "evidence": "検証部PDCA(2026-07-28、horizon 2026-07-28予測5件の判定)",
+   "status": "仮説"
   }
  ]
 }
