@@ -298,8 +298,13 @@ function updateMarkUI(card, id){
   if (wb) wb.classList.toggle('on', isWeak);
   document.getElementById('count').textContent =
     `${filteredWords().length}語　（覚えた ${known.size}／覚えてない ${weak.size}／全${CATALOG.length}語）`;
-  // 絞り込み中のタブに影響する場合は一覧を作り直す
-  if (['known','weak','unknown'].includes(filterLevel)) renderList();
+  // 絞り込み中で、そのカードが条件から外れた場合は「その1枚だけ」を除去
+  // （一覧全体を作り直すとスクロール位置が先頭に戻ってしまうため）
+  const dropped =
+    (filterLevel === 'known'   && !isKnown) ||
+    (filterLevel === 'weak'    && !isWeak) ||
+    (filterLevel === 'unknown' && (isKnown || isWeak));
+  if (dropped) card.remove();
 }
 
 /* リストのクリック（イベント委譲） */
