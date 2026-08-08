@@ -1,202 +1,244 @@
 {
- "schema": "scorecard v2",
- "purpose": "評価軸v2（4族 A予測力/B意思決定品質/C運用成果/D システム健全性）の週次メトリクス時系列。ページの通信簿セクションはこのファイルから機械生成する。散文でなくデータから計算する。",
- "growth_definition": "A・Bが月次で改善（Brier↓・機序的中率↑・反復ミス率↓・較正誤差↓）し、Cが四半期で非負を維持しつつ判断効果が漸増すること。序盤（〜四半期）はA/B（プロセス指標）で成長を判断し、C（リターン）は遅行するため日次で一喜一憂しない。",
- "metric_families": {
-  "A_predictive": [
-   "的中率(horizon別)",
-   "Brierスコア(rolling)",
-   "較正誤差(バケット別|p−実現率|)",
-   "機序的中率=方向○かつ機序○÷方向○",
-   "サプライズ率=想定外事象の割合"
-  ],
-  "B_decision_quality": [
-   "対・却下代替デルタ",
-   "前提生存率",
-   "反復ミス率=既知カテゴリでの再失敗÷全失敗",
-   "教訓引用率",
-   "制約遵守率"
-  ],
-  "C_returns": [
-   "対オルカン超過(rolling 20d/60d/四半期)",
-   "対凍結初期デルタ=判断効果",
-   "リスク調整(実現ボラ・最大DD)"
-  ],
-  "D_system_health": [
-   "稼働率(runs/7)",
-   "採点遅延(horizon到来→verifiedの日数)",
-   "教訓の昇格数/引退数",
-   "スキーマ逸脱件数"
-  ]
- },
- "snapshots": [
-  {
-   "week_ending": "2026-07-05",
-   "stage": "土台構築直後（v2運用開始週）",
-   "A_predictive": {
-    "verified_count": 0,
-    "brier_rolling": null,
-    "calibration_error": null,
-    "mechanism_hit_rate": null,
-    "surprise_rate": 0.0,
-    "note": "検証済み予測ゼロ。最短horizon P-E01(2026-07-16)/P-U05 checkpoint(2026-07-16)は未到来。7/4-7/5朝のサプライズ監査ではconsidered_scenarios外の事象は検出されず(surprise_rate=0)。"
-   },
-   "B_decision_quality": {
-    "counterfactual_delta_jpy": 0,
-    "counterfactual_note": "凍結初期PFに対する判断効果=0（6/29以降hold＋規律的つみたてのみ、裁量的組換えなし）。7/5もNAV据置につき同様。却下枝B0001/B0002は前向き評価未開始。",
-    "assumption_survival_rate": null,
-    "repeat_mistake_rate": null,
-    "lesson_citation_rate": 0.0,
-    "constraint_compliance_rate": 1.0,
-    "constraint_note": "全トレード(T0001-T0011)がconstraint_checkを通過＝100%遵守。"
-   },
-   "C_returns": {
-    "excess_vs_orukan_pct_cum": 1.3,
-    "excess_vs_orukan_pct_fund_adjusted": 0.28,
-    "excess_note": "2026-07-04時点値を据置(7/5は休場でNAV更新なし)。累積超過+1.300pt、資金調整後+0.280pt。",
-    "judgment_effect_vs_frozen_jpy": 0,
-    "slope_effect_vs_orukan100_jpy": 69732,
-    "attribution_note": "判断効果(実PF-凍結初期)=¥0。傾き効果(凍結初期-オルカン100%換算)=+¥69,732（初期配分(FANG+42%・金9.5%)がオルカン一本を上回る）。",
-    "rolling_20d": null,
-    "rolling_60d": null,
-    "rolling_note": "運用開始2026-06-29から1週間強のためrolling 20d/60dは算出不可（データ不足）。",
-    "realized_vol": null,
-    "max_drawdown": null
-   },
-   "D_system_health": {
-    "uptime_pct": 60.0,
-    "uptime_note": "2026-06-29以降のrunsを再集計：scheduled 5件(6/30,7/1,7/3,7/4×2)中succeeded 3件(6/30,7/4×2)=60.0%。manual rescue 1件(7/2)。既存記録40.0%は7/4の2回目run反映前のstale値だったため訂正。",
-    "scoring_latency_days": null,
-    "lessons_promoted": 0,
-    "lessons_retired": 0,
-    "schema_violations": 0
-   },
-   "read": "A系は検証データ待ち継続（最短horizon 7/16）。B(判断効果)は裁量判断が未発生のため0のまま。C(傾き効果)は初期設計がオルカン一本を上回っており小さな正の寄与。D(稼働率)を60%へ訂正、次週の完全復旧確認が引き続き最重要。"
-  },
-  {
-   "week_ending": "2026-07-12",
-   "stage": "土台構築期（v2運用開始3週目）",
-   "A_predictive": {
-    "verified_count": 0,
-    "brier_rolling": null,
-    "calibration_error": null,
-    "mechanism_hit_rate": null,
-    "surprise_rate": 0.0,
-    "note": "検証済み予測ゼロ継続。最短horizon 2026-07-16(P-E01/P-E03/P-E12/P-E14/P-U05 checkpoint1)は未到来。7/11-7/12監査ではconsidered_scenarios外の事象なし(surprise_rate=0)。週次レビューで7/6の全東信破産(地銀与信ショック)が既存predictions全件のconsidered_scenariosに未反映と判明、教訓化・P-T14新設で対応。"
-   },
-   "B_decision_quality": {
-    "counterfactual_delta_jpy": -1,
-    "counterfactual_note": "判断効果(実PF-凍結初期)は6/29以降ゼロ近傍で継続(裁量的組換えなし、hold×17回=T0001〜T0017)。却下枝B0001(全売却)は-¥222,960でfrozen劣後継続、B0002(無売却)は+¥101,509でfrozen優位継続(部分利確が全売却よりまだ良いが、無売却には短期的に劣後)。B0003(FANG+トリム機会費用)は実PFが-¥32,746上回り、hold継続の正当性を示唆(いずれも低confidence参考値)。反対尋問(2026-07-12)は17回連続holdのガバナンス上の懸念とサーキットブレーカー条項の検討が未実施である点を指摘。",
-    "assumption_survival_rate": null,
-    "repeat_mistake_rate": null,
-    "lesson_citation_rate": 0.33,
-    "constraint_compliance_rate": 1.0,
-    "constraint_note": "全トレード(T0001-T0017)がconstraint_check通過=100%遵守継続。lesson_citation_rateは今週新規予測10本中約1/3がlessons.jsonを明示引用した簡易カウント(参考値、算出方法は今後標準化要)。"
-   },
-   "C_returns": {
-    "excess_vs_orukan_pct_cum": 2.12,
-    "excess_vs_orukan_pct_cum_asof": "2026-07-12(運用部確定値、NAV基準日2026-07-10)",
-    "judgment_effect_vs_frozen_jpy": -1,
-    "slope_effect_vs_orukan100_jpy": 61265,
-    "attribution_note": "判断効果(実PF-凍結初期)=概算¥-1(端数丸めのみ、裁量判断なし)。傾き効果(凍結初期-オルカン100%換算)=概算+¥61,265(前週2026-07-05時点+¥69,732から縮小。初期配分(FANG+42%・金9.5%)は依然オルカン一本を上回るが優位幅は週内で変動)。超過拡大(+1.774%pt→+2.120%pt)は全銘柄の基準価額上昇による相対効果であり戦略の実力向上を意味しない。",
-    "rolling_20d": null,
-    "rolling_60d": null,
-    "rolling_note": "運用開始2026-06-29から本日2026-07-12まで実質10営業日相当のため、20d/60dローリングは算出不可(データ不足、20営業日到達は概ね2026-07-27頃見込み)。",
-    "realized_vol": null,
-    "max_drawdown": null,
-    "risk_note": "日次リターン系列がまだ短く実現ボラ・最大DDは算出不可(データ不足)。"
-   },
-   "D_system_health": {
-    "uptime_pct": 71.4,
-    "uptime_note": "直近7日(2026-07-06〜07-12)でruns succeeded/7=5/7=71.4%。07-08はrunlog記録・git commitともに欠落(要調査、教訓化済み)。",
-    "scoring_latency_days": null,
-    "lessons_promoted": 0,
-    "lessons_retired": 0,
-    "schema_violations": 0
-   },
-   "read": "A系(予測力)は検証データ待ちが3週連続継続(最短horizon 7/16)。B系(判断品質)は制約遵守100%を維持しつつ、却下代替枝の機会費用追跡(B0003)がhold継続の正当性を裏付ける方向だが、反対尋問は17回連続holdのガバナンス懸念とサーキットブレーカー条項未検討を重ねて指摘。C系(リターン)は対オルカン超過が確定値+1.774pt(7/11)→+2.120pt(7/12)へ拡大したが、これは全銘柄のNAV上昇による相対効果でありrolling 20d/60dが算出可能になる7月下旬まで実力判断は保留。D系(稼働率)は71.4%(7/8欠測が主因)、runlog記録漏れ自体を検知する仕組みの整備が次週の優先課題。"
-  },
-  {
-   "week_ending": "2026-07-26",
-   "stage": "土台構築期（v2運用開始4週目）",
-   "A_predictive": {
-    "verified_count": 0,
-    "brier_rolling": 0.099,
-    "calibration_error": null,
-    "mechanism_hit_rate": null,
-    "surprise_rate": 0.0,
-    "note": "本日検証対象0件(status:openかつhorizon本日以前の予測なし)。サプライズ監査は今週も「内」継続。status:verified(v2)19件のp値較正では0.5-0.6帯(n=19)の実現率42.1%・算出可能分のrolling Brier 0.099だが、p≥0.6の高確信予測が皆無で較正曲線がこの一帯でしか検証できていない構造的ギャップを教訓化した。"
-   },
-   "B_decision_quality": {
-    "counterfactual_delta_jpy": -209,
-    "counterfactual_note": "判断効果(実PF-凍結初期)は6/29以降ゼロ近傍で継続(裁量的組換えなし、hold×29回=T0001〜T0029)。B0008(FANG+一部→為替ヘッジ型先進国株ファンド振替)は振替先NAVの再取得を試行したが変化率が同期間のベンチマークと著しく非整合(▼41.7% vs オルカン+1.4%程度)で不採用、概念枝のまま。反対尋問は29回連続holdの三重制約下での実行可能性・B0008の儀式化リスクを継続指摘。",
-    "assumption_survival_rate": null,
-    "repeat_mistake_rate": null,
-    "lesson_citation_rate": null,
-    "constraint_compliance_rate": 1.0,
-    "constraint_note": "全トレード(T0001-T0029)がconstraint_check通過=100%遵守継続。"
-   },
-   "C_returns": {
-    "excess_vs_orukan_pct_cum": 1.221,
-    "excess_vs_orukan_pct_cum_asof": "2026-07-26(運用部確定値、NAV基準日2026-07-24)",
-    "judgment_effect_vs_frozen_jpy": -209,
-    "slope_effect_vs_orukan100_jpy": 70200,
-    "attribution_note": "判断効果(実PF-凍結初期)=概算-¥209(端数丸めのみ、裁量判断なし)。傾き効果(凍結初期-オルカン100%換算)=概算+¥70,100〜70,300で、超過リターンの牽引役は依然として6/29の初期配置判断(FANG+42%・金9.5%)であり、28〜29回連続holdという裁量判断そのものの寄与はゼロ。対オルカン超過は運用部の本日再評価により+2.289%pt(検証部20d相当値)→+1.221%pt(NAV確定後)へ縮小、FANG+・ゴールドの下落幅がオルカンを上回った相対効果であり戦略の実力低下ではない。",
-    "rolling_20d": 2.289,
-    "rolling_60d": null,
-    "rolling_note": "運用開始2026-06-29から本日2026-07-26まで実質19〜20営業日相当。真の20d窓到達は2026-07-27頃見込みのため、本日の20d値はsince-inception代用値。60dは2026年9月中旬以降まで算出不可。",
-    "realized_vol": null,
-    "max_drawdown": null,
-    "risk_note": "日次リターン系列は蓄積継続中。実現ボラ・最大DDは60d窓到達後に算出予定。"
-   },
-   "D_system_health": {
-    "uptime_pct": 100.0,
-    "uptime_note": "直近7日(2026-07-20〜2026-07-26)でruns succeeded/7=6/6(2026-07-26は本レポート作成中のため未計上)=100.0%。",
-    "scoring_latency_days": null,
-    "lessons_promoted": 0,
-    "lessons_retired": 0,
-    "schema_violations": 0
-   },
-   "read": "A系(予測力)は本日も検証対象0件が続くが、status:verified(v2)19件の較正分析からp値が0.5-0.55に偏在し高確信予測が皆無という構造的ギャップを新たに検出、教訓化した。B系(判断品質)は制約遵守100%を維持しつつ、29回連続holdの機会費用検証(B0008)を今回は実際のデータ再取得を伴う形で実施し儀式化懸念に定量的に応答した。C系(リターン)は対オルカン超過が+2.289%pt(20d相当)から運用部のNAV確定後+1.221%ptへ縮小したが、帰属分解では超過の実質100%が6/29の初期配置(傾き効果)によるもので、判断効果(hold継続)の寄与はゼロと明確化された。D系(稼働率)は直近7日100%を維持。"
-  }
- ],
- "monthly": [
-  {
-   "month": "2026-08",
-   "date": "2026-08-01",
-   "playbook_distillation": {
-    "summary": "data/playbook.md を今回初回作成。lessons.json全38件(すべてstatus:仮説)から、繰り返し一貫して適用され矛盾を生んでいない原則を1件「検証済み」に昇格（NAVデータ品質・確度分類の原則）、継続監視中の原則を2件「仮説（運用中/新設）」として明文化（予測considered_scenariosの第三軸原則、hold判断の反証可能性原則）。原則の引退（status:引退）は該当なし（まだ反証された原則がないため）。",
-    "promoted": [
-     "NAVデータ品質・確度分類の原則"
+  "schema": "scorecard v2",
+  "purpose": "評価軸v2（4族 A予測力/B意思決定品質/C運用成果/D システム健全性）の週次メトリクス時系列。ページの通信簿セクションはこのファイルから機械生成する。散文でなくデータから計算する。",
+  "growth_definition": "A・Bが月次で改善（Brier↓・機序的中率↑・反復ミス率↓・較正誤差↓）し、Cが四半期で非負を維持しつつ判断効果が漸増すること。序盤（〜四半期）はA/B（プロセス指標）で成長を判断し、C（リターン）は遅行するため日次で一喜一憂しない。",
+  "metric_families": {
+    "A_predictive": [
+      "的中率(horizon別)",
+      "Brierスコア(rolling)",
+      "較正誤差(バケット別|p−実現率|)",
+      "機序的中率=方向○かつ機序○÷方向○",
+      "サプライズ率=想定外事象の割合"
     ],
-    "retired": []
-   },
-   "universe_review": {
-    "summary": "bench_navs.json Tier2候補7本を点検。eMAXIS Slim S&P500・ニッセイNASDAQ100は本日マーケット課が新値(as of 2026-07-30)を取得し追跡継続中。iFreeNEXTインド株(as of 2026-06-30)・eMAXIS Slim先進国債券(ヘッジあり、navデータなし)・eMAXIS Slimバランス8資産(navデータなし)は1ヶ月以上新値取得なく採用トリガー(日印経済安保進展・日銀利上げ完了シグナル等)も未充足のため、Tier3(監視継続・優先度低)へ格下げを提案。三菱UFJ純金ファンド・純金上場信託「金の果実」は2026-07-10の初回取得以降新値未更新、金-株相関崩れ(2026-07-09)の再燃有無を次回優先確認事項とする。ニッセイSOX指数インデックスは2026-07-07以降25日超新値未更新で最も陳腐化が進んでおり、半導体関連の新規予測(P-T28)を機に次回runでの再取得を優先する。",
-    "downgrade_candidates": [
-     "iFreeNEXTインド株インデックス",
-     "eMAXIS Slim先進国債券(為替ヘッジあり)",
-     "eMAXIS Slimバランス(8資産均等)"
+    "B_decision_quality": [
+      "対・却下代替デルタ",
+      "前提生存率",
+      "反復ミス率=既知カテゴリでの再失敗÷全失敗",
+      "教訓引用率",
+      "制約遵守率"
     ],
-    "priority_refresh": [
-     "ニッセイSOX指数インデックス",
-     "三菱UFJ純金ファンド",
-     "純金上場信託「金の果実」"
+    "C_returns": [
+      "対オルカン超過(rolling 20d/60d/四半期)",
+      "対凍結初期デルタ=判断効果",
+      "リスク調整(実現ボラ・最大DD)"
+    ],
+    "D_system_health": [
+      "稼働率(runs/7)",
+      "採点遅延(horizon到来→verifiedの日数)",
+      "教訓の昇格数/引退数",
+      "スキーマ逸脱件数"
     ]
-   },
-   "method_performance": {
-    "summary": "trades.json全34件(T0001〜T0034)を analysis_method 別に集計。運用開始(2026-06-29)時の初期配分決定と、同日実施した1回のFANG+集中是正トリム(¥1,000,000分)を除き、残る全トレードは制約(NISA成長枠上限到達・3ヶ月反対売買制限・つみたて規律)による『hold』であり、裁量的な手法間比較が可能な複数回の実売買がまだ発生していない。したがって『どの分析フレームが機能しているか』を統計的に比較するには時期尚早であり、捏造を避けるためこの月は数値による優劣判定を行わない。継続して使われている手法は反実仮想比較法(凍結初期PF・却下代替枝との比較)＋長期リスク調整後リターン評価(対オルカン超過率トラッキング)の2本柱。3ヶ月反対売買制限が解除される2026-09-29以降、初めて複数の裁量的トレードが発生しうるため、手法別成績表の本格運用はそれ以降を予定。",
-    "note": "実売買サンプル不足のため定量比較は次回以降に持ち越し（捏造禁止原則を優先）。"
-   },
-   "practical_memo": {
-    "summary": "仮想PFの学びから実口座(SBI証券・NISA)への示唆：(1)3ヶ月反対売買制限やNISA成長枠年間上限のような『動けない制約』を事前に理解しておくことで、実際のNISA枠配分でも一括投資か時間分散(ドルコスト平均法)かの判断を、制約発動後に後悔しない形で先に設計しておくことの重要性が確認された。(2)単一ソースのNAV速報を鵜呑みにせず複数系統でクロスチェックする習慣は、実口座での基準価額確認(月次レポート・運用会社公式サイト)でも同様に有効。(3)『何が起きたら方針転換するか』を事前に明文化しておく本日の教訓(hold判断の反証可能性原則)は、実口座でのリバランス基準(例：目標配分から±5%乖離したら見直す等)を事前にルール化しておくことの重要性に直結する。学習目的の参考情報であり、特定の商品・時期の売買を推奨するものではありません。"
-   },
-   "meta_review": {
-    "summary": "PDCA自体の点検（初回）。(a)採点遅延：本日8/1時点でstatus:openかつcheckpoints到来済みの中間チェックが最大9日遅延(P-U06)していたことが判明、遅延の常態化を防ぐため次回以降は検証部が日次でcheckpoints期日を機械チェックする運用を徹底する。(b)教訓引用率：投資部・運用部とも本日は複数のlessons.json項目を明示的にciteしており引用率は良好だが、簡易カウントによる標準化された算出方法が未整備（週次scorecardのlesson_citation_rateは概算値のまま）。(c)スキーマ逸脱：本日新規追加した予測P-E67〜70/P-T28はv2スキーマ(type/p/scoring_spec/considered_scenarios/watch)を満たしており逸脱なし。(d)★最重要指摘（2026-08-01反対尋問より）：仮想運用が34回連続holdに達しているにもかかわらず、本日まで『何が起きればhold以外の判断に転換するか』という反証条件が一度も明文化されていなかった。これはPDCAの根幹（反証可能性）に反する構造的欠陥であり、本日playbook.mdに原則3として明文化し是正した。次回月次メタレビューでこの是正が実際にガバナンス改善につながったかを再点検する。",
-    "scoring_latency_days_max": 9,
-    "schema_violations": 0,
-    "key_finding": "hold判断の反証可能性欠如（是正済み、playbook.md原則3参照）"
-   }
-  }
- ]
+  },
+  "snapshots": [
+    {
+      "week_ending": "2026-07-05",
+      "stage": "土台構築直後（v2運用開始週）",
+      "A_predictive": {
+        "verified_count": 0,
+        "brier_rolling": null,
+        "calibration_error": null,
+        "mechanism_hit_rate": null,
+        "surprise_rate": 0.0,
+        "note": "検証済み予測ゼロ。最短horizon P-E01(2026-07-16)/P-U05 checkpoint(2026-07-16)は未到来。7/4-7/5朝のサプライズ監査ではconsidered_scenarios外の事象は検出されず(surprise_rate=0)。"
+      },
+      "B_decision_quality": {
+        "counterfactual_delta_jpy": 0,
+        "counterfactual_note": "凍結初期PFに対する判断効果=0（6/29以降hold＋規律的つみたてのみ、裁量的組換えなし）。7/5もNAV据置につき同様。却下枝B0001/B0002は前向き評価未開始。",
+        "assumption_survival_rate": null,
+        "repeat_mistake_rate": null,
+        "lesson_citation_rate": 0.0,
+        "constraint_compliance_rate": 1.0,
+        "constraint_note": "全トレード(T0001-T0011)がconstraint_checkを通過＝100%遵守。"
+      },
+      "C_returns": {
+        "excess_vs_orukan_pct_cum": 1.3,
+        "excess_vs_orukan_pct_fund_adjusted": 0.28,
+        "excess_note": "2026-07-04時点値を据置(7/5は休場でNAV更新なし)。累積超過+1.300pt、資金調整後+0.280pt。",
+        "judgment_effect_vs_frozen_jpy": 0,
+        "slope_effect_vs_orukan100_jpy": 69732,
+        "attribution_note": "判断効果(実PF-凍結初期)=¥0。傾き効果(凍結初期-オルカン100%換算)=+¥69,732（初期配分(FANG+42%・金9.5%)がオルカン一本を上回る）。",
+        "rolling_20d": null,
+        "rolling_60d": null,
+        "rolling_note": "運用開始2026-06-29から1週間強のためrolling 20d/60dは算出不可（データ不足）。",
+        "realized_vol": null,
+        "max_drawdown": null
+      },
+      "D_system_health": {
+        "uptime_pct": 60.0,
+        "uptime_note": "2026-06-29以降のrunsを再集計：scheduled 5件(6/30,7/1,7/3,7/4×2)中succeeded 3件(6/30,7/4×2)=60.0%。manual rescue 1件(7/2)。既存記録40.0%は7/4の2回目run反映前のstale値だったため訂正。",
+        "scoring_latency_days": null,
+        "lessons_promoted": 0,
+        "lessons_retired": 0,
+        "schema_violations": 0
+      },
+      "read": "A系は検証データ待ち継続（最短horizon 7/16）。B(判断効果)は裁量判断が未発生のため0のまま。C(傾き効果)は初期設計がオルカン一本を上回っており小さな正の寄与。D(稼働率)を60%へ訂正、次週の完全復旧確認が引き続き最重要。"
+    },
+    {
+      "week_ending": "2026-07-12",
+      "stage": "土台構築期（v2運用開始3週目）",
+      "A_predictive": {
+        "verified_count": 0,
+        "brier_rolling": null,
+        "calibration_error": null,
+        "mechanism_hit_rate": null,
+        "surprise_rate": 0.0,
+        "note": "検証済み予測ゼロ継続。最短horizon 2026-07-16(P-E01/P-E03/P-E12/P-E14/P-U05 checkpoint1)は未到来。7/11-7/12監査ではconsidered_scenarios外の事象なし(surprise_rate=0)。週次レビューで7/6の全東信破産(地銀与信ショック)が既存predictions全件のconsidered_scenariosに未反映と判明、教訓化・P-T14新設で対応。"
+      },
+      "B_decision_quality": {
+        "counterfactual_delta_jpy": -1,
+        "counterfactual_note": "判断効果(実PF-凍結初期)は6/29以降ゼロ近傍で継続(裁量的組換えなし、hold×17回=T0001〜T0017)。却下枝B0001(全売却)は-¥222,960でfrozen劣後継続、B0002(無売却)は+¥101,509でfrozen優位継続(部分利確が全売却よりまだ良いが、無売却には短期的に劣後)。B0003(FANG+トリム機会費用)は実PFが-¥32,746上回り、hold継続の正当性を示唆(いずれも低confidence参考値)。反対尋問(2026-07-12)は17回連続holdのガバナンス上の懸念とサーキットブレーカー条項の検討が未実施である点を指摘。",
+        "assumption_survival_rate": null,
+        "repeat_mistake_rate": null,
+        "lesson_citation_rate": 0.33,
+        "constraint_compliance_rate": 1.0,
+        "constraint_note": "全トレード(T0001-T0017)がconstraint_check通過=100%遵守継続。lesson_citation_rateは今週新規予測10本中約1/3がlessons.jsonを明示引用した簡易カウント(参考値、算出方法は今後標準化要)。"
+      },
+      "C_returns": {
+        "excess_vs_orukan_pct_cum": 2.12,
+        "excess_vs_orukan_pct_cum_asof": "2026-07-12(運用部確定値、NAV基準日2026-07-10)",
+        "judgment_effect_vs_frozen_jpy": -1,
+        "slope_effect_vs_orukan100_jpy": 61265,
+        "attribution_note": "判断効果(実PF-凍結初期)=概算¥-1(端数丸めのみ、裁量判断なし)。傾き効果(凍結初期-オルカン100%換算)=概算+¥61,265(前週2026-07-05時点+¥69,732から縮小。初期配分(FANG+42%・金9.5%)は依然オルカン一本を上回るが優位幅は週内で変動)。超過拡大(+1.774%pt→+2.120%pt)は全銘柄の基準価額上昇による相対効果であり戦略の実力向上を意味しない。",
+        "rolling_20d": null,
+        "rolling_60d": null,
+        "rolling_note": "運用開始2026-06-29から本日2026-07-12まで実質10営業日相当のため、20d/60dローリングは算出不可(データ不足、20営業日到達は概ね2026-07-27頃見込み)。",
+        "realized_vol": null,
+        "max_drawdown": null,
+        "risk_note": "日次リターン系列がまだ短く実現ボラ・最大DDは算出不可(データ不足)。"
+      },
+      "D_system_health": {
+        "uptime_pct": 71.4,
+        "uptime_note": "直近7日(2026-07-06〜07-12)でruns succeeded/7=5/7=71.4%。07-08はrunlog記録・git commitともに欠落(要調査、教訓化済み)。",
+        "scoring_latency_days": null,
+        "lessons_promoted": 0,
+        "lessons_retired": 0,
+        "schema_violations": 0
+      },
+      "read": "A系(予測力)は検証データ待ちが3週連続継続(最短horizon 7/16)。B系(判断品質)は制約遵守100%を維持しつつ、却下代替枝の機会費用追跡(B0003)がhold継続の正当性を裏付ける方向だが、反対尋問は17回連続holdのガバナンス懸念とサーキットブレーカー条項未検討を重ねて指摘。C系(リターン)は対オルカン超過が確定値+1.774pt(7/11)→+2.120pt(7/12)へ拡大したが、これは全銘柄のNAV上昇による相対効果でありrolling 20d/60dが算出可能になる7月下旬まで実力判断は保留。D系(稼働率)は71.4%(7/8欠測が主因)、runlog記録漏れ自体を検知する仕組みの整備が次週の優先課題。"
+    },
+    {
+      "week_ending": "2026-07-26",
+      "stage": "土台構築期（v2運用開始4週目）",
+      "A_predictive": {
+        "verified_count": 0,
+        "brier_rolling": 0.099,
+        "calibration_error": null,
+        "mechanism_hit_rate": null,
+        "surprise_rate": 0.0,
+        "note": "本日検証対象0件(status:openかつhorizon本日以前の予測なし)。サプライズ監査は今週も「内」継続。status:verified(v2)19件のp値較正では0.5-0.6帯(n=19)の実現率42.1%・算出可能分のrolling Brier 0.099だが、p≥0.6の高確信予測が皆無で較正曲線がこの一帯でしか検証できていない構造的ギャップを教訓化した。"
+      },
+      "B_decision_quality": {
+        "counterfactual_delta_jpy": -209,
+        "counterfactual_note": "判断効果(実PF-凍結初期)は6/29以降ゼロ近傍で継続(裁量的組換えなし、hold×29回=T0001〜T0029)。B0008(FANG+一部→為替ヘッジ型先進国株ファンド振替)は振替先NAVの再取得を試行したが変化率が同期間のベンチマークと著しく非整合(▼41.7% vs オルカン+1.4%程度)で不採用、概念枝のまま。反対尋問は29回連続holdの三重制約下での実行可能性・B0008の儀式化リスクを継続指摘。",
+        "assumption_survival_rate": null,
+        "repeat_mistake_rate": null,
+        "lesson_citation_rate": null,
+        "constraint_compliance_rate": 1.0,
+        "constraint_note": "全トレード(T0001-T0029)がconstraint_check通過=100%遵守継続。"
+      },
+      "C_returns": {
+        "excess_vs_orukan_pct_cum": 1.221,
+        "excess_vs_orukan_pct_cum_asof": "2026-07-26(運用部確定値、NAV基準日2026-07-24)",
+        "judgment_effect_vs_frozen_jpy": -209,
+        "slope_effect_vs_orukan100_jpy": 70200,
+        "attribution_note": "判断効果(実PF-凍結初期)=概算-¥209(端数丸めのみ、裁量判断なし)。傾き効果(凍結初期-オルカン100%換算)=概算+¥70,100〜70,300で、超過リターンの牽引役は依然として6/29の初期配置判断(FANG+42%・金9.5%)であり、28〜29回連続holdという裁量判断そのものの寄与はゼロ。対オルカン超過は運用部の本日再評価により+2.289%pt(検証部20d相当値)→+1.221%pt(NAV確定後)へ縮小、FANG+・ゴールドの下落幅がオルカンを上回った相対効果であり戦略の実力低下ではない。",
+        "rolling_20d": 2.289,
+        "rolling_60d": null,
+        "rolling_note": "運用開始2026-06-29から本日2026-07-26まで実質19〜20営業日相当。真の20d窓到達は2026-07-27頃見込みのため、本日の20d値はsince-inception代用値。60dは2026年9月中旬以降まで算出不可。",
+        "realized_vol": null,
+        "max_drawdown": null,
+        "risk_note": "日次リターン系列は蓄積継続中。実現ボラ・最大DDは60d窓到達後に算出予定。"
+      },
+      "D_system_health": {
+        "uptime_pct": 100.0,
+        "uptime_note": "直近7日(2026-07-20〜2026-07-26)でruns succeeded/7=6/6(2026-07-26は本レポート作成中のため未計上)=100.0%。",
+        "scoring_latency_days": null,
+        "lessons_promoted": 0,
+        "lessons_retired": 0,
+        "schema_violations": 0
+      },
+      "read": "A系(予測力)は本日も検証対象0件が続くが、status:verified(v2)19件の較正分析からp値が0.5-0.55に偏在し高確信予測が皆無という構造的ギャップを新たに検出、教訓化した。B系(判断品質)は制約遵守100%を維持しつつ、29回連続holdの機会費用検証(B0008)を今回は実際のデータ再取得を伴う形で実施し儀式化懸念に定量的に応答した。C系(リターン)は対オルカン超過が+2.289%pt(20d相当)から運用部のNAV確定後+1.221%ptへ縮小したが、帰属分解では超過の実質100%が6/29の初期配置(傾き効果)によるもので、判断効果(hold継続)の寄与はゼロと明確化された。D系(稼働率)は直近7日100%を維持。"
+    },
+    {
+      "week_ending": "2026-08-09",
+      "stage": "運用継続期(v2運用開始6週目、日曜週次)",
+      "A_predictive": {
+        "verified_count": 56,
+        "brier_rolling": 0.159,
+        "calibration_error": null,
+        "mechanism_hit_rate": 0.375,
+        "surprise_rate": 0.089,
+        "note": "07-26時点の検証0件から一転、三重制約解除待ちだった予測群が集中満期を迎え期間内56件を新規検証、rolling Brier 0.099→0.159へ悪化。為替介入・AI人材流出という『外』サプライズ2件が機序想定漏れの主因。本日8/9は検証対象0件(P-E02/P-E46はscoring_spec上の正式判定期日が本日より後のためopen継続)。"
+      },
+      "B_decision_quality": {
+        "counterfactual_delta_jpy": 0,
+        "counterfactual_note": "判断効果(実PF-凍結初期)は¥0近傍で継続(41日連続hold、裁量的組換えなし)。",
+        "assumption_survival_rate": null,
+        "repeat_mistake_rate": null,
+        "lesson_citation_rate": 0.804,
+        "constraint_compliance_rate": 1.0,
+        "constraint_note": "期間内トレード全件がconstraint_check通過=100%遵守継続。"
+      },
+      "C_returns": {
+        "excess_vs_orukan_pct_cum": 2.99,
+        "excess_vs_orukan_pct_cum_asof": "2026-08-09(運用部T0041確定値、NAV基準日2026-08-07)",
+        "judgment_effect_vs_frozen_jpy": 0,
+        "slope_effect_vs_orukan100_jpy": null,
+        "attribution_note": "対オルカン超過は+3.486%pt(8/7)→+2.990%pt(8/9)へ縮小したが、これはオルカン自体が新値(38,302円)を反映したことによる会計上の変化であり、戦略の実力低下を意味しない。判断効果(hold継続)の寄与は引き続きゼロ。",
+        "rolling_20d": null,
+        "rolling_60d": null,
+        "rolling_note": "60d窓は2026年9月中旬以降まで算出不可(継続)。",
+        "realized_vol": null,
+        "max_drawdown": null
+      },
+      "D_system_health": {
+        "uptime_pct": 71.4,
+        "uptime_note": "直近7日(2026-08-03〜08-09)でruns succeeded/7=5/7=71.4%。8/8(土)分のrunlog記録が欠測(過去にも複数回発生済みの土日パターン、教訓化済み)。",
+        "scoring_latency_days": null,
+        "lessons_promoted": 0,
+        "lessons_retired": 0,
+        "schema_violations": 0
+      },
+      "read": "A系(予測力)は三重制約解除待ちだった予測群が集中満期を迎え56件を新規検証、rolling Brier 0.099→0.159へ悪化。為替介入・AI人材流出という『外』サプライズ2件が機序想定漏れの主因。B系(判断品質)は制約遵守100%・教訓引用率80.4%を維持しhold規律は健全。C系は判断効果ほぼゼロを継続、対オルカン超過はオルカン新値反映により+3.486%pt→+2.990%ptへ会計上縮小(実力低下ではない)。D系(稼働率)は8/8(土)の欠測により71.4%へ後退、土日の無人publish停止パターンが依然未解消。反対尋問(2026-08-09)は新規予測のテーマ偏重(金融政策・金利に3本集中)を指摘、次回是正を課題とする。"
+    }
+  ],
+  "monthly": [
+    {
+      "month": "2026-08",
+      "date": "2026-08-01",
+      "playbook_distillation": {
+        "summary": "data/playbook.md を今回初回作成。lessons.json全38件(すべてstatus:仮説)から、繰り返し一貫して適用され矛盾を生んでいない原則を1件「検証済み」に昇格（NAVデータ品質・確度分類の原則）、継続監視中の原則を2件「仮説（運用中/新設）」として明文化（予測considered_scenariosの第三軸原則、hold判断の反証可能性原則）。原則の引退（status:引退）は該当なし（まだ反証された原則がないため）。",
+        "promoted": [
+          "NAVデータ品質・確度分類の原則"
+        ],
+        "retired": []
+      },
+      "universe_review": {
+        "summary": "bench_navs.json Tier2候補7本を点検。eMAXIS Slim S&P500・ニッセイNASDAQ100は本日マーケット課が新値(as of 2026-07-30)を取得し追跡継続中。iFreeNEXTインド株(as of 2026-06-30)・eMAXIS Slim先進国債券(ヘッジあり、navデータなし)・eMAXIS Slimバランス8資産(navデータなし)は1ヶ月以上新値取得なく採用トリガー(日印経済安保進展・日銀利上げ完了シグナル等)も未充足のため、Tier3(監視継続・優先度低)へ格下げを提案。三菱UFJ純金ファンド・純金上場信託「金の果実」は2026-07-10の初回取得以降新値未更新、金-株相関崩れ(2026-07-09)の再燃有無を次回優先確認事項とする。ニッセイSOX指数インデックスは2026-07-07以降25日超新値未更新で最も陳腐化が進んでおり、半導体関連の新規予測(P-T28)を機に次回runでの再取得を優先する。",
+        "downgrade_candidates": [
+          "iFreeNEXTインド株インデックス",
+          "eMAXIS Slim先進国債券(為替ヘッジあり)",
+          "eMAXIS Slimバランス(8資産均等)"
+        ],
+        "priority_refresh": [
+          "ニッセイSOX指数インデックス",
+          "三菱UFJ純金ファンド",
+          "純金上場信託「金の果実」"
+        ]
+      },
+      "method_performance": {
+        "summary": "trades.json全34件(T0001〜T0034)を analysis_method 別に集計。運用開始(2026-06-29)時の初期配分決定と、同日実施した1回のFANG+集中是正トリム(¥1,000,000分)を除き、残る全トレードは制約(NISA成長枠上限到達・3ヶ月反対売買制限・つみたて規律)による『hold』であり、裁量的な手法間比較が可能な複数回の実売買がまだ発生していない。したがって『どの分析フレームが機能しているか』を統計的に比較するには時期尚早であり、捏造を避けるためこの月は数値による優劣判定を行わない。継続して使われている手法は反実仮想比較法(凍結初期PF・却下代替枝との比較)＋長期リスク調整後リターン評価(対オルカン超過率トラッキング)の2本柱。3ヶ月反対売買制限が解除される2026-09-29以降、初めて複数の裁量的トレードが発生しうるため、手法別成績表の本格運用はそれ以降を予定。",
+        "note": "実売買サンプル不足のため定量比較は次回以降に持ち越し（捏造禁止原則を優先）。"
+      },
+      "practical_memo": {
+        "summary": "仮想PFの学びから実口座(SBI証券・NISA)への示唆：(1)3ヶ月反対売買制限やNISA成長枠年間上限のような『動けない制約』を事前に理解しておくことで、実際のNISA枠配分でも一括投資か時間分散(ドルコスト平均法)かの判断を、制約発動後に後悔しない形で先に設計しておくことの重要性が確認された。(2)単一ソースのNAV速報を鵜呑みにせず複数系統でクロスチェックする習慣は、実口座での基準価額確認(月次レポート・運用会社公式サイト)でも同様に有効。(3)『何が起きたら方針転換するか』を事前に明文化しておく本日の教訓(hold判断の反証可能性原則)は、実口座でのリバランス基準(例：目標配分から±5%乖離したら見直す等)を事前にルール化しておくことの重要性に直結する。学習目的の参考情報であり、特定の商品・時期の売買を推奨するものではありません。"
+      },
+      "meta_review": {
+        "summary": "PDCA自体の点検（初回）。(a)採点遅延：本日8/1時点でstatus:openかつcheckpoints到来済みの中間チェックが最大9日遅延(P-U06)していたことが判明、遅延の常態化を防ぐため次回以降は検証部が日次でcheckpoints期日を機械チェックする運用を徹底する。(b)教訓引用率：投資部・運用部とも本日は複数のlessons.json項目を明示的にciteしており引用率は良好だが、簡易カウントによる標準化された算出方法が未整備（週次scorecardのlesson_citation_rateは概算値のまま）。(c)スキーマ逸脱：本日新規追加した予測P-E67〜70/P-T28はv2スキーマ(type/p/scoring_spec/considered_scenarios/watch)を満たしており逸脱なし。(d)★最重要指摘（2026-08-01反対尋問より）：仮想運用が34回連続holdに達しているにもかかわらず、本日まで『何が起きればhold以外の判断に転換するか』という反証条件が一度も明文化されていなかった。これはPDCAの根幹（反証可能性）に反する構造的欠陥であり、本日playbook.mdに原則3として明文化し是正した。次回月次メタレビューでこの是正が実際にガバナンス改善につながったかを再点検する。",
+        "scoring_latency_days_max": 9,
+        "schema_violations": 0,
+        "key_finding": "hold判断の反証可能性欠如（是正済み、playbook.md原則3参照）"
+      }
+    }
+  ]
 }
