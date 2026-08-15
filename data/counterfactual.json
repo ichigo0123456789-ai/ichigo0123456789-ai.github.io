@@ -472,6 +472,21 @@
         },
         "total_value_jpy": 5753523,
         "note": "本セッションでは8/13分の新規Tier1 NAVを裏取りできず、8/12確定値(8/13評価時点と同値)をcarry-forward。口数固定(現金¥0、46日超hold継続)。"
+      },
+      {
+        "date": "2026-08-16",
+        "navs": {
+          "orukan": 39019,
+          "fangplus": 101036,
+          "gold": 24927
+        },
+        "units": {
+          "orukan": 715459,
+          "fangplus": 245984,
+          "gold": 214160
+        },
+        "total_value_jpy": 5810810,
+        "note": "口数固定(715,459/245,984/214,160、現金¥0、48日超hold継続)。実PFが採用した新NAV(オルカン39,019円・FANG+101,036円・ゴールド24,927円、いずれもas of 2026-08-14)を反映。frozen_initial評価額=実PF評価額=¥5,810,810で完全一致。"
       }
     ]
   },
@@ -739,6 +754,13 @@
       "frozen_total_jpy": 5753523,
       "diff_jpy": -29,
       "note": "実PF値はportfolio.json/nav_history.json直近確定値(T0046)を参照。6/29以降、実PFとfrozenは口数ベースで完全一致(裁量売買なし)のため差額¥29は端数丸め起因。判断効果は実質ゼロ(hold継続)。新規NAV未取得のためfrozen側も8/13時点と同値のcarry-forward。"
+    },
+    {
+      "date": "2026-08-16",
+      "real_pf_total_jpy": 5810810,
+      "frozen_total_jpy": 5810810,
+      "diff_jpy": 0,
+      "note": "実PF(運用部T0047確定値)-凍結初期PF。6/29以降、実PFとfrozenは口数ベースで完全一致(裁量売買なし)のため差額¥0。判断効果は実質ゼロ(hold継続)。検証部の帰属分解教訓どおり、60日換算でもjudgment_effectはほぼゼロ(+¥186)であり、超過収益+6.054%ptの説明変数はslope_effect(2026-06-29の初期配分)にほぼ全て帰属することが本日改めて確認された。"
     }
   ],
   "branches": [
