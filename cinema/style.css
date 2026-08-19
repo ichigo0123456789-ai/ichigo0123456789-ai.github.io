@@ -136,6 +136,21 @@ select{cursor:pointer}
 .tray-label{font-size:11px;font-weight:700;color:var(--faint);letter-spacing:.06em}
 .tray-seats{font-family:var(--mono);font-size:13px;color:var(--cool);flex:1;min-width:120px}
 .tray-seats.empty-t{color:var(--faint)}
+.tray-seats.confirmed{color:var(--accent);font-size:15px;font-weight:600}
+
+/* ---- 速度まわり ---- */
+.speed-item{border-left:2px solid var(--line-2);padding-left:13px;margin-bottom:16px}
+.speed-item b{font-size:12.5px}
+.sync-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sync-head b{margin-right:auto}
+.sync-result{margin-top:8px;font-size:11.5px;line-height:1.65;color:var(--sub);
+  background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 11px}
+.sync-result.busy{color:var(--cool);border-color:rgba(90,169,255,.3)}
+.sync-result.good{color:var(--ok);border-color:rgba(61,220,151,.3);background:var(--ok-soft)}
+.sync-result.warn-t{color:var(--amber);border-color:rgba(255,181,71,.3)}
+.sync-result.bad{color:var(--err);border-color:rgba(255,93,104,.3)}
+.timeline-table td.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.timeline-table tbody tr:last-child td{color:var(--ink)}
 
 .seatmap-wrap{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:16px 12px 14px;overflow-x:auto}
 /* スクリーンの位置を示す帯。ラベルの下に光る線を引く。 */

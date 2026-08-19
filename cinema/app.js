@@ -11,6 +11,7 @@
   var D = window.CINEMA_DATA;
   var CE = window.CinemaEngine;
   var CR = window.CinemaRunner;
+  var CS = window.CinemaSpeed;
 
   var LS_PLANS = 'cinema.plans.v1';
   var LS_PROFILE = 'cinema.profile.v1';
@@ -29,6 +30,8 @@
     liveMap: null,     /* 実行中に取得した座席状況 */
     logs: [],
     result: null,
+    sync: null,        /* CinemaSpeed.TimeSync */
+    visWatch: null,
     profile: { save: false, name: '', tel: '', mail: '' }
   };
 
@@ -117,7 +120,10 @@
       tickets: { general: 2 },
       onSaleAt: '',
       candidates: [],
-      strategy: { pollIntervalMs: 1000, preconnectSec: 10, deadlineSec: 180, fallbackAny: false },
+      strategy: {
+        pollIntervalMs: 1000, preconnectSec: 20, deadlineSec: 180,
+        fallbackAny: false, holdFirst: true
+      },
       mock: { congestion: 'normal', seed: 'rehearsal-1', speed: 30 }
     };
   }
@@ -255,12 +261,12 @@
     $('s-preconnect').value = p.strategy.preconnectSec;
     $('s-deadline').value = p.strategy.deadlineSec;
     $('s-fallback').checked = !!p.strategy.fallbackAny;
+    $('s-holdfirst').checked = p.strategy.holdFirst !== false;
     $('s-congestion').value = p.mock.congestion;
     $('s-seed').value = p.mock.seed;
     $('s-speed').value = p.mock.speed;
 
     renderPlanList();
-    renderCandidates();
     updateSeatContext();
   }
 
@@ -281,6 +287,7 @@
     p.strategy.preconnectSec = parseInt($('s-preconnect').value, 10) || 0;
     p.strategy.deadlineSec = parseInt($('s-deadline').value, 10) || 180;
     p.strategy.fallbackAny = $('s-fallback').checked;
+    p.strategy.holdFirst = $('s-holdfirst').checked;
     p.mock.congestion = $('s-congestion').value;
     p.mock.seed = $('s-seed').value;
     p.mock.speed = Math.max(1, parseInt($('s-speed').value, 10) || 1);
@@ -303,7 +310,7 @@
       main.className = 'pi-main';
       main.innerHTML = '<div class="pi-title">' + esc(p.title || '（無題）') + '</div>' +
         '<div class="pi-meta">' + esc(t ? t.name : '?') + ' / ' + esc(p.date + ' ' + p.showtime) +
-        ' / ' + p.count + '枚 / 候補' + p.candidates.length + '件</div>';
+        ' / ' + p.count + '枚 / ' + (p.candidates[0] ? p.candidates[0].seats.join(' ') : '座席未選択') + '</div>';
       main.addEventListener('click', function () {
         S.plan = JSON.parse(JSON.stringify(p));
         S.pick = [];
@@ -442,11 +449,10 @@
   }
 
   function onSeatClick(seat, screen) {
-    /* 既に候補に入っている席をクリックしたら、その候補ごと外す */
-    var rank = candRankOf(seat.id);
-    if (rank) {
-      S.plan.candidates.splice(rank - 1, 1);
-      renderCandidates();
+    /* 確保対象の席をクリックしたら選び直し */
+    if (candRankOf(seat.id)) {
+      S.plan.candidates = [];
+      S.pick = [];
       renderSeatEditor();
       return;
     }
@@ -478,19 +484,30 @@
       }
       S.pick.push(seat.id);
     }
+    /* 枚数分そろったら、そのまま確保対象として確定する。
+       優先順位を付けないので、候補は常に0件か1件。 */
+    if (S.pick.length === S.plan.count) {
+      S.plan.candidates = [{ id: 'target', seats: S.pick.slice().sort(seatSort) }];
+      S.pick = [];
+    }
     renderSeatEditor();
   }
 
   function renderTray() {
     var el = $('tray-seats');
-    if (!S.pick.length) {
-      el.textContent = '座席をクリックしてください';
-      el.classList.add('empty-t');
-    } else {
-      el.textContent = S.pick.join(' / ') + '（' + S.pick.length + '/' + S.plan.count + '）';
+    var target = S.plan.candidates[0];
+    if (target) {
+      el.textContent = target.seats.join('  /  ');
       el.classList.remove('empty-t');
+      el.classList.add('confirmed');
+    } else if (S.pick.length) {
+      el.textContent = S.pick.join(' / ') + '（あと' + (S.plan.count - S.pick.length) + '席）';
+      el.classList.remove('empty-t', 'confirmed');
+    } else {
+      el.textContent = '座席表からクリックして選んでください';
+      el.classList.add('empty-t');
+      el.classList.remove('confirmed');
     }
-    $('btn-add-cand').disabled = S.pick.length !== S.plan.count;
   }
 
   /* ---- 候補 -------------------------------------------------------- */
@@ -501,82 +518,11 @@
     return parseInt(a.split('-')[1], 10) - parseInt(b.split('-')[1], 10);
   }
 
-  function addCandidate(seats) {
-    var sorted = seats.slice().sort(seatSort);
-    var key = sorted.join(',');
-    var dup = S.plan.candidates.some(function (c) {
-      return c.seats.slice().sort(seatSort).join(',') === key;
-    });
-    if (dup) { toast('同じ座席の候補が既にあります'); return false; }
-    S.plan.candidates.push({ id: uid(), seats: sorted });
-    return true;
-  }
-
-  function candPopularity(c) {
-    var screen = currentScreen();
-    if (!screen) return 0;
-    var seats = CE.expandSeats(screen);
-    var byId = {};
-    seats.forEach(function (s) { byId[s.id] = s; });
-    var sum = 0, n = 0;
-    c.seats.forEach(function (id) {
-      if (byId[id]) { sum += CE.popularity(byId[id], screen); n++; }
-    });
-    return n ? sum / n : 0;
-  }
-
-  function renderCandidates() {
-    var list = $('cand-list');
-    list.innerHTML = '';
-    if (!S.plan.candidates.length) {
-      list.innerHTML = '<div class="empty">候補がありません。座席マップから選ぶか、「おすすめ候補を自動生成」を押してください。</div>';
-      return;
-    }
-    S.plan.candidates.forEach(function (c, i) {
-      var li = document.createElement('li');
-      li.className = 'cand-item';
-      var pop = Math.round(candPopularity(c) * 100);
-      li.innerHTML =
-        '<span class="cand-rank">' + (i + 1) + '</span>' +
-        '<span class="cand-seats">' + esc(c.seats.join('  /  ')) + '</span>' +
-        '<span class="cand-pop">人気度 ' + pop + '</span>';
-      var act = document.createElement('span');
-      act.className = 'cand-actions';
-
-      var up = document.createElement('button');
-      up.textContent = '↑'; up.title = '優先順位を上げる'; up.disabled = i === 0;
-      up.addEventListener('click', function () { move(i, -1); });
-
-      var down = document.createElement('button');
-      down.textContent = '↓'; down.title = '優先順位を下げる';
-      down.disabled = i === S.plan.candidates.length - 1;
-      down.addEventListener('click', function () { move(i, 1); });
-
-      var del = document.createElement('button');
-      del.className = 'del'; del.textContent = '削除';
-      del.addEventListener('click', function () {
-        S.plan.candidates.splice(i, 1);
-        renderCandidates(); renderSeatEditor();
-      });
-
-      act.appendChild(up); act.appendChild(down); act.appendChild(del);
-      li.appendChild(act);
-      list.appendChild(li);
-    });
-  }
-
-  function move(i, dir) {
-    var j = i + dir;
-    if (j < 0 || j >= S.plan.candidates.length) return;
-    var tmp = S.plan.candidates[i];
-    S.plan.candidates[i] = S.plan.candidates[j];
-    S.plan.candidates[j] = tmp;
-    renderCandidates();
-    renderSeatEditor();
-  }
-
-  /** 人気度の高い連席を上位から拾って候補にする */
-  function autoCandidates(limit) {
+  /**
+   * 中央の見やすい連席を1組だけ選ぶ。
+   * 優先順位を付けないので、返すのは常に最良の1組。
+   */
+  function autoPick() {
     var screen = currentScreen();
     if (!screen) return;
     var need = S.plan.count;
@@ -584,7 +530,7 @@
     var byRow = {};
     seats.forEach(function (s) { (byRow[s.row] = byRow[s.row] || []).push(s); });
 
-    var groups = [];
+    var best = null, bestScore = -1;
     Object.keys(byRow).forEach(function (rowLabel) {
       var list = byRow[rowLabel].slice().sort(function (a, b) { return a.num - b.num; });
       for (var i = 0; i + need <= list.length; i++) {
@@ -595,46 +541,16 @@
           score += CE.popularity(g[j], screen);
         }
         if (!ok) continue;
-        groups.push({ seats: g.map(function (s) { return s.id; }), score: score / need });
+        score /= need;
+        if (score > bestScore) { bestScore = score; best = g.map(function (s) { return s.id; }); }
       }
     });
-    groups.sort(function (a, b) { return b.score - a.score; });
 
-    /* 隣り合った候補ばかり並べても、第1候補が埋まる状況では第2・第3も
-       同時に埋まっていて「次の候補」の意味が無い。
-       席が重ならないことに加えて、隣接を避け、1列あたり2件までに制限して散らす。 */
-    var used = {};
-    var perRow = {};
-    S.plan.candidates.forEach(function (c) {
-      c.seats.forEach(function (id) { used[id] = 1; });
-      var row = c.seats[0].split('-')[0];
-      perRow[row] = (perRow[row] || 0) + 1;
-    });
-
-    function tooClose(seatIds) {
-      return seatIds.some(function (id) {
-        var parts = id.split('-'), row = parts[0], num = parseInt(parts[1], 10);
-        /* 前後1席まで空けて、実質的に同じかたまりを候補にしない */
-        for (var d = -1; d <= 1; d++) if (used[row + '-' + (num + d)]) return true;
-        return false;
-      });
-    }
-
-    var added = 0;
-    for (var k = 0; k < groups.length && added < limit; k++) {
-      var g = groups[k];
-      var row = g.seats[0].split('-')[0];
-      if ((perRow[row] || 0) >= 2) continue;
-      if (tooClose(g.seats)) continue;
-      if (addCandidate(g.seats)) {
-        g.seats.forEach(function (id) { used[id] = 1; });
-        perRow[row] = (perRow[row] || 0) + 1;
-        added++;
-      }
-    }
-    renderCandidates();
+    if (!best) { toast('枚数分の連席が見つかりませんでした'); return; }
+    S.plan.candidates = [{ id: 'target', seats: best }];
+    S.pick = [];
     renderSeatEditor();
-    toast(added + '件の候補を追加しました');
+    toast(best.join(' / ') + ' を選びました');
   }
 
   /* ---- 実行 -------------------------------------------------------- */
@@ -656,6 +572,7 @@
       $('state-detail').textContent = '試行 ' + detail.attempt + '回 / 空席 ' + free + '席';
     } else if (st === 'held') {
       S.result = detail;
+      renderTimeline(detail.timeline);
       if (S.adapter) {
         var snap = S.adapter.fetchSeatMap({
           now: (S.clock ? S.clock.now() : Date.now()),
@@ -669,6 +586,7 @@
       showView('result');
     } else if (st === 'failed') {
       S.result = null;
+      renderTimeline(S.runner ? S.runner.timeline : null);
       var reasons = { timeout: '打ち切り時間に到達', exhausted: '候補がすべて埋まりました', request_limit: 'リクエスト上限に到達' };
       $('state-detail').textContent = (detail && reasons[detail.reason]) || '';
       renderResult();
@@ -680,6 +598,29 @@
     $('btn-run-live').disabled = running;
     $('btn-run-rehearsal').disabled = running;
     $('btn-run-abort').disabled = !running;
+  }
+
+  /** どこに何msかかったかの内訳。実行が終わるたびに描き直す。 */
+  function renderTimeline(marks) {
+    var card = $('timeline-card');
+    var body = $('timeline-body');
+    if (!marks || !marks.length) { card.hidden = true; body.innerHTML = ''; return; }
+    card.hidden = false;
+    /* リハーサルは仮想時間なので、タイマーのズレが早送り倍率ぶん拡大して見える。
+       本番の数字と取り違えないよう明示する。 */
+    $('timeline-note').textContent = S.rehearsal
+      ? 'リハーサル（' + S.plan.mock.speed + '倍速）の仮想時間です。発火のズレは倍率ぶん拡大されて見えます。'
+      : '';
+    body.innerHTML = '';
+    marks.forEach(function (m, i) {
+      var tr = document.createElement('tr');
+      var rel = Math.round(m.rel);
+      tr.innerHTML =
+        '<td>' + esc(m.label) + '</td>' +
+        '<td class="num">' + (rel >= 0 ? '+' : '') + rel.toLocaleString() + ' ms</td>' +
+        '<td class="num">' + (i === 0 ? '—' : Math.round(m.delta).toLocaleString() + ' ms') + '</td>';
+      body.appendChild(tr);
+    });
   }
 
   function pushLog(e) {
@@ -709,9 +650,10 @@
     if (!S.plan.title) return '作品タイトルを入力してください';
     if (!S.plan.date || !S.plan.showtime) return '上映日と開映時刻を入力してください';
     if (!S.plan.onSaleAt || isNaN(onSaleMs(S.plan))) return '発売開始日時を入力してください';
-    if (!S.plan.candidates.length) return '座席の候補を1件以上登録してください';
-    var bad = S.plan.candidates.filter(function (c) { return c.seats.length !== S.plan.count; });
-    if (bad.length) return '枚数（' + S.plan.count + '枚）と席数が違う候補があります';
+    if (!S.plan.candidates.length) return '座席表から座席を選んでください';
+    if (S.plan.candidates[0].seats.length !== S.plan.count) {
+      return '枚数（' + S.plan.count + '枚）と選んだ席数が一致していません';
+    }
     return null;
   }
 
@@ -723,6 +665,7 @@
     S.logs = [];
     S.result = null;
     $('log').innerHTML = '';
+    renderTimeline(null);
 
     var onSale = onSaleMs(S.plan);
     var speed = 1;
@@ -739,7 +682,24 @@
       return;
     }
 
-    var clock = new CR.Clock({ speed: speed, base: base });
+    /* 本番実行では、測ったオフセットを時計に載せる。
+       リハーサルは時刻を作り替えるので補正しない。 */
+    var offset = (!rehearsal && S.sync && S.sync.uncertainty != null) ? S.sync.offset : 0;
+    if (!rehearsal) {
+      if (offset) {
+        pushLog({ rel: (Date.now() + offset - onSale) / 1000, level: 'info',
+          msg: 'サーバ時刻とのズレ ' + (offset >= 0 ? '+' : '') + offset + 'ms を補正して実行します' });
+      } else {
+        pushLog({ rel: (Date.now() - onSale) / 1000, level: 'warn',
+          msg: 'サーバ時刻と同期していません。手元の時計のズレがそのまま出遅れになります' });
+      }
+      if (document.hidden) {
+        pushLog({ rel: (Date.now() - onSale) / 1000, level: 'warn',
+          msg: 'タブが背景にあります。表示したままにしてください' });
+      }
+    }
+
+    var clock = new CR.Clock({ speed: speed, base: base, offset: offset });
     S.clock = clock;
     S.rehearsal = !!rehearsal;
     S.adapter = new CE.MockAdapter({
@@ -759,6 +719,12 @@
       onLog: pushLog, onState: setState
     });
 
+    if (S.visWatch) S.visWatch.stop();
+    S.visWatch = new CS.VisibilityWatch(function () {
+      pushLog({ rel: (syncedNow() - onSale) / 1000, level: 'warn',
+        msg: 'タブが背景に回りました。タイマーがまとめられ、発火が遅れる可能性があります' });
+    });
+
     if (rehearsal) {
       pushLog({
         rel: (base - onSale) / 1000,
@@ -767,6 +733,54 @@
       });
     }
     S.runner.run();
+  }
+
+  /* ---- サーバ時刻との同期 ------------------------------------------
+
+     手元の時計がずれていると、そのぶんまるごと出遅れる。
+     同一オリジン（このページ自身）に HEAD を投げて Date ヘッダから
+     オフセットを推定する。Phase 2 のローカル runner では
+     KINEZO のレスポンスから同じ方法で測る。 */
+
+  function renderSyncResult(msg, cls) {
+    var el = $('sync-result');
+    el.textContent = msg;
+    el.className = 'sync-result' + (cls ? ' ' + cls : '');
+  }
+
+  function doSync() {
+    var btn = $('btn-sync');
+    btn.disabled = true;
+    renderSyncResult('測定中…', 'busy');
+    if (!S.sync) S.sync = new CS.TimeSync();
+
+    return S.sync.measure(location.pathname, {
+      count: 12,
+      onProgress: function (p) {
+        renderSyncResult('測定中… ' + p.done + '/' + p.total +
+          '（現在の精度 ±' + Math.round(p.uncertainty) + 'ms）', 'busy');
+      }
+    }).then(function (r) {
+      btn.disabled = false;
+      if (!r.ok) {
+        renderSyncResult('同期できませんでした（Date ヘッダが読めません）。この端末の時計をそのまま使います。', 'bad');
+        return;
+      }
+      var sign = r.offset >= 0 ? '+' : '';
+      renderSyncResult(
+        'この端末の時計はサーバより ' + sign + r.offset + 'ms ずれています（精度 ±' + r.uncertainty +
+        'ms / 往復 ' + r.rtt + 'ms / ' + r.samples + 'サンプル）。実行時にこのぶん補正します。',
+        Math.abs(r.offset) > 1000 ? 'warn-t' : 'good');
+      tickCountdown();
+    }).catch(function () {
+      btn.disabled = false;
+      renderSyncResult('同期に失敗しました。この端末の時計をそのまま使います。', 'bad');
+    });
+  }
+
+  /** 同期済みの現在時刻。未同期ならローカル時刻。 */
+  function syncedNow() {
+    return S.sync && S.sync.uncertainty != null ? S.sync.now() : Date.now();
   }
 
   /* ---- カウントダウン ---------------------------------------------- */
@@ -780,7 +794,7 @@
       sub.textContent = '発売開始日時が未設定です。';
       return;
     }
-    var diff = ms - Date.now();
+    var diff = ms - syncedNow();
     if (diff <= 0) {
       el.textContent = '発売中';
       el.className = 'countdown live';
@@ -821,7 +835,7 @@
     var r = S.result;
     var t = D.theater(S.plan.theaterId);
     var sc = currentScreen();
-    var rankLabel = r.rank ? '第' + r.rank + '候補' : '自動選択席';
+    var rankLabel = r.rank ? '指定した座席' : '自動選択席';
     var mark = S.rehearsal
       ? '<span class="badge">リハーサル結果 — 実際には予約されていません</span>' : '';
     box.innerHTML =
@@ -832,7 +846,7 @@
           '<div class="result-meta">' +
             esc((t ? t.name : '') + ' ' + (sc ? sc.name : '')) + '<br>' +
             esc(S.plan.title + ' ／ ' + S.plan.date + ' ' + S.plan.showtime + ' 開映') + '<br>' +
-            rankLabel + 'で確保（発売開始から ' + r.elapsedSec.toFixed(1) + '秒）' +
+            rankLabel + 'で確保（発売開始から ' + Math.round(r.elapsedMs).toLocaleString() + 'ms）' +
           '</div>' +
         '</div>' +
         '<div class="hold-timer"><div class="ht-num" id="ht-num">--:--</div>' +
@@ -988,7 +1002,7 @@
       S.plan.screenId = $('f-screen').value;
       S.plan.candidates = []; S.pick = [];
       updateTheaterNote(); updateTicketSum();
-      renderCandidates(); updateSeatContext();
+      updateSeatContext();
     });
 
     $('f-screen').addEventListener('change', function () {
@@ -996,7 +1010,7 @@
       /* スクリーンが変われば座席番号の意味が変わるので候補は破棄する */
       S.plan.candidates = []; S.pick = [];
       updateTicketSum();
-      renderCandidates(); updateSeatContext();
+      updateSeatContext();
     });
 
     ['f-title', 'f-date', 'f-time', 'f-runtime'].forEach(function (id) {
@@ -1040,15 +1054,11 @@
     });
 
     $('opt-consecutive').addEventListener('change', function () { S.pick = []; renderSeatEditor(); });
-    $('btn-add-cand').addEventListener('click', function () {
-      if (addCandidate(S.pick)) { S.pick = []; renderCandidates(); renderSeatEditor(); }
+    $('btn-clear-pick').addEventListener('click', function () {
+      S.pick = []; S.plan.candidates = [];
+      renderSeatEditor();
     });
-    $('btn-clear-pick').addEventListener('click', function () { S.pick = []; renderSeatEditor(); });
-    $('btn-clear-cands').addEventListener('click', function () {
-      S.plan.candidates = []; S.pick = [];
-      renderCandidates(); renderSeatEditor();
-    });
-    $('btn-auto-cands').addEventListener('click', function () { autoCandidates(5); });
+    $('btn-auto-pick').addEventListener('click', autoPick);
 
     $('btn-run-live').addEventListener('click', function () { startRun(false); });
     $('btn-run-rehearsal').addEventListener('click', function () { startRun(true); });
@@ -1059,6 +1069,7 @@
       $(id).addEventListener('input', updateCalendarLinks);
     });
     $('btn-ics').addEventListener('click', downloadIcs);
+    $('btn-sync').addEventListener('click', doSync);
 
     bindProfile();
   }
@@ -1072,6 +1083,7 @@
     writeForm();
     writeProfile();
     renderResult();
+    renderTimeline(null);
     tickCountdown();
     setInterval(tickCountdown, 1000);
     setState('idle');

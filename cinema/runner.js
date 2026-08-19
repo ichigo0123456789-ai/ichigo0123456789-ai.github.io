@@ -1,15 +1,21 @@
 /* ============================================================
    予約ランナー（チェーン非依存のオーケストレーション）
    ------------------------------------------------------------
-   「発売時刻を待つ → 座席状況を取る → 優先順位の高い候補から確保を試す
-     → 負けたら次の候補へ」というループ本体。
+   「発売時刻を待つ → 席を確保する → 取れなければ空くのを待つ」というループ本体。
    アダプタ（engine.js の MockAdapter / Phase 2 の実サイトアダプタ）と
    時計（Clock）にしか依存しないので、Phase 2 ではそのまま流用できる。
+
+   ■ 発売の瞬間の速さについて
+   欲しい席が決まっているなら、座席表を取ってから確保するのは1往復ぶん遅い。
+   holdFirst が有効なとき、発売の瞬間は座席表を挟まずいきなり確保を投げる。
+   失敗して初めて座席表を取りにいく。
 
    ■ レート制限について
    ポーリング間隔には MIN_POLL_MS の下限を強制している。相手サイトへの
    連打は規約違反であり、そもそも弾かれて成功率も下がる。UI 側で
    これより短い値を入れても、ここで切り上げてログに残す。
+   ただし発売直後だけは、まだ発売前だと返された場合に限り、
+   BURST_MS 間隔・BURST_MAX 回までの再試行を認める（人が数回リロードする程度）。
    ============================================================ */
 
 (function () {
@@ -17,17 +23,25 @@
 
   var MIN_POLL_MS = 500;      /* これ以上速くポーリングしない（ハード下限） */
   var MAX_REQUESTS = 400;     /* 1回の実行で出すリクエストの総数上限 */
+  var BURST_MS = 200;         /* 発売直後、「まだ発売前」と返されたときの再試行間隔 */
+  var BURST_MAX = 5;          /* その再試行の上限回数 */
+  /* 座席表を見ずに確保を投げてよい時間帯。発売直後はほぼ全席空いているので
+     空振りしないが、時間が経つと埋まった席を撃って1往復ぶん損をする。 */
+  var HOLD_FIRST_WINDOW_MS = 5000;
 
   /* ---- 時計 --------------------------------------------------------
      speed > 1 で早送り。リハーサルで「発売の瞬間」を待たずに検証するため。 */
   function Clock(opts) {
     opts = opts || {};
     this.speed = opts.speed || 1;
+    /* サーバ時刻との差。TimeSync で測った値を入れると、
+       手元の時計がずれていても発売の瞬間を正しく捉えられる。 */
+    this.offset = opts.offset || 0;
     this._base = opts.base != null ? opts.base : Date.now();
     this._start = Date.now();
   }
   Clock.prototype.now = function () {
-    return this._base + (Date.now() - this._start) * this.speed;
+    return this._base + (Date.now() - this._start) * this.speed + this.offset;
   };
   /** 仮想時間で ms 待つ */
   Clock.prototype.sleep = function (ms) {
@@ -51,6 +65,14 @@
     this.clock = o.clock || new Clock();
     this.onLog = o.onLog || function () {};
     this.onState = o.onState || function () {};
+
+    /* 発売の瞬間ちょうどに発火させるための高精度タイマー。
+       無い環境（Node のテスト等）では素の待機にフォールバックする。 */
+    var self0 = this;
+    this.timer = (typeof window !== 'undefined' && window.CinemaSpeed && this.clock.speed === 1)
+      ? new window.CinemaSpeed.PreciseTimer(function () { return self0.clock.now(); })
+      : null;
+    this.timeline = [];
 
     this.state = 'idle';
     this.aborted = false;
@@ -82,7 +104,31 @@
     this.onState(s, detail || null);
   };
 
+  /** どこに何ms使ったかを残す。速くなったと言い張らず、測って示すため。 */
+  Runner.prototype._mark = function (label) {
+    var t = this.clock.now();
+    var prev = this.timeline.length ? this.timeline[this.timeline.length - 1].t : null;
+    this.timeline.push({
+      label: label, t: t,
+      rel: t - this.plan.onSaleAt,
+      delta: prev != null ? t - prev : 0
+    });
+    return t;
+  };
+
+  /** 同期済み時計で targetTime まで待つ。高精度タイマーがあればそれを使う。 */
+  Runner.prototype._waitUntil = function (targetTime) {
+    var self = this;
+    var remain = targetTime - this.clock.now();
+    if (remain <= 0) return Promise.resolve(0);
+    if (!this.timer) return this.clock.sleep(remain).then(function () { return null; });
+    return new Promise(function (res) {
+      self._pending = self.timer.at(targetTime, function (drift) { res(drift); });
+    });
+  };
+
   Runner.prototype.abort = function () {
+    if (this._pending) this._pending.cancel();
     this.aborted = true;
     this._log('warn', '中止しました');
     this._setState('aborted');
@@ -119,7 +165,7 @@
     this._log('info', 'プラン「' + plan.title + '」を実行します', {
       theater: plan.theaterName, screen: plan.screenName,
       show: plan.date + ' ' + plan.showtime,
-      candidates: plan.candidates.length
+      seats: (plan.candidates[0] || {}).seats
     });
 
     return Promise.resolve()
@@ -137,27 +183,37 @@
         if (self.aborted) return;
         self._setState('connecting');
         self._log('info', '座席選択画面へ接続します');
+        self._mark('事前接続 開始');
         return self._call(self.adapter.open).then(function (r) {
+          self._mark('事前接続 完了');
           if (r && r.queueSec > 0) {
             self._log('warn', '待機列に入りました（約' + r.queueSec + '秒）');
-            return self.clock.sleep(r.queueSec * 1000);
+            return self.clock.sleep(r.queueSec * 1000).then(function () {
+              self._mark('待機列 通過');
+            });
           }
         });
       })
-      /* --- 3. 発売の瞬間まで残りを待つ --- */
+      /* --- 3. 発売の瞬間ちょうどまで待つ --- */
       .then(function () {
         if (self.aborted) return;
         var remain = plan.onSaleAt - self.clock.now();
         if (remain > 0) {
           self._log('info', '発売開始まであと ' + (remain / 1000).toFixed(1) + '秒');
-          return self.clock.sleep(remain);
         }
+        return self._waitUntil(plan.onSaleAt).then(function (drift) {
+          if (drift != null) {
+            self._log('info', '発売時刻ちょうどに発火（ズレ ' +
+              (drift >= 0 ? '+' : '') + drift.toFixed(1) + 'ms）');
+          }
+        });
       })
       /* --- 4. 確保ループ --- */
       .then(function () {
         if (self.aborted) return;
         self._setState('hunting');
         self._log('ok', '発売開始。座席の確保を開始します');
+        self._mark('発売開始');
         var startedAt = self.clock.now();
         return self._huntLoop(startedAt, deadlineMs, pollMs);
       })
@@ -169,9 +225,50 @@
       });
   };
 
+  Runner.prototype._succeed = function (h, target) {
+    this.result = {
+      seats: h.seats,
+      rank: target.rank,
+      heldAt: this.clock.now(),
+      holdExpiresAt: h.holdExpiresAt,
+      elapsedMs: this.clock.now() - this.plan.onSaleAt,
+      elapsedSec: (this.clock.now() - this.plan.onSaleAt) / 1000,
+      timeline: this.timeline.slice()
+    };
+    this._log('ok', '確保しました: ' + h.seats.join(' / ') +
+      '（発売開始から ' + Math.round(this.result.elapsedMs) + 'ms）');
+    this._setState('held', this.result);
+    return 'done';
+  };
+
+  Runner.prototype._logHoldFailure = function (reason, h) {
+    var seat = (h && h.seat) ? h.seat : '';
+    if (reason === 'race_lost') {
+      this._log('err', seat + ' を他のユーザーに先に取られました');
+    } else if (reason === 'taken') {
+      this._log('err', seat + ' は既に売切です');
+    } else if (reason === 'not_on_sale') {
+      this._log('warn', 'まだ発売開始前でした。少し待って再試行します');
+    } else {
+      this._log('err', '確保に失敗しました（' + reason + '）');
+    }
+  };
+
   Runner.prototype._huntLoop = function (startedAt, deadlineMs, pollMs) {
     var self = this;
     var plan = this.plan;
+    var st = plan.strategy || {};
+    /* 発売の瞬間だけは座席表を挟まず、いきなり確保を投げる。
+       欲しい席が決まっているなら、座席表の1往復ぶん確保が遅れるだけで
+       得るものが無い。失敗したときに初めて座席表を取りにいく。 */
+    var holdFirst = st.holdFirst !== false;
+    if (holdFirst && self.clock.now() - plan.onSaleAt > HOLD_FIRST_WINDOW_MS) {
+      /* 発売からだいぶ経ってから始めた場合、目当ての席はもう埋まっている
+         可能性が高い。空振りする往復のほうが高くつくので座席表から入る。 */
+      holdFirst = false;
+      self._log('dim', '発売からの経過が大きいため、座席表の取得から始めます');
+    }
+    var burst = 0;
 
     function iterate() {
       if (self.aborted) return Promise.resolve();
@@ -189,6 +286,35 @@
 
       self.attempts++;
       var cycleStart = self.clock.now();
+
+      /* --- 発売の瞬間の一撃 --- */
+      if (holdFirst) {
+        holdFirst = false;
+        var want = plan.candidates[0];
+        if (want) {
+          self._log('info', '座席表を待たずに ' + want.seats.join(' / ') + ' の確保を試みます');
+          self._mark('確保リクエスト送信');
+          return self._call(self.adapter.hold, want.seats).then(function (h) {
+            self._mark('確保レスポンス受信');
+            if (self.aborted) return 'stop';
+            if (h && h.ok) return self._succeed(h, { cand: want, rank: 1 });
+            var reason = h ? h.reason : 'unknown';
+            if (reason === 'not_on_sale' && burst < BURST_MAX) {
+              /* 時計のズレで撃つのが早すぎた。ごく短い間隔で撃ち直す。 */
+              burst++;
+              holdFirst = true;
+              self._log('warn', 'まだ発売前でした（時計のズレ）。' + BURST_MS + 'ms 後に撃ち直します（' +
+                burst + '/' + BURST_MAX + '）');
+              return self.clock.sleep(BURST_MS).then(iterate).then(function () { return 'stop'; });
+            }
+            self._logHoldFailure(reason, h);
+            return null;
+          }).then(function (r2) {
+            if (r2 === 'done' || r2 === 'stop' || self.aborted) return;
+            return self.clock.sleep(Math.max(0, pollMs - (self.clock.now() - cycleStart))).then(iterate);
+          });
+        }
+      }
 
       return self._call(self.adapter.fetchSeatMap).then(function (r) {
         if (self.aborted || !r || !r.ok) return;
@@ -235,33 +361,14 @@
           return null;
         }
 
-        var label = target.rank ? '第' + target.rank + '候補' : '自動選択席';
+        var label = target.rank ? '指定席' : '自動選択席';
         self._log('info', label + ' ' + target.cand.seats.join(' / ') + ' を確保します');
+        self._mark('確保リクエスト送信');
         return self._call(self.adapter.hold, target.cand.seats).then(function (h) {
+          self._mark('確保レスポンス受信');
           if (self.aborted) return;
-          if (h && h.ok) {
-            self.result = {
-              seats: h.seats,
-              rank: target.rank,
-              heldAt: self.clock.now(),
-              holdExpiresAt: h.holdExpiresAt,
-              elapsedSec: (self.clock.now() - plan.onSaleAt) / 1000
-            };
-            self._log('ok', '確保しました: ' + h.seats.join(' / ') +
-              '（発売開始から ' + self.result.elapsedSec.toFixed(1) + '秒）');
-            self._setState('held', self.result);
-            return 'done';
-          }
-          var reason = h ? h.reason : 'unknown';
-          if (reason === 'race_lost') {
-            self._log('err', (h.seat || '') + ' を他のユーザーに先に取られました。次の候補へ移ります');
-          } else if (reason === 'taken') {
-            self._log('err', (h.seat || '') + ' は既に売切です。次の候補へ移ります');
-          } else if (reason === 'not_on_sale') {
-            self._log('warn', 'まだ発売開始前でした。少し待って再試行します');
-          } else {
-            self._log('err', '確保に失敗しました（' + reason + '）');
-          }
+          if (h && h.ok) return self._succeed(h, target);
+          self._logHoldFailure(h ? h.reason : 'unknown', h);
           self.triedCandidates.push(target.cand.id);
           return null;
         });

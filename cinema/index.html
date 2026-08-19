@@ -33,7 +33,7 @@
   </div>
   <nav class="tabs" id="tabs">
     <button class="tab on" data-view="plan">1. 上映回</button>
-    <button class="tab" data-view="seats">2. 座席の優先順位</button>
+    <button class="tab" data-view="seats">2. 座席を選ぶ</button>
     <button class="tab" data-view="run">3. 実行</button>
     <button class="tab" data-view="result">4. 予約後</button>
     <button class="tab" data-view="privacy">個人情報の扱い</button>
@@ -124,11 +124,11 @@
 <section id="view-seats" class="view">
   <div class="card">
     <div class="card-head">
-      <h2>座席の優先順位</h2>
+      <h2>座席を選ぶ</h2>
       <div class="legend">
         <span><i class="sw sw-free"></i>空席</span>
         <span><i class="sw sw-pick"></i>選択中</span>
-        <span><i class="sw sw-cand"></i>候補</span>
+        <span><i class="sw sw-cand"></i>確保対象</span>
         <span><i class="sw sw-taken"></i>売切</span>
         <span><i class="sw sw-blocked"></i>販売対象外</span>
         <span><i class="sw sw-wc"></i>車椅子スペース</span>
@@ -140,27 +140,19 @@
     <div class="seat-toolbar">
       <label class="chk"><input type="checkbox" id="opt-consecutive" checked><span>連席で選ぶ（クリックした席から右へ枚数分）</span></label>
       <div class="spacer"></div>
-      <button class="btn ghost sm" id="btn-auto-cands">おすすめ候補を自動生成</button>
-      <button class="btn ghost sm" id="btn-clear-cands">候補をすべて削除</button>
+      <button class="btn ghost sm" id="btn-auto-pick">中央の見やすい席を選ぶ</button>
+      <button class="btn ghost sm" id="btn-clear-pick">選択を解除</button>
     </div>
 
     <div class="pick-tray" id="pick-tray">
-      <span class="tray-label">選択中</span>
-      <span id="tray-seats" class="tray-seats">座席をクリックしてください</span>
-      <button class="btn sm" id="btn-add-cand" disabled>候補に追加</button>
-      <button class="btn ghost sm" id="btn-clear-pick">選択解除</button>
+      <span class="tray-label">確保する座席</span>
+      <span id="tray-seats" class="tray-seats">座席表からクリックして選んでください</span>
     </div>
 
     <div class="seatmap-wrap">
       <div class="screen-bar">SCREEN（この向きがスクリーン）</div>
       <div id="seatmap" class="seatmap"></div>
     </div>
-  </div>
-
-  <div class="card">
-    <h2>候補リスト（上が最優先）</h2>
-    <p class="note">実行時はこの順に確保を試み、埋まっていたら次の候補へ移ります。</p>
-    <ol id="cand-list" class="cand-list"></ol>
   </div>
 </section>
 
@@ -172,14 +164,14 @@
 
       <div class="row-2">
         <div class="field">
-          <label for="s-poll">ポーリング間隔（ms）</label>
-          <input id="s-poll" type="number" min="500" step="100" value="1000">
-          <p class="hint">下限 500ms。これより短い値は実行時に切り上げます。</p>
+          <label for="s-preconnect">事前接続（秒前）</label>
+          <input id="s-preconnect" type="number" min="0" max="120" value="20">
+          <p class="hint">発売の何秒前に座席選択画面を開いておくか。待機列がある場合、ここが短いと発売の瞬間に間に合いません。</p>
         </div>
         <div class="field">
-          <label for="s-preconnect">事前接続（秒前）</label>
-          <input id="s-preconnect" type="number" min="0" max="120" value="10">
-          <p class="hint">発売の何秒前に座席選択画面を開いておくか。</p>
+          <label for="s-poll">再試行の間隔（ms）</label>
+          <input id="s-poll" type="number" min="500" step="100" value="1000">
+          <p class="hint">下限 500ms。これより短い値は実行時に切り上げます。</p>
         </div>
       </div>
 
@@ -189,9 +181,44 @@
           <input id="s-deadline" type="number" min="10" max="900" value="180">
         </div>
         <div class="field">
-          <label class="chk mt"><input type="checkbox" id="s-fallback"><span>全候補が埋まったら空席から自動で拾う</span></label>
-          <p class="hint">人数分の連席のうち、最も条件の良いものを選びます。</p>
+          <label class="chk mt"><input type="checkbox" id="s-fallback"><span>取れなかったら空席から自動で拾う</span></label>
+          <p class="hint">枚数分の連席のうち、最も条件の良いものを選びます。</p>
         </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>発売の瞬間の速さ</h3>
+      <p class="note">「速く取る」の中身はほぼ次の3つです。順に効きます。</p>
+
+      <div class="speed-item">
+        <label class="chk"><input type="checkbox" id="s-holdfirst" checked><span><b>座席表を待たずに確保を投げる</b></span></label>
+        <p class="hint">
+          欲しい席が決まっているなら、座席表を取ってから確保するのは1往復ぶん遅いだけです。
+          発売の瞬間はいきなり確保を投げ、失敗して初めて座席表を取りにいきます。
+          発売から5秒以上経って始めた場合は、空振りのほうが高くつくので自動的に無効になります。
+        </p>
+      </div>
+
+      <div class="speed-item">
+        <div class="sync-head">
+          <b>サーバ時刻と同期する</b>
+          <button class="btn sm" id="btn-sync">いま同期する</button>
+        </div>
+        <p class="hint">
+          手元の時計が2秒遅れていれば、どれだけ速いコードでも2秒出遅れます。体感で最も効くのはここです。
+          HTTP の Date ヘッダを繰り返し測り、秒境界をまたぐサンプルを交差させてサブ秒まで絞り込みます。
+        </p>
+        <div class="sync-result" id="sync-result">未同期（この端末の時計をそのまま使います）</div>
+      </div>
+
+      <div class="speed-item">
+        <b>発売時刻ちょうどに発火する</b>
+        <p class="hint">
+          setTimeout は数十ms〜数百msずれます。遠いうちは粗く、直前は MessageChannel で
+          1ms 未満の粒度まで詰めています。設定は不要です。
+        </p>
+        <div class="sync-result" id="visibility-note">タブを表示したままにしてください。背景タブではタイマーが1秒以上まとめられ、発売の瞬間を外します。</div>
       </div>
 
       <div class="hr"></div>
@@ -238,6 +265,16 @@
       </div>
       <div id="log" class="log" role="log" aria-live="polite"></div>
     </div>
+  </div>
+
+  <div class="card" id="timeline-card" hidden>
+    <h2>どこに何ミリ秒かかったか</h2>
+    <p class="note">発売開始を 0ms としたときの各段階の到達時刻です。速くなったと言い張らずに測ります。</p>
+    <p class="hint" id="timeline-note"></p>
+    <table class="data-table timeline-table">
+      <thead><tr><th>段階</th><th>発売開始から</th><th>この区間</th></tr></thead>
+      <tbody id="timeline-body"></tbody>
+    </table>
   </div>
 
   <div class="card">
@@ -368,6 +405,7 @@
 </footer>
 
 <script src="data/theaters.js"></script>
+<script src="speed.js"></script>
 <script src="engine.js"></script>
 <script src="runner.js"></script>
 <script src="app.js"></script>
