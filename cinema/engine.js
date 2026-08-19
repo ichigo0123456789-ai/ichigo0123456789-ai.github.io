@@ -20,20 +20,30 @@
 
   /** レイアウト定義を席の配列へ展開する。UI と混雑シミュの両方がこれを使う。 */
   function expandSeats(screen) {
+    var wc = {};
+    (screen.wheelchair || []).forEach(function (id) { wc[id] = true; });
     var out = [];
     screen.rows.forEach(function (r, rowIndex) {
       for (var n = 1; n <= r.count; n++) {
+        var id = r.label + '-' + n;
         out.push({
-          id: r.label + '-' + n,
+          id: id,
           row: r.label,
           num: n,
           rowIndex: rowIndex,
-          kind: r.kind,
-          aisleAfter: r.aisles.indexOf(n) >= 0
+          /* 車椅子スペースは通常の座席として売られないため、席種で区別する */
+          kind: wc[id] ? 'wheelchair' : r.kind,
+          aisleAfter: r.aisles.indexOf(n) >= 0,
+          gapBefore: !!r.gapBefore
         });
       }
     });
     return out;
+  }
+
+  /** 通常の予約対象として選べる席か */
+  function isSelectable(seat) {
+    return seat.kind !== 'wheelchair';
   }
 
   /**
@@ -50,7 +60,8 @@
     var depth = screen.rows.length > 1 ? seat.rowIndex / (screen.rows.length - 1) : 0.5;
     var depthScore = 1 - Math.abs(depth - 0.66) / 0.66;
     var score = 0.55 * lateral + 0.45 * Math.max(0, depthScore);
-    if (seat.kind === 'premium') score = Math.min(1, score + 0.15);
+    /* 横通路の直後の列は足元が広く、実際に埋まるのが早い */
+    if (seat.gapBefore) score = Math.min(1, score + 0.08);
     if (seat.kind === 'front') score *= 0.7;
     return Math.max(0.02, Math.min(1, score));
   }
@@ -113,6 +124,8 @@
     var blocked = {};
 
     seats.forEach(function (s) {
+      /* 車椅子スペースは一般の座席選択では押さえられない */
+      if (!isSelectable(s)) { blocked[s.id] = true; return; }
       if (rand() < cfg.blocked) { blocked[s.id] = true; return; }
       var pop = popularity(s, screen);
       if (rand() < cfg.preTaken * (0.4 + pop)) { takenAt[s.id] = -1; return; }  /* 発売前に確定済み */
@@ -191,6 +204,7 @@
 
   window.CinemaEngine = {
     expandSeats: expandSeats,
+    isSelectable: isSelectable,
     popularity: popularity,
     CONGESTION: CONGESTION,
     MockAdapter: MockAdapter

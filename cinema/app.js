@@ -99,7 +99,7 @@
   /* ---- プランの生成 ------------------------------------------------ */
 
   function blankPlan() {
-    var chain = '109';
+    var chain = Object.keys(D.chains)[0];
     var theater = D.theaters.filter(function (t) { return t.chain === chain; })[0];
     var d = new Date();
     d.setDate(d.getDate() + 7);
@@ -107,7 +107,8 @@
       id: uid(),
       chain: chain,
       theaterId: theater.id,
-      screenId: theater.screens[0].id,
+      /* ドルビーシネマのシアター4を既定に。いちばん競争になる回を想定している。 */
+      screenId: (theater.screens.filter(function (x) { return x.format; })[0] || theater.screens[0]).id,
       title: '',
       date: d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()),
       showtime: '19:20',
@@ -148,20 +149,10 @@
 
   /* ---- フォーム ---------------------------------------------------- */
 
-  function fillChains() {
-    var sel = $('f-chain');
-    sel.innerHTML = '';
-    Object.keys(D.chains).forEach(function (k) {
-      var o = document.createElement('option');
-      o.value = k; o.textContent = D.chains[k].name;
-      sel.appendChild(o);
-    });
-  }
-
-  function fillTheaters(chain, selected) {
+  function fillTheaters(selected) {
     var sel = $('f-theater');
     sel.innerHTML = '';
-    D.theaters.filter(function (t) { return t.chain === chain; }).forEach(function (t) {
+    D.theaters.forEach(function (t) {
       var o = document.createElement('option');
       o.value = t.id; o.textContent = t.name + '（' + t.area + '）';
       sel.appendChild(o);
@@ -175,9 +166,9 @@
     var t = D.theater(theaterId);
     if (!t) return;
     t.screens.forEach(function (s) {
-      var n = CE.expandSeats(s).length;
       var o = document.createElement('option');
-      o.value = s.id; o.textContent = s.name + '（' + n + '席）';
+      o.value = s.id;
+      o.textContent = s.name + '（' + s.seats + '席' + (s.format ? ' / ' + s.format : '') + '）';
       sel.appendChild(o);
     });
     if (selected && sel.querySelector('option[value="' + selected + '"]')) sel.value = selected;
@@ -191,6 +182,15 @@
       o.value = k; o.textContent = CE.CONGESTION[k].label;
       sel.appendChild(o);
     });
+  }
+
+  function updateTheaterNote() {
+    var t = D.theater(S.plan.theaterId);
+    $('theater-note').textContent = t && t.note ? t.note : '';
+    /* チェーンはプランに持つが、選択は劇場だけで済ませる */
+    if (t) S.plan.chain = t.chain;
+    var ch = t ? D.chains[t.chain] : null;
+    $('chain-note').textContent = ch ? ch.note : '';
   }
 
   function renderTickets() {
@@ -216,13 +216,16 @@
   }
 
   function updateTicketSum() {
+    var sc = currentScreen();
+    var extra = sc && sc.surcharge ? sc.surcharge : 0;
     var n = 0, yen = 0;
     D.ticketTypes.forEach(function (tt) {
       var q = S.plan.tickets[tt.id] || 0;
-      n += q; yen += q * tt.price;
+      n += q; yen += q * (tt.price + extra);
     });
     var el = $('ticket-sum');
     var msg = '合計 ' + n + '枚 / ¥' + yen.toLocaleString();
+    if (extra) msg += '（' + sc.format + ' 追加料金 +¥' + extra.toLocaleString() + '/枚 を含む）';
     if (n !== S.plan.count) {
       msg += ' — 枚数（' + S.plan.count + '枚）と一致していません';
       el.style.color = 'var(--warn)';
@@ -235,10 +238,9 @@
   /** 編集中プラン -> フォーム */
   function writeForm() {
     var p = S.plan;
-    $('f-chain').value = p.chain;
-    $('chain-note').textContent = D.chains[p.chain].note;
-    fillTheaters(p.chain, p.theaterId);
+    fillTheaters(p.theaterId);
     p.theaterId = $('f-theater').value;
+    updateTheaterNote();
     fillScreens(p.theaterId, p.screenId);
     p.screenId = $('f-screen').value;
     $('f-title').value = p.title;
@@ -265,8 +267,9 @@
   /** フォーム -> 編集中プラン */
   function readForm() {
     var p = S.plan;
-    p.chain = $('f-chain').value;
     p.theaterId = $('f-theater').value;
+    var t = D.theater(p.theaterId);
+    if (t) p.chain = t.chain;
     p.screenId = $('f-screen').value;
     p.title = $('f-title').value.trim();
     p.date = $('f-date').value;
@@ -335,6 +338,14 @@
     return D.screen(S.plan.theaterId, S.plan.screenId);
   }
 
+  /** 現在のスクリーンの車椅子スペース（座席ID -> true） */
+  function wheelchairSet() {
+    var sc = currentScreen();
+    var out = {};
+    if (sc) (sc.wheelchair || []).forEach(function (id) { out[id] = true; });
+    return out;
+  }
+
   /** 座席 id -> 候補の順位（1始まり）。候補に無ければ 0 */
   function candRankOf(seatId) {
     for (var i = 0; i < S.plan.candidates.length; i++) {
@@ -363,11 +374,23 @@
       lab.textContent = r.label;
       rowEl.appendChild(lab);
 
+      if (r.gapBefore) rowEl.classList.add('cross-aisle');
+
       byRow[r.label].forEach(function (s) {
         var b = document.createElement('button');
-        b.className = 'seat' + (s.aisleAfter ? ' gap' : '') + (s.kind === 'premium' ? ' premium' : '');
+        var wc = !CE.isSelectable(s);
+        b.className = 'seat' + (s.aisleAfter ? ' gap' : '');
         b.dataset.seat = s.id;
-        b.title = s.id + (s.kind === 'premium' ? '（プレミアシート）' : '');
+        b.title = s.id + (wc ? '（車椅子スペース）' : '');
+
+        if (wc) {
+          /* 車椅子スペースは一般の座席選択では選べない */
+          b.dataset.st = 'wc';
+          b.disabled = true;
+          b.textContent = '♿';
+          rowEl.appendChild(b);
+          return;
+        }
 
         var st = 'free';
         if (live && S.liveMap) {
@@ -413,7 +436,7 @@
     var t = D.theater(S.plan.theaterId);
     var sc = currentScreen();
     $('seat-context').textContent =
-      (t ? t.name : '?') + ' ' + (sc ? sc.name : '?') + ' ／ ' +
+      (t ? t.name : '?') + ' ' + (sc ? sc.name + (sc.format ? '（' + sc.format + '）' : '') : '?') + ' ／ ' +
       (S.plan.title || '（作品未入力）') + ' ／ ' + S.plan.date + ' ' + S.plan.showtime +
       ' ／ ' + S.plan.count + '枚';
   }
@@ -440,6 +463,7 @@
         screen.rows.forEach(function (r) { if (r.label === seat.row) row = r; });
         if (!row || n > row.count) break;
         if (candRankOf(id)) break;
+        if (wheelchairSet()[id]) break;
         group.push(id);
       }
       if (group.length < need) {
@@ -567,6 +591,7 @@
         var g = list.slice(i, i + need), ok = true, score = 0;
         for (var j = 0; j < g.length; j++) {
           if (j > 0 && g[j].num !== g[j - 1].num + 1) { ok = false; break; }
+          if (!CE.isSelectable(g[j])) { ok = false; break; }
           score += CE.popularity(g[j], screen);
         }
         if (!ok) continue;
@@ -575,16 +600,35 @@
     });
     groups.sort(function (a, b) { return b.score - a.score; });
 
-    /* 席が重なる候補ばかりになると「次の候補」の意味が無いので、
-       既に採用した席を含むグループは飛ばす。 */
+    /* 隣り合った候補ばかり並べても、第1候補が埋まる状況では第2・第3も
+       同時に埋まっていて「次の候補」の意味が無い。
+       席が重ならないことに加えて、隣接を避け、1列あたり2件までに制限して散らす。 */
     var used = {};
-    S.plan.candidates.forEach(function (c) { c.seats.forEach(function (s) { used[s] = 1; }); });
+    var perRow = {};
+    S.plan.candidates.forEach(function (c) {
+      c.seats.forEach(function (id) { used[id] = 1; });
+      var row = c.seats[0].split('-')[0];
+      perRow[row] = (perRow[row] || 0) + 1;
+    });
+
+    function tooClose(seatIds) {
+      return seatIds.some(function (id) {
+        var parts = id.split('-'), row = parts[0], num = parseInt(parts[1], 10);
+        /* 前後1席まで空けて、実質的に同じかたまりを候補にしない */
+        for (var d = -1; d <= 1; d++) if (used[row + '-' + (num + d)]) return true;
+        return false;
+      });
+    }
+
     var added = 0;
     for (var k = 0; k < groups.length && added < limit; k++) {
       var g = groups[k];
-      if (g.seats.some(function (s) { return used[s]; })) continue;
+      var row = g.seats[0].split('-')[0];
+      if ((perRow[row] || 0) >= 2) continue;
+      if (tooClose(g.seats)) continue;
       if (addCandidate(g.seats)) {
-        g.seats.forEach(function (s) { used[s] = 1; });
+        g.seats.forEach(function (id) { used[id] = 1; });
+        perRow[row] = (perRow[row] || 0) + 1;
         added++;
       }
     }
@@ -938,22 +982,12 @@
       b.addEventListener('click', function () { readForm(); showView(b.dataset.view); });
     });
 
-    $('f-chain').addEventListener('change', function () {
-      S.plan.chain = $('f-chain').value;
-      $('chain-note').textContent = D.chains[S.plan.chain].note;
-      fillTheaters(S.plan.chain);
-      S.plan.theaterId = $('f-theater').value;
-      fillScreens(S.plan.theaterId);
-      S.plan.screenId = $('f-screen').value;
-      S.plan.candidates = []; S.pick = [];
-      renderCandidates(); updateSeatContext();
-    });
-
     $('f-theater').addEventListener('change', function () {
       S.plan.theaterId = $('f-theater').value;
       fillScreens(S.plan.theaterId);
       S.plan.screenId = $('f-screen').value;
       S.plan.candidates = []; S.pick = [];
+      updateTheaterNote(); updateTicketSum();
       renderCandidates(); updateSeatContext();
     });
 
@@ -961,6 +995,7 @@
       S.plan.screenId = $('f-screen').value;
       /* スクリーンが変われば座席番号の意味が変わるので候補は破棄する */
       S.plan.candidates = []; S.pick = [];
+      updateTicketSum();
       renderCandidates(); updateSeatContext();
     });
 
@@ -1030,7 +1065,6 @@
 
   function init() {
     loadStore();
-    fillChains();
     fillCongestion();
     S.plan = S.plans.length ? JSON.parse(JSON.stringify(S.plans[0])) : blankPlan();
     if (!S.plan.onSaleAt) S.plan.onSaleAt = autoOnSale(S.plan);

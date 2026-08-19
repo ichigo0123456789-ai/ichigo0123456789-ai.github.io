@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0b0d12">
-<title>座席オートリザーブ｜映画予約プランナー</title>
+<title>座席オートリザーブ｜T・ジョイ横浜</title>
 <meta name="description" content="映画館・作品・上映回・座席の優先順位を先に決めておき、発売開始と同時に座席を確保するためのプランナー。Phase 1 はモック環境での動作検証用。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
       </div>
       <div>
         <h1>座席オートリザーブ</h1>
-        <p class="sub">映画の予約プランを先に組み、発売と同時に押さえる</p>
+        <p class="sub">T・ジョイ横浜（KINEZO）／ 予約プランを先に組み、発売と同時に押さえる</p>
       </div>
     </div>
     <div class="phase-chip" title="Phase 1 は実サイトへ一切アクセスしません">
@@ -50,19 +50,15 @@
       <p class="note">予約したい上映回を1つ決めます。ここで入れた内容が実行時のターゲットになります。</p>
 
       <div class="field">
-        <label for="f-chain">劇場チェーン</label>
-        <select id="f-chain"></select>
-        <p class="hint" id="chain-note"></p>
-      </div>
-
-      <div class="field">
         <label for="f-theater">劇場</label>
         <select id="f-theater"></select>
+        <p class="hint" id="theater-note"></p>
       </div>
 
       <div class="field">
         <label for="f-screen">スクリーン</label>
         <select id="f-screen"></select>
+        <p class="hint" id="chain-note"></p>
       </div>
 
       <div class="field">
@@ -95,7 +91,7 @@
         <div class="inline-actions">
           <button class="btn ghost sm" id="btn-onsale-auto">上映日の2日前 0:00 に合わせる</button>
         </div>
-        <p class="hint">チェーンの一般発売の慣例から計算します。作品や劇場によって例外があるので、公式の発売日時を必ず確認して上書きしてください。</p>
+        <p class="hint">KINEZO の一般発売の慣例から計算します。作品や上映回によって例外があるので、公式の発売日時を必ず確認して上書きしてください。</p>
       </div>
 
       <div class="field">
@@ -135,6 +131,7 @@
         <span><i class="sw sw-cand"></i>候補</span>
         <span><i class="sw sw-taken"></i>売切</span>
         <span><i class="sw sw-blocked"></i>販売対象外</span>
+        <span><i class="sw sw-wc"></i>車椅子スペース</span>
         <span><i class="sw sw-mine"></i>確保済み</span>
       </div>
     </div>
@@ -200,7 +197,7 @@
       <div class="hr"></div>
 
       <h3>モック環境の設定</h3>
-      <p class="note">Phase 1 では実サイトの代わりに、他ユーザーが席を埋めていく劇場を再現します。</p>
+      <p class="note">Phase 1 では KINEZO の代わりに、他ユーザーが席を埋めていく劇場を再現します。</p>
       <div class="row-2">
         <div class="field">
           <label for="s-congestion">混雑度</label>
@@ -284,7 +281,7 @@
     <h2>決済（Phase 2 予定）</h2>
     <p class="note">
       いまは座席の確保までで止めています。確保後は保持時間（モックでは10分）のうちに、
-      劇場サイトの決済画面で自分で購入を完了させる運用です。
+      KINEZO の決済画面で自分で購入を完了させる運用です。
     </p>
     <ul class="todo">
       <li><span class="badge todo-b">Phase 2</span> ローカル runner（Node + Playwright）から決済フォームを自動入力</li>
@@ -304,7 +301,7 @@
         <tr><td>予約プラン（劇場・作品・上映回・座席候補）</td><td>この端末の localStorage</td><td class="ok">なし</td></tr>
         <tr><td>実行ログ</td><td>メモリのみ（リロードで消える）</td><td class="ok">なし</td></tr>
         <tr><td>予約者情報（氏名・電話・メール）</td><td>下の設定を ON にしたときのみ localStorage</td><td class="ok">なし</td></tr>
-        <tr><td>劇場サイトの会員ID・パスワード</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
+        <tr><td>KINEZO（キネパス）の会員ID・パスワード</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
         <tr><td>クレジットカード情報</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
       </tbody>
     </table>
@@ -317,7 +314,7 @@
 
   <div class="card">
     <h2>Phase 2 で認証情報が必要になったら</h2>
-    <p class="note">実際にログインして座席を押さえる段階では、会員IDとパスワードが要ります。そのときの方針を先に決めておきます。</p>
+    <p class="note">実際に KINEZO へログインして座席を押さえる段階では、キネパスの会員IDとパスワードが要ります。そのときの方針を先に決めておきます。</p>
     <ul class="policy">
       <li><b>ブラウザには置かない。</b> 認証情報は手元PCで動く runner だけが持ち、静的サイト側は一切受け取りません。</li>
       <li><b>OS のキーチェーンに預ける。</b> macOS Keychain / Windows 資格情報マネージャー / libsecret に保存し、平文の設定ファイルには書きません。</li>
@@ -344,9 +341,19 @@
   </div>
 
   <div class="card">
+    <h2>座席データについて</h2>
+    <p class="note">
+      スクリーン数（9）・各シアターの座席数（合計1,212席）・料金・発売タイミングは公開情報にもとづく実データです。
+      ただし「どの列に何席あるか」は公開されていないため、<b>列ごとの座席配置は総席数が一致するよう生成した近似</b>で、
+      KINEZO の実際の座席表とは列幅や席番号が一致しません。
+      シアター4のみ、M列の前の横通路と車椅子スペース（J-1 / M-1）の位置を公開情報に合わせてあります。
+    </p>
+  </div>
+
+  <div class="card">
     <h2>自動化を使ううえでの前提</h2>
     <ul class="policy">
-      <li>劇場サイトの利用規約で自動アクセスが禁止されている場合があります。使う前に対象サイトの規約を確認してください。</li>
+      <li>KINEZO の利用規約で自動アクセスが禁止されている場合があります。使う前に必ず規約を確認してください。</li>
       <li>このツールは<b>自分が観る1件の予約</b>を取ることだけを想定しています。転売目的の大量確保はできない作りにしてあります。</li>
       <li>リクエスト間隔には下限（500ms）を強制しています。連打はサーバ負荷になるだけでなく、遮断されて成功率も下がります。</li>
       <li>確保に失敗しても、そのぶん誰かが観られています。取れなかったときに粘り続けない打ち切り時間を必ず設定してください。</li>
@@ -357,7 +364,7 @@
 </main>
 
 <footer class="foot">
-  <span>Phase 1 — モック環境。実際の劇場サイトへは接続しません。</span>
+  <span>Phase 1 — モック環境。KINEZO へは接続しません。</span>
 </footer>
 
 <script src="data/theaters.js"></script>

@@ -1,159 +1,147 @@
 /* ============================================================
-   映画館・スクリーンのマスタデータ（モック）
+   劇場・スクリーンのマスタデータ — T・ジョイ横浜
    ------------------------------------------------------------
-   Phase 1 では実サイトへアクセスしないため、劇場名とスクリーンの
-   座席レイアウトはこのファイルのハードコードを正とする。
+   スクリーン数・各シアターの座席数・料金・発売タイミングは
+   公開情報にもとづく実データ。ただし
+   「どの列に何席あるか」までは公開されていないため、
+   列ごとの配置は総席数が一致するよう生成した近似である。
+   （シアター4だけは中央通路と車椅子席の位置が公開情報と一致する）
+
    Phase 2 でローカル runner を足す際は、ここを
-   「アダプタが実サイトから取得したレイアウトのキャッシュ」に
-   差し替える想定。形（chains / theaters / screens.layout）は変えない。
+   「アダプタが KINEZO から取得したレイアウトのキャッシュ」に置き換える。
    ============================================================ */
 
 (function () {
   'use strict';
 
-  /* 列レイアウトの短縮記法をほどく。
-     "14" -> 1..14 の通し番号 / aisles は「その番号の後ろに通路」 */
-  function row(label, count, aisles, kind) {
-    return { label: label, count: count, aisles: aisles || [], kind: kind || 'normal' };
+  /* 日本の映画館の慣例に合わせ、紛らわしい I と O を飛ばす */
+  var ROW_LABELS = 'ABCDEFGHJKLMNPQRSTUVW'.split('');
+
+  /**
+   * 総席数 total を R 列に振り分ける。
+   * 前方は狭く、奥行き 3/4 あたりで最大、最後列は少し狭い台形。
+   * 端数は中央付近の列で吸収するので、合計は必ず total に一致する。
+   */
+  function distribute(total, R) {
+    var w = [];
+    for (var i = 0; i < R; i++) {
+      var d = R > 1 ? i / (R - 1) : 0.5;
+      w.push(0.72 + 0.42 * Math.min(1, d / 0.75) - 0.20 * Math.max(0, (d - 0.8) / 0.2));
+    }
+    var sw = w.reduce(function (a, b) { return a + b; }, 0);
+    var counts = w.map(function (x) { return Math.max(4, Math.round(total * x / sw)); });
+
+    var diff = total - counts.reduce(function (a, b) { return a + b; }, 0);
+    /* 差分を寄せる順番: 中央後方の列から */
+    var pivot = (R - 1) * 0.66;
+    var order = counts.map(function (_, i) { return i; }).sort(function (a, b) {
+      return Math.abs(a - pivot) - Math.abs(b - pivot);
+    });
+    var k = 0;
+    while (diff !== 0) {
+      var i = order[k % R];
+      if (diff > 0) { counts[i]++; diff--; }
+      else if (counts[i] > 4) { counts[i]--; diff++; }
+      k++;
+    }
+    return counts;
   }
 
-  /* 標準的なシネコンのスクリーン（中規模・約200席） */
-  function standardRows() {
-    return [
-      row('A', 12, [4, 8], 'front'),
-      row('B', 14, [5, 9]),
-      row('C', 16, [5, 11]),
-      row('D', 16, [5, 11]),
-      row('E', 18, [6, 12]),
-      row('F', 18, [6, 12]),
-      row('G', 18, [6, 12]),
-      row('H', 18, [6, 12]),
-      row('J', 18, [6, 12]),
-      row('K', 16, [5, 11]),
-      row('L', 14, [5, 9], 'rear')
-    ];
-  }
+  /**
+   * スクリーンを1つ組み立てる。
+   * @param id      スクリーンID
+   * @param name    表示名
+   * @param seats   総席数（公開情報）
+   * @param opt     {rows, crossAisleAt, surcharge, format}
+   *                crossAisleAt … 横通路を入れる列の位置（0〜1の深さ）
+   */
+  function makeScreen(id, name, seats, opt) {
+    opt = opt || {};
+    var R = opt.rows || Math.max(5, Math.round(Math.sqrt(seats / 1.55)));
+    var counts = distribute(seats, R);
+    var crossIndex = opt.crossAisleAt != null ? Math.round((R - 1) * opt.crossAisleAt) : -1;
 
-  /* 小箱（約90席） */
-  function smallRows() {
-    return [
-      row('A', 8, [4], 'front'),
-      row('B', 10, [5]),
-      row('C', 12, [6]),
-      row('D', 12, [6]),
-      row('E', 12, [6]),
-      row('F', 12, [6]),
-      row('G', 10, [5]),
-      row('H', 8, [4], 'rear')
-    ];
-  }
+    var rows = counts.map(function (c, i) {
+      /* 縦通路: 大箱は2本、小箱は中央1本 */
+      var aisles = c >= 16 ? [Math.round(c / 3), Math.round(c * 2 / 3)] : [Math.round(c / 2)];
+      return {
+        label: ROW_LABELS[i],
+        count: c,
+        aisles: aisles,
+        kind: i === 0 ? 'front' : (i === R - 1 ? 'rear' : 'normal'),
+        /* 横通路の直後の列は足元が広い。UI でも間隔を空けて描く。 */
+        gapBefore: i === crossIndex
+      };
+    });
 
-  /* IMAX / 大箱（約350席）。最後列にプレミアシートを置く */
-  function largeRows() {
-    return [
-      row('A', 14, [5, 10], 'front'),
-      row('B', 18, [6, 12]),
-      row('C', 20, [7, 13]),
-      row('D', 22, [7, 15]),
-      row('E', 22, [7, 15]),
-      row('F', 24, [8, 16]),
-      row('G', 24, [8, 16]),
-      row('H', 24, [8, 16]),
-      row('J', 24, [8, 16]),
-      row('K', 22, [7, 15]),
-      row('L', 20, [7, 13]),
-      row('M', 16, [5, 11], 'premium')
-    ];
+    /* 車椅子スペース。T・ジョイ横浜は全9シアターで18席 = 各シアター2席。
+       位置が公開されているシアターは opt.wheelchair で明示し、
+       それ以外は横通路沿いの両端に置く。 */
+    var wheelchair;
+    if (opt.wheelchair) {
+      wheelchair = opt.wheelchair;
+    } else {
+      var wcRow = rows[crossIndex >= 0 ? crossIndex : Math.floor(R / 2)];
+      wheelchair = [wcRow.label + '-1', wcRow.label + '-' + wcRow.count];
+    }
+
+    return {
+      id: id,
+      name: name,
+      seats: seats,
+      format: opt.format || null,
+      surcharge: opt.surcharge || 0,
+      wheelchair: wheelchair,
+      rows: rows
+    };
   }
 
   var CHAINS = {
-    '109': {
-      id: '109',
-      name: '109シネマズ',
-      /* 一般発売の慣例。プランを作るとき onSaleAt の初期値を計算するのに使う。
-         実際の発売タイミングは劇場・作品で例外があるので UI 側で上書き可能にしてある。 */
+    tjoy: {
+      id: 'tjoy',
+      name: 'T・ジョイ（KINEZO）',
+      /* KINEZO のオンライン予約は鑑賞希望日の2日前 0:00 から。
+         プラン作成時の発売開始日時の初期値をここから計算する。 */
       onSaleRule: { daysBefore: 2, time: '00:00' },
-      note: '一般発売は上映日の2日前 0:00 が基本。シネマポイントカード会員は先行枠あり。',
-      memberProgram: 'シネマポイントカード'
-    },
-    'united': {
-      id: 'united',
-      name: 'ユナイテッド・シネマ / シネプレックス',
-      onSaleRule: { daysBefore: 2, time: '00:00' },
-      note: '一般発売は上映日の2日前 0:00 が基本。CLUB-SPICE 会員は先行枠あり。',
-      memberProgram: 'CLUB-SPICE'
+      note: 'KINEZO のオンライン予約は鑑賞希望日の2日前 0:00 から。一部のイベント上映等は例外。',
+      memberProgram: 'キネパス'
     }
   };
 
   var THEATERS = [
     {
-      id: '109-futako', chain: '109', name: '109シネマズ二子玉川', area: '東京',
+      id: 'tjoy-yokohama',
+      chain: 'tjoy',
+      name: 'T・ジョイ横浜',
+      area: '神奈川 / JR横浜タワー',
+      note: '全9スクリーン・1,212席。シアター4のみ DOLBY CINEMA。',
       screens: [
-        { id: 's1', name: 'シアター1', kind: 'large', rows: largeRows() },
-        { id: 's2', name: 'シアター2', kind: 'standard', rows: standardRows() },
-        { id: 's5', name: 'シアター5', kind: 'small', rows: smallRows() }
-      ]
-    },
-    {
-      id: '109-kawasaki', chain: '109', name: '109シネマズ川崎', area: '神奈川',
-      screens: [
-        { id: 's1', name: 'シアター1', kind: 'standard', rows: standardRows() },
-        { id: 's7', name: 'シアター7', kind: 'large', rows: largeRows() },
-        { id: 's9', name: 'シアター9', kind: 'small', rows: smallRows() }
-      ]
-    },
-    {
-      id: '109-grandberry', chain: '109', name: '109シネマズグランベリーパーク', area: '東京',
-      screens: [
-        { id: 'imax', name: 'IMAXシアター', kind: 'large', rows: largeRows() },
-        { id: 's3', name: 'シアター3', kind: 'standard', rows: standardRows() }
-      ]
-    },
-    {
-      id: '109-expocity', chain: '109', name: '109シネマズ大阪エキスポシティ', area: '大阪',
-      screens: [
-        { id: 'imax', name: 'IMAXレーザーGT', kind: 'large', rows: largeRows() },
-        { id: 's4', name: 'シアター4', kind: 'standard', rows: standardRows() }
-      ]
-    },
-    {
-      id: 'uc-toyosu', chain: 'united', name: 'ユナイテッド・シネマ豊洲', area: '東京',
-      screens: [
-        { id: 'imax', name: 'IMAXシアター', kind: 'large', rows: largeRows() },
-        { id: 's6', name: 'スクリーン6', kind: 'standard', rows: standardRows() },
-        { id: 's11', name: 'スクリーン11', kind: 'small', rows: smallRows() }
-      ]
-    },
-    {
-      id: 'uc-aquacity', chain: 'united', name: 'ユナイテッド・シネマ アクアシティお台場', area: '東京',
-      screens: [
-        { id: 's1', name: 'スクリーン1', kind: 'standard', rows: standardRows() },
-        { id: 's5', name: 'スクリーン5', kind: 'small', rows: smallRows() }
-      ]
-    },
-    {
-      id: 'uc-urawa', chain: 'united', name: 'ユナイテッド・シネマ浦和', area: '埼玉',
-      screens: [
-        { id: 's3', name: 'スクリーン3', kind: 'standard', rows: standardRows() },
-        { id: 's8', name: 'スクリーン8', kind: 'small', rows: smallRows() }
-      ]
-    },
-    {
-      id: 'cineplex-makuhari', chain: 'united', name: 'シネプレックス幕張', area: '千葉',
-      screens: [
-        { id: 's2', name: 'スクリーン2', kind: 'standard', rows: standardRows() }
+        makeScreen('s1', 'シアター1', 63, { rows: 6 }),
+        makeScreen('s2', 'シアター2', 79, { rows: 7 }),
+        makeScreen('s3', 'シアター3', 94, { rows: 8 }),
+        /* J・K列が見やすい / M列の前が横通路 / 車椅子席はJ列とM列の入口付近、
+           という公開情報に合わせて18列構成にしてある。 */
+        makeScreen('s4', 'シアター4', 325, {
+          rows: 18, crossAisleAt: 11 / 17, format: 'DOLBY CINEMA', surcharge: 600,
+          wheelchair: ['J-1', 'M-1']
+        }),
+        makeScreen('s5', 'シアター5', 127, { rows: 9, crossAisleAt: 0.72 }),
+        makeScreen('s6', 'シアター6', 201, { rows: 12, crossAisleAt: 0.72 }),
+        makeScreen('s7', 'シアター7', 150, { rows: 10, crossAisleAt: 0.72 }),
+        makeScreen('s8', 'シアター8', 79, { rows: 7 }),
+        makeScreen('s9', 'シアター9', 94, { rows: 8 })
       ]
     }
   ];
 
-  /* 券種。人数の内訳を持たせて合計金額を出すのに使う（Phase 2 の決済で必要になる） */
+  /* 2025年9月改定の鑑賞料金。ドルビーシネマは各料金に +600円。 */
   var TICKET_TYPES = [
-    { id: 'general', name: '一般', price: 2000 },
-    { id: 'member', name: '会員', price: 1600 },
-    { id: 'univ', name: '大学生', price: 1500 },
-    { id: 'high', name: '高校生以下', price: 1000 },
-    { id: 'senior', name: 'シニア', price: 1300 },
-    { id: 'disability', name: '障がい者割引', price: 1000 }
+    { id: 'general', name: '一般', price: 2200 },
+    { id: 'univ', name: '大学生', price: 1600 },
+    { id: 'high', name: '高校生', price: 1100 },
+    { id: 'child', name: '小・中学生', price: 1100 },
+    { id: 'senior', name: 'シニア（60歳以上）', price: 1300 },
+    { id: 'disability', name: '障がい者割引', price: 1100 }
   ];
 
   window.CINEMA_DATA = {

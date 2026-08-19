@@ -300,6 +300,7 @@
         var ok = true, score = 0;
         for (var j = 0; j < group.length; j++) {
           if (j > 0 && group[j].num !== group[j - 1].num + 1) { ok = false; break; }
+          if (!CE.isSelectable(group[j])) { ok = false; break; }
           if (seatMap[group[j].id] !== 'available') { ok = false; break; }
           score += CE.popularity(group[j], screen);
         }

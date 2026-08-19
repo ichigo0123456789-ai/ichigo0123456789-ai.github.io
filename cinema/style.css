@@ -127,6 +127,7 @@ select{cursor:pointer}
 .sw-taken{background:#0f121a;border-color:rgba(255,255,255,.05)}
 .sw-blocked{background:repeating-linear-gradient(45deg,#1a1e29,#1a1e29 3px,#0f121a 3px,#0f121a 6px);border-color:transparent}
 .sw-mine{background:var(--ok);border-color:var(--ok)}
+.sw-wc{background:rgba(90,169,255,.16);border-color:rgba(90,169,255,.45)}
 
 .seat-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .seat-toolbar .spacer{flex:1}
@@ -157,7 +158,11 @@ select{cursor:pointer}
 .seat[data-st=picked]{background:var(--cool);border-color:var(--cool)}
 .seat[data-st=cand]{background:var(--accent);border-color:var(--accent);color:#fff}
 .seat[data-st=mine]{background:var(--ok);border-color:var(--ok);color:#04120c;box-shadow:0 0 12px -2px var(--ok)}
-.seat.premium{box-shadow:inset 0 0 0 1px rgba(255,181,71,.5)}
+/* 車椅子スペース。一般の座席選択では選べないので、押せないことが分かる見た目にする。 */
+.seat[data-st=wc]{background:rgba(90,169,255,.16);border-color:rgba(90,169,255,.45);
+  color:rgba(200,225,255,.8);font-size:10px;cursor:not-allowed}
+/* 横通路の直後の列。前が空いていることを間隔で示す。 */
+.seat-row.cross-aisle{margin-top:12px}
 .seatmap.live .seat{cursor:default}
 .seatmap.live .seat:hover{transform:none}
 
