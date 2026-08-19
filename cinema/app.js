@@ -156,7 +156,7 @@
       renderDateStrip();
       renderSchedule();
     }
-    if (name === 'seats') renderSeatEditor();
+    if (name === 'seats') { renderSeatEditor(); renderRulesBox(); }
     if (name === 'run') renderLiveMap();
     window.scrollTo(0, 0);
   }
@@ -514,6 +514,10 @@
     $('f-time').value = p.showtime;
     $('f-runtime').value = p.runtime;
     $('f-onsale').value = p.onSaleAt;
+    var mx = currentRules().maxSeats || 8;
+    $('f-count').max = mx;
+    $('count-hint').textContent = 'この枚数ぶんの席をひとまとまりとして確保します。' +
+      'KINEZO で一度に予約できるのは最大' + mx + '席です。';
     $('f-count').value = p.count;
     renderTickets();
 
@@ -536,13 +540,18 @@
     p.theaterId = $('f-theater').value;
     var t = D.theater(p.theaterId);
     if (t) p.chain = t.chain;
+    var maxSeats = currentRules().maxSeats || 8;
     p.screenId = $('f-screen').value;
     p.title = $('f-title').value.trim();
     p.date = $('f-date').value;
     p.showtime = $('f-time').value;
     p.runtime = parseInt($('f-runtime').value, 10) || 120;
     p.onSaleAt = $('f-onsale').value;
-    p.count = Math.max(1, parseInt($('f-count').value, 10) || 1);
+    p.count = Math.max(1, Math.min(maxSeats, parseInt($('f-count').value, 10) || 1));
+    if (parseInt($('f-count').value, 10) > maxSeats) {
+      $('f-count').value = maxSeats;
+      toast('この劇場で一度に予約できるのは最大' + maxSeats + '席です');
+    }
     p.strategy.pollIntervalMs = parseInt($('s-poll').value, 10) || 1000;
     p.strategy.preconnectSec = parseInt($('s-preconnect').value, 10) || 0;
     p.strategy.deadlineSec = parseInt($('s-deadline').value, 10) || 180;
@@ -603,6 +612,12 @@
 
   function currentScreen() {
     return D.screen(S.plan.theaterId, S.plan.screenId);
+  }
+
+  /** 現在のチェーンの予約ルール。未定義でも安全な既定値を返す */
+  function currentRules() {
+    var ch = D.chains[S.plan.chain];
+    return (ch && ch.rules) || { maxSeats: 8, singleGap: { enforce: false, warn: false }, notes: [] };
   }
 
   /** 現在のスクリーンの車椅子スペース（座席ID -> true） */
@@ -719,6 +734,21 @@
     renderSeatmap($('seatmap-live'), true);
   }
 
+  function renderRulesBox() {
+    var box = $('rules-box');
+    if (!box) return;
+    var ch = D.chains[S.plan.chain];
+    var r = currentRules();
+    var items = (r.notes || []).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
+    if (r.singleGap && (r.singleGap.warn || r.singleGap.enforce) && r.singleGap.note) {
+      items += '<li>' + esc(r.singleGap.note) + '</li>';
+    }
+    box.innerHTML =
+      '<div class="rules-head">' + esc(ch ? ch.name : '') + ' の予約ルール' +
+      (r.asOf ? '<span class="rules-asof">' + esc(r.asOf.replace(/-/g, '/')) + ' 時点</span>' : '') +
+      '</div><ul>' + items + '</ul>';
+  }
+
   function updateSeatContext() {
     var t = D.theater(S.plan.theaterId);
     var sc = currentScreen();
@@ -729,51 +759,74 @@
   }
 
   function onSeatClick(seat, screen) {
-    /* 確保対象の席をクリックしたら選び直し */
-    if (candRankOf(seat.id)) {
-      S.plan.candidates = [];
-      S.pick = [];
-      renderSeatEditor();
-      return;
+    /* 1クリック = 1席。自動で横並びに広げることはしない。
+       確定済み（candidates）の席をクリックしたら、その1席だけ外して
+       残りは選択中に戻す。 */
+    var target = S.plan.candidates[0];
+    if (target) {
+      var ci = target.seats.indexOf(seat.id);
+      if (ci >= 0) {
+        S.pick = target.seats.filter(function (id) { return id !== seat.id; });
+        S.plan.candidates = [];
+        renderSeatEditor();
+        return;
+      }
     }
+
     var idx = S.pick.indexOf(seat.id);
     if (idx >= 0) {
       S.pick.splice(idx, 1);
-    } else if ($('opt-consecutive').checked) {
-      /* クリックした席から右へ枚数分。縦通路をまたぐ・列をはみ出す場合は取れる分だけ。 */
-      var need = S.plan.count;
-      var group = [];
-      var rowSeats = CE.expandSeats(screen).filter(function (s) { return s.row === seat.row; });
-      for (var k = 0; k < need; k++) {
-        var next = null;
-        for (var i = 0; i < rowSeats.length; i++) {
-          if (rowSeats[i].num === seat.num + k) { next = rowSeats[i]; break; }
-        }
-        /* 番号が続いていても別ブロックなら隣り合っていない */
-        if (!next || next.block !== seat.block) break;
-        if (!CE.isSelectable(next)) break;
-        if (candRankOf(next.id)) break;
-        group.push(next.id);
-      }
-      if (group.length < need) {
-        toast('その位置からは' + need + '席ぶん連続で取れません');
-        return;
-      }
-      S.pick = group;
     } else {
-      if (S.pick.length >= S.plan.count) {
-        toast('枚数（' + S.plan.count + '枚）ぶん選択済みです');
+      if (S.pick.length + (target ? target.seats.length : 0) >= S.plan.count) {
+        toast('枚数（' + S.plan.count + '枚）ぶん選択済みです。外したい席をクリックしてください');
         return;
       }
       S.pick.push(seat.id);
     }
-    /* 枚数分そろったら、そのまま確保対象として確定する。
-       優先順位を付けないので、候補は常に0件か1件。 */
+
+    /* 枚数分そろったら確保対象として確定する。
+       その前に、席の間に1席だけ空きを残す配置をチェックする。 */
     if (S.pick.length === S.plan.count) {
+      var gaps = singleGapSeats(S.pick, screen);
+      var rule = currentRules().singleGap || {};
+      if (gaps.length && rule.enforce) {
+        toast('席の間に1席だけ空き（' + gaps.join(' / ') + '）が残る配置は選べません');
+        renderSeatEditor();
+        return;
+      }
       S.plan.candidates = [{ id: 'target', seats: S.pick.slice().sort(seatSort) }];
       S.pick = [];
+      if (gaps.length && rule.warn) {
+        toast('注意: 席の間に1席だけ空き（' + gaps.join(' / ') + '）が残ります。劇場によっては取れない配置です');
+      }
     }
     renderSeatEditor();
+  }
+
+
+  /**
+   * 選択席の間に「1席だけ空いた予約可能席」が残る箇所を返す。
+   * 同じ列で番号差が2、間の席が実在して選択可能な場合のみ該当。
+   * 縦通路（欠番）を挟む場合は間の席が存在しないので該当しない。
+   */
+  function singleGapSeats(seatIds, screen) {
+    var byId = {};
+    CE.expandSeats(screen).forEach(function (s) { byId[s.id] = s; });
+    var picked = {};
+    seatIds.forEach(function (id) { picked[id] = true; });
+    var out = [];
+    seatIds.forEach(function (id) {
+      var a = byId[id];
+      if (!a) return;
+      var midId = a.row + '-' + (a.num + 1);
+      var otherId = a.row + '-' + (a.num + 2);
+      var mid = byId[midId];
+      if (picked[otherId] && !picked[midId] && mid && CE.isSelectable(mid) &&
+          mid.block === a.block && out.indexOf(midId) < 0) {
+        out.push(midId);
+      }
+    });
+    return out;
   }
 
   function renderTray() {
@@ -1359,7 +1412,6 @@
       toast('保存しました');
     });
 
-    $('opt-consecutive').addEventListener('change', function () { S.pick = []; renderSeatEditor(); });
     $('btn-clear-pick').addEventListener('click', function () {
       S.pick = []; S.plan.candidates = [];
       renderSeatEditor();
