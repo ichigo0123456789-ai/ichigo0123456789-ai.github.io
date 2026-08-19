@@ -200,6 +200,11 @@
       chain: 'tjoy',
       name: 'T・ジョイ横浜',
       area: '神奈川 / JR横浜タワー',
+      pref: '神奈川県',
+      address: '横浜市西区南幸1-1-1 JR横浜タワー 8F',
+      station: 'JR横浜駅 直結',
+      /* 全国マップ上のピン位置（viewBox 0 0 1000 900 に対する座標） */
+      map: { x: 610, y: 560 },
       note: '全9スクリーン・1,212席（＋車椅子18席）。シアター4のみ DOLBY CINEMA。',
       screens: [
         makeScreen('s1', 'シアター1', 63, { rows: 6 }),

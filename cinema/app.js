@@ -143,14 +143,122 @@
   /* ---- ビュー切り替え ---------------------------------------------- */
 
   function showView(name) {
-    ['plan', 'seats', 'run', 'result', 'privacy'].forEach(function (v) {
+    ['theater', 'plan', 'seats', 'run', 'result', 'privacy'].forEach(function (v) {
       $('view-' + v).classList.toggle('on', v === name);
     });
     Array.prototype.forEach.call(document.querySelectorAll('#tabs .tab'), function (b) {
       b.classList.toggle('on', b.dataset.view === name);
     });
+    if (name === 'theater') renderTheaterPicker();
+    if (name === 'plan') renderPlanSelbar();
     if (name === 'seats') renderSeatEditor();
     if (name === 'run') renderLiveMap();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---- ① 劇場選択 --------------------------------------------------
+
+     検索と全国マップの両方から選べる。いまは T・ジョイ横浜の1館だけだが、
+     データを足せばそのまま並ぶ構造にしてある。 */
+
+  var theaterQuery = '';
+
+  function theaterMatches(t, q) {
+    if (!q) return true;
+    var hay = [t.name, t.area, t.pref || '', t.station || '', t.address || ''].join(' ').toLowerCase();
+    return q.toLowerCase().split(/\s+/).every(function (w) { return !w || hay.indexOf(w) >= 0; });
+  }
+
+  function selectTheater(id) {
+    if (S.plan.theaterId !== id) {
+      S.plan.theaterId = id;
+      var t = D.theater(id);
+      if (t) {
+        S.plan.chain = t.chain;
+        S.plan.screenId = t.screens[0].id;
+      }
+      /* 劇場が変われば座席の意味が変わる */
+      S.plan.candidates = []; S.pick = [];
+    }
+    renderTheaterPicker();
+    $('btn-to-plan').disabled = false;
+  }
+
+  function renderTheaterPicker() {
+    var list = $('theater-list');
+    list.innerHTML = '';
+    var shown = D.theaters.filter(function (t) { return theaterMatches(t, theaterQuery); });
+
+    if (!shown.length) {
+      list.innerHTML = '<div class="theater-empty">「' + esc(theaterQuery) +
+        '」に一致する対応劇場はありません。<br>現在対応しているのは T・ジョイ横浜のみです。</div>';
+    }
+    shown.forEach(function (t) {
+      var on = t.id === S.plan.theaterId;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'theater-item' + (on ? ' on' : '');
+      b.innerHTML =
+        '<span class="ti-pin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
+        '<span><span class="ti-name">' + esc(t.name) + '</span><br>' +
+        '<span class="ti-meta">' + esc((t.pref ? t.pref + ' ／ ' : '') + (t.station || t.area)) + '<br>' +
+        esc(t.note || '') + '</span>' +
+        '<span class="ti-badge">' + esc(D.chains[t.chain].name) + '</span></span>';
+      b.addEventListener('click', function () { selectTheater(t.id); });
+      list.appendChild(b);
+    });
+
+    renderMapPins();
+    $('btn-to-plan').disabled = !S.plan.theaterId;
+  }
+
+  function renderMapPins() {
+    var g = $('map-pins');
+    if (!g) return;
+    g.innerHTML = '';
+    var SVG = 'http://www.w3.org/2000/svg';
+    D.theaters.forEach(function (t) {
+      if (!t.map) return;
+      var on = t.id === S.plan.theaterId;
+      var pin = document.createElementNS(SVG, 'g');
+      pin.setAttribute('class', 'map-pin' + (on ? ' on' : ''));
+      pin.setAttribute('role', 'button');
+      pin.setAttribute('aria-label', t.name);
+
+      var ring = document.createElementNS(SVG, 'circle');
+      ring.setAttribute('class', 'ring');
+      ring.setAttribute('cx', t.map.x); ring.setAttribute('cy', t.map.y);
+      ring.setAttribute('r', on ? 30 : 20);
+      var core = document.createElementNS(SVG, 'circle');
+      core.setAttribute('class', 'core');
+      core.setAttribute('cx', t.map.x); core.setAttribute('cy', t.map.y);
+      core.setAttribute('r', 8);
+      var label = document.createElementNS(SVG, 'text');
+      label.setAttribute('x', t.map.x + 38); label.setAttribute('y', t.map.y + 9);
+      label.textContent = t.name;
+
+      pin.appendChild(ring); pin.appendChild(core); pin.appendChild(label);
+      pin.addEventListener('click', function () { selectTheater(t.id); });
+      g.appendChild(pin);
+    });
+  }
+
+  /* ---- ② 選択サマリー ---------------------------------------------- */
+
+  function renderPlanSelbar() {
+    var bar = $('plan-selbar');
+    if (!bar) return;
+    var t = D.theater(S.plan.theaterId);
+    bar.innerHTML = '';
+    var chip = document.createElement('span');
+    if (t) {
+      chip.className = 'sel-chip';
+      chip.innerHTML = '<span class="sc-label">映画館</span><b>' + esc(t.name) + '</b>';
+    } else {
+      chip.className = 'sel-chip empty';
+      chip.textContent = '映画館が未選択です（手順1へ）';
+    }
+    bar.appendChild(chip);
   }
 
   /* ---- フォーム ---------------------------------------------------- */
@@ -519,6 +627,8 @@
   function renderTray() {
     var el = $('tray-seats');
     var target = S.plan.candidates[0];
+    var nextBtn = $('btn-to-run');
+    if (nextBtn) nextBtn.disabled = !target;
     if (target) {
       el.textContent = target.seats.join('  /  ');
       el.classList.remove('empty-t');
@@ -1020,6 +1130,26 @@
       b.addEventListener('click', function () { readForm(); showView(b.dataset.view); });
     });
 
+    $('theater-search').addEventListener('input', function () {
+      theaterQuery = $('theater-search').value.trim();
+      renderTheaterPicker();
+    });
+    $('btn-to-plan').addEventListener('click', function () {
+      if (!S.plan.theaterId) { toast('映画館を選んでください'); return; }
+      writeForm();
+      showView('plan');
+    });
+    $('btn-to-seats').addEventListener('click', function () {
+      readForm();
+      if (!S.plan.title) { toast('作品タイトルを入力してください'); return; }
+      if (!S.plan.date || !S.plan.showtime) { toast('上映日と開映時刻を入力してください'); return; }
+      showView('seats');
+    });
+    $('btn-to-run').addEventListener('click', function () {
+      if (!S.plan.candidates.length) { toast('座席を選んでください'); return; }
+      showView('run');
+    });
+
     $('f-theater').addEventListener('change', function () {
       S.plan.theaterId = $('f-theater').value;
       fillScreens(S.plan.theaterId);
@@ -1108,6 +1238,7 @@
     writeProfile();
     renderResult();
     renderTimeline(null);
+    renderTheaterPicker();
     tickCountdown();
     setInterval(tickCountdown, 1000);
     setState('idle');
