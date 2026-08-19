@@ -13,6 +13,8 @@
   --warn:#ffb547; --err:#ff5d68;
   --mono:'JetBrains Mono',Consolas,ui-monospace,monospace;
   --r:12px; --r-sm:8px;
+  /* 座席表のマス目。半席刻みのグリッドなので、席1つ = --seat-half 2つ + gap。 */
+  --seat-half:9px; --aisle:14px;
   --shadow:0 1px 1px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.9);
 }
 
@@ -159,14 +161,16 @@ select{cursor:pointer}
   border-bottom:2px solid transparent;
   border-image:linear-gradient(90deg,transparent,rgba(90,169,255,.7),transparent) 1}
 .seatmap{display:flex;flex-direction:column;gap:4px;align-items:center;min-width:min-content}
-.seat-row{display:flex;align-items:center;gap:3px}
+.seat-row{display:flex;align-items:center;gap:7px}
 .row-label{width:20px;flex:none;text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+/* 列はブロック幅そのままのグリッド。縦通路はブロック間の隙間カラムなので、
+   席の少ない列も実際の座席表と同じ位置に並ぶ。 */
+.seat-grid{display:grid;gap:3px;align-items:center}
 /* 空席は「輪郭のある明るい面」、売切・販売対象外は「沈んだ面」。
    実行中のマップは一瞬で読み取れる必要があるので、両者の差を大きく取る。 */
-.seat{width:21px;height:21px;flex:none;border-radius:4px;border:1px solid rgba(255,255,255,.28);background:var(--panel-3);
+.seat{height:21px;min-width:0;border-radius:4px;border:1px solid rgba(255,255,255,.28);background:var(--panel-3);
   cursor:pointer;padding:0;font-size:9px;font-weight:700;color:transparent;transition:transform .1s,background .12s;position:relative}
 .seat:hover:not(:disabled){transform:scale(1.18);border-color:#fff;z-index:2}
-.seat.gap{margin-right:11px}
 .seat[data-st=taken]{background:#0f121a;border-color:rgba(255,255,255,.05);cursor:not-allowed}
 .seat[data-st=blocked]{background:repeating-linear-gradient(45deg,#1a1e29,#1a1e29 3px,#0f121a 3px,#0f121a 6px);
   border-color:transparent;cursor:not-allowed}

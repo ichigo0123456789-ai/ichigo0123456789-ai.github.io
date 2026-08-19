@@ -2,10 +2,14 @@
    劇場・スクリーンのマスタデータ — T・ジョイ横浜
    ------------------------------------------------------------
    スクリーン数・各シアターの座席数・料金・発売タイミングは
-   公開情報にもとづく実データ。ただし
-   「どの列に何席あるか」までは公開されていないため、
-   列ごとの配置は総席数が一致するよう生成した近似である。
-   （シアター4だけは中央通路と車椅子席の位置が公開情報と一致する）
+   公開情報にもとづく実データ。
+
+   シアター4（DOLBY CINEMA）は、劇場公式の施設案内が公開している
+   座席表そのものから列・ブロック・車椅子スペースを起こしてある。
+     出典: https://tjoy.jp/t-joy_yokohama/facilities
+           https://tjoy.jp/img/front/images/theater/190/map_04.png
+   それ以外のシアターは、列ごとの配置が公開されていないため
+   総席数が一致するよう生成した近似のまま（makeScreen）。
 
    Phase 2 でローカル runner を足す際は、ここを
    「アダプタが KINEZO から取得したレイアウトのキャッシュ」に置き換える。
@@ -14,14 +18,104 @@
 (function () {
   'use strict';
 
+  /* ---- 行（列）の共通形 --------------------------------------------
+     blocks      … 縦通路で区切られたブロックごとの席数。[左, 中央, 右]。
+                   0 のブロックは「その列にはその位置の席が無い」を表す。
+     wheelchair  … 行頭に置かれた車椅子スペースの幅（座席何個ぶんか）の配列。
+     gapBefore   … この列の手前が横通路。
+     kind        … front / normal / rear。
+     count       … 販売席数（blocks の合計）。車椅子スペースは含めない。
+     ------------------------------------------------------------------ */
+  function makeRow(label, blocks, opt) {
+    opt = opt || {};
+    var count = blocks.reduce(function (a, b) { return a + b; }, 0);
+    return {
+      label: label,
+      blocks: blocks.slice(),
+      count: count,
+      wheelchair: (opt.wheelchair || []).slice(),
+      gapBefore: !!opt.gapBefore,
+      kind: opt.kind || 'normal'
+    };
+  }
+
+  /** 行の集合から、ブロックごとの最大幅を出す。座席表の桁を揃えるのに使う。 */
+  function blockWidths(rows) {
+    var n = 0;
+    rows.forEach(function (r) { n = Math.max(n, r.blocks.length); });
+    var w = [];
+    for (var i = 0; i < n; i++) {
+      var m = 0;
+      rows.forEach(function (r) { m = Math.max(m, r.blocks[i] || 0); });
+      w.push(m);
+    }
+    return w;
+  }
+
+  function finishScreen(id, name, rows, opt) {
+    opt = opt || {};
+    var seats = 0, wc = 0;
+    rows.forEach(function (r) { seats += r.count; wc += r.wheelchair.length; });
+    return {
+      id: id,
+      name: name,
+      seats: seats,
+      wheelchairSeats: wc,
+      format: opt.format || null,
+      surcharge: opt.surcharge || 0,
+      source: opt.source || 'approx',
+      rows: rows,
+      blockWidths: blockWidths(rows)
+    };
+  }
+
+  /* ============================================================
+     シアター4（DOLBY CINEMA）— 公式座席表から起こした実データ
+     ------------------------------------------------------------
+     ・15列 325席 ＋ 車椅子スペース2。
+     ・縦通路は2本。全幅は 4 + 15 + 4 = 23 席ぶん。
+     ・E列・L列は欠番。その位置が横通路になっている
+       （D列とF列のあいだ／K列とM列のあいだ）。
+     ・A列は中央ブロックに14席で、前後の列とは半席ずれて並ぶ。
+       中央ブロックの中央寄せで描くと公式の座席表と同じ位置になる。
+     ・J列の車椅子スペースは左端の2席ぶん、M列は1席ぶんを占める。
+     ・席番号は座席表の左から順に 1 とした通し番号。KINEZO 上の実際の
+       採番は座席表に印字されておらず、確認できていない（下の注記を参照）。
+     ============================================================ */
+  function theater4Rows() {
+    var W = [4, 15, 4];
+    return [
+      makeRow('A', [0, 14, 0], { kind: 'front' }),
+      makeRow('B', [2, 15, 2]),
+      makeRow('C', [4, 15, 4]),
+      makeRow('D', [4, 15, 4]),
+      /* ---- 横通路（E列は欠番）---- */
+      makeRow('F', [4, 15, 4], { gapBefore: true }),
+      makeRow('G', W),
+      makeRow('H', W),
+      makeRow('I', W),
+      makeRow('J', [2, 15, 4], { wheelchair: [2] }),
+      makeRow('K', [0, 15, 4]),
+      /* ---- 横通路（L列は欠番）---- */
+      makeRow('M', [3, 15, 4], { gapBefore: true, wheelchair: [1] }),
+      makeRow('N', W),
+      makeRow('O', W),
+      makeRow('P', W),
+      makeRow('Q', [4, 15, 4], { kind: 'rear' })
+    ];
+  }
+
+  /* ============================================================
+     公開されていないシアターの近似レイアウト
+     ------------------------------------------------------------
+     総席数だけを合わせ、前方が狭く奥行き 3/4 あたりで最大になる
+     台形を作る。列ごとの席数・席番号は実際の座席表とは一致しない。
+     ============================================================ */
+
   /* 日本の映画館の慣例に合わせ、紛らわしい I と O を飛ばす */
   var ROW_LABELS = 'ABCDEFGHJKLMNPQRSTUVW'.split('');
 
-  /**
-   * 総席数 total を R 列に振り分ける。
-   * 前方は狭く、奥行き 3/4 あたりで最大、最後列は少し狭い台形。
-   * 端数は中央付近の列で吸収するので、合計は必ず total に一致する。
-   */
+  /** 総席数 total を R 列に振り分ける。合計は必ず total に一致する。 */
   function distribute(total, R) {
     var w = [];
     for (var i = 0; i < R; i++) {
@@ -47,53 +141,39 @@
     return counts;
   }
 
+  /** 席数 c の列を [左, 中央, 右] に割る。縦通路は常に2本。 */
+  function splitRow(c) {
+    var side = Math.max(2, Math.round(c * 0.18));
+    if (c - 2 * side < 4) side = Math.max(0, Math.floor((c - 4) / 2));
+    return [side, c - 2 * side, side];
+  }
+
   /**
-   * スクリーンを1つ組み立てる。
-   * @param id      スクリーンID
-   * @param name    表示名
-   * @param seats   総席数（公開情報）
-   * @param opt     {rows, crossAisleAt, surcharge, format}
-   *                crossAisleAt … 横通路を入れる列の位置（0〜1の深さ）
+   * 近似レイアウトのスクリーンを1つ組み立てる。
+   * @param seats  総席数（公開情報）
+   * @param opt    {rows, crossAisleAt, surcharge, format}
+   *               crossAisleAt … 横通路を入れる列の位置（0〜1の深さ）
    */
   function makeScreen(id, name, seats, opt) {
     opt = opt || {};
     var R = opt.rows || Math.max(5, Math.round(Math.sqrt(seats / 1.55)));
     var counts = distribute(seats, R);
     var crossIndex = opt.crossAisleAt != null ? Math.round((R - 1) * opt.crossAisleAt) : -1;
+    /* 車椅子スペースは全9シアターで18 = 各シアター2。
+       位置は公開されていないので、横通路沿いの列の行頭にまとめて置く。 */
+    var wcIndex = crossIndex >= 0 ? crossIndex : Math.floor(R / 2);
 
     var rows = counts.map(function (c, i) {
-      /* 縦通路: 大箱は2本、小箱は中央1本 */
-      var aisles = c >= 16 ? [Math.round(c / 3), Math.round(c * 2 / 3)] : [Math.round(c / 2)];
-      return {
-        label: ROW_LABELS[i],
-        count: c,
-        aisles: aisles,
-        kind: i === 0 ? 'front' : (i === R - 1 ? 'rear' : 'normal'),
-        /* 横通路の直後の列は足元が広い。UI でも間隔を空けて描く。 */
-        gapBefore: i === crossIndex
-      };
+      return makeRow(ROW_LABELS[i], splitRow(c), {
+        gapBefore: i === crossIndex,
+        wheelchair: i === wcIndex ? [1, 1] : [],
+        kind: i === 0 ? 'front' : (i === R - 1 ? 'rear' : 'normal')
+      });
     });
 
-    /* 車椅子スペース。T・ジョイ横浜は全9シアターで18席 = 各シアター2席。
-       位置が公開されているシアターは opt.wheelchair で明示し、
-       それ以外は横通路沿いの両端に置く。 */
-    var wheelchair;
-    if (opt.wheelchair) {
-      wheelchair = opt.wheelchair;
-    } else {
-      var wcRow = rows[crossIndex >= 0 ? crossIndex : Math.floor(R / 2)];
-      wheelchair = [wcRow.label + '-1', wcRow.label + '-' + wcRow.count];
-    }
-
-    return {
-      id: id,
-      name: name,
-      seats: seats,
-      format: opt.format || null,
-      surcharge: opt.surcharge || 0,
-      wheelchair: wheelchair,
-      rows: rows
-    };
+    return finishScreen(id, name, rows, {
+      format: opt.format, surcharge: opt.surcharge, source: 'approx'
+    });
   }
 
   var CHAINS = {
@@ -114,16 +194,13 @@
       chain: 'tjoy',
       name: 'T・ジョイ横浜',
       area: '神奈川 / JR横浜タワー',
-      note: '全9スクリーン・1,212席。シアター4のみ DOLBY CINEMA。',
+      note: '全9スクリーン・1,212席（＋車椅子18席）。シアター4のみ DOLBY CINEMA。',
       screens: [
         makeScreen('s1', 'シアター1', 63, { rows: 6 }),
         makeScreen('s2', 'シアター2', 79, { rows: 7 }),
         makeScreen('s3', 'シアター3', 94, { rows: 8 }),
-        /* J・K列が見やすい / M列の前が横通路 / 車椅子席はJ列とM列の入口付近、
-           という公開情報に合わせて18列構成にしてある。 */
-        makeScreen('s4', 'シアター4', 325, {
-          rows: 18, crossAisleAt: 11 / 17, format: 'DOLBY CINEMA', surcharge: 600,
-          wheelchair: ['J-1', 'M-1']
+        finishScreen('s4', 'シアター4', theater4Rows(), {
+          format: 'DOLBY CINEMA', surcharge: 600, source: 'official'
         }),
         makeScreen('s5', 'シアター5', 127, { rows: 9, crossAisleAt: 0.72 }),
         makeScreen('s6', 'シアター6', 201, { rows: 12, crossAisleAt: 0.72 }),

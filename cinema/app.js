@@ -349,7 +349,10 @@
   function wheelchairSet() {
     var sc = currentScreen();
     var out = {};
-    if (sc) (sc.wheelchair || []).forEach(function (id) { out[id] = true; });
+    if (!sc) return out;
+    CE.expandSeats(sc).forEach(function (s) {
+      if (!CE.isSelectable(s)) out[s.id] = true;
+    });
     return out;
   }
 
@@ -369,6 +372,17 @@
     var screen = currentScreen();
     container.innerHTML = '';
     if (!screen) return;
+
+    /* 座席表はブロック幅そのままのグリッドで描く。縦通路はブロックとブロックの
+       あいだの1本の隙間カラムなので、席の少ない列（シアター4のA・B・K列など）も
+       公式の座席表と同じ位置に並ぶ。
+       A列のように前後の列と半席ずれる列があるため、グリッドは半席刻みで敷き、
+       席1つは2カラムぶんを占める。 */
+    var widths = screen.blockWidths;
+    var template = widths.map(function (w) {
+      return 'repeat(' + (w * 2) + ', var(--seat-half))';
+    }).join(' var(--aisle) ');
+
     var seats = CE.expandSeats(screen);
     var byRow = {};
     seats.forEach(function (s) { (byRow[s.row] = byRow[s.row] || []).push(s); });
@@ -376,18 +390,24 @@
     screen.rows.forEach(function (r) {
       var rowEl = document.createElement('div');
       rowEl.className = 'seat-row';
+      if (r.gapBefore) rowEl.classList.add('cross-aisle');
+
       var lab = document.createElement('span');
       lab.className = 'row-label';
       lab.textContent = r.label;
       rowEl.appendChild(lab);
 
-      if (r.gapBefore) rowEl.classList.add('cross-aisle');
+      var grid = document.createElement('div');
+      grid.className = 'seat-grid';
+      grid.style.gridTemplateColumns = template;
 
       byRow[r.label].forEach(function (s) {
         var b = document.createElement('button');
         var wc = !CE.isSelectable(s);
-        b.className = 'seat' + (s.aisleAfter ? ' gap' : '');
+        b.className = 'seat';
         b.dataset.seat = s.id;
+        /* ブロックの前に縦通路のカラムがそのぶん挟まる */
+        b.style.gridColumn = (s.col * 2 + s.block + 1) + ' / span ' + 2 * (wc ? s.span : 1);
         b.title = s.id + (wc ? '（車椅子スペース）' : '');
 
         if (wc) {
@@ -395,7 +415,7 @@
           b.dataset.st = 'wc';
           b.disabled = true;
           b.textContent = '♿';
-          rowEl.appendChild(b);
+          grid.appendChild(b);
           return;
         }
 
@@ -420,11 +440,11 @@
         } else {
           b.addEventListener('click', function () { onSeatClick(s, screen); });
         }
-        rowEl.appendChild(b);
+        grid.appendChild(b);
       });
 
-      var lab2 = lab.cloneNode(true);
-      rowEl.appendChild(lab2);
+      rowEl.appendChild(grid);
+      rowEl.appendChild(lab.cloneNode(true));
       container.appendChild(rowEl);
     });
   }
@@ -460,17 +480,20 @@
     if (idx >= 0) {
       S.pick.splice(idx, 1);
     } else if ($('opt-consecutive').checked) {
-      /* クリックした席から右へ枚数分。列をはみ出す・既に埋まっている場合は取れる分だけ。 */
+      /* クリックした席から右へ枚数分。縦通路をまたぐ・列をはみ出す場合は取れる分だけ。 */
       var need = S.plan.count;
       var group = [];
-      for (var n = seat.num; n < seat.num + need; n++) {
-        var id = seat.row + '-' + n;
-        var row = null;
-        screen.rows.forEach(function (r) { if (r.label === seat.row) row = r; });
-        if (!row || n > row.count) break;
-        if (candRankOf(id)) break;
-        if (wheelchairSet()[id]) break;
-        group.push(id);
+      var rowSeats = CE.expandSeats(screen).filter(function (s) { return s.row === seat.row; });
+      for (var k = 0; k < need; k++) {
+        var next = null;
+        for (var i = 0; i < rowSeats.length; i++) {
+          if (rowSeats[i].num === seat.num + k) { next = rowSeats[i]; break; }
+        }
+        /* 番号が続いていても別ブロックなら隣り合っていない */
+        if (!next || next.block !== seat.block) break;
+        if (!CE.isSelectable(next)) break;
+        if (candRankOf(next.id)) break;
+        group.push(next.id);
       }
       if (group.length < need) {
         toast('その位置からは' + need + '席ぶん連続で取れません');
@@ -536,7 +559,8 @@
       for (var i = 0; i + need <= list.length; i++) {
         var g = list.slice(i, i + need), ok = true, score = 0;
         for (var j = 0; j < g.length; j++) {
-          if (j > 0 && g[j].num !== g[j - 1].num + 1) { ok = false; break; }
+          /* 縦通路をまたいだ組は連席とみなさない */
+          if (j > 0 && (g[j].num !== g[j - 1].num + 1 || g[j].block !== g[j - 1].block)) { ok = false; break; }
           if (!CE.isSelectable(g[j])) { ok = false; break; }
           score += CE.popularity(g[j], screen);
         }

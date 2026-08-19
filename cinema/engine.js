@@ -18,27 +18,59 @@
 
   /* ---- 座席 ID とレイアウト展開 ------------------------------------ */
 
-  /** レイアウト定義を席の配列へ展開する。UI と混雑シミュの両方がこれを使う。 */
+  /**
+   * レイアウト定義を席の配列へ展開する。UI と混雑シミュの両方がこれを使う。
+   *
+   * 席には、その列の中での通し番号 num のほかに
+   *   block … 何番目の縦ブロックか（0=左, 1=中央, 2=右）
+   *   col   … スクリーン全幅を席1つ=1として数えた横位置（中央寄せ済み）
+   * を持たせる。連席の判定は num ではなく block+num で行う必要がある
+   * （番号が続いていても、縦通路をまたいでいれば隣り合っていない）。
+   */
   function expandSeats(screen) {
-    var wc = {};
-    (screen.wheelchair || []).forEach(function (id) { wc[id] = true; });
+    var widths = screen.blockWidths || [];
     var out = [];
     screen.rows.forEach(function (r, rowIndex) {
-      for (var n = 1; n <= r.count; n++) {
-        var id = r.label + '-' + n;
+      /* 車椅子スペースは行頭。通常の座席として売られないので席種で区別する。 */
+      r.wheelchair.forEach(function (span, i) {
         out.push({
-          id: id,
-          row: r.label,
-          num: n,
-          rowIndex: rowIndex,
-          /* 車椅子スペースは通常の座席として売られないため、席種で区別する */
-          kind: wc[id] ? 'wheelchair' : r.kind,
-          aisleAfter: r.aisles.indexOf(n) >= 0,
+          id: r.label + '-WC' + (i + 1),
+          row: r.label, num: 0, rowIndex: rowIndex,
+          block: 0, col: 0, span: span,
+          kind: 'wheelchair',
           gapBefore: !!r.gapBefore
         });
-      }
+      });
+
+      var n = 0;
+      var base = 0;
+      r.blocks.forEach(function (c, bi) {
+        var w = widths[bi] || c;
+        /* 先頭ブロックは右寄せ、末尾は左寄せ、あいだは中央寄せ。
+           こうすると席の少ない列が公式の座席表と同じ位置に並ぶ。 */
+        var pad = bi === 0 ? w - c : (bi === r.blocks.length - 1 ? 0 : (w - c) / 2);
+        for (var k = 0; k < c; k++) {
+          n++;
+          out.push({
+            id: r.label + '-' + n,
+            row: r.label,
+            num: n,
+            rowIndex: rowIndex,
+            block: bi,
+            col: base + pad + k,
+            kind: r.kind,
+            gapBefore: !!r.gapBefore
+          });
+        }
+        base += w;
+      });
     });
     return out;
+  }
+
+  /** スクリーンの全幅（席1つ=1）。人気度の横方向の正規化に使う。 */
+  function screenWidth(screen) {
+    return (screen.blockWidths || []).reduce(function (a, b) { return a + b; }, 0);
   }
 
   /** 通常の予約対象として選べる席か */
@@ -52,10 +84,12 @@
    * スクリーンの横中央 & 前後方向は後ろ寄り 2/3 あたりが最も人気、という素朴なモデル。
    */
   function popularity(seat, screen) {
-    var r = screen.rows[seat.rowIndex];
-    var center = (r.count + 1) / 2;
-    /* 横方向: 中央からの距離を列幅で正規化 */
-    var lateral = 1 - Math.abs(seat.num - center) / center;
+    var w = screenWidth(screen);
+    var center = (w - 1) / 2;
+    /* 横方向: スクリーン中央からの距離を全幅で正規化。
+       列ごとの通し番号ではなく実際の横位置で測るので、
+       片側の席が無い列（シアター4のK列など）も正しく評価できる。 */
+    var lateral = center > 0 ? 1 - Math.abs(seat.col - center) / center : 1;
     /* 前後方向: 0=最前列, 1=最後列。ピークは 0.66 付近 */
     var depth = screen.rows.length > 1 ? seat.rowIndex / (screen.rows.length - 1) : 0.5;
     var depthScore = 1 - Math.abs(depth - 0.66) / 0.66;
