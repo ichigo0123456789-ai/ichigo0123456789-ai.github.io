@@ -150,7 +150,12 @@
       b.classList.toggle('on', b.dataset.view === name);
     });
     if (name === 'theater') renderTheaterPicker();
-    if (name === 'plan') renderPlanSelbar();
+    if (name === 'plan') {
+      renderPlanSelbar();
+      if (!scheduleDate) scheduleDate = S.plan.date || dateStr(new Date());
+      renderDateStrip();
+      renderSchedule();
+    }
     if (name === 'seats') renderSeatEditor();
     if (name === 'run') renderLiveMap();
     window.scrollTo(0, 0);
@@ -259,6 +264,152 @@
       chip.textContent = '映画館が未選択です（手順1へ）';
     }
     bar.appendChild(chip);
+
+    var chip2 = document.createElement('span');
+    if (S.plan.title && S.plan.date && S.plan.showtime) {
+      chip2.className = 'sel-chip';
+      chip2.innerHTML = '<span class="sc-label">上映回</span><b>' +
+        esc(S.plan.title + '　' + S.plan.date + ' ' + S.plan.showtime) + '</b>';
+    } else {
+      chip2.className = 'sel-chip empty';
+      chip2.textContent = '作品と時間帯が未選択です';
+    }
+    bar.appendChild(chip2);
+  }
+
+  /* ---- ② 番組表 ----------------------------------------------------
+
+     日付タブ + 作品ごとの時間帯ボタン。選ぶと従来のフォーム項目
+     （タイトル・日付・時刻・スクリーン・上映時間）へ同期するので、
+     以降の処理（readForm / 実行 / カレンダー）は変更なしで動く。 */
+
+  var scheduleDate = null;   /* 表示中の日付 'YYYY-MM-DD' */
+
+  function dateStr(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+
+  function renderDateStrip() {
+    var strip = $('date-strip');
+    strip.innerHTML = '';
+    var today = new Date();
+    for (var i = 0; i < 14; i++) {
+      (function (i) {
+        var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+        var ds = dateStr(d);
+        var dow = d.getDay();
+        var dowLabel = i === 0 ? '今日' : (i === 1 ? '明日' : '日月火水木金土'[dow]);
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'date-chip' + (ds === scheduleDate ? ' on' : '');
+        chip.innerHTML =
+          '<span class="dc-dow' + (dow === 0 ? ' dc-sun' : dow === 6 ? ' dc-sat' : '') + '">' + dowLabel + '</span>' +
+          '<span class="dc-day' + (dow === 0 ? ' dc-sun' : dow === 6 ? ' dc-sat' : '') + '">' +
+            (d.getMonth() + 1) + '/' + d.getDate() + '</span>';
+        chip.addEventListener('click', function () {
+          scheduleDate = ds;
+          renderDateStrip();
+          renderSchedule();
+        });
+        strip.appendChild(chip);
+      })(i);
+    }
+  }
+
+  /** いま選ばれている上映回かどうか */
+  function isSelectedShow(movie, show) {
+    return S.plan.title === movie.title &&
+      S.plan.date === scheduleDate &&
+      S.plan.showtime === show.time &&
+      S.plan.screenId === show.screenId;
+  }
+
+  function selectShow(movie, show) {
+    S.plan.title = movie.title;
+    S.plan.date = scheduleDate;
+    S.plan.showtime = show.time;
+    S.plan.screenId = show.screenId;
+    S.plan.runtime = movie.runtime;
+    /* スクリーンが変われば座席の意味が変わる */
+    S.plan.candidates = []; S.pick = [];
+
+    /* 隠しフォームへ同期（readForm がここから読む） */
+    $('f-title').value = movie.title;
+    $('f-date').value = S.plan.date;
+    $('f-time').value = show.time;
+    fillScreens(S.plan.theaterId, show.screenId);
+    $('f-screen').value = show.screenId;
+    $('f-runtime').value = movie.runtime;
+
+    /* 発売開始日時も KINEZO の慣例から自動設定（手動変更は右のカードで可能） */
+    var auto = autoOnSale(S.plan);
+    if (auto) { S.plan.onSaleAt = auto; $('f-onsale').value = auto; }
+
+    updateTicketSum();
+    updateSeatContext();
+    renderPlanSelbar();
+    renderSchedule();
+    tickCountdown();
+    toast(movie.title + ' ' + show.time 
+      + '（' + show.screenName + '）を選びました');
+  }
+
+  var STATUS_LABEL = {
+    many: '<span class="st-mark st-many">◎</span>',
+    few: '<span class="st-mark st-few">残りわずか</span>',
+    soldout: '<span class="st-mark st-soldout">売切</span>',
+    presale: '<span class="st-presale">発売前</span>'
+  };
+
+  function renderSchedule() {
+    var wrap = $('schedule-list');
+    wrap.innerHTML = '';
+    var t = D.theater(S.plan.theaterId);
+    if (!t) {
+      wrap.innerHTML = '<div class="empty">先に映画館を選んでください（手順1）。</div>';
+      return;
+    }
+    var sched = window.CINEMA_SCHEDULE.forDate(t, scheduleDate);
+
+    sched.movies.forEach(function (entry) {
+      var m = entry.movie;
+      var block = document.createElement('div');
+      block.className = 'movie-block';
+
+      var head = document.createElement('div');
+      head.className = 'movie-head';
+      head.innerHTML =
+        '<span class="movie-title">' + esc(m.title) + '</span>' +
+        (entry.shows.some(function (x) { return x.format; })
+          ? '<span class="movie-badge">DOLBY CINEMA</span>' : '') +
+        '<span class="movie-meta">' + m.runtime + '分 ／ ' + esc(m.rating) + ' ／ ' + esc(m.tag) + '</span>';
+      block.appendChild(head);
+
+      var row = document.createElement('div');
+      row.className = 'show-row';
+      entry.shows.forEach(function (show) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'show-btn' + (isSelectedShow(m, show) ? ' on' : '');
+        b.disabled = show.status === 'soldout';
+        b.innerHTML =
+          '<span class="show-time">' + show.time + ' <small>〜' + show.endTime + '</small></span>' +
+          '<span class="show-sub">' + esc(show.screenName) + ' ' + STATUS_LABEL[show.status] + '</span>';
+        if (!b.disabled) {
+          b.addEventListener('click', function () { selectShow(m, show); });
+        }
+        row.appendChild(b);
+      });
+      block.appendChild(row);
+      wrap.appendChild(block);
+    });
+
+    var note = document.createElement('p');
+    note.className = 'sched-note';
+    note.textContent = sched.onSale
+      ? '◎=空席あり ／ この日の回は発売中です'
+      : 'この日の回はまだ発売前です（発売は上映日の2日前 0:00）。時間帯を選んでおくと、発売と同時に確保を試みます。';
+    wrap.appendChild(note);
   }
 
   /* ---- フォーム ---------------------------------------------------- */
@@ -1141,8 +1292,9 @@
     });
     $('btn-to-seats').addEventListener('click', function () {
       readForm();
-      if (!S.plan.title) { toast('作品タイトルを入力してください'); return; }
-      if (!S.plan.date || !S.plan.showtime) { toast('上映日と開映時刻を入力してください'); return; }
+      if (!S.plan.title || !S.plan.date || !S.plan.showtime) {
+        toast('作品と時間帯を選んでください'); return;
+      }
       showView('seats');
     });
     $('btn-to-run').addEventListener('click', function () {
@@ -1168,7 +1320,12 @@
     });
 
     ['f-title', 'f-date', 'f-time', 'f-runtime'].forEach(function (id) {
-      $(id).addEventListener('input', function () { readForm(); updateSeatContext(); });
+      $(id).addEventListener('input', function () {
+        readForm();
+        updateSeatContext();
+        renderPlanSelbar();
+        if (id === 'f-date' && S.plan.date) { scheduleDate = S.plan.date; renderDateStrip(); renderSchedule(); }
+      });
     });
 
     $('f-count').addEventListener('input', function () {

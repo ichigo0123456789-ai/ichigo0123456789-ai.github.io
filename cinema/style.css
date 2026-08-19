@@ -146,6 +146,46 @@ select{cursor:pointer}
 .sel-chip.empty{border-style:dashed;color:var(--faint)}
 .sel-chip .sc-label{font-size:10px;letter-spacing:.06em;color:var(--faint)}
 
+/* ---- ② 番組表 ---- */
+.date-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin}
+.date-chip{flex:none;min-width:64px;text-align:center;background:var(--bg-2);border:1px solid var(--line-2);
+  border-radius:10px;padding:7px 10px 6px;cursor:pointer;transition:.15s;line-height:1.35}
+.date-chip:hover{border-color:var(--faint)}
+.date-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.date-chip .dc-dow{display:block;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--faint)}
+.date-chip.on .dc-dow{color:rgba(255,255,255,.8)}
+.date-chip .dc-day{display:block;font-size:16px;font-weight:800;font-family:var(--mono)}
+.date-chip .dc-sat{color:var(--cool)} .date-chip .dc-sun{color:var(--accent)}
+.date-chip.on .dc-sat,.date-chip.on .dc-sun{color:#fff}
+
+.schedule-list{display:flex;flex-direction:column;gap:14px}
+.movie-block{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;background:var(--bg-2)}
+.movie-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:10px 14px 8px;border-bottom:1px solid var(--line)}
+.movie-title{font-size:14.5px;font-weight:800}
+.movie-meta{font-size:11px;color:var(--faint)}
+.movie-badge{font-size:10px;font-weight:800;padding:1px 7px;border-radius:5px;
+  background:var(--cool-soft);border:1px solid var(--cool-line);color:var(--cool)}
+.show-row{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px 12px}
+.show-btn{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:7px 12px 6px;cursor:pointer;text-align:left;transition:.15s;line-height:1.4;box-shadow:var(--shadow-sm)}
+.show-btn:hover:not(:disabled):not(.on){border-color:var(--accent);background:var(--accent-soft)}
+.show-btn.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 12px -6px var(--accent)}
+.show-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.show-time{font-family:var(--mono);font-size:15px;font-weight:700;display:block}
+.show-time small{font-size:10.5px;font-weight:400;color:var(--faint)}
+.show-btn.on .show-time small{color:rgba(255,255,255,.75)}
+.show-sub{font-size:10.5px;color:var(--sub);display:flex;gap:6px;align-items:center}
+.show-btn.on .show-sub{color:rgba(255,255,255,.85)}
+.st-mark{font-weight:800}
+.st-many{color:var(--ok)} .st-few{color:var(--amber)} .st-soldout{color:var(--err)}
+.st-presale{color:var(--cool);font-size:9.5px;font-weight:800;border:1px solid var(--cool-line);
+  background:var(--cool-soft);border-radius:4px;padding:0 5px}
+.show-btn.on .st-many,.show-btn.on .st-few,.show-btn.on .st-presale{color:#fff;border-color:rgba(255,255,255,.5);background:transparent}
+.sched-note{font-size:11.5px;color:var(--faint);padding:8px 2px 0}
+
+.manual-entry summary{font-size:12px;color:var(--sub);cursor:pointer;user-select:none;margin-bottom:12px}
+.manual-entry[open] summary{color:var(--ink);font-weight:700}
+
 /* ---- 券種 ---- */
 .ticket-rows{display:flex;flex-direction:column;gap:7px}
 .ticket-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
