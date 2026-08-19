@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>座席オートリザーブ｜T・ジョイ横浜</title>
+<meta name="description" content="T・ジョイ横浜（KINEZO）の上映回と座席を先に決めておき、発売開始と同時に座席を確保するためのプランナー。Phase 1 はモック環境での動作検証用。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ff4d64'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'%3E%3Crect x='6' y='11' width='20' height='14' rx='2'/%3E%3Cpath d='M6 15h20'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="in">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="m6 6 2.5-3M11 6l2.5-3M16 6l2.5-3"/>
+        </svg>
+      </div>
+      <div>
+        <h1>座席オートリザーブ</h1>
+        <p class="sub">T・ジョイ横浜（KINEZO）／ 予約プランを先に組み、発売と同時に押さえる</p>
+      </div>
+    </div>
+    <div class="phase-chip" title="Phase 1 は実サイトへ一切アクセスしません">
+      <span class="dot"></span>Phase&nbsp;1 ／ モック環境
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-view="theater">1. 映画館</button>
+    <button class="tab" data-view="plan">2. 日にちと作品</button>
+    <button class="tab" data-view="seats">3. 座席を選ぶ</button>
+    <button class="tab" data-view="run">4. 実行</button>
+    <button class="tab" data-view="result">5. 予約後</button>
+    <button class="tab" data-view="privacy">個人情報の扱い</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ 1. 映画館 ============ -->
+<section id="view-theater" class="view on">
+  <div class="card">
+    <h2>映画館を選ぶ</h2>
+    <p class="note">名前で検索するか、マップのピンから選んでください。現在対応しているのは T・ジョイ横浜のみです（対応劇場は順次追加予定）。</p>
+
+    <div class="theater-layout">
+      <div>
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="theater-search" type="search" placeholder="劇場名・都道府県・駅名で検索" autocomplete="off">
+        </div>
+        <div id="theater-list" class="theater-list"></div>
+      </div>
+
+      <div class="map-wrap">
+        <svg id="jp-map" viewBox="0 0 1000 900" role="img" aria-label="全国マップ">
+          <!-- 簡略化した日本のシルエット -->
+          <g class="jp-land">
+            <!-- 北海道 -->
+            <path d="M735 95 L770 55 L825 45 L880 75 L900 125 L870 160 L820 150 L790 185 L745 195 L720 160 L700 125 Z"/>
+            <!-- 本州 -->
+            <path d="M745 235 L775 275 L770 330 L745 385 L715 435 L685 480
+                     L662 515 L648 545 L622 558 L600 545 L575 560 L548 572
+                     L515 578 L480 585 L452 600 L430 588 L400 585 L365 590
+                     L330 600 L295 615 L258 618 L228 605 L215 580 L235 560
+                     L275 555 L315 548 L355 540 L395 532 L430 528 L462 515
+                     L478 490 L470 462 L490 445 L520 430 L540 400 L558 362
+                     L580 320 L602 280 L630 250 L665 228 L705 215 Z"/>
+            <!-- 四国 -->
+            <path d="M395 640 L440 628 L485 632 L505 652 L488 678 L445 690 L405 678 L385 658 Z"/>
+            <!-- 九州 -->
+            <path d="M265 655 L305 640 L340 655 L352 690 L340 735 L318 775 L288 790 L258 768 L245 720 L248 680 Z"/>
+          </g>
+          <g id="map-pins"></g>
+        </svg>
+        <span class="map-note">対応劇場のみピンを表示しています</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-next">
+    <button class="btn primary" id="btn-to-plan" disabled>この映画館で次へ →</button>
+  </div>
+</section>
+
+<!-- ============ 2. 日にちと作品 ============ -->
+<section id="view-plan" class="view">
+  <div class="grid-2">
+    <div class="card">
+      <h2>日にちと作品を決める</h2>
+      <p class="note">予約したい上映回を1つ決めます。ここで入れた内容が実行時のターゲットになります。</p>
+      <div class="selection-bar" id="plan-selbar"></div>
+
+      <div class="field" hidden>
+        <label for="f-theater">劇場</label>
+        <select id="f-theater"></select>
+      </div>
+      <p class="hint" id="theater-note" hidden></p>
+
+      <div class="field">
+        <label for="f-title">作品タイトル</label>
+        <input id="f-title" type="text" placeholder="例：君たちはどう生きるか" autocomplete="off">
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="f-date">上映日</label>
+          <input id="f-date" type="date">
+        </div>
+        <div class="field">
+          <label for="f-time">開映時刻</label>
+          <input id="f-time" type="time" step="300">
+        </div>
+      </div>
+
+      <div class="row-2">
+      <div class="field">
+        <label for="f-screen">スクリーン</label>
+        <select id="f-screen"></select>
+      </div>
+      <div class="field">
+        <label for="f-runtime">上映時間（分）</label>
+        <input id="f-runtime" type="number" min="30" max="300" step="5" value="120">
+      </div>
+      </div>
+      <p class="hint" id="chain-note"></p>
+    </div>
+
+    <div class="card">
+      <h2>発売開始と枚数</h2>
+
+      <div class="field">
+        <label for="f-onsale">発売開始日時</label>
+        <input id="f-onsale" type="datetime-local">
+        <div class="inline-actions">
+          <button class="btn ghost sm" id="btn-onsale-auto">上映日の2日前 0:00 に合わせる</button>
+        </div>
+        <p class="hint">KINEZO の一般発売の慣例から計算します。作品や上映回によって例外があるので、公式の発売日時を必ず確認して上書きしてください。</p>
+      </div>
+
+      <div class="field">
+        <label for="f-count">枚数</label>
+        <input id="f-count" type="number" min="1" max="8" value="2">
+        <p class="hint">この枚数ぶんの席をひとまとまりの「候補」として扱います。</p>
+      </div>
+
+      <div class="field">
+        <label>券種の内訳</label>
+        <div id="ticket-rows" class="ticket-rows"></div>
+        <p class="hint" id="ticket-sum">—</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>保存したプラン</h2>
+      <div class="inline-actions">
+        <button class="btn ghost sm" id="btn-plan-new">新しいプラン</button>
+        <button class="btn sm" id="btn-plan-save">このプランを保存</button>
+      </div>
+    </div>
+    <div id="plan-list" class="plan-list"></div>
+  </div>
+
+  <div class="step-next">
+    <button class="btn primary" id="btn-to-seats">座席を選ぶ →</button>
+  </div>
+</section>
+
+<!-- ============ 3. 座席 ============ -->
+<section id="view-seats" class="view">
+  <div class="card">
+    <div class="card-head">
+      <h2>座席を選ぶ</h2>
+      <div class="legend">
+        <span><i class="sw sw-free"></i>空席</span>
+        <span><i class="sw sw-pick"></i>選択中</span>
+        <span><i class="sw sw-cand"></i>確保対象</span>
+        <span><i class="sw sw-taken"></i>売切</span>
+        <span><i class="sw sw-blocked"></i>販売対象外</span>
+        <span><i class="sw sw-wc"></i>車椅子スペース</span>
+        <span><i class="sw sw-mine"></i>確保済み</span>
+      </div>
+    </div>
+    <p class="note" id="seat-context">—</p>
+
+    <div class="seat-toolbar">
+      <label class="chk"><input type="checkbox" id="opt-consecutive" checked><span>連席で選ぶ（クリックした席から右へ枚数分）</span></label>
+      <div class="spacer"></div>
+      <button class="btn ghost sm" id="btn-auto-pick">中央の見やすい席を選ぶ</button>
+      <button class="btn ghost sm" id="btn-clear-pick">選択を解除</button>
+    </div>
+
+    <div class="pick-tray" id="pick-tray">
+      <span class="tray-label">確保する座席</span>
+      <span id="tray-seats" class="tray-seats">座席表からクリックして選んでください</span>
+    </div>
+
+    <div class="seatmap-wrap">
+      <div class="screen-bar">SCREEN（この向きがスクリーン）</div>
+      <div id="seatmap" class="seatmap"></div>
+    </div>
+  </div>
+
+  <div class="step-next">
+    <button class="btn primary" id="btn-to-run" disabled>実行設定へ →</button>
+  </div>
+</section>
+
+<!-- ============ 4. 実行 ============ -->
+<section id="view-run" class="view">
+  <div class="grid-2">
+    <div class="card">
+      <h2>実行設定</h2>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="s-preconnect">事前接続（秒前）</label>
+          <input id="s-preconnect" type="number" min="0" max="120" value="20">
+          <p class="hint">発売の何秒前に座席選択画面を開いておくか。待機列がある場合、ここが短いと発売の瞬間に間に合いません。</p>
+        </div>
+        <div class="field">
+          <label for="s-poll">再試行の間隔（ms）</label>
+          <input id="s-poll" type="number" min="500" step="100" value="1000">
+          <p class="hint">下限 500ms。これより短い値は実行時に切り上げます。</p>
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="s-deadline">打ち切り（秒）</label>
+          <input id="s-deadline" type="number" min="10" max="900" value="180">
+        </div>
+        <div class="field">
+          <label class="chk mt"><input type="checkbox" id="s-fallback"><span>取れなかったら空席から自動で拾う</span></label>
+          <p class="hint">枚数分の連席のうち、最も条件の良いものを選びます。</p>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>発売の瞬間の速さ</h3>
+      <p class="note">「速く取る」の中身はほぼ次の3つです。順に効きます。</p>
+
+      <div class="speed-item">
+        <label class="chk"><input type="checkbox" id="s-holdfirst" checked><span><b>座席表を待たずに確保を投げる</b></span></label>
+        <p class="hint">
+          欲しい席が決まっているなら、座席表を取ってから確保するのは1往復ぶん遅いだけです。
+          発売の瞬間はいきなり確保を投げ、失敗して初めて座席表を取りにいきます。
+          発売から5秒以上経って始めた場合は、空振りのほうが高くつくので自動的に無効になります。
+        </p>
+      </div>
+
+      <div class="speed-item">
+        <div class="sync-head">
+          <b>サーバ時刻と同期する</b>
+          <button class="btn sm" id="btn-sync">いま同期する</button>
+        </div>
+        <p class="hint">
+          手元の時計が2秒遅れていれば、どれだけ速いコードでも2秒出遅れます。体感で最も効くのはここです。
+          HTTP の Date ヘッダを繰り返し測り、秒境界をまたぐサンプルを交差させてサブ秒まで絞り込みます。
+        </p>
+        <div class="sync-result" id="sync-result">未同期（この端末の時計をそのまま使います）</div>
+      </div>
+
+      <div class="speed-item">
+        <b>発売時刻ちょうどに発火する</b>
+        <p class="hint">
+          setTimeout は数十ms〜数百msずれます。遠いうちは粗く、直前は MessageChannel で
+          1ms 未満の粒度まで詰めています。設定は不要です。
+        </p>
+        <div class="sync-result" id="visibility-note">タブを表示したままにしてください。背景タブではタイマーが1秒以上まとめられ、発売の瞬間を外します。</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>モック環境の設定</h3>
+      <p class="note">Phase 1 では KINEZO の代わりに、他ユーザーが席を埋めていく劇場を再現します。</p>
+      <div class="row-2">
+        <div class="field">
+          <label for="s-congestion">混雑度</label>
+          <select id="s-congestion"></select>
+        </div>
+        <div class="field">
+          <label for="s-seed">シード</label>
+          <input id="s-seed" type="text" value="rehearsal-1">
+          <p class="hint">同じシードなら同じ結果を再現します。</p>
+        </div>
+      </div>
+      <div class="field">
+        <label for="s-speed">リハーサルの早送り倍率</label>
+        <input id="s-speed" type="number" min="1" max="200" value="30">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>発売開始まで</h2>
+      <div class="countdown" id="countdown">—</div>
+      <p class="hint" id="countdown-sub">プランを選ぶとカウントダウンが始まります。</p>
+
+      <div class="run-actions">
+        <button class="btn primary" id="btn-run-live">本番実行（発売時刻まで待機）</button>
+        <button class="btn" id="btn-run-rehearsal">リハーサル（早送り）</button>
+        <button class="btn danger" id="btn-run-abort" disabled>中止</button>
+      </div>
+
+      <div class="state-row">
+        <span class="state-chip" id="state-chip" data-state="idle">待機中</span>
+        <span class="hint" id="state-detail"></span>
+      </div>
+
+      <div class="hr"></div>
+      <div class="card-head">
+        <h3>実行ログ</h3>
+        <label class="chk sm-chk"><input type="checkbox" id="log-verbose"><span>詳細も表示</span></label>
+      </div>
+      <div id="log" class="log" role="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="card" id="timeline-card" hidden>
+    <h2>どこに何ミリ秒かかったか</h2>
+    <p class="note">発売開始を 0ms としたときの各段階の到達時刻です。速くなったと言い張らずに測ります。</p>
+    <p class="hint" id="timeline-note"></p>
+    <table class="data-table timeline-table">
+      <thead><tr><th>段階</th><th>発売開始から</th><th>この区間</th></tr></thead>
+      <tbody id="timeline-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>座席の推移</h2>
+    <p class="note">実行中は取得した座席状況をここに反映します。</p>
+    <div class="seatmap-wrap">
+      <div class="screen-bar">SCREEN（この向きがスクリーン）</div>
+      <div id="seatmap-live" class="seatmap live"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. 予約後 ============ -->
+<section id="view-result" class="view">
+  <div class="card" id="result-card">
+    <h2>確保結果</h2>
+    <div id="result-body"><p class="note">まだ実行していません。</p></div>
+  </div>
+
+  <div class="card">
+    <h2>カレンダーに登録</h2>
+    <p class="note">確保できた上映回を Google カレンダーに追加します。開映の前に着けるよう、開始時刻の20分前から予定を作ります（変更可）。</p>
+    <div class="row-2">
+      <div class="field">
+        <label for="c-lead">何分前から予定にするか</label>
+        <input id="c-lead" type="number" min="0" max="120" step="5" value="20">
+      </div>
+      <div class="field">
+        <label for="c-remind">通知（分前）</label>
+        <input id="c-remind" type="number" min="0" max="1440" step="5" value="60">
+      </div>
+    </div>
+    <div class="inline-actions">
+      <a class="btn primary" id="btn-gcal" target="_blank" rel="noopener">Google カレンダーに追加</a>
+      <button class="btn" id="btn-ics">.ics をダウンロード</button>
+    </div>
+    <p class="hint">Google カレンダーのボタンは予定作成画面を開くだけで、この端末の外へデータを送りません。.ics は Apple カレンダー等でも読み込めます。</p>
+  </div>
+
+  <div class="card">
+    <h2>決済（Phase 2 予定）</h2>
+    <p class="note">
+      いまは座席の確保までで止めています。確保後は保持時間（モックでは10分）のうちに、
+      KINEZO の決済画面で自分で購入を完了させる運用です。
+    </p>
+    <ul class="todo">
+      <li><span class="badge todo-b">Phase 2</span> ローカル runner（Node + Playwright）から決済フォームを自動入力</li>
+      <li><span class="badge todo-b">Phase 2</span> カード情報は OS キーチェーンに保存し、ブラウザ側には一切置かない</li>
+      <li><span class="badge todo-b">Phase 2</span> 購入完了メールの検知 → カレンダー登録までを自動化</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 個人情報 ============ -->
+<section id="view-privacy" class="view">
+  <div class="card">
+    <h2>いま、どのデータがどこにあるか</h2>
+    <table class="data-table">
+      <thead><tr><th>データ</th><th>保存先</th><th>外部送信</th></tr></thead>
+      <tbody>
+        <tr><td>予約プラン（劇場・作品・上映回・座席候補）</td><td>この端末の localStorage</td><td class="ok">なし</td></tr>
+        <tr><td>実行ログ</td><td>メモリのみ（リロードで消える）</td><td class="ok">なし</td></tr>
+        <tr><td>予約者情報（氏名・電話・メール）</td><td>下の設定を ON にしたときのみ localStorage</td><td class="ok">なし</td></tr>
+        <tr><td>KINEZO（キネパス）の会員ID・パスワード</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
+        <tr><td>クレジットカード情報</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      このページは GitHub Pages 上の静的サイトで、サーバ側の保存領域を持ちません。
+      入力内容はブラウザから出ないため、外部に漏れる経路がそもそもありません。
+      ただし共用PCでは localStorage が他の利用者から読めるので、下のボタンで消してください。
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Phase 2 で認証情報が必要になったら</h2>
+    <p class="note">実際に KINEZO へログインして座席を押さえる段階では、キネパスの会員IDとパスワードが要ります。そのときの方針を先に決めておきます。</p>
+    <ul class="policy">
+      <li><b>ブラウザには置かない。</b> 認証情報は手元PCで動く runner だけが持ち、静的サイト側は一切受け取りません。</li>
+      <li><b>OS のキーチェーンに預ける。</b> macOS Keychain / Windows 資格情報マネージャー / libsecret に保存し、平文の設定ファイルには書きません。</li>
+      <li><b>リポジトリには絶対に入れない。</b> 認証情報を含むファイルは <code>.gitignore</code> で除外し、コミット前に検知する仕組みを入れます。</li>
+      <li><b>ログに残さない。</b> runner のログは会員番号・カード番号をマスクしてから出力します。</li>
+      <li><b>予約は自分の1件だけ。</b> 複数アカウントの並列実行や転売目的の大量確保には対応しません。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>予約者情報（任意）</h2>
+      <label class="chk"><input type="checkbox" id="p-save"><span>この端末に保存する</span></label>
+    </div>
+    <p class="note">Phase 2 で予約フォームの自動入力に使います。OFF のあいだは入力しても保存されません。</p>
+    <div class="row-3">
+      <div class="field"><label for="p-name">氏名</label><input id="p-name" type="text" autocomplete="off"></div>
+      <div class="field"><label for="p-tel">電話番号</label><input id="p-tel" type="tel" autocomplete="off"></div>
+      <div class="field"><label for="p-mail">メールアドレス</label><input id="p-mail" type="email" autocomplete="off"></div>
+    </div>
+    <div class="inline-actions">
+      <button class="btn danger" id="btn-wipe">この端末の保存データをすべて削除</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>座席データについて</h2>
+    <p class="note">
+      スクリーン数（9）・各シアターの座席数（合計1,212席＋車椅子18席）・料金・発売タイミングは公開情報にもとづく実データです。
+      <b>シアター4（DOLBY CINEMA）は座席配置・席番号とも実データ</b>です
+      — 15列325席、E列とL列は欠番で横通路、縦通路2本、J列とM列の左端に車椅子スペース。
+      席番号はスクリーンに向かって左から数えたグリッド位置（縦通路が5と21を消費）で、
+      全325席のIDが KINEZO の座席選択画面の実IDと一致することを照合済みです。
+    </p>
+    <p class="note">
+      シアター4以外は「どの列に何席あるか」が公開されていないため、<b>列ごとの座席配置は総席数が一致するよう生成した近似</b>で、
+      KINEZO の実際の座席表とは列幅や席番号が一致しません。
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>自動化を使ううえでの前提</h2>
+    <ul class="policy">
+      <li>KINEZO の利用規約で自動アクセスが禁止されている場合があります。使う前に必ず規約を確認してください。</li>
+      <li>このツールは<b>自分が観る1件の予約</b>を取ることだけを想定しています。転売目的の大量確保はできない作りにしてあります。</li>
+      <li>リクエスト間隔には下限（500ms）を強制しています。連打はサーバ負荷になるだけでなく、遮断されて成功率も下がります。</li>
+      <li>確保に失敗しても、そのぶん誰かが観られています。取れなかったときに粘り続けない打ち切り時間を必ず設定してください。</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <span>Phase 1 — モック環境。KINEZO へは接続しません。</span>
+</footer>
+
+<script src="data/theaters.js"></script>
+<script src="speed.js"></script>
+<script src="engine.js"></script>
+<script src="runner.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
