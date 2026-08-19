@@ -382,7 +382,7 @@
         '<span class="movie-title">' + esc(m.title) + '</span>' +
         (entry.shows.some(function (x) { return x.format; })
           ? '<span class="movie-badge">DOLBY CINEMA</span>' : '') +
-        '<span class="movie-meta">' + m.runtime + '分 ／ ' + esc(m.rating) + ' ／ ' + esc(m.tag) + '</span>';
+        '<span class="movie-meta">' + m.runtime + '分' + (m.note ? ' ／ ' + esc(m.note) : '') + '</span>';
       block.appendChild(head);
 
       var row = document.createElement('div');
@@ -406,9 +406,10 @@
 
     var note = document.createElement('p');
     note.className = 'sched-note';
-    note.textContent = sched.onSale
-      ? '◎=空席あり ／ この日の回は発売中です'
-      : 'この日の回はまだ発売前です（発売は上映日の2日前 0:00）。時間帯を選んでおくと、発売と同時に確保を試みます。';
+    note.textContent = (sched.onSale
+      ? '◎=空席あり ／ この日の回は発売中です。'
+      : 'この日の回はまだ発売前です（発売は上映日の2日前 0:00）。時間帯を選んでおくと、発売と同時に確保を試みます。')
+      + ' 作品は' + sched.asOf.replace(/-/g, '/') + '時点の上映ラインナップ、時間帯はサンプルです。';
     wrap.appendChild(note);
   }
 
@@ -1319,14 +1320,8 @@
       updateSeatContext();
     });
 
-    ['f-title', 'f-date', 'f-time', 'f-runtime'].forEach(function (id) {
-      $(id).addEventListener('input', function () {
-        readForm();
-        updateSeatContext();
-        renderPlanSelbar();
-        if (id === 'f-date' && S.plan.date) { scheduleDate = S.plan.date; renderDateStrip(); renderSchedule(); }
-      });
-    });
+    /* 作品・日時は番組表からの選択でのみ決まる（手入力欄は廃止）。
+       同期用の隠しフィールドはユーザー操作では変化しない。 */
 
     $('f-count').addEventListener('input', function () {
       readForm();
