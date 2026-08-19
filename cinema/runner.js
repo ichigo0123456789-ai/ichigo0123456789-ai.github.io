@@ -324,7 +324,8 @@
         self._log('dim', '座席状況を取得（空席 ' + free + '席） 試行#' + self.attempts);
         self.onState('hunting', { seatMap: r.seats, attempt: self.attempts });
 
-        /* 優先順位の高い候補から順に見る */
+        /* 候補を順に見る。UI はいま1組しか作らないが、
+           将来の優先順位付けに備えてループのままにしてある。 */
         var target = null;
         for (var i = 0; i < plan.candidates.length; i++) {
           var c = plan.candidates[i];
