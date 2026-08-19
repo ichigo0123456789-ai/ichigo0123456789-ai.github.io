@@ -94,7 +94,7 @@
   <div class="grid-2">
     <div class="card">
       <h2>日にちと作品を決める</h2>
-      <p class="note">日にちを選び、観たい作品の時間帯をタップしてください。<b>上映作品はサンプルです</b>（Phase 2 で実際の番組表に置き換えます）。</p>
+      <p class="note">日にちを選び、観たい作品の時間帯をタップしてください。作品は T・ジョイ横浜で上映中のラインナップ（2026/8/19時点）ですが、<b>時間帯はサンプル</b>です（Phase 2 で実際の番組表に置き換えます）。</p>
       <div class="selection-bar" id="plan-selbar"></div>
 
       <div class="date-strip" id="date-strip"></div>
@@ -102,36 +102,13 @@
       <div id="schedule-list" class="schedule-list"></div>
       <p class="hint" id="chain-note"></p>
 
-      <div class="hr"></div>
-      <details class="manual-entry">
-        <summary>リストにない作品を手入力する</summary>
-        <div class="field">
-          <label for="f-title">作品タイトル</label>
-          <input id="f-title" type="text" placeholder="例：君たちはどう生きるか" autocomplete="off">
-        </div>
-        <div class="row-2">
-          <div class="field">
-            <label for="f-date">上映日</label>
-            <input id="f-date" type="date">
-          </div>
-          <div class="field">
-            <label for="f-time">開映時刻</label>
-            <input id="f-time" type="time" step="300">
-          </div>
-        </div>
-        <div class="row-2">
-          <div class="field">
-            <label for="f-screen">スクリーン</label>
-            <select id="f-screen"></select>
-          </div>
-          <div class="field">
-            <label for="f-runtime">上映時間（分）</label>
-            <input id="f-runtime" type="number" min="30" max="300" step="5" value="120">
-          </div>
-        </div>
-      </details>
-
-      <div class="field" hidden>
+      <!-- 番組表の選択内容の同期先。readForm() がここから読む。 -->
+      <div hidden>
+        <input id="f-title" type="text">
+        <input id="f-date" type="date">
+        <input id="f-time" type="time">
+        <select id="f-screen"></select>
+        <input id="f-runtime" type="number" value="120">
         <select id="f-theater"></select>
       </div>
       <p class="hint" id="theater-note" hidden></p>

@@ -183,9 +183,6 @@ select{cursor:pointer}
 .show-btn.on .st-many,.show-btn.on .st-few,.show-btn.on .st-presale{color:#fff;border-color:rgba(255,255,255,.5);background:transparent}
 .sched-note{font-size:11.5px;color:var(--faint);padding:8px 2px 0}
 
-.manual-entry summary{font-size:12px;color:var(--sub);cursor:pointer;user-select:none;margin-bottom:12px}
-.manual-entry[open] summary{color:var(--ink);font-weight:700}
-
 /* ---- 券種 ---- */
 .ticket-rows{display:flex;flex-direction:column;gap:7px}
 .ticket-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
