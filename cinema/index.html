@@ -299,6 +299,7 @@
         <span class="state-chip" id="state-chip" data-state="idle">待機中</span>
         <span class="hint" id="state-detail"></span>
       </div>
+      <div class="run-precheck" id="run-precheck" role="button" tabindex="0">—</div>
 
       <div class="hr"></div>
       <div class="card-head">
@@ -380,7 +381,7 @@
         <tr><td>予約プラン（劇場・作品・上映回・座席候補）</td><td>この端末の localStorage</td><td class="ok">なし</td></tr>
         <tr><td>実行ログ</td><td>メモリのみ（リロードで消える）</td><td class="ok">なし</td></tr>
         <tr><td>予約者情報（氏名・電話・メール）</td><td>下の設定を ON にしたときのみ localStorage</td><td class="ok">なし</td></tr>
-        <tr><td>KINEZO（キネパス）の会員ID・パスワード</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
+        <tr><td>KINEZO（キネパス）の会員ID・パスワード</td><td>Google Drive の非公開ファイル（kinezo-credential）。このサイトは受け取らない</td><td class="ok">なし</td></tr>
         <tr><td>クレジットカード情報</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
       </tbody>
     </table>
@@ -392,15 +393,32 @@
   </div>
 
   <div class="card">
-    <h2>Phase 2 で認証情報が必要になったら</h2>
-    <p class="note">実際に KINEZO へログインして座席を押さえる段階では、キネパスの会員IDとパスワードが要ります。そのときの方針を先に決めておきます。</p>
+    <h2>認証情報の方針（Phase 2）</h2>
+    <p class="note">実際に KINEZO へログインして座席を押さえる段階では、キネパスの会員IDとパスワードが要ります。決定済みの方針は次のとおりです。</p>
     <ul class="policy">
-      <li><b>ブラウザには置かない。</b> 認証情報は手元PCで動く runner だけが持ち、静的サイト側は一切受け取りません。</li>
-      <li><b>OS のキーチェーンに預ける。</b> macOS Keychain / Windows 資格情報マネージャー / libsecret に保存し、平文の設定ファイルには書きません。</li>
-      <li><b>リポジトリには絶対に入れない。</b> 認証情報を含むファイルは <code>.gitignore</code> で除外し、コミット前に検知する仕組みを入れます。</li>
-      <li><b>ログに残さない。</b> runner のログは会員番号・カード番号をマスクしてから出力します。</li>
+      <li><b>保管は Google Drive の非公開ファイル。</b> マイドライブ &gt; Claude &gt; <code>kinezo-credential</code> に本人が直接書き込みます。このサイトは認証情報を一切受け取りません。</li>
+      <li><b>実行はクラウドの実行体。</b> 予約の実行時にだけ Drive からファイルを読み、値はログ・チャット・コミットのどこにも出力しません。</li>
+      <li><b>ファイルは共有しない。</b> Drive の共有設定は「自分のみ」。Google アカウントの2段階認証を必須とします。</li>
+      <li><b>リポジトリには絶対に入れない。</b> 認証情報を含むファイルはコミットしません。</li>
       <li><b>予約は自分の1件だけ。</b> 複数アカウントの並列実行や転売目的の大量確保には対応しません。</li>
+      <li><b>カード情報は保存しない。</b> 決済は KINEZO 側の登録済み手段か「あとから決済」を使います。</li>
     </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>ログイン準備チェック（KINEZO）</h2>
+      <span class="check-progress" id="check-progress">0/0</span>
+    </div>
+    <p class="note">
+      本番の予約実行までに確認しておく項目です。チェック状態はこの端末に保存されます。
+      静的サイトからは KINEZO へのログインを自動では試せないため（Phase 2 の実行体が担当）、
+      いまは手動確認のチェックリストです。
+    </p>
+    <div class="checklist" id="login-checklist"></div>
+    <div class="inline-actions">
+      <a class="btn sm" href="https://tjoy.jp/t-joy_yokohama" target="_blank" rel="noopener">T・ジョイ横浜を開いて手動ログインを試す</a>
+    </div>
   </div>
 
   <div class="card">

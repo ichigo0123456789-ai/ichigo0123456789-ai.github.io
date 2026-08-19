@@ -157,7 +157,8 @@
       renderSchedule();
     }
     if (name === 'seats') { renderSeatEditor(); renderRulesBox(); }
-    if (name === 'run') renderLiveMap();
+    if (name === 'run') { renderLiveMap(); updateRunPrecheck(); }
+    if (name === 'privacy') renderChecklist();
     window.scrollTo(0, 0);
   }
 
@@ -1294,6 +1295,94 @@
     return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
   }
 
+  /* ---- ログイン準備チェック ----------------------------------------
+     本番実行までに人間が確認しておく項目。静的サイトからは KINEZO への
+     ログインを自動では試せないため、いまは手動チェックリスト。
+     Phase 2 の実行体ができたら「実際にログインして確認」ボタンに置き換える。 */
+
+  var LS_CHECKLIST = 'cinema.checklist.v1';
+
+  var LOGIN_CHECKS = [
+    { id: 'member',
+      label: 'KINEZO（キネパス）の会員登録が済んでいる',
+      sub: '会員登録（無料）が予約の前提。未登録なら T・ジョイのサイトから登録する' },
+    { id: 'manual-login',
+      label: 'T・ジョイのサイトで手動ログインできることを確認した',
+      sub: 'ID・パスワードが正しいことの確認。下のボタンからサイトを開ける' },
+    { id: 'drive-file',
+      label: 'Google Drive の kinezo-credential にID・パスワードを書いた',
+      sub: 'マイドライブ > Claude > kinezo-credential。KINEZO_ID= と KINEZO_PASSWORD= の行を実際の値に書き換える' },
+    { id: 'drive-private',
+      label: 'kinezo-credential を誰とも共有していない',
+      sub: 'Drive の共有設定が「自分のみ」になっていることを確認' },
+    { id: 'google-2fa',
+      label: 'Google アカウントの2段階認証が有効になっている',
+      sub: 'Drive に認証情報を置く以上、Google アカウント自体の保護が生命線' },
+    { id: 'payment',
+      label: '支払い方法を決めてある',
+      sub: 'オンライン決済（クレジット/PayPay等）か「あとから決済」（支払期限あり・期限超過で自動キャンセル）か' },
+    { id: 'password-fresh',
+      label: 'パスワードを変更した場合、Drive のファイルも更新した',
+      sub: '古いパスワードのままだと本番でログインに失敗する' }
+  ];
+
+  function loadChecklist() {
+    try { return JSON.parse(localStorage.getItem(LS_CHECKLIST)) || {}; }
+    catch (e) { return {}; }
+  }
+
+  function checklistDone() {
+    var st = loadChecklist();
+    return LOGIN_CHECKS.filter(function (c) { return st[c.id]; }).length;
+  }
+
+  function renderChecklist() {
+    var wrap = $('login-checklist');
+    if (!wrap) return;
+    var st = loadChecklist();
+    wrap.innerHTML = '';
+    LOGIN_CHECKS.forEach(function (c) {
+      var on = !!st[c.id];
+      var item = document.createElement('label');
+      item.className = 'check-item' + (on ? ' on' : '');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = on;
+      cb.addEventListener('change', function () {
+        var cur = loadChecklist();
+        cur[c.id] = cb.checked;
+        try { localStorage.setItem(LS_CHECKLIST, JSON.stringify(cur)); } catch (e) {}
+        renderChecklist();
+        updateRunPrecheck();
+      });
+      var body = document.createElement('span');
+      body.innerHTML = '<span class="ci-label">' + esc(c.label) + '</span><br>' +
+        '<span class="ci-sub">' + esc(c.sub) + '</span>';
+      item.appendChild(cb);
+      item.appendChild(body);
+      wrap.appendChild(item);
+    });
+    var prog = $('check-progress');
+    var done = checklistDone();
+    prog.textContent = done + '/' + LOGIN_CHECKS.length;
+    prog.classList.toggle('done', done === LOGIN_CHECKS.length);
+  }
+
+  /** 実行タブに準備状況を出す */
+  function updateRunPrecheck() {
+    var el = $('run-precheck');
+    if (!el) return;
+    var done = checklistDone();
+    var all = LOGIN_CHECKS.length;
+    if (done === all) {
+      el.className = 'run-precheck ok';
+      el.textContent = '✓ ログイン準備チェック ' + done + '/' + all + ' 完了';
+    } else {
+      el.className = 'run-precheck';
+      el.textContent = '⚠ ログイン準備チェックが ' + done + '/' + all + ' です（「個人情報の扱い」タブで確認） — 本番の予約実行には KINEZO ログインの準備が必要です';
+    }
+  }
+
   /* ---- 個人情報パネル ---------------------------------------------- */
 
   function writeProfile() {
@@ -1315,15 +1404,22 @@
       saveProfile();
       toast(S.profile.save ? 'この端末に保存します' : '保存を解除し、保存済みの内容も削除しました');
     });
+    $('run-precheck').addEventListener('click', function () {
+      if (!this.classList.contains('ok')) { readForm(); showView('privacy'); }
+    });
+
     $('btn-wipe').addEventListener('click', function () {
       if (!confirm('保存済みのプランと予約者情報をすべて削除します。よろしいですか？')) return;
       localStorage.removeItem(LS_PLANS);
       localStorage.removeItem(LS_PROFILE);
+      localStorage.removeItem(LS_CHECKLIST);
       S.plans = [];
       S.profile = { save: false, name: '', tel: '', mail: '' };
       S.plan = blankPlan();
       writeProfile();
       writeForm();
+      renderChecklist();
+      updateRunPrecheck();
       toast('削除しました');
     });
   }
