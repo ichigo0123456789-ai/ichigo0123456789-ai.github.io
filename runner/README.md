@@ -50,6 +50,29 @@ node runner/reserve.js --date 2026-08-27 --title ユーフォニアム \
 `--at` を使うと発売時刻まで待って確保します＝**発売前にPCで起動しておく運用**。
 席の確保（仮予約）まで自動、**券種選択・決済は人間がブラウザで完了**します。
 
+> ⚠️ **純Node版（reserve.js）の制約**：仮予約は実行時のログインセッションに紐づくため、
+> 掴んだ席は**別ブラウザに引き継げません**（choice_ticket のURLを貼っても
+> 「アクセスに失敗しました」。マイページにも出ません）。実機で確認済み。
+> **決済まで人間が続けたい場合は下の可視ブラウザ版を使ってください。**
+
+### 予約（可視ブラウザ版 = 推奨）`reserve-browser.js`
+
+実ブラウザを1枚立ち上げ、ログイン→席確保まで自動 → **同じウィンドウを開いたまま**にする。
+決済はその同じセッションで人間が続けるので、引き継ぎ問題が起きない。
+
+```bash
+# 初回だけ Playwright を導入
+cd runner && npm install && npx playwright install chromium && cd ..
+
+node runner/reserve-browser.js --login-only                          # ①ログイン確認
+node runner/reserve-browser.js --date 2026-08-21 --title オークストリート \
+  --time 15:00 --seats A-3 --dry                                     # ②予行演習（確保しない）
+node runner/reserve-browser.js --date 2026-08-21 --title オークストリート \
+  --time 15:00 --seats A-3                                           # ③確保→開いたまま決済
+node runner/reserve-browser.js --date 2026-08-27 --title ユーフォニアム \
+  --time 10:00 --seats G-10,G-11 --at "2026-08-25T00:00:00+09:00"    # ④発売時刻に確保
+```
+
 ## 構成
 
 | ファイル | 役割 |
@@ -58,7 +81,9 @@ node runner/reserve.js --date 2026-08-27 --title ユーフォニアム \
 | `lib/kinezo.js` | KINEZO アダプタ本体。`init/fetchSchedule/openShow/fetchSeatMap/login/hold` |
 | `config.js` | 認証情報をローカルからのみ読む（値は出力しない） |
 | `probe.js` | 動作確認 CLI（認証不要） |
-| `reserve.js` | 予約オーケストレータ（ログイン→席確保→停止） |
+| `reserve.js` | 予約オーケストレータ・純Node版（席確保まで。決済引き継ぎ不可） |
+| `reserve-browser.js` | 予約・可視ブラウザ版（Playwright）。**決済まで人間が同一画面で続けられる=推奨** |
+| `package.json` | Playwright 依存（`cd runner && npm install`） |
 | `.env.example` | 認証情報ファイルの雛形（コピーして `.env` に） |
 
 実サイトの仕様（API・URL・DOM）は `cinema/KINEZO-RESEARCH.md` を参照。
