@@ -75,16 +75,18 @@ async function waitUntil(iso) {
   var browser = await chromium.launch({ headless: false, args: ['--no-first-run', '--no-default-browser-check'] });
   var ctx = await browser.newContext({ locale: 'ja-JP' });
 
-  // 速度最適化: 画像/フォント/メディアを読み込まない。
-  // 座席は <area> 要素への click 発火で選択するので、座席表の画像は不要。
-  // （画像を出したい場合は環境変数 KINEZO_LOAD_IMAGES=1 で無効化できる）
-  if (!process.env.KINEZO_LOAD_IMAGES) {
-    await ctx.route('**/*', function (route) {
-      var t = route.request().resourceType();
-      if (t === 'image' || t === 'media' || t === 'font') return route.abort();
-      return route.continue();
-    });
-  }
+  // 速度最適化（任意）: フォント/メディアの読み込みを止める。
+  // ※ 座席表の「画像」は既定で読み込む。KINEZO は座席マップ画像の onload で
+  //   「読み込み中」オーバーレイを消すため、画像を止めると画面がローディングのまま
+  //   固まって見える。だから画像はブロックしない。
+  //   さらに削りたい上級者向けに KINEZO_BLOCK_IMAGES=1 で画像も止められる。
+  var blockImages = !!process.env.KINEZO_BLOCK_IMAGES;
+  await ctx.route('**/*', function (route) {
+    var t = route.request().resourceType();
+    if (t === 'media' || t === 'font') return route.abort();
+    if (blockImages && t === 'image') return route.abort();
+    return route.continue();
+  });
 
   var page = await ctx.newPage();
 
@@ -133,7 +135,7 @@ async function waitUntil(iso) {
     log('対象: ' + movie.title + ' ' + show.time + ' ｼｱﾀｰ' + show.screen);
 
     // 5) 予約フロー入口 → choice_seat（ログイン済みブラウザで）
-    await page.goto(BASE + show.reserveUrl, { waitUntil: 'domcontentloaded' });
+    await page.goto(BASE + show.reserveUrl, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
     await dismissModals(page);
     if (!/choice_seat/.test(page.url())) {
       log('注意: 座席選択画面に自動遷移しませんでした（発売前/待機列/規約同意の可能性）。現在: ' + page.url());
