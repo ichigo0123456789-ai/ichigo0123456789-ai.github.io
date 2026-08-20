@@ -68,11 +68,16 @@ async function syncServerClock(k, samples) {
  * 最後の数十msはビジースピンでミリ秒精度に寄せる。待機中は keepAlive を回す。
  * 発火した実時刻(ms)を返す。
  */
-async function waitUntil(fireAt, keepAlive) {
-  var lastPing = Date.now(), lastSec = -1, lastMin = -1;
+async function waitUntil(fireAt, keepAlive, onApproach) {
+  var lastPing = Date.now(), lastSec = -1, lastMin = -1, approached = false;
   while (true) {
     var remain = fireAt - Date.now();
     if (remain <= 0) break;
+    // 発火の約1.6秒前に一度だけ「接続ウォームアップ＋予約URL先読み」を実行
+    if (onApproach && !approached && remain <= 1600) {
+      approached = true;
+      try { await onApproach(); } catch (e) { log('事前準備で警告: ' + e.message); }
+    }
     if (keepAlive && remain > 5000 && Date.now() - lastPing > 180000) {
       lastPing = Date.now();
       try { await keepAlive(); } catch (e) { log('セッション維持で警告: ' + e.message); }
@@ -92,17 +97,21 @@ async function waitUntil(fireAt, keepAlive) {
   return Date.now();
 }
 
-/** 対象上映回を解決。発売直後は予約導線が出るまで数百msの遅延があるので少しリトライ。 */
+/** 対象上映回を1回だけ探す（予約導線が無ければ null）。 */
+async function resolveShowOnce(k, date, title, time) {
+  var sched = await k.fetchSchedule(date);
+  var movie = sched.find(function (m) { return m.title.indexOf(title) >= 0; });
+  if (!movie) return null;
+  return movie.shows.find(function (s) { return s.time === time && s.reserveUrl; }) || null;
+}
+
+/** 対象上映回を解決。発売直後は予約導線が出るまで遅延があるので短間隔でリトライ。 */
 async function resolveShow(k, date, title, time) {
-  for (var attempt = 0; attempt < 20; attempt++) {
-    var sched = await k.fetchSchedule(date);
-    var movie = sched.find(function (m) { return m.title.indexOf(title) >= 0; });
-    if (movie) {
-      var show = movie.shows.find(function (s) { return s.time === time && s.reserveUrl; });
-      if (show) return show;
-    }
-    if (attempt === 0) log('予約導線を待っています…（発売直後は数百msの遅延あり）');
-    await sleep(400);
+  for (var attempt = 0; attempt < 40; attempt++) {
+    var show = await resolveShowOnce(k, date, title, time);
+    if (show) return show;
+    if (attempt === 0) log('予約導線を待っています…（発売直後の遅延を短間隔で追跡）');
+    await sleep(150);
   }
   throw new Error('対象の予約導線が見つかりません（作品/時刻/発売状況を確認）: ' + title + ' ' + time);
 }
@@ -127,8 +136,10 @@ async function resolveShow(k, date, title, time) {
   if (!date || !title || !time || !seats.length) throw new Error('--date --title --time --seats を指定してください');
 
   // 2) 発売時刻まで待機（サーバ時刻に同期して精密発火。待機中はセッション維持）
+  //    発火の直前に ①予約URL先読み ②接続ウォームアップ を実行しておく。
   var at = arg('at');
   var clockOffset = 0;
+  var preShow = null;
   if (at && at !== true) {
     var targetLocal = new Date(at).getTime();
     if (isNaN(targetLocal)) throw new Error('--at の時刻を解釈できません: ' + at);
@@ -147,19 +158,25 @@ async function resolveShow(k, date, title, time) {
       var re = await k.login(creds.email, creds.password);
       log(re.ok ? '✓ 再ログイン成功' : '✗ 再ログイン失敗: ' + re.reason);
     };
-    var fired = await waitUntil(fireAt, keepAlive);
+    var onApproach = async function () {
+      // ② 接続ウォームアップ（TLS/DNSを温める）
+      await request({ url: BASE + '/' + THEATER_PATH, jar: k.jar }).catch(function () {});
+      // ① 予約URL先読み（発売前でも取れれば T=0 の番組表取得を省ける）
+      preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
+      log(preShow ? '事前準備OK（予約URLを先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
+    };
+    var fired = await waitUntil(fireAt, keepAlive, onApproach);
     var firedServer = fired + clockOffset;
     var diff = firedServer - targetLocal;
     log('発火: ローカル ' + fmtMs(fired) + ' ／ サーバ時刻換算 ' + fmtMs(firedServer) +
         ' → 目標との差 ' + (diff >= 0 ? '+' : '') + diff + ' ms');
   }
 
-  // 3) 対象回を解決 → 座席画面 → 確保（各ステップの所要msを計測）
+  // 3) 対象回を解決（先読み済みなら省略）→ 座席画面 → 席を掴む
   var t0 = Date.now();
-  var tA = Date.now();
-  var show = await resolveShow(k, date, title, time);
-  var dRes = Date.now() - tA;
-  log('対象: ' + title + ' ' + show.time + ' ｼｱﾀｰ' + show.screen + '（上映回解決 ' + dRes + 'ms）');
+  var show = preShow, dRes = 0;
+  if (!show) { var tA = Date.now(); show = await resolveShow(k, date, title, time); dRes = Date.now() - tA; }
+  log('対象: ' + title + ' ' + show.time + ' ｼｱﾀｰ' + show.screen + (preShow ? '（予約URL先読み済み）' : '（上映回解決 ' + dRes + 'ms）'));
   var tB = Date.now();
   var op = await k.openShow(show);
   var dOpen = Date.now() - tB;
@@ -172,13 +189,18 @@ async function resolveShow(k, date, title, time) {
     process.exit(3);
   }
 
-  // 4) 確保（サブ秒）
+  // 4) 席を掴む（choiceSeatSave＝勝敗の決まる点）
   if (dry) { log('--dry。確保の直前で停止（席は取っていません）。内訳: 上映回解決 ' + dRes + 'ms／座席画面 ' + dOpen + 'ms'); return; }
-  var tC = Date.now();
-  var hr = await k.hold(seats);
-  var dHold = Date.now() - tC;
-  if (!hr.ok) { console.error('✗ 確保失敗: ' + hr.reason); process.exit(4); }
-  log('✓✓ 席を確保しました（合計 ' + (Date.now() - t0) + 'ms ｜ 上映回解決 ' + dRes + 'ms・座席画面 ' + dOpen + 'ms・確保 ' + dHold + 'ms）: ' + seats.join(', '));
+  var tSec = Date.now();
+  var sr = await k.secure(seats);
+  var dSecure = Date.now() - tSec;
+  if (!sr.ok) { console.error('✗ 確保失敗: ' + sr.reason); process.exit(4); }
+  log('✓✓ 席を掴みました＝勝敗確定（座席確保 ' + dSecure + 'ms ｜ T0からの合計 ' + (Date.now() - t0) + 'ms ' +
+      '＝解決 ' + dRes + '＋座席画面 ' + dOpen + '＋確保 ' + dSecure + 'ms）: ' + seats.join(', '));
+  // 5) 券種選択画面へ前進（勝敗確定後の後処理。決済は人間）
+  var tAdv = Date.now();
+  var hr = await k.advanceToTicket();
+  log('券種選択画面へ前進（' + (Date.now() - tAdv) + 'ms）');
 
   // 5) 同じセッションの Cookie をブラウザへ注入して決済画面を開く
   var chromium;
