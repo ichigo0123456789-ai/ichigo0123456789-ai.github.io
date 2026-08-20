@@ -37,13 +37,26 @@ function log(msg) { console.log('[' + new Date().toTimeString().slice(0, 8) + ']
 function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function maskEmail(e) { var m = String(e).split('@'); return (m[0] || '').slice(0, 2) + '***@' + (m[1] || '').slice(0, 2) + '***'; }
 
-async function waitUntil(iso) {
+/**
+ * 発売時刻まで待つ。待機中は keepAlive() を数分ごとに呼び、ログインを維持する
+ * （長時間待つとセッションが切れるため）。keepAlive は省略可。
+ */
+async function waitUntil(iso, keepAlive) {
   var target = new Date(iso).getTime();
   if (isNaN(target)) throw new Error('--at の時刻を解釈できません: ' + iso);
-  log('発売時刻まで待機: ' + new Date(target).toLocaleString('ja-JP'));
+  log('発売時刻まで待機: ' + new Date(target).toLocaleString('ja-JP') + '（ログインを維持しながら待ちます）');
+  var lastPing = Date.now();
+  var lastMinLog = 0;
   while (Date.now() < target) {
     var remain = target - Date.now();
-    if (remain > 60000) { log('あと約 ' + Math.round(remain / 60000) + ' 分'); await sleep(Math.min(remain - 30000, 60000)); }
+    // 3分ごとにセッション維持
+    if (keepAlive && remain > 5000 && Date.now() - lastPing > 180000) {
+      lastPing = Date.now();
+      try { await keepAlive(); } catch (e) { log('セッション維持で警告: ' + e.message); }
+    }
+    // 残り時間の表示は控えめに（1分ごと）
+    if (remain > 60000 && Date.now() - lastMinLog > 60000) { lastMinLog = Date.now(); log('あと約 ' + Math.round(remain / 60000) + ' 分'); }
+    if (remain > 60000) { await sleep(Math.min(remain - 30000, 20000)); }
     else if (remain > 3000) { await sleep(remain - 2000); }
     else { await sleep(50); }
   }
@@ -84,9 +97,17 @@ async function resolveShow(k, date, title, time) {
   var seats = String(arg('seats') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
   if (!date || !title || !time || !seats.length) throw new Error('--date --title --time --seats を指定してください');
 
-  // 2) 発売時刻まで待機（ログイン済みで待つ）
+  // 2) 発売時刻まで待機（ログイン済みで待つ。待機中はセッションを維持し、切れたら再ログイン）
   var at = arg('at');
-  if (at && at !== true) await waitUntil(at);
+  if (at && at !== true) {
+    await waitUntil(at, async function () {
+      var ok = await k.isLoggedIn().catch(function () { return false; });
+      if (ok) { log('セッション維持OK'); return; }
+      log('セッションが切れたため再ログインします');
+      var re = await k.login(creds.email, creds.password);
+      log(re.ok ? '✓ 再ログイン成功' : '✗ 再ログイン失敗: ' + re.reason);
+    });
+  }
 
   // 3) 対象回を解決 → 座席画面 → 希望席の空き確認（ここまで軽量）
   var t0 = Date.now();
