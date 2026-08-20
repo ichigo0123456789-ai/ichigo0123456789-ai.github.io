@@ -116,6 +116,41 @@ async function resolveShow(k, date, title, time) {
   throw new Error('対象の予約導線が見つかりません（作品/時刻/発売状況を確認）: ' + title + ' ' + time);
 }
 
+/**
+ * 予約フローを開き座席選択画面まで到達する。待機列/混雑は「単一接続で正直に」待つ。
+ * 多重接続・列の追い越しはしない。CAPTCHA・想定外画面では停止して人間に引き継ぐ。
+ * 詳細は cinema/QUEUE-RESEARCH.md。
+ */
+async function enterSeatMap(k, show, creds) {
+  var MAXW = 10 * 60 * 1000; // 総待機の上限（10分）
+  var t0 = Date.now(), waitingSince = 0, lastNote = 0, reloginTried = false;
+  for (;;) {
+    var op = await k.openShow(show);
+    var html = k._seatHtml || '';
+    var kind = op.ok ? 'seat' : k.pageKind(html, op.url || '');
+    if (kind === 'seat') return op;
+    if (Date.now() - t0 > MAXW) throw new Error('待機が上限(10分)を超えました。安全のため停止（画面: ' + (op.url || '') + '）');
+    if (kind === 'waiting') {
+      if (!waitingSince) { waitingSince = Date.now(); log('待機列/混雑を検出。単一接続で正直に順番を待ちます（多重接続・追い越しはしません）'); }
+      if (Date.now() - lastNote > 15000) { lastNote = Date.now(); log('待機中…（経過 ' + Math.round((Date.now() - t0) / 1000) + '秒）'); }
+      var sec = k.metaRefreshSec(html);
+      await sleep(sec ? Math.max(1, Math.min(sec, 10)) * 1000 : 2000);
+      continue;
+    }
+    if (kind === 'notonsale') { await sleep(300); continue; } // 発売枠に入るのを待つ
+    if (kind === 'login') {
+      if (reloginTried) throw new Error('再ログイン後もログイン画面に戻されます。安全のため停止');
+      reloginTried = true;
+      log('セッション切れを検出。再ログインします');
+      var re = await k.login(creds.email, creds.password);
+      if (!re.ok) throw new Error('再ログイン失敗: ' + re.reason);
+      continue;
+    }
+    if (kind === 'captcha') throw new Error('CAPTCHA/確認画面を検出。安全のため停止（手動で進めてください）: ' + (op.url || ''));
+    throw new Error('予期せぬ画面に到達（' + (op.url || '') + '）。安全のため停止します');
+  }
+}
+
 (async () => {
   var loginOnly = arg('login-only', false);
   var dry = arg('dry', false);
@@ -178,9 +213,8 @@ async function resolveShow(k, date, title, time) {
   if (!show) { var tA = Date.now(); show = await resolveShow(k, date, title, time); dRes = Date.now() - tA; }
   log('対象: ' + title + ' ' + show.time + ' ｼｱﾀｰ' + show.screen + (preShow ? '（予約URL先読み済み）' : '（上映回解決 ' + dRes + 'ms）'));
   var tB = Date.now();
-  var op = await k.openShow(show);
+  var op = await enterSeatMap(k, show, creds); // 待機列は正直に待って座席画面まで到達
   var dOpen = Date.now() - tB;
-  if (!op.ok) throw new Error('座席選択画面に到達できませんでした（待機列/発売前の可能性）');
   var map = k.fetchSeatMap();
   var bad = seats.filter(function (id) { return !map[id] || map[id].state !== 'available'; });
   if (bad.length) {

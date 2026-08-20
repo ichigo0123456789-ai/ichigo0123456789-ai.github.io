@@ -113,6 +113,14 @@ node runner/reserve-hybrid.js --date 2026-08-27 --title ユーフォニアム \
 | `package.json` | Playwright 依存（`cd runner && npm install`） |
 | `.env.example` | 認証情報ファイルの雛形（コピーして `.env` に） |
 
+## 待機列（混雑時）対応
+
+`reserve-hybrid.js` は発売直後に座席画面へ到達できない場合、画面種別を判定して
+分岐します（`Kinezo.pageKind`）：混雑/順番待ちなら**単一接続で正直に待って**解放と
+同時に掴む、CAPTCHA・想定外画面なら**停止して人間に引き継ぐ**。**多重接続・列の
+追い越しはしません**。各チェーンの待機列方式と「会員先行が最速」等の戦略は
+`cinema/QUEUE-RESEARCH.md` を参照。
+
 実サイトの仕様（API・URL・DOM）は `cinema/KINEZO-RESEARCH.md` を参照。
 
 ## `cinema/` との接続（今後）
