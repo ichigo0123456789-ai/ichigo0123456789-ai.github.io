@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "auto-sync (Claude → 手元)",
+      "detail": "クラウド側の変更を自動で git pull します。VSCodeを閉じると止まります。",
+      "type": "process",
+      "command": "node",
+      "args": ["runner/autopull.js"],
+      "isBackground": true,
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "sync",
+        "clear": false
+      },
+      "problemMatcher": []
+    }
+  ]
+}
