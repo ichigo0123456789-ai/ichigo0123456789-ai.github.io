@@ -72,8 +72,20 @@ async function waitUntil(iso) {
   var dry = arg('dry', false);
   var creds = loadCreds();
 
-  var browser = await chromium.launch({ headless: false });
+  var browser = await chromium.launch({ headless: false, args: ['--no-first-run', '--no-default-browser-check'] });
   var ctx = await browser.newContext({ locale: 'ja-JP' });
+
+  // 速度最適化: 画像/フォント/メディアを読み込まない。
+  // 座席は <area> 要素への click 発火で選択するので、座席表の画像は不要。
+  // （画像を出したい場合は環境変数 KINEZO_LOAD_IMAGES=1 で無効化できる）
+  if (!process.env.KINEZO_LOAD_IMAGES) {
+    await ctx.route('**/*', function (route) {
+      var t = route.request().resourceType();
+      if (t === 'image' || t === 'media' || t === 'font') return route.abort();
+      return route.continue();
+    });
+  }
+
   var page = await ctx.newPage();
 
   try {
@@ -88,11 +100,11 @@ async function waitUntil(iso) {
     await page.fill('input[name="email"]', creds.email);
     await page.fill('input[name="password"]', creds.password);
     await Promise.all([
-      page.waitForLoadState('networkidle').catch(function () {}),
+      page.waitForNavigation({ timeout: 15000 }).catch(function () {}),
       page.click('#btn-login-submit')
     ]);
-    await page.waitForTimeout(1200);
-    var loggedIn = !(await page.locator('input[name="password"]').count()) || !/\/login/.test(page.url());
+    await page.waitForTimeout(300);
+    var loggedIn = !/\/login(\/|$)/.test(page.url()) || !(await page.locator('input[name="password"]').count());
     if (!loggedIn) {
       log('✗ ログインに失敗した可能性があります。メール/パスワードをご確認ください（ブラウザは開いたまま）。');
       await sleep(600000);
@@ -128,9 +140,8 @@ async function waitUntil(iso) {
       log('必要なら画面の指示に従って座席選択まで進めてください。ブラウザは開いたままにします。');
     }
 
-    // 座席表とハンドラの準備を待つ
-    await page.waitForLoadState('networkidle').catch(function () {});
-    await page.waitForSelector('#seatLength', { timeout: 15000 }).catch(function () {});
+    // 座席表の準備を待つ（networkidle は使わない＝広告/決済タグの通信で待たされるため）。
+    // 実際に必要なのは座席の <area> が生成されていること。
     await page.waitForSelector('area.seat-select', { timeout: 15000 }).catch(function () {});
 
     // 6) 席をクリック（image-map の area。可視判定を避けて確実に選択）
