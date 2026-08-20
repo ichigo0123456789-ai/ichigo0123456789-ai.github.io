@@ -30,6 +30,11 @@ class CookieJar {
   header() {
     return Object.keys(this.jar).map((k) => k + '=' + this.jar[k]).join('; ');
   }
+  /** Playwright の addCookies 形式に変換（同一サイト用途なので url を付ける） */
+  toPlaywrightCookies(url) {
+    var jar = this.jar;
+    return Object.keys(jar).map(function (name) { return { name: name, value: jar[name], url: url }; });
+  }
 }
 
 /** プロキシ環境なら CONNECT トンネルの socket を、なければ null（直結）を返す */
