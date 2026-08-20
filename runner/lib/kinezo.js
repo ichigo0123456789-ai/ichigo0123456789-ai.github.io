@@ -195,6 +195,31 @@ Kinezo.prototype.advanceToTicket = async function () {
   return { ok: true, atTicket: atTicket, ticketUrl: adv.url };
 };
 
+/**
+ * openShow 後の到達画面を種別判定する（待機列対応の中核）。
+ *   seat      … choice_seat（座席選択に到達＝掴める）
+ *   waiting   … 混雑/順番待ち（正直に待って再取得する）
+ *   notonsale … 販売期間外/発売前（発売枠入りを待つ）
+ *   login     … セッション切れ（再ログイン）
+ *   captcha   … 確認画面（人間に引き継ぐ）
+ *   unknown   … 想定外（安全のため停止）
+ */
+Kinezo.prototype.pageKind = function (html, url) {
+  html = html || ''; url = url || '';
+  if (/choice_seat/.test(url)) return 'seat';
+  if (/g-recaptcha|hcaptcha|recaptcha|data-sitekey/i.test(html)) return 'captcha';
+  if (/しばらくお待ち|順番にご案内|順番待ち|アクセスが集中|ただいま.{0,6}混雑|大変混み合|混雑して|only a moment|waiting[\s-]?room|queue-it/i.test(html)) return 'waiting';
+  if (/\/login(\/|$|\?)/.test(url) || /name="password"/.test(html)) return 'login';
+  if (/販売期間外|発売前|販売しておりません|受付時間外|お取り扱い時間外|時間外です/.test(html)) return 'notonsale';
+  return 'unknown';
+};
+
+/** meta refresh の秒数（あれば）。待機時の再取得間隔に使う。 */
+Kinezo.prototype.metaRefreshSec = function (html) {
+  var m = (html || '').match(/http-equiv=["']?refresh["']?[^>]*content=["']?\s*(\d+)/i);
+  return m ? parseInt(m[1], 10) : null;
+};
+
 /** 仮予約を解放する（掴んだ席を手放す） */
 Kinezo.prototype.releaseHold = async function () {
   try {
