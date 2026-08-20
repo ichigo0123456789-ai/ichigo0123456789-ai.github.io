@@ -1,0 +1,14 @@
+{
+  "name": "kinezo-runner",
+  "private": true,
+  "version": "1.0.0",
+  "description": "KINEZO 予約 runner（手元PCで実行）。認証情報はローカルのみ。",
+  "scripts": {
+    "reserve": "node reserve.js",
+    "reserve:browser": "node reserve-browser.js",
+    "probe": "node probe.js"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
