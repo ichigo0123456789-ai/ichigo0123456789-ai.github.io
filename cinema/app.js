@@ -649,16 +649,10 @@
     container.innerHTML = '';
     if (!screen) return;
 
-    /* 座席表はブロック幅そのままのグリッドで描く。縦通路はブロックとブロックの
-       あいだの1本の隙間カラムなので、席の少ない列（シアター4のA・B・K列など）も
-       公式の座席表と同じ位置に並ぶ。
-       A列のように前後の列と半席ずれる列があるため、グリッドは半席刻みで敷き、
-       席1つは2カラムぶんを占める。 */
-    var widths = screen.blockWidths;
-    var template = widths.map(function (w) {
-      return 'repeat(' + (w * 2) + ', var(--seat-half))';
-    }).join(' var(--aisle) ');
-
+    /* 席番号 = スクリーンに向かって左からのグリッド位置（KINEZO 実採番）。
+       gridColumn に番号をそのまま使えば欠番（縦通路）が自然に空く。
+       半席刻みグリッドで、席1つは2カラムぶんを占める。 */
+    var cols = (screen.gridWidth || 0) * 2;
     var seats = CE.expandSeats(screen);
     var byRow = {};
     seats.forEach(function (s) { (byRow[s.row] = byRow[s.row] || []).push(s); });
@@ -675,25 +669,14 @@
 
       var grid = document.createElement('div');
       grid.className = 'seat-grid';
-      grid.style.gridTemplateColumns = template;
+      grid.style.gridTemplateColumns = 'repeat(' + cols + ', var(--seat-half))';
 
-      byRow[r.label].forEach(function (s) {
+      (byRow[r.label] || []).forEach(function (s) {
         var b = document.createElement('button');
-        var wc = !CE.isSelectable(s);
         b.className = 'seat';
         b.dataset.seat = s.id;
-        /* ブロックの前に縦通路のカラムがそのぶん挟まる */
-        b.style.gridColumn = (s.col * 2 + s.block + 1) + ' / span ' + 2 * (wc ? s.span : 1);
-        b.title = s.id + (wc ? '（車椅子スペース）' : '');
-
-        if (wc) {
-          /* 車椅子スペースは一般の座席選択では選べない */
-          b.dataset.st = 'wc';
-          b.disabled = true;
-          b.textContent = '♿';
-          grid.appendChild(b);
-          return;
-        }
+        b.style.gridColumn = ((s.num - 1) * 2 + 1) + ' / span 2';
+        b.title = s.id;
 
         var st = 'free';
         if (live && S.liveMap) {
@@ -724,6 +707,7 @@
       container.appendChild(rowEl);
     });
   }
+
 
   function renderSeatEditor() {
     updateSeatContext();
@@ -822,8 +806,10 @@
       var midId = a.row + '-' + (a.num + 1);
       var otherId = a.row + '-' + (a.num + 2);
       var mid = byId[midId];
+      /* mid が実在して空席なら、a と other の間に1席だけ空きが残る配置。
+         縦通路をまたぐ場合は mid（欠番番号）が存在しないので該当しない。 */
       if (picked[otherId] && !picked[midId] && mid && CE.isSelectable(mid) &&
-          mid.block === a.block && out.indexOf(midId) < 0) {
+          out.indexOf(midId) < 0) {
         out.push(midId);
       }
     });
@@ -875,8 +861,8 @@
       for (var i = 0; i + need <= list.length; i++) {
         var g = list.slice(i, i + need), ok = true, score = 0;
         for (var j = 0; j < g.length; j++) {
-          /* 縦通路をまたいだ組は連席とみなさない */
-          if (j > 0 && (g[j].num !== g[j - 1].num + 1 || g[j].block !== g[j - 1].block)) { ok = false; break; }
+          /* 番号が連続していなければ（縦通路の欠番をまたげば）連席ではない */
+          if (j > 0 && g[j].num !== g[j - 1].num + 1) { ok = false; break; }
           if (!CE.isSelectable(g[j])) { ok = false; break; }
           score += CE.popularity(g[j], screen);
         }
