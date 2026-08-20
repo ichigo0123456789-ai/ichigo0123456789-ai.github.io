@@ -219,6 +219,12 @@ select{cursor:pointer}
 
 .seat-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .seat-toolbar .spacer{flex:1}
+.pick-guide{font-size:12px;color:var(--sub)}
+.rules-box{margin-top:14px;background:var(--amber-soft);border:1px solid var(--amber-line);
+  border-radius:var(--r-sm);padding:12px 15px}
+.rules-box .rules-head{font-size:12.5px;font-weight:800;margin-bottom:6px;display:flex;align-items:baseline;gap:10px}
+.rules-box .rules-asof{font-size:10.5px;font-weight:400;color:var(--faint)}
+.rules-box ul{margin:0;padding-left:19px;font-size:12px;color:var(--sub);line-height:1.85}
 .pick-tray{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel-2);
   border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 13px;margin-bottom:14px}
 .tray-label{font-size:11px;font-weight:700;color:var(--faint);letter-spacing:.06em}
@@ -320,6 +326,24 @@ code{font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border:1
   border-radius:4px;padding:1px 5px}
 
 .foot{max-width:1180px;margin:0 auto;padding:0 20px 34px;font-size:11.5px;color:var(--faint)}
+
+/* ---- ログイン準備チェック ---- */
+.check-progress{font-size:12px;font-weight:800;font-family:var(--mono);color:var(--sub);
+  background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+.check-progress.done{color:var(--ok);border-color:var(--ok-line);background:var(--ok-soft)}
+.checklist{display:flex;flex-direction:column;gap:6px;margin:4px 0 12px}
+.check-item{display:flex;gap:10px;align-items:flex-start;background:var(--bg-2);
+  border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 13px;cursor:pointer;transition:.15s}
+.check-item:hover{border-color:var(--line-2)}
+.check-item.on{background:var(--ok-soft);border-color:var(--ok-line)}
+.check-item input{accent-color:var(--ok);width:16px;height:16px;margin-top:3px;flex:none;cursor:pointer}
+.check-item .ci-label{font-size:13px;font-weight:700}
+.check-item.on .ci-label{color:var(--ok)}
+.check-item .ci-sub{font-size:11.5px;color:var(--faint);line-height:1.6}
+
+.run-precheck{font-size:12px;margin-top:10px;padding:8px 12px;border-radius:var(--r-sm);
+  border:1px solid var(--amber-line);background:var(--amber-soft);color:var(--amber);cursor:pointer}
+.run-precheck.ok{border-color:var(--ok-line);background:var(--ok-soft);color:var(--ok);cursor:default}
 
 /* ---- トースト ---- */
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);opacity:0;pointer-events:none;

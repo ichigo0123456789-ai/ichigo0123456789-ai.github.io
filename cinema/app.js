@@ -156,8 +156,9 @@
       renderDateStrip();
       renderSchedule();
     }
-    if (name === 'seats') renderSeatEditor();
-    if (name === 'run') renderLiveMap();
+    if (name === 'seats') { renderSeatEditor(); renderRulesBox(); }
+    if (name === 'run') { renderLiveMap(); updateRunPrecheck(); }
+    if (name === 'privacy') renderChecklist();
     window.scrollTo(0, 0);
   }
 
@@ -514,6 +515,10 @@
     $('f-time').value = p.showtime;
     $('f-runtime').value = p.runtime;
     $('f-onsale').value = p.onSaleAt;
+    var mx = currentRules().maxSeats || 8;
+    $('f-count').max = mx;
+    $('count-hint').textContent = 'この枚数ぶんの席をひとまとまりとして確保します。' +
+      'KINEZO で一度に予約できるのは最大' + mx + '席です。';
     $('f-count').value = p.count;
     renderTickets();
 
@@ -536,13 +541,18 @@
     p.theaterId = $('f-theater').value;
     var t = D.theater(p.theaterId);
     if (t) p.chain = t.chain;
+    var maxSeats = currentRules().maxSeats || 8;
     p.screenId = $('f-screen').value;
     p.title = $('f-title').value.trim();
     p.date = $('f-date').value;
     p.showtime = $('f-time').value;
     p.runtime = parseInt($('f-runtime').value, 10) || 120;
     p.onSaleAt = $('f-onsale').value;
-    p.count = Math.max(1, parseInt($('f-count').value, 10) || 1);
+    p.count = Math.max(1, Math.min(maxSeats, parseInt($('f-count').value, 10) || 1));
+    if (parseInt($('f-count').value, 10) > maxSeats) {
+      $('f-count').value = maxSeats;
+      toast('この劇場で一度に予約できるのは最大' + maxSeats + '席です');
+    }
     p.strategy.pollIntervalMs = parseInt($('s-poll').value, 10) || 1000;
     p.strategy.preconnectSec = parseInt($('s-preconnect').value, 10) || 0;
     p.strategy.deadlineSec = parseInt($('s-deadline').value, 10) || 180;
@@ -605,6 +615,12 @@
     return D.screen(S.plan.theaterId, S.plan.screenId);
   }
 
+  /** 現在のチェーンの予約ルール。未定義でも安全な既定値を返す */
+  function currentRules() {
+    var ch = D.chains[S.plan.chain];
+    return (ch && ch.rules) || { maxSeats: 8, singleGap: { enforce: false, warn: false }, notes: [] };
+  }
+
   /** 現在のスクリーンの車椅子スペース（座席ID -> true） */
   function wheelchairSet() {
     var sc = currentScreen();
@@ -633,16 +649,10 @@
     container.innerHTML = '';
     if (!screen) return;
 
-    /* 座席表はブロック幅そのままのグリッドで描く。縦通路はブロックとブロックの
-       あいだの1本の隙間カラムなので、席の少ない列（シアター4のA・B・K列など）も
-       公式の座席表と同じ位置に並ぶ。
-       A列のように前後の列と半席ずれる列があるため、グリッドは半席刻みで敷き、
-       席1つは2カラムぶんを占める。 */
-    var widths = screen.blockWidths;
-    var template = widths.map(function (w) {
-      return 'repeat(' + (w * 2) + ', var(--seat-half))';
-    }).join(' var(--aisle) ');
-
+    /* 席番号 = スクリーンに向かって左からのグリッド位置（KINEZO 実採番）。
+       gridColumn に番号をそのまま使えば欠番（縦通路）が自然に空く。
+       半席刻みグリッドで、席1つは2カラムぶんを占める。 */
+    var cols = (screen.gridWidth || 0) * 2;
     var seats = CE.expandSeats(screen);
     var byRow = {};
     seats.forEach(function (s) { (byRow[s.row] = byRow[s.row] || []).push(s); });
@@ -659,25 +669,14 @@
 
       var grid = document.createElement('div');
       grid.className = 'seat-grid';
-      grid.style.gridTemplateColumns = template;
+      grid.style.gridTemplateColumns = 'repeat(' + cols + ', var(--seat-half))';
 
-      byRow[r.label].forEach(function (s) {
+      (byRow[r.label] || []).forEach(function (s) {
         var b = document.createElement('button');
-        var wc = !CE.isSelectable(s);
         b.className = 'seat';
         b.dataset.seat = s.id;
-        /* ブロックの前に縦通路のカラムがそのぶん挟まる */
-        b.style.gridColumn = (s.col * 2 + s.block + 1) + ' / span ' + 2 * (wc ? s.span : 1);
-        b.title = s.id + (wc ? '（車椅子スペース）' : '');
-
-        if (wc) {
-          /* 車椅子スペースは一般の座席選択では選べない */
-          b.dataset.st = 'wc';
-          b.disabled = true;
-          b.textContent = '♿';
-          grid.appendChild(b);
-          return;
-        }
+        b.style.gridColumn = ((s.num - 1) * 2 + 1) + ' / span 2';
+        b.title = s.id;
 
         var st = 'free';
         if (live && S.liveMap) {
@@ -709,6 +708,7 @@
     });
   }
 
+
   function renderSeatEditor() {
     updateSeatContext();
     renderSeatmap($('seatmap'), false);
@@ -717,6 +717,21 @@
 
   function renderLiveMap() {
     renderSeatmap($('seatmap-live'), true);
+  }
+
+  function renderRulesBox() {
+    var box = $('rules-box');
+    if (!box) return;
+    var ch = D.chains[S.plan.chain];
+    var r = currentRules();
+    var items = (r.notes || []).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
+    if (r.singleGap && (r.singleGap.warn || r.singleGap.enforce) && r.singleGap.note) {
+      items += '<li>' + esc(r.singleGap.note) + '</li>';
+    }
+    box.innerHTML =
+      '<div class="rules-head">' + esc(ch ? ch.name : '') + ' の予約ルール' +
+      (r.asOf ? '<span class="rules-asof">' + esc(r.asOf.replace(/-/g, '/')) + ' 時点</span>' : '') +
+      '</div><ul>' + items + '</ul>';
   }
 
   function updateSeatContext() {
@@ -729,51 +744,76 @@
   }
 
   function onSeatClick(seat, screen) {
-    /* 確保対象の席をクリックしたら選び直し */
-    if (candRankOf(seat.id)) {
-      S.plan.candidates = [];
-      S.pick = [];
-      renderSeatEditor();
-      return;
+    /* 1クリック = 1席。自動で横並びに広げることはしない。
+       確定済み（candidates）の席をクリックしたら、その1席だけ外して
+       残りは選択中に戻す。 */
+    var target = S.plan.candidates[0];
+    if (target) {
+      var ci = target.seats.indexOf(seat.id);
+      if (ci >= 0) {
+        S.pick = target.seats.filter(function (id) { return id !== seat.id; });
+        S.plan.candidates = [];
+        renderSeatEditor();
+        return;
+      }
     }
+
     var idx = S.pick.indexOf(seat.id);
     if (idx >= 0) {
       S.pick.splice(idx, 1);
-    } else if ($('opt-consecutive').checked) {
-      /* クリックした席から右へ枚数分。縦通路をまたぐ・列をはみ出す場合は取れる分だけ。 */
-      var need = S.plan.count;
-      var group = [];
-      var rowSeats = CE.expandSeats(screen).filter(function (s) { return s.row === seat.row; });
-      for (var k = 0; k < need; k++) {
-        var next = null;
-        for (var i = 0; i < rowSeats.length; i++) {
-          if (rowSeats[i].num === seat.num + k) { next = rowSeats[i]; break; }
-        }
-        /* 番号が続いていても別ブロックなら隣り合っていない */
-        if (!next || next.block !== seat.block) break;
-        if (!CE.isSelectable(next)) break;
-        if (candRankOf(next.id)) break;
-        group.push(next.id);
-      }
-      if (group.length < need) {
-        toast('その位置からは' + need + '席ぶん連続で取れません');
-        return;
-      }
-      S.pick = group;
     } else {
-      if (S.pick.length >= S.plan.count) {
-        toast('枚数（' + S.plan.count + '枚）ぶん選択済みです');
+      if (S.pick.length + (target ? target.seats.length : 0) >= S.plan.count) {
+        toast('枚数（' + S.plan.count + '枚）ぶん選択済みです。外したい席をクリックしてください');
         return;
       }
       S.pick.push(seat.id);
     }
-    /* 枚数分そろったら、そのまま確保対象として確定する。
-       優先順位を付けないので、候補は常に0件か1件。 */
+
+    /* 枚数分そろったら確保対象として確定する。
+       その前に、席の間に1席だけ空きを残す配置をチェックする。 */
     if (S.pick.length === S.plan.count) {
+      var gaps = singleGapSeats(S.pick, screen);
+      var rule = currentRules().singleGap || {};
+      if (gaps.length && rule.enforce) {
+        toast('席の間に1席だけ空き（' + gaps.join(' / ') + '）が残る配置は選べません');
+        renderSeatEditor();
+        return;
+      }
       S.plan.candidates = [{ id: 'target', seats: S.pick.slice().sort(seatSort) }];
       S.pick = [];
+      if (gaps.length && rule.warn) {
+        toast('注意: 席の間に1席だけ空き（' + gaps.join(' / ') + '）が残ります。劇場によっては取れない配置です');
+      }
     }
     renderSeatEditor();
+  }
+
+
+  /**
+   * 選択席の間に「1席だけ空いた予約可能席」が残る箇所を返す。
+   * 同じ列で番号差が2、間の席が実在して選択可能な場合のみ該当。
+   * 縦通路（欠番）を挟む場合は間の席が存在しないので該当しない。
+   */
+  function singleGapSeats(seatIds, screen) {
+    var byId = {};
+    CE.expandSeats(screen).forEach(function (s) { byId[s.id] = s; });
+    var picked = {};
+    seatIds.forEach(function (id) { picked[id] = true; });
+    var out = [];
+    seatIds.forEach(function (id) {
+      var a = byId[id];
+      if (!a) return;
+      var midId = a.row + '-' + (a.num + 1);
+      var otherId = a.row + '-' + (a.num + 2);
+      var mid = byId[midId];
+      /* mid が実在して空席なら、a と other の間に1席だけ空きが残る配置。
+         縦通路をまたぐ場合は mid（欠番番号）が存在しないので該当しない。 */
+      if (picked[otherId] && !picked[midId] && mid && CE.isSelectable(mid) &&
+          out.indexOf(midId) < 0) {
+        out.push(midId);
+      }
+    });
+    return out;
   }
 
   function renderTray() {
@@ -821,8 +861,8 @@
       for (var i = 0; i + need <= list.length; i++) {
         var g = list.slice(i, i + need), ok = true, score = 0;
         for (var j = 0; j < g.length; j++) {
-          /* 縦通路をまたいだ組は連席とみなさない */
-          if (j > 0 && (g[j].num !== g[j - 1].num + 1 || g[j].block !== g[j - 1].block)) { ok = false; break; }
+          /* 番号が連続していなければ（縦通路の欠番をまたげば）連席ではない */
+          if (j > 0 && g[j].num !== g[j - 1].num + 1) { ok = false; break; }
           if (!CE.isSelectable(g[j])) { ok = false; break; }
           score += CE.popularity(g[j], screen);
         }
@@ -1241,6 +1281,94 @@
     return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
   }
 
+  /* ---- ログイン準備チェック ----------------------------------------
+     本番実行までに人間が確認しておく項目。静的サイトからは KINEZO への
+     ログインを自動では試せないため、いまは手動チェックリスト。
+     Phase 2 の実行体ができたら「実際にログインして確認」ボタンに置き換える。 */
+
+  var LS_CHECKLIST = 'cinema.checklist.v1';
+
+  var LOGIN_CHECKS = [
+    { id: 'member',
+      label: 'KINEZO（キネパス）の会員登録が済んでいる',
+      sub: '会員登録（無料）が予約の前提。未登録なら T・ジョイのサイトから登録する' },
+    { id: 'manual-login',
+      label: 'T・ジョイのサイトで手動ログインできることを確認した',
+      sub: 'ID・パスワードが正しいことの確認。下のボタンからサイトを開ける' },
+    { id: 'drive-file',
+      label: 'Google Drive の kinezo-credential にID・パスワードを書いた',
+      sub: 'マイドライブ > Claude > kinezo-credential。KINEZO_ID= と KINEZO_PASSWORD= の行を実際の値に書き換える' },
+    { id: 'drive-private',
+      label: 'kinezo-credential を誰とも共有していない',
+      sub: 'Drive の共有設定が「自分のみ」になっていることを確認' },
+    { id: 'google-2fa',
+      label: 'Google アカウントの2段階認証が有効になっている',
+      sub: 'Drive に認証情報を置く以上、Google アカウント自体の保護が生命線' },
+    { id: 'payment',
+      label: '支払い方法を決めてある',
+      sub: 'オンライン決済（クレジット/PayPay等）か「あとから決済」（支払期限あり・期限超過で自動キャンセル）か' },
+    { id: 'password-fresh',
+      label: 'パスワードを変更した場合、Drive のファイルも更新した',
+      sub: '古いパスワードのままだと本番でログインに失敗する' }
+  ];
+
+  function loadChecklist() {
+    try { return JSON.parse(localStorage.getItem(LS_CHECKLIST)) || {}; }
+    catch (e) { return {}; }
+  }
+
+  function checklistDone() {
+    var st = loadChecklist();
+    return LOGIN_CHECKS.filter(function (c) { return st[c.id]; }).length;
+  }
+
+  function renderChecklist() {
+    var wrap = $('login-checklist');
+    if (!wrap) return;
+    var st = loadChecklist();
+    wrap.innerHTML = '';
+    LOGIN_CHECKS.forEach(function (c) {
+      var on = !!st[c.id];
+      var item = document.createElement('label');
+      item.className = 'check-item' + (on ? ' on' : '');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = on;
+      cb.addEventListener('change', function () {
+        var cur = loadChecklist();
+        cur[c.id] = cb.checked;
+        try { localStorage.setItem(LS_CHECKLIST, JSON.stringify(cur)); } catch (e) {}
+        renderChecklist();
+        updateRunPrecheck();
+      });
+      var body = document.createElement('span');
+      body.innerHTML = '<span class="ci-label">' + esc(c.label) + '</span><br>' +
+        '<span class="ci-sub">' + esc(c.sub) + '</span>';
+      item.appendChild(cb);
+      item.appendChild(body);
+      wrap.appendChild(item);
+    });
+    var prog = $('check-progress');
+    var done = checklistDone();
+    prog.textContent = done + '/' + LOGIN_CHECKS.length;
+    prog.classList.toggle('done', done === LOGIN_CHECKS.length);
+  }
+
+  /** 実行タブに準備状況を出す */
+  function updateRunPrecheck() {
+    var el = $('run-precheck');
+    if (!el) return;
+    var done = checklistDone();
+    var all = LOGIN_CHECKS.length;
+    if (done === all) {
+      el.className = 'run-precheck ok';
+      el.textContent = '✓ ログイン準備チェック ' + done + '/' + all + ' 完了';
+    } else {
+      el.className = 'run-precheck';
+      el.textContent = '⚠ ログイン準備チェックが ' + done + '/' + all + ' です（「個人情報の扱い」タブで確認） — 本番の予約実行には KINEZO ログインの準備が必要です';
+    }
+  }
+
   /* ---- 個人情報パネル ---------------------------------------------- */
 
   function writeProfile() {
@@ -1262,15 +1390,22 @@
       saveProfile();
       toast(S.profile.save ? 'この端末に保存します' : '保存を解除し、保存済みの内容も削除しました');
     });
+    $('run-precheck').addEventListener('click', function () {
+      if (!this.classList.contains('ok')) { readForm(); showView('privacy'); }
+    });
+
     $('btn-wipe').addEventListener('click', function () {
       if (!confirm('保存済みのプランと予約者情報をすべて削除します。よろしいですか？')) return;
       localStorage.removeItem(LS_PLANS);
       localStorage.removeItem(LS_PROFILE);
+      localStorage.removeItem(LS_CHECKLIST);
       S.plans = [];
       S.profile = { save: false, name: '', tel: '', mail: '' };
       S.plan = blankPlan();
       writeProfile();
       writeForm();
+      renderChecklist();
+      updateRunPrecheck();
       toast('削除しました');
     });
   }
@@ -1359,7 +1494,6 @@
       toast('保存しました');
     });
 
-    $('opt-consecutive').addEventListener('change', function () { S.pick = []; renderSeatEditor(); });
     $('btn-clear-pick').addEventListener('click', function () {
       S.pick = []; S.plan.candidates = [];
       renderSeatEditor();

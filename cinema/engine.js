@@ -33,58 +33,33 @@
    * （通路をまたぐと番号は2飛ぶので通常は num でも切れるが、念のため）。
    */
   function expandSeats(screen) {
-    var widths = screen.blockWidths || [];
+    /* 席番号 = スクリーンに向かって左からのグリッド位置（KINEZO の実採番）。
+       col に番号をそのまま使えば、欠番（縦通路）が自然に空く。 */
     var out = [];
     screen.rows.forEach(function (r, rowIndex) {
-      /* 車椅子スペースは行頭。通常の座席として売られないので席種で区別する。 */
-      r.wheelchair.forEach(function (span, i) {
+      r.seatNums.forEach(function (num) {
         out.push({
-          id: r.label + '-WC' + (i + 1),
-          row: r.label, num: 0, rowIndex: rowIndex,
-          block: 0, col: 0, span: span,
-          kind: 'wheelchair',
+          id: r.label + '-' + num,
+          row: r.label,
+          num: num,
+          rowIndex: rowIndex,
+          col: num,
+          kind: r.kind,
           gapBefore: !!r.gapBefore
         });
-      });
-
-      var base = 0;     /* 席単位の累積（通路を含まない） */
-      var numBase = 0;  /* 番号の累積（通路も1つ消費する） */
-      r.blocks.forEach(function (c, bi) {
-        var w = widths[bi] || c;
-        /* 先頭ブロックは右寄せ、末尾は左寄せ、あいだは中央寄せ。
-           こうすると席の少ない列が公式の座席表と同じ位置に並ぶ。
-           シアター4のA列（15幅に14席）は視覚上は半席ずれるが、
-           番号は整数位置に切り下げる（実IDも A-6〜A-19）。 */
-        var pad = bi === 0 ? w - c : (bi === r.blocks.length - 1 ? 0 : (w - c) / 2);
-        var numPad = Math.floor(pad);
-        for (var k = 0; k < c; k++) {
-          var num = numBase + numPad + k + 1;
-          out.push({
-            id: r.label + '-' + num,
-            row: r.label,
-            num: num,
-            rowIndex: rowIndex,
-            block: bi,
-            col: base + pad + k,
-            kind: r.kind,
-            gapBefore: !!r.gapBefore
-          });
-        }
-        base += w;
-        numBase += w + 1;  /* +1 は縦通路のぶん */
       });
     });
     return out;
   }
 
-  /** スクリーンの全幅（席1つ=1）。人気度の横方向の正規化に使う。 */
-  function screenWidth(screen) {
-    return (screen.blockWidths || []).reduce(function (a, b) { return a + b; }, 0);
-  }
-
   /** 通常の予約対象として選べる席か */
   function isSelectable(seat) {
     return seat.kind !== 'wheelchair';
+  }
+
+  /** スクリーンの横グリッド幅（席番号の最大値） */
+  function screenWidth(screen) {
+    return screen.gridWidth || 0;
   }
 
   /**
@@ -94,7 +69,7 @@
    */
   function popularity(seat, screen) {
     var w = screenWidth(screen);
-    var center = (w - 1) / 2;
+    var center = (w + 1) / 2;
     /* 横方向: スクリーン中央からの距離を全幅で正規化。
        列ごとの通し番号ではなく実際の横位置で測るので、
        片側の席が無い列（シアター4のK列など）も正しく評価できる。 */
