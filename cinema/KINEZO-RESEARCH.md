@@ -90,10 +90,68 @@ GET /t-joy_yokohama/reservation/index/{showId}/{filmCode}/{screen}/{date}?type=f
    人間に渡す**（RULES.md の設計原則どおり）。
 4. レート制限厳守。スケジュールAPI/予約フローを短時間に連打しない。
 
-## 6. 未確認・要注意
+## 6. ログインの実フロー（2026-08-20 追記・公開ページで確認）
 
-- **ログインの実フロー**（どのURL・POST項目・CAPTCHA有無）は未調査（前者=公開範囲の調査に限定したため）。
+ログインページ `GET /t-joy_yokohama/login`（**CAPTCHA なし**）。CakePHP。
+
+```
+POST /t-joy_yokohama/login
+  _method     = POST        (hidden)
+  _csrfToken  = <login ページの hidden #_csrfToken（128hex）>
+  email       = <会員メール>
+  password    = <会員パスワード>
+  food_order  =             (hidden, 空)
+```
+
+- 事前に login ページを GET して **CSRF cookie とトークン**を同じ Cookie ジャーに載せてから POST する（cookie とフォームの `_csrfToken` が対応している必要がある）。
+- 成功時はリダイレクトし会員セッションが張られる。失敗時は login ページを再描画（エラー文言）。
+- ログイン判定は会員限定要素（ログアウト導線／マイページ）で確認する。
+- **認証情報はコード内に持たない**。実行者がローカルの環境変数／gitignore 済みファイルから渡す（クラウド＝Claude 側には一切渡さない）。
+
+## 7. 座席確保（hold）の実フロー（2026-08-21 の choice_seat で確認）
+
+choice_seat 画面のボタン `#seatChoice` → 内部関数 `addChangeSubmit()` が実行する処理：
+
+```
+POST /reservation/choiceSeatSave          ← 劇場パス無しの絶対パス
+  data       = JSON.stringify({ scheduleId, theaterId, seatArr })
+                 seatArr は席IDの配列（例 ["A-2","A-3"]。area の id と同形式）
+  _csrfToken = <choice_seat の hidden #csrfToken（128hex）>
+  → JSON: { result_code: "done" | "28" | "error" }
+     done  = 仮予約成立（＝席を確保）→ 続けて #form を submit
+     28    = タイムアウト（/timeout へ）
+     error = 再読込
+```
+
+`done` の後、choice_seat の `#form` を送信して券種選択へ進む：
+
+```
+POST /t-joy_yokohama/reservation/choice_ticket
+  _method=POST, _csrfToken, scheduleId, theaterId
+```
+
+- **`choiceSeatSave` が成立した時点で席は仮押さえ**。ここが発売直後の速度勝負の核心。
+- choice_seat の hidden から取得できる値: `scheduleId`, `theaterId`, `#csrfToken`,
+  `#seatArr`(初期空), `#seatLength`(初期0)。
+- 仮予約には**時間制限**があり、`/reservation/cancel_temporary_reservation_which_exists`
+  で解放する導線がある。確保後は制限時間内に券種・決済を完了する必要がある。
+- 我々のアダプタは UI を介さず `seatArr` を直接組んで POST できる（＝最速）。
+- **停止点**：券種選択〜決済（choice_ticket 以降）は人間に渡す設計。CAPTCHA や
+  想定外画面に遭遇したら即停止（RULES.md の原則）。
+
+### 決済ハンドオフ（要検討・未確定）
+
+仮予約は Node プロセスの Cookie セッションに紐づく。人間のブラウザで続きを払うには
+セッション共有が要る。実現案:
+- (a) ローカルで**可視ブラウザ（Playwright 等）**を動かし、確保後そのウィンドウで人間が決済 → 同一セッションでハンドオフ問題なし（ローカルPC運用に最適）。
+- (b) 純 Node で確保し、Cookie を人間のブラウザへ受け渡す（手間）。
+- (c) 会員に**劇場支払い等のカード不要導線**があれば Node で予約完了まで可能（要確認）。
+
+## 8. 未確認・要注意
+
 - 待機列（仮想待合室）に実際に入ったときの挙動・URL は未確認。
 - 残席アイコン `icon_label1〜4` と ◎○△× の正確な対応。
 - ペア席・エグゼクティブ席等の `type-seat` 値と料金の対応。
 - 発売の瞬間（0:00）に choice_seat がどう変わるか（発売前は予約導線が出ない可能性）。
+- `choiceSeatSave` がログイン必須かどうか（ログイン後に実行するので実運用上は問題なし）。
+- 決済ハンドオフ方式の確定（上記 (a)/(b)/(c)）。

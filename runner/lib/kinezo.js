@@ -8,8 +8,9 @@
      openShow(show)          … reservation/index → choice_seat のセッション確立
      fetchSeatMap()          … choice_seat の <area> から空席/売切を読む
 
-   hold / login / 決済は認証が必要なため未実装（権限が開いてから Phase 2b）。
-   調査根拠は cinema/KINEZO-RESEARCH.md。
+   login / hold は cinema/KINEZO-RESEARCH.md の実フロー（§6, §7）に基づき実装。
+   認証情報は引数で受け取るだけで、インスタンスにもログにも一切残さない。
+   決済（choice_ticket 以降）は人間に渡す設計のため未実装。
    ============================================================ */
 
 'use strict';
@@ -27,6 +28,24 @@ function csrfToken(html) {
   return pick(html, /name="csrf-token"\s+content="([^"]*)"/) ||
          pick(html, /id="csrfToken"[^>]*value="([^"]*)"/) ||
          pick(html, /name="_csrfToken"[^>]*value="([^"]*)"/);
+}
+/** name 指定で hidden input の value を取る */
+function hiddenVal(html, name) {
+  var re = new RegExp('name="' + name + '"[^>]*value="([^"]*)"');
+  var m = html.match(re);
+  if (m) return m[1];
+  // value が name より前に来るパターンも拾う
+  re = new RegExp('value="([^"]*)"[^>]*name="' + name + '"');
+  m = html.match(re);
+  return m ? m[1] : null;
+}
+/** id 指定で input の value を取る */
+function idVal(html, id) {
+  return pick(html, new RegExp('id="' + id + '"[^>]*value="([^"]*)"')) ||
+         pick(html, new RegExp('value="([^"]*)"[^>]*id="' + id + '"'));
+}
+function form(obj) {
+  return Object.keys(obj).map((k) => k + '=' + encodeURIComponent(obj[k] == null ? '' : obj[k])).join('&');
 }
 
 /**
@@ -68,14 +87,110 @@ Kinezo.prototype.openShow = async function (show) {
   var res = await request({ url: url, jar: this.jar, followRedirect: true,
     headers: { 'Referer': BASE + '/' + this.theaterPath + '/theater_cinema' } });
   this._seatHtml = res.body;
-  this._csrfSeat = csrfToken(res.body);
-  return { ok: /choice_seat/.test(res.url), url: res.url };
+  this._seatUrl = res.url;
+  // hold() に必要な値を choice_seat の hidden から確保
+  this._csrfSeat = idVal(res.body, 'csrfToken') || csrfToken(res.body);
+  this._scheduleId = hiddenVal(res.body, 'scheduleId') || (show && show.showId);
+  this._seatTheaterId = hiddenVal(res.body, 'theaterId') || this.theaterId;
+  return { ok: /choice_seat/.test(res.url), url: res.url, scheduleId: this._scheduleId };
 };
 
 /** choice_seat の座席状況（実データ）。openShow の後に呼ぶ。 */
 Kinezo.prototype.fetchSeatMap = function () {
   if (!this._seatHtml) throw new Error('先に openShow() を呼んでください');
   return parseSeatMap(this._seatHtml);
+};
+
+/* ---- 認証・座席確保（KINEZO-RESEARCH.md §6, §7） ------------------- */
+
+/**
+ * 会員ログイン。email / password は「この呼び出しの間だけ」使う。
+ * インスタンスにもログにも保存しない。戻り値にも生の値は含めない。
+ * @returns { ok, reason }
+ */
+Kinezo.prototype.login = async function (email, password) {
+  if (!email || !password) throw new Error('メールとパスワードが必要です');
+  // 1) ログインページを GET → CSRF cookie とフォームトークンを同じ jar に載せる
+  var page = await request({ url: BASE + '/' + this.theaterPath + '/login', jar: this.jar });
+  var token = hiddenVal(page.body, '_csrfToken') || csrfToken(page.body);
+  if (!token) return { ok: false, reason: 'CSRFトークン取得失敗（ページ構造の変更かも）' };
+  if (/recaptcha|hcaptcha|g-recaptcha/i.test(page.body)) {
+    return { ok: false, reason: 'CAPTCHAが出現。自動ログインを中止し人間に引き継ぎます' };
+  }
+  // 2) 認証情報を POST（本文はローカル変数のみ。ここでも値はログ出力しない）
+  var body = form({ _method: 'POST', _csrfToken: token, email: email, password: password, food_order: '' });
+  var res = await request({
+    method: 'POST', url: BASE + '/' + this.theaterPath + '/login', jar: this.jar,
+    headers: { 'Referer': BASE + '/' + this.theaterPath + '/login', 'Origin': BASE },
+    body: body, followRedirect: true
+  });
+  // 3) 成否判定：ログインフォームが再表示されていれば失敗
+  var stillLogin = /name="password"/.test(res.body) && /\/login/.test(res.url);
+  if (stillLogin) {
+    var errM = res.body.match(/class="[^"]*(?:error|alert|flash)[^"]*"[^>]*>\s*([^<]{2,80})/i);
+    return { ok: false, reason: 'ログイン失敗' + (errM ? '：' + decode(errM[1]) : '（メール/パスワードをご確認ください）') };
+  }
+  var ok = await this.isLoggedIn();
+  return { ok: ok, reason: ok ? 'ログイン成功' : 'ログイン状態を確認できませんでした' };
+};
+
+/** 会員ログイン済みか（劇場トップの会員導線で判定） */
+Kinezo.prototype.isLoggedIn = async function () {
+  var res = await request({ url: BASE + '/' + this.theaterPath, jar: this.jar });
+  // ログアウト導線／マイページがあればログイン済み、login リンクだけならば未ログイン
+  if (/\/logout|ログアウト|\/mypage|マイページ/.test(res.body)) return true;
+  if (new RegExp('/' + this.theaterPath + '/login"').test(res.body)) return false;
+  return false;
+};
+
+/**
+ * 座席確保（仮予約）。openShow のあと、ログイン済みで呼ぶ。
+ * seatIds は area の id 形式（例 ["A-2","A-3"]）。
+ * choiceSeatSave が done を返した時点で「席を掴んだ」状態。
+ * その後 choice_ticket まで進めて停止（券種・決済は人間へ）。
+ * @returns { ok, code, atTicket, reason }
+ */
+Kinezo.prototype.hold = async function (seatIds) {
+  if (!this._seatHtml) throw new Error('先に openShow() を呼んでください');
+  if (!Array.isArray(seatIds) || !seatIds.length) throw new Error('確保する座席IDを渡してください');
+  if (!this._csrfSeat) return { ok: false, reason: 'choice_seat の CSRF を取得できていません' };
+  // 1) 仮予約（席確保）
+  var payload = JSON.stringify({ scheduleId: this._scheduleId, theaterId: this._seatTheaterId, seatArr: seatIds });
+  var res = await request({
+    method: 'POST', url: BASE + '/reservation/choiceSeatSave', jar: this.jar,
+    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': this._seatUrl || (BASE + '/' + this.theaterPath + '/reservation/choice_seat') },
+    body: form({ data: payload, _csrfToken: this._csrfSeat })
+  });
+  var code = null;
+  try { code = (JSON.parse(res.body) || {}).result_code; } catch (e) { code = null; }
+  if (code !== 'done') {
+    var reason = code === '28' ? '仮予約タイムアウト（発売前 or セッション切れ）'
+      : code === 'error' ? 'サーバがerror（席が既に埋まった/重複予約の可能性）'
+      : '想定外の応答（code=' + code + '）。安全のため停止します';
+    return { ok: false, code: code, atTicket: false, reason: reason };
+  }
+  // 2) 券種選択画面へ前進（ここで停止。決済は人間が実施）
+  var adv = await request({
+    method: 'POST', url: BASE + '/' + this.theaterPath + '/reservation/choice_ticket', jar: this.jar,
+    headers: { 'Referer': this._seatUrl || BASE }, followRedirect: true,
+    body: form({ _method: 'POST', _csrfToken: this._csrfSeat, scheduleId: this._scheduleId, theaterId: this._seatTheaterId })
+  });
+  this._ticketUrl = adv.url;
+  var atTicket = /choice_ticket|reservation/.test(adv.url) && !/choice_seat/.test(adv.url);
+  return { ok: true, code: 'done', atTicket: atTicket, ticketUrl: adv.url,
+    reason: '席を確保しました。券種選択・決済はブラウザで人間が完了してください' };
+};
+
+/** 仮予約を解放する（掴んだ席を手放す） */
+Kinezo.prototype.releaseHold = async function () {
+  try {
+    await request({
+      method: 'POST', url: BASE + '/reservation/cancel_temporary_reservation_which_exists', jar: this.jar,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: form({ _csrfToken: this._csrfSeat })
+    });
+    return { ok: true };
+  } catch (e) { return { ok: false, reason: e.message }; }
 };
 
 /* ---- パーサ ------------------------------------------------------- */
