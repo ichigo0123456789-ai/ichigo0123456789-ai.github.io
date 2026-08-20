@@ -73,6 +73,32 @@ node runner/reserve-browser.js --date 2026-08-27 --title ユーフォニアム \
   --time 10:00 --seats G-10,G-11 --at "2026-08-25T00:00:00+09:00"    # ④発売時刻に確保
 ```
 
+### 予約（ハイブリッド版 = 最速）`reserve-hybrid.js`
+
+**確保は純HTTPで直POST（サブ秒。ブラウザもスクリプトも読まない）**→ その確保済み
+セッションの Cookie を実ブラウザに注入して、**決済は人間が同一セッションで続ける**。
+発売0秒の争奪戦向け。Playwright は決済ウィンドウ用に必要。
+
+```bash
+cd runner && npm install && npx playwright install chromium && cd ..
+
+node runner/reserve-hybrid.js --login-only
+node runner/reserve-hybrid.js --date 2026-08-21 --title オークストリート \
+  --time 15:00 --seats A-3 --dry
+node runner/reserve-hybrid.js --date 2026-08-21 --title オークストリート \
+  --time 15:00 --seats A-3
+node runner/reserve-hybrid.js --date 2026-08-27 --title ユーフォニアム \
+  --time 10:00 --seats G-10,G-11 --at "2026-08-25T00:00:00+09:00"
+```
+
+速度比較（目安）:
+
+| 方式 | 確保までの速さ | 決済引き継ぎ |
+|---|---|---|
+| `reserve.js`（純Node） | 最速（サブ秒） | ❌ 別ブラウザに渡せない |
+| `reserve-browser.js`（可視ブラウザ） | 遅い（ページ読込 ~11秒） | ✅ 同一ウィンドウ |
+| **`reserve-hybrid.js`** | **最速（サブ秒）** | **✅ Cookie注入で同一セッション** |
+
 ## 構成
 
 | ファイル | 役割 |
@@ -82,7 +108,8 @@ node runner/reserve-browser.js --date 2026-08-27 --title ユーフォニアム \
 | `config.js` | 認証情報をローカルからのみ読む（値は出力しない） |
 | `probe.js` | 動作確認 CLI（認証不要） |
 | `reserve.js` | 予約オーケストレータ・純Node版（席確保まで。決済引き継ぎ不可） |
-| `reserve-browser.js` | 予約・可視ブラウザ版（Playwright）。**決済まで人間が同一画面で続けられる=推奨** |
+| `reserve-browser.js` | 予約・可視ブラウザ版（Playwright）。決済まで人間が同一画面で続けられる |
+| `reserve-hybrid.js` | 予約・ハイブリッド版。**サブ秒確保＋Cookie注入で決済＝最速・推奨** |
 | `package.json` | Playwright 依存（`cd runner && npm install`） |
 | `.env.example` | 認証情報ファイルの雛形（コピーして `.env` に） |
 
