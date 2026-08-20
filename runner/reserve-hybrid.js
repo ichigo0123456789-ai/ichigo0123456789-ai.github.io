@@ -23,6 +23,7 @@
 
 const { Kinezo } = require('./lib/kinezo');
 const { loadCreds } = require('./config');
+const { request } = require('./lib/http');
 
 var BASE = 'https://tjoy.jp';
 var THEATER_PATH = 't-joy_yokohama';
@@ -33,34 +34,62 @@ function arg(name, def) {
   var v = process.argv[i + 1];
   return (v == null || String(v).startsWith('--')) ? true : v;
 }
-function log(msg) { console.log('[' + new Date().toTimeString().slice(0, 8) + '] ' + msg); }
+function ts() { var d = new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
+function fmtMs(t) { var d = new Date(t); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
+function log(msg) { console.log('[' + ts() + '] ' + msg); }
 function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function maskEmail(e) { var m = String(e).split('@'); return (m[0] || '').slice(0, 2) + '***@' + (m[1] || '').slice(0, 2) + '***'; }
 
 /**
- * 発売時刻まで待つ。待機中は keepAlive() を数分ごとに呼び、ログインを維持する
- * （長時間待つとセッションが切れるため）。keepAlive は省略可。
+ * サーバ時刻(KINEZO)とローカル時計のズレを実測する（Date ヘッダの区間交差法）。
+ * 返り値 offset = serverTime - localTime（ms）。ローカルがサーバより遅い＝offset は正。
  */
-async function waitUntil(iso, keepAlive) {
-  var target = new Date(iso).getTime();
-  if (isNaN(target)) throw new Error('--at の時刻を解釈できません: ' + iso);
-  log('発売時刻まで待機: ' + new Date(target).toLocaleString('ja-JP') + '（ログインを維持しながら待ちます）');
-  var lastPing = Date.now();
-  var lastMinLog = 0;
-  while (Date.now() < target) {
-    var remain = target - Date.now();
-    // 3分ごとにセッション維持
+async function syncServerClock(k, samples) {
+  var lo = -Infinity, hi = Infinity, got = 0;
+  for (var i = 0; i < samples; i++) {
+    var t0 = Date.now();
+    var res = await request({ url: BASE + '/' + THEATER_PATH, jar: k.jar, headers: { 'Cache-Control': 'no-cache' } }).catch(function () { return null; });
+    var t1 = Date.now();
+    var d = res && res.headers && res.headers.date ? Date.parse(res.headers.date) : NaN;
+    if (!isNaN(d)) {
+      // サーバが秒 D を刻んだ瞬間、ローカル時計は [t0, t1] のどこか。区間を絞り込む。
+      lo = Math.max(lo, d - t1);
+      hi = Math.min(hi, d + 1000 - t0);
+      got++;
+    }
+    await sleep(120);
+  }
+  if (!got || !isFinite(lo) || !isFinite(hi) || lo > hi) return { offset: 0, uncertainty: null };
+  return { offset: Math.round((lo + hi) / 2), uncertainty: Math.round((hi - lo) / 2) };
+}
+
+/**
+ * 目標ローカル時刻(絶対ms)まで精密に待つ。近づくほどスリープを細かくし、
+ * 最後の数十msはビジースピンでミリ秒精度に寄せる。待機中は keepAlive を回す。
+ * 発火した実時刻(ms)を返す。
+ */
+async function waitUntil(fireAt, keepAlive) {
+  var lastPing = Date.now(), lastSec = -1, lastMin = -1;
+  while (true) {
+    var remain = fireAt - Date.now();
+    if (remain <= 0) break;
     if (keepAlive && remain > 5000 && Date.now() - lastPing > 180000) {
       lastPing = Date.now();
       try { await keepAlive(); } catch (e) { log('セッション維持で警告: ' + e.message); }
     }
-    // 残り時間の表示は控えめに（1分ごと）
-    if (remain > 60000 && Date.now() - lastMinLog > 60000) { lastMinLog = Date.now(); log('あと約 ' + Math.round(remain / 60000) + ' 分'); }
-    if (remain > 60000) { await sleep(Math.min(remain - 30000, 20000)); }
-    else if (remain > 3000) { await sleep(remain - 2000); }
-    else { await sleep(50); }
+    if (remain <= 10000) {
+      var s = Math.ceil(remain / 1000);
+      if (s !== lastSec) { lastSec = s; log('発火まで ' + s + ' 秒'); }
+      if (remain > 1000) await sleep(Math.min(remain - 900, 250));
+      else if (remain > 30) await sleep(5);
+      // 残り30ms以下はビジースピン（await しない）でミリ秒精度に寄せる
+    } else {
+      var m = Math.round(remain / 60000);
+      if (m !== lastMin) { lastMin = m; log('あと約 ' + m + ' 分'); }
+      await sleep(Math.min(remain - 9500, 20000));
+    }
   }
-  log('発売時刻になりました。');
+  return Date.now();
 }
 
 /** 対象上映回を解決。発売直後は予約導線が出るまで数百msの遅延があるので少しリトライ。 */
@@ -97,23 +126,43 @@ async function resolveShow(k, date, title, time) {
   var seats = String(arg('seats') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
   if (!date || !title || !time || !seats.length) throw new Error('--date --title --time --seats を指定してください');
 
-  // 2) 発売時刻まで待機（ログイン済みで待つ。待機中はセッションを維持し、切れたら再ログイン）
+  // 2) 発売時刻まで待機（サーバ時刻に同期して精密発火。待機中はセッション維持）
   var at = arg('at');
+  var clockOffset = 0;
   if (at && at !== true) {
-    await waitUntil(at, async function () {
+    var targetLocal = new Date(at).getTime();
+    if (isNaN(targetLocal)) throw new Error('--at の時刻を解釈できません: ' + at);
+    log('サーバ時刻に同期中…');
+    var sync = await syncServerClock(k, 12);
+    clockOffset = sync.offset; // server - local
+    log('サーバ時計とのズレ: ローカルは ' + (clockOffset >= 0 ? 'サーバより ' + clockOffset + 'ms 遅い' : 'サーバより ' + (-clockOffset) + 'ms 速い') +
+        (sync.uncertainty != null ? '（測定誤差 ±' + sync.uncertainty + 'ms）' : '（測定できず 0 とみなす）'));
+    var fireAt = targetLocal - clockOffset; // ローカル時計でこの瞬間＝サーバ時刻で目標
+    log('目標(発売): ' + fmtMs(targetLocal) + '（サーバ時刻基準）');
+    log('発火予定: ローカル ' + fmtMs(fireAt) + ' に実行');
+    var keepAlive = async function () {
       var ok = await k.isLoggedIn().catch(function () { return false; });
       if (ok) { log('セッション維持OK'); return; }
       log('セッションが切れたため再ログインします');
       var re = await k.login(creds.email, creds.password);
       log(re.ok ? '✓ 再ログイン成功' : '✗ 再ログイン失敗: ' + re.reason);
-    });
+    };
+    var fired = await waitUntil(fireAt, keepAlive);
+    var firedServer = fired + clockOffset;
+    var diff = firedServer - targetLocal;
+    log('発火: ローカル ' + fmtMs(fired) + ' ／ サーバ時刻換算 ' + fmtMs(firedServer) +
+        ' → 目標との差 ' + (diff >= 0 ? '+' : '') + diff + ' ms');
   }
 
-  // 3) 対象回を解決 → 座席画面 → 希望席の空き確認（ここまで軽量）
+  // 3) 対象回を解決 → 座席画面 → 確保（各ステップの所要msを計測）
   var t0 = Date.now();
+  var tA = Date.now();
   var show = await resolveShow(k, date, title, time);
-  log('対象: ' + title + ' ' + show.time + ' ｼｱﾀｰ' + show.screen);
+  var dRes = Date.now() - tA;
+  log('対象: ' + title + ' ' + show.time + ' ｼｱﾀｰ' + show.screen + '（上映回解決 ' + dRes + 'ms）');
+  var tB = Date.now();
   var op = await k.openShow(show);
+  var dOpen = Date.now() - tB;
   if (!op.ok) throw new Error('座席選択画面に到達できませんでした（待機列/発売前の可能性）');
   var map = k.fetchSeatMap();
   var bad = seats.filter(function (id) { return !map[id] || map[id].state !== 'available'; });
@@ -124,10 +173,12 @@ async function resolveShow(k, date, title, time) {
   }
 
   // 4) 確保（サブ秒）
-  if (dry) { log('--dry。確保の直前で停止（席は取っていません）。'); return; }
+  if (dry) { log('--dry。確保の直前で停止（席は取っていません）。内訳: 上映回解決 ' + dRes + 'ms／座席画面 ' + dOpen + 'ms'); return; }
+  var tC = Date.now();
   var hr = await k.hold(seats);
+  var dHold = Date.now() - tC;
   if (!hr.ok) { console.error('✗ 確保失敗: ' + hr.reason); process.exit(4); }
-  log('✓✓ 席を確保しました（所要 ' + (Date.now() - t0) + 'ms）: ' + seats.join(', '));
+  log('✓✓ 席を確保しました（合計 ' + (Date.now() - t0) + 'ms ｜ 上映回解決 ' + dRes + 'ms・座席画面 ' + dOpen + 'ms・確保 ' + dHold + 'ms）: ' + seats.join(', '));
 
   // 5) 同じセッションの Cookie をブラウザへ注入して決済画面を開く
   var chromium;
