@@ -111,13 +111,17 @@ function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   var hr = await k.hold(seats);
   if (!hr.ok) { console.error('✗ 確保できませんでした: ' + hr.reason); process.exit(4); }
   log('✓✓ ' + hr.reason);
-  console.log('\n──────── 席を確保しました ────────');
+  console.log('\n──────── 席を確保しました（仮予約） ────────');
   console.log('  作品: ' + movie.title);
   console.log('  日時: ' + date + ' ' + show.time + ' / ｼｱﾀｰ' + show.screen);
   console.log('  座席: ' + seats.join(', '));
-  console.log('  続きURL(券種・決済): ' + (hr.ticketUrl || '(ブラウザでKINEZOにログインし予約手続き中の回を開いてください)'));
-  console.log('  ※ 仮予約には時間制限があります。ブラウザで速やかに決済してください。');
-  console.log('  ※ カード情報はこのツールでは一切扱いません（人間が決済）。');
+  console.log('\n  ▼ 決済（人間がブラウザで）');
+  console.log('  ※ この仮予約は「この実行のログインセッション」に紐づいています。');
+  console.log('    choice_ticket の URL を別ブラウザに貼っても開けません（セッションが違うため）。');
+  console.log('    ブラウザで https://tjoy.jp/t-joy_yokohama に同じアカウントでログインし、');
+  console.log('    「お手続き中の予約 / マイページ / カート」から続けて券種選択・決済してください。');
+  console.log('    ※ 仮予約には時間制限があります。放置すると自動で解放されます。');
+  console.log('    ※ カード情報はこのツールでは一切扱いません（人間が決済）。');
 })().catch(function (e) { console.error('ERROR:', e.message); process.exit(1); });
 
 /** ログ用にメールを伏せる（例: ab***@ex***） */
