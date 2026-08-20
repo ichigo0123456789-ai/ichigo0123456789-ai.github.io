@@ -1,0 +1,7 @@
+# 認証情報は絶対にコミットしない（Phase 2b で Drive から実行時に読む方針）
+*credential*
+*.cred
+*.cred.b64
+runner/.env
+runner/**/secret*
+node_modules/
