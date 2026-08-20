@@ -151,10 +151,21 @@ Kinezo.prototype.isLoggedIn = async function () {
  * @returns { ok, code, atTicket, reason }
  */
 Kinezo.prototype.hold = async function (seatIds) {
+  var s = await this.secure(seatIds);
+  if (!s.ok) return s;
+  var a = await this.advanceToTicket();
+  return { ok: true, code: 'done', atTicket: a.atTicket, ticketUrl: a.ticketUrl,
+    reason: '席を確保しました。券種選択・決済はブラウザで人間が完了してください' };
+};
+
+/**
+ * 席を掴む（choiceSeatSave のみ）。ここが勝敗の決まる点。最短で返す。
+ * @returns { ok, code, reason }
+ */
+Kinezo.prototype.secure = async function (seatIds) {
   if (!this._seatHtml) throw new Error('先に openShow() を呼んでください');
   if (!Array.isArray(seatIds) || !seatIds.length) throw new Error('確保する座席IDを渡してください');
   if (!this._csrfSeat) return { ok: false, reason: 'choice_seat の CSRF を取得できていません' };
-  // 1) 仮予約（席確保）
   var payload = JSON.stringify({ scheduleId: this._scheduleId, theaterId: this._seatTheaterId, seatArr: seatIds });
   var res = await request({
     method: 'POST', url: BASE + '/reservation/choiceSeatSave', jar: this.jar,
@@ -167,9 +178,13 @@ Kinezo.prototype.hold = async function (seatIds) {
     var reason = code === '28' ? '仮予約タイムアウト（発売前 or セッション切れ）'
       : code === 'error' ? 'サーバがerror（席が既に埋まった/重複予約の可能性）'
       : '想定外の応答（code=' + code + '）。安全のため停止します';
-    return { ok: false, code: code, atTicket: false, reason: reason };
+    return { ok: false, code: code, reason: reason };
   }
-  // 2) 券種選択画面へ前進（ここで停止。決済は人間が実施）
+  return { ok: true, code: 'done', reason: '席を掴みました（仮予約成立）' };
+};
+
+/** 確保後、券種選択画面へ前進する（勝敗確定の後処理。決済は人間）。 */
+Kinezo.prototype.advanceToTicket = async function () {
   var adv = await request({
     method: 'POST', url: BASE + '/' + this.theaterPath + '/reservation/choice_ticket', jar: this.jar,
     headers: { 'Referer': this._seatUrl || BASE }, followRedirect: true,
@@ -177,8 +192,7 @@ Kinezo.prototype.hold = async function (seatIds) {
   });
   this._ticketUrl = adv.url;
   var atTicket = /choice_ticket|reservation/.test(adv.url) && !/choice_seat/.test(adv.url);
-  return { ok: true, code: 'done', atTicket: atTicket, ticketUrl: adv.url,
-    reason: '席を確保しました。券種選択・決済はブラウザで人間が完了してください' };
+  return { ok: true, atTicket: atTicket, ticketUrl: adv.url };
 };
 
 /** 仮予約を解放する（掴んだ席を手放す） */

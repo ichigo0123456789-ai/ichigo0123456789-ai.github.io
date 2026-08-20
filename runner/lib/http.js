@@ -15,6 +15,10 @@ const net = require('net');
 const tls = require('tls');
 const { URL } = require('url');
 
+/* 直結時（プロキシ無し＝手元PC）は keep-alive で TCP/TLS 接続を使い回す。
+   発売前にウォームアップしておけば T=0 の各リクエストがハンドシェイク無しで飛ぶ。 */
+const keepAliveAgent = new https.Agent({ keepAlive: true, maxSockets: 6, keepAliveMsecs: 30000 });
+
 /** 簡易 Cookie ジャー（ドメイン無視の単純版。単一サイト用途なので十分） */
 class CookieJar {
   constructor() { this.jar = {}; }
@@ -93,6 +97,7 @@ async function request(opt) {
       headers: headers
     };
     if (socket) { reqOpts.socket = socket; reqOpts.agent = false; reqOpts.servername = url.hostname; }
+    else if (isHttps) { reqOpts.agent = keepAliveAgent; } // 直結時は接続を使い回す
     var lib = isHttps ? https : http;
     var req = lib.request(reqOpts, (r) => {
       var chunks = [];
