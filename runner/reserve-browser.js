@@ -128,16 +128,15 @@ async function waitUntil(iso) {
       log('必要なら画面の指示に従って座席選択まで進めてください。ブラウザは開いたままにします。');
     }
 
-    // 6) 席をクリック（サイト自身のJSが選択を処理）
+    // 座席表とハンドラの準備を待つ
+    await page.waitForLoadState('networkidle').catch(function () {});
+    await page.waitForSelector('#seatLength', { timeout: 15000 }).catch(function () {});
+    await page.waitForSelector('area.seat-select', { timeout: 15000 }).catch(function () {});
+
+    // 6) 席をクリック（image-map の area。可視判定を避けて確実に選択）
     for (var i = 0; i < seats.length; i++) {
-      var sel = 'area#' + seats[i].replace(/([^a-zA-Z0-9_-])/g, '\\$1');
-      var loc = page.locator(sel);
-      if (!(await loc.count())) { throw new Error('席が見つかりません: ' + seats[i] + '（席IDが実在するか、この回のシアターか確認）'); }
-      var cls = (await loc.getAttribute('class')) || '';
-      if (/sold-out/.test(cls)) throw new Error('席が売切です: ' + seats[i]);
-      await loc.click({ timeout: 5000 });
-      log('席を選択: ' + seats[i]);
-      await page.waitForTimeout(150);
+      await clickSeat(page, seats[i]);
+      log('席を選択: ' + seats[i] + '（現在の選択数 ' + (await seatCount(page)) + '）');
     }
 
     // 7) 確保（--dry は押さない）
@@ -167,6 +166,62 @@ async function waitUntil(iso) {
     await new Promise(function () {});
   }
 })();
+
+/** 現在の選択座席数（#seatLength の値）。取れなければ 0。 */
+async function seatCount(page) {
+  var v = await page.locator('#seatLength').inputValue().catch(function () { return '0'; });
+  var n = parseInt(v, 10);
+  return isNaN(n) ? 0 : n;
+}
+
+/**
+ * 座席（image-map の <area>）を選択する。area は不可視要素扱いになるため、
+ * 通常 click は効かない。3段構えで試し、#seatLength が増えたら成功と判定。
+ *   ① click イベントを直接 dispatch（サイトの選択ハンドラを起動）
+ *   ② area の座標を画像上の位置に換算して実クリック（image-map 本来の動作）
+ *   ③ force click
+ */
+async function clickSeat(page, seatId) {
+  var sel = 'area#' + seatId.replace(/([^a-zA-Z0-9_-])/g, '\\$1');
+  var loc = page.locator(sel);
+  if (!(await loc.count())) throw new Error('席が見つかりません: ' + seatId + '（席IDが実在するか、この回のシアターか確認）');
+  var cls = (await loc.getAttribute('class')) || '';
+  if (/sold-out/.test(cls)) throw new Error('席が売切です: ' + seatId);
+
+  var before = await seatCount(page);
+
+  // ① click を dispatch
+  await loc.dispatchEvent('click').catch(function () {});
+  await page.waitForTimeout(200);
+  if ((await seatCount(page)) > before) return;
+
+  // ② 座標クリック（画像の表示サイズに合わせて換算）
+  var info = await loc.evaluate(function (area) {
+    var raw = area.getAttribute('data-coords') || area.getAttribute('coords') || '';
+    var c = raw.split(',').map(Number);
+    var map = area.closest('map');
+    var name = map ? map.getAttribute('name') : null;
+    var img = name ? document.querySelector('img[usemap="#' + name + '"]') : null;
+    if (!img || c.length < 4) return null;
+    var r = img.getBoundingClientRect();
+    return { cx: (c[0] + c[2]) / 2, cy: (c[1] + c[3]) / 2, natW: img.naturalWidth || r.width, natH: img.naturalHeight || r.height, rx: r.x, ry: r.y, rw: r.width, rh: r.height };
+  }).catch(function () { return null; });
+  if (info && info.rw > 0 && info.natW > 0) {
+    var px = info.rx + info.cx * (info.rw / info.natW);
+    var py = info.ry + info.cy * (info.rh / info.natH);
+    await page.mouse.click(px, py).catch(function () {});
+    await page.waitForTimeout(200);
+    if ((await seatCount(page)) > before) return;
+  }
+
+  // ③ force click
+  await loc.click({ force: true, timeout: 3000 }).catch(function () {});
+  await page.waitForTimeout(200);
+  if ((await seatCount(page)) > before) return;
+
+  throw new Error('席を選択できませんでした（クリックは実行したが選択数が増えない）: ' + seatId +
+    '。座席表の描画待ちが足りない可能性。もう一度実行するか、画面を確認してください。');
+}
 
 /** 規約同意・案内などのモーダルを best-effort で閉じる/同意する */
 async function dismissModals(page) {
