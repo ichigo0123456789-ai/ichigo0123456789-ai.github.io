@@ -198,6 +198,31 @@
 
 <!-- ============ 4. 実行 ============ -->
 <section id="view-run" class="view">
+
+  <!-- 実際に予約する（コマンド生成）：サイトの選択 → 手元 runner のコマンド -->
+  <div class="card" id="cmd-card">
+    <h2>実際に予約する（コマンド）</h2>
+    <p class="note">下のコマンドをコピーして、手元のターミナル（リポジトリのフォルダ）で実行します。発売の瞬間に席を最速で確保し、決済画面まで開きます。下のリハーサルは練習用（モック）です。</p>
+    <div class="row-2">
+      <div class="field">
+        <label for="cmd-at">発売日時（任意・空なら今すぐ実行）</label>
+        <input id="cmd-at" type="datetime-local">
+        <p class="hint">指定すると、その時刻まで事前ログインで待機し、発売0秒で確保します。</p>
+      </div>
+      <div class="field">
+        <label for="cmd-seats">座席（第2候補は「 / 」で区切る）</label>
+        <input id="cmd-seats" type="text" placeholder="A-3,A-4 / B-5,B-6">
+        <p class="hint">第1候補が埋まっていたら次の候補を自動確保します。</p>
+      </div>
+    </div>
+    <label class="cmd-label">生成コマンド</label>
+    <pre id="cmd-out" class="cmd-out">座席を確定するとコマンドが出ます。</pre>
+    <div class="run-actions">
+      <button class="btn primary" id="btn-copy-cmd">コマンドをコピー</button>
+    </div>
+    <p class="hint">※ 現在は T・ジョイ横浜（KINEZO）専用。認証情報は手元の <code>runner/.env</code> から読み、サイトには一切入力しません。</p>
+  </div>
+
   <div class="grid-2">
     <div class="card">
       <h2>実行設定</h2>

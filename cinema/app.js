@@ -1436,7 +1436,68 @@
     $('btn-to-run').addEventListener('click', function () {
       if (!S.plan.candidates.length) { toast('座席を選んでください'); return; }
       showView('run');
+      initCmdCard();
     });
+
+    /* ---- 実際に予約する（コマンド生成） ---------------------------
+       サイトで選んだ 作品/日付/時刻/座席 を、手元 runner の
+       `node runner/reserve-hybrid.js ...` に変換する。
+       座席IDは runner と同形式（例 A-3）。第2候補は " / " 区切り。 */
+    function cmdQuote(s) {
+      /* PowerShell / bash 双方で安全になるよう二重引用符で囲む */
+      return '"' + String(s).replace(/"/g, '\\"') + '"';
+    }
+    function buildCmd() {
+      var target = S.plan.candidates[0];
+      var seatsField = $('cmd-seats');
+      var seats = (seatsField && seatsField.value.trim()) || (target ? target.seats.join(',') : '');
+      if (!seats || !S.plan.title || !S.plan.date || !S.plan.showtime) return null;
+      var parts = ['node runner/reserve-hybrid.js',
+        '--date ' + S.plan.date,
+        '--title ' + cmdQuote(S.plan.title),
+        '--time ' + S.plan.showtime,
+        '--seats ' + cmdQuote(seats)];
+      var atEl = $('cmd-at');
+      if (atEl && atEl.value) {
+        /* datetime-local は "YYYY-MM-DDTHH:MM"。日本時間として +09:00 を付ける */
+        var v = atEl.value.length === 16 ? atEl.value + ':00' : atEl.value;
+        parts.push('--at ' + cmdQuote(v + '+09:00'));
+      }
+      return parts.join(' ');
+    }
+    function renderCmd() {
+      var out = $('cmd-out');
+      if (!out) return;
+      var c = buildCmd();
+      out.textContent = c || '座席を確定するとコマンドが出ます。';
+      out.classList.toggle('ready', !!c);
+    }
+    function initCmdCard() {
+      var target = S.plan.candidates[0];
+      var seatsField = $('cmd-seats');
+      if (seatsField && target) seatsField.value = target.seats.join(',');
+      renderCmd();
+    }
+    ['cmd-at', 'cmd-seats'].forEach(function (id) {
+      var el = $(id);
+      if (el) el.addEventListener('input', renderCmd);
+    });
+    var copyBtn = $('btn-copy-cmd');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      var c = buildCmd();
+      if (!c) { toast('座席を確定してください'); return; }
+      var done = function () { toast('コマンドをコピーしました。ターミナルに貼り付けて実行してください'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(c).then(done, function () { fallbackCopy(c); done(); });
+      } else { fallbackCopy(c); done(); }
+    });
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+      document.body.removeChild(ta);
+    }
 
     $('f-theater').addEventListener('change', function () {
       S.plan.theaterId = $('f-theater').value;
