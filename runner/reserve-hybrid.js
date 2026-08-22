@@ -30,7 +30,13 @@ const { loadCreds } = require('./config');
 const { request } = require('./lib/http');
 
 var BASE = 'https://tjoy.jp';
-var THEATER_PATH = 't-joy_yokohama';
+
+/* KINEZO 系の対応劇場。--theater <key> で切替（既定 yokohama）。
+   同じ KINEZO なので劇場パスと theaterId が違うだけで、ログイン/座席/確保は共通。 */
+var THEATERS = {
+  yokohama: { path: 't-joy_yokohama', id: '190', name: 'T・ジョイ横浜' },
+  wald9:    { path: 'shinjuku_wald9', id: '140', name: '新宿バルト9' }
+};
 
 function arg(name, def) {
   var i = process.argv.indexOf('--' + name);
@@ -38,6 +44,9 @@ function arg(name, def) {
   var v = process.argv[i + 1];
   return (v == null || String(v).startsWith('--')) ? true : v;
 }
+
+var TH = THEATERS[String(arg('theater', 'yokohama')).toLowerCase()];
+if (!TH) { console.error('--theater は次から指定: ' + Object.keys(THEATERS).join(', ')); process.exit(2); }
 function ts() { var d = new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
 function fmtMs(t) { var d = new Date(t); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
 function log(msg) { console.log('[' + ts() + '] ' + msg); }
@@ -64,7 +73,7 @@ async function syncServerClock(k, samples) {
   var lo = -Infinity, hi = Infinity, got = 0;
   for (var i = 0; i < samples; i++) {
     var t0 = Date.now();
-    var res = await request({ url: BASE + '/' + THEATER_PATH, jar: k.jar, headers: { 'Cache-Control': 'no-cache' } }).catch(function () { return null; });
+    var res = await request({ url: BASE + '/' + TH.path, jar: k.jar, headers: { 'Cache-Control': 'no-cache' } }).catch(function () { return null; });
     var t1 = Date.now();
     var d = res && res.headers && res.headers.date ? Date.parse(res.headers.date) : NaN;
     if (!isNaN(d)) {
@@ -172,7 +181,7 @@ async function enterSeatMap(k, show, creds) {
   var dry = arg('dry', false);
   var creds = loadCreds();
 
-  var k = new Kinezo({ theaterPath: THEATER_PATH, theaterId: '190' });
+  var k = new Kinezo({ theaterPath: TH.path, theaterId: TH.id });
   await k.init();
 
   // 1) ログイン（HTTP）。--at より前に済ませる＝発売時のロスにならない。
@@ -211,7 +220,7 @@ async function enterSeatMap(k, show, creds) {
     };
     var onApproach = async function () {
       // ② 接続ウォームアップ（TLS/DNSを温める）
-      await request({ url: BASE + '/' + THEATER_PATH, jar: k.jar }).catch(function () {});
+      await request({ url: BASE + '/' + TH.path, jar: k.jar }).catch(function () {});
       // ① 予約URL先読み（発売前でも取れれば T=0 の番組表取得を省ける）
       preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
       log(preShow ? '事前準備OK（予約URLを先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
@@ -276,7 +285,7 @@ async function enterSeatMap(k, show, creds) {
   catch (e) {
     console.log('\n席は確保済みですが、決済用ブラウザ(Playwright)が未導入です。');
     console.log('  cd runner && npm install && npx playwright install chromium');
-    console.log('を実行後、ブラウザで ' + BASE + '/' + THEATER_PATH + ' にログインし、お手続き中の予約から決済してください。');
+    console.log('を実行後、ブラウザで ' + BASE + '/' + TH.path + ' にログインし、お手続き中の予約から決済してください。');
     console.log('（この端末のログインセッションは終了するため、仮予約は時間切れになる場合があります）');
     process.exit(0);
   }
@@ -284,7 +293,7 @@ async function enterSeatMap(k, show, creds) {
   var ctx = await browser.newContext({ locale: 'ja-JP' });
   await ctx.addCookies(k.jar.toPlaywrightCookies(BASE));
   var page = await ctx.newPage();
-  var target = hr.ticketUrl && /choice_ticket/.test(hr.ticketUrl) ? hr.ticketUrl : (BASE + '/' + THEATER_PATH + '/reservation/choice_ticket');
+  var target = hr.ticketUrl && /choice_ticket/.test(hr.ticketUrl) ? hr.ticketUrl : (BASE + '/' + TH.path + '/reservation/choice_ticket');
   await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
   // 券種画面でなくログイン等に飛ばされたら、座席画面から続ける保険
   if (/\/login/.test(page.url())) {

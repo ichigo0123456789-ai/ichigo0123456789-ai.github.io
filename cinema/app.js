@@ -1452,11 +1452,17 @@
       var seatsField = $('cmd-seats');
       var seats = (seatsField && seatsField.value.trim()) || (target ? target.seats.join(',') : '');
       if (!seats || !S.plan.title || !S.plan.date || !S.plan.showtime) return null;
-      var parts = ['node runner/reserve-hybrid.js',
-        '--date ' + S.plan.date,
+      var parts = ['node runner/reserve-hybrid.js'];
+      /* 劇場を runner の --theater キーに変換（KINEZO 劇場パス → キー）。
+         横浜は既定なので省略。対応表は runner/reserve-hybrid.js の THEATERS と揃える。 */
+      var th = D.theater(S.plan.theaterId);
+      var kinezoPath = th && th.kinezo && th.kinezo.path;
+      var THEATER_KEYS = { 'shinjuku_wald9': 'wald9' };
+      if (kinezoPath && THEATER_KEYS[kinezoPath]) parts.push('--theater ' + THEATER_KEYS[kinezoPath]);
+      parts.push('--date ' + S.plan.date,
         '--title ' + cmdQuote(S.plan.title),
         '--time ' + S.plan.showtime,
-        '--seats ' + cmdQuote(seats)];
+        '--seats ' + cmdQuote(seats));
       var atEl = $('cmd-at');
       if (atEl && atEl.value) {
         /* datetime-local は "YYYY-MM-DDTHH:MM"。日本時間として +09:00 を付ける */

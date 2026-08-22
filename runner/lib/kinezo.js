@@ -78,7 +78,7 @@ Kinezo.prototype.fetchSchedule = async function (dateStr) {
     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Referer': BASE + '/' + this.theaterPath + '/theater_cinema' },
     body: body, jar: this.jar
   });
-  return parseSchedule(res.body);
+  return parseSchedule(res.body, this.theaterPath);
 };
 
 /** 上映回の予約フローを開き、choice_seat のセッションを確立（ログイン不要） */
@@ -240,7 +240,7 @@ function decode(s) {
 }
 
 /** scheduleGetHtmlApi の HTML から上映回を抽出 */
-function parseSchedule(html) {
+function parseSchedule(html, defaultTheaterPath) {
   var movies = {};
   /* 予約フローURL単位で走査（1回 = 1リンク） */
   var re = /reservation\/index\/(\d+)\/([A-Z0-9]+)\/(\d+)\/([\d-]+)\?type=film/g;
@@ -270,7 +270,7 @@ function parseSchedule(html) {
     }
     /* 予約URLの劇場パスは onclick=location.href='/t-joy_yokohama/reservation/...' から取る */
     var pathM = around.match(/\/([a-z_]+)\/reservation\/index/);
-    var theaterPath = pathM ? pathM[1] : 't-joy_yokohama';
+    var theaterPath = pathM ? pathM[1] : (defaultTheaterPath || 't-joy_yokohama');
     movies[title].shows.push({
       showId: m[1], filmCode: m[2], screen: m[3], date: m[4],
       time: timeM ? timeM[1] : null, endTime: timeM ? timeM[2] : null,
