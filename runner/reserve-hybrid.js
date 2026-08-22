@@ -18,6 +18,10 @@
      node runner/reserve-hybrid.js --date 2026-08-21 --title オークストリート --time 15:00 --seats A-3 --dry
      node runner/reserve-hybrid.js --date 2026-08-21 --title オークストリート --time 15:00 --seats A-3
      node runner/reserve-hybrid.js --date 2026-08-27 --title ユーフォニアム --time 10:00 --seats G-10,G-11 --at "2026-08-25T00:00:00+09:00"
+
+   --seats は「優先グループ」を '/' で区切って第2候補以降も指定できる（各グループはカンマ区切りの席）:
+     --seats "G-10,G-11 / F-10,F-11 / H-8,H-9"
+     → 第1候補 G-10,G-11 が埋まっていれば F-10,F-11 → H-8,H-9 の順で自動確保。
    ============================================================ */
 'use strict';
 
@@ -39,6 +43,18 @@ function fmtMs(t) { var d = new Date(t); return d.toTimeString().slice(0, 8) + '
 function log(msg) { console.log('[' + ts() + '] ' + msg); }
 function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 function maskEmail(e) { var m = String(e).split('@'); return (m[0] || '').slice(0, 2) + '***@' + (m[1] || '').slice(0, 2) + '***'; }
+
+/**
+ * --seats を「優先グループ」に解析する。'/' 区切りで第1候補→第2候補…、
+ * 各グループはカンマ区切りの席（人数分）。
+ * 例) "A-3,A-4 / B-5,B-6 / C-7,C-8" → [[A-3,A-4],[B-5,B-6],[C-7,C-8]]
+ */
+function parseSeatGroups(str) {
+  return String(str || '').split('/').map(function (g) {
+    return g.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+  }).filter(function (g) { return g.length; });
+}
+function allAvail(map, g) { return g.every(function (id) { return map[id] && map[id].state === 'available'; }); }
 
 /**
  * サーバ時刻(KINEZO)とローカル時計のズレを実測する（Date ヘッダの区間交差法）。
@@ -167,8 +183,8 @@ async function enterSeatMap(k, show, creds) {
   if (loginOnly) { log('--login-only のため終了します。'); return; }
 
   var date = arg('date'), title = arg('title'), time = arg('time');
-  var seats = String(arg('seats') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
-  if (!date || !title || !time || !seats.length) throw new Error('--date --title --time --seats を指定してください');
+  var groups = parseSeatGroups(arg('seats')); // 優先グループ（第1候補→第2候補…）
+  if (!date || !title || !time || !groups.length) throw new Error('--date --title --time --seats を指定してください（--seats は "A-3,A-4 / B-5,B-6" で第2候補も指定可）');
 
   // 2) 発売時刻まで待機（サーバ時刻に同期して精密発火。待機中はセッション維持）
   //    発火の直前に ①予約URL先読み ②接続ウォームアップ を実行しておく。
@@ -216,21 +232,39 @@ async function enterSeatMap(k, show, creds) {
   var op = await enterSeatMap(k, show, creds); // 待機列は正直に待って座席画面まで到達
   var dOpen = Date.now() - tB;
   var map = k.fetchSeatMap();
-  var bad = seats.filter(function (id) { return !map[id] || map[id].state !== 'available'; });
-  if (bad.length) {
-    console.error('✗ 取得できない席（売切/存在しない）: ' + bad.join(', '));
+  // 優先順に「全席空いているグループ」を探す（第1候補→第2候補…）
+  var firstOk = -1;
+  for (var gi0 = 0; gi0 < groups.length; gi0++) { if (allAvail(map, groups[gi0])) { firstOk = gi0; break; } }
+  if (firstOk < 0) {
+    console.error('✗ どの候補席も確保できません（全グループに売切/存在しない席あり）');
+    groups.forEach(function (g, i) {
+      var miss = g.filter(function (id) { return !map[id] || map[id].state !== 'available'; });
+      console.error('  第' + (i + 1) + '候補 ' + g.join(',') + ' → 不可: ' + miss.join(','));
+    });
     console.error('  空席の例: ' + Object.keys(map).filter(function (id) { return map[id].state === 'available'; }).slice(0, 20).join(', '));
     process.exit(3);
   }
 
-  // 4) 席を掴む（choiceSeatSave＝勝敗の決まる点）
-  if (dry) { log('--dry。確保の直前で停止（席は取っていません）。内訳: 上映回解決 ' + dRes + 'ms／座席画面 ' + dOpen + 'ms'); return; }
-  var tSec = Date.now();
-  var sr = await k.secure(seats);
-  var dSecure = Date.now() - tSec;
-  if (!sr.ok) { console.error('✗ 確保失敗: ' + sr.reason); process.exit(4); }
-  log('✓✓ 席を掴みました＝勝敗確定（座席確保 ' + dSecure + 'ms ｜ T0からの合計 ' + (Date.now() - t0) + 'ms ' +
-      '＝解決 ' + dRes + '＋座席画面 ' + dOpen + '＋確保 ' + dSecure + 'ms）: ' + seats.join(', '));
+  // 4) 席を掴む（第1候補から。競合で失敗したら座席表を取り直して次候補へ）
+  if (dry) {
+    log('--dry。確保の直前で停止（席は取っていません）。確保予定: 第' + (firstOk + 1) + '候補 ' + groups[firstOk].join(',') +
+        ' ｜ 内訳: 上映回解決 ' + dRes + 'ms／座席画面 ' + dOpen + 'ms');
+    return;
+  }
+  var sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
+  for (var gi = firstOk; gi < groups.length; gi++) {
+    if (!allAvail(map, groups[gi])) continue;
+    var tSec = Date.now();
+    var attempt = await k.secure(groups[gi]);
+    dSecure = Date.now() - tSec;
+    if (attempt.ok) { sr = attempt; chosenSeats = groups[gi]; chosenRank = gi + 1; break; }
+    log('第' + (gi + 1) + '候補 ' + groups[gi].join(',') + ' は確保できず（' + attempt.reason + '）。次候補を試します');
+    await k.openShow(show); // 競合。座席表を取り直して残り候補の空きを最新化
+    map = k.fetchSeatMap();
+  }
+  if (!sr) { console.error('✗ すべての候補席を確保できませんでした（競合で埋まった可能性）'); process.exit(4); }
+  log('✓✓ 席を掴みました＝勝敗確定（第' + chosenRank + '候補 / 座席確保 ' + dSecure + 'ms ｜ T0からの合計 ' + (Date.now() - t0) + 'ms ' +
+      '＝解決 ' + dRes + '＋座席画面 ' + dOpen + '＋確保 ' + dSecure + 'ms）: ' + chosenSeats.join(', '));
   // 5) 券種選択画面へ前進（勝敗確定後の後処理。決済は人間）
   var tAdv = Date.now();
   var hr = await k.advanceToTicket();
@@ -259,7 +293,7 @@ async function enterSeatMap(k, show, creds) {
 
   console.log('\n──────── 席を確保しました（このブラウザで決済してください） ────────');
   console.log('  作品: ' + title + ' / ' + date + ' ' + show.time + ' ｼｱﾀｰ' + show.screen);
-  console.log('  座席: ' + seats.join(', '));
+  console.log('  座席: ' + chosenSeats.join(', ') + '（第' + chosenRank + '候補）');
   console.log('  現在の画面: ' + page.url());
   console.log('  ▶ この開いているウィンドウで券種を選び、決済まで進めてください。');
   console.log('  ※ カード情報はツールでは扱いません（人間が入力）。');

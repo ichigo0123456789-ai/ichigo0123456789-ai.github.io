@@ -113,6 +113,16 @@ node runner/reserve-hybrid.js --date 2026-08-27 --title ユーフォニアム \
 | `package.json` | Playwright 依存（`cd runner && npm install`） |
 | `.env.example` | 認証情報ファイルの雛形（コピーして `.env` に） |
 
+## 第2候補席の自動フォールバック
+
+`reserve-hybrid.js` の `--seats` は `/` 区切りで**優先グループ**を指定できます（各グループはカンマ区切りの席＝人数分）。第1候補が埋まっていれば第2候補…と**自動で次点を確保**します。競合で確保に失敗した場合も座席表を取り直して次候補を試します。
+
+```bash
+node runner/reserve-hybrid.js --date 2026-08-27 --title ユーフォニアム --time 10:00 \
+  --seats "G-10,G-11 / F-10,F-11 / H-8,H-9" --at "2026-08-25T00:00:00+09:00"
+```
+単一グループ（例 `--seats A-3`）は従来どおり動作します。
+
 ## 待機列（混雑時）対応
 
 `reserve-hybrid.js` は発売直後に座席画面へ到達できない場合、画面種別を判定して
