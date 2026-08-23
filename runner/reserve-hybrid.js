@@ -398,7 +398,7 @@ async function enterSeatMap(k, show, creds) {
     browser = await chromium.launch(Object.assign({ headless: false, args: launchArgs }, exe ? { executablePath: exe } : {}));
     ctx = await browser.newContext({ locale: 'ja-JP' });
   } else {
-    var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? path.basename(path.dirname(path.dirname(path.dirname(exe)))).toLowerCase() : 'chromium'))));
+    var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? (want || 'brave') : 'chromium'))));
     try { fs.mkdirSync(profDir, { recursive: true }); } catch (e) {}
     ctx = await chromium.launchPersistentContext(profDir, Object.assign({ headless: false, locale: 'ja-JP', viewport: null, args: launchArgs }, exe ? { executablePath: exe } : {}));
     log('決済ブラウザ: ' + (exe ? exe : 'Playwright Chromium') + ' ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
