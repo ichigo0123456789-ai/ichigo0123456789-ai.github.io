@@ -459,16 +459,16 @@ async function enterSeatMap(k, show, creds) {
     // 古いCookieを消す → ログイン → 座席ページ（JSが座席AJAXを実行）→ 席をクリック → 購入ボタン。
     var tH = Date.now();
     if (!creds) { console.error('✗ 109 は会員ログインが必要ですが認証情報がありません（runner/.env の C109_ID / C109_PASSWORD）'); process.exit(5); }
+    page.on('dialog', function (d) { d.accept().catch(function () {}); }); // confirm/alert（年齢確認・規約同意等）を自動承認
     try { await ctx.clearCookies({ domain: holdPlan.cookieDomain }); } catch (e) { try { await ctx.clearCookies(); } catch (e2) {} }
     await page.goto(holdPlan.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
     log('ブラウザで109にログインします（' + maskEmail(creds.email) + '）');
     await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
     await page.fill('#id', creds.email).catch(function () {});
     await page.fill('#pw', creds.password).catch(function () {});
-    await Promise.all([
-      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {}),
-      page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {})
-    ]);
+    await page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {});
+    // ログイン後は login.cgi を離れる。CDP では waitForNavigation が不安定なのでポーリング
+    await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 25000 }).catch(function () {});
     var nowIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
     log(nowIn ? '✓ 109 ログイン成功（ブラウザ）' : '△ ログイン状態を確認できません（そのまま座席選択を試みます）');
     // 座席ページ → 座席AJAXの描画を待つ
@@ -488,42 +488,68 @@ async function enterSeatMap(k, show, creds) {
     }, holdPlan).catch(function (e) { return { picked: [], miss: ['evaluate: ' + e.message] }; });
     if (sel.miss.length) log('△ 一部の席をクリックできません: ' + sel.miss.join(',') + '（画面で選び直してください）');
     await sleep(300);
-    // 座席ページの「次へ（#resv-purchase）」を押す＝ここで席を確保。座席確認ポップアップが出たら、
-    // 「座席ページ上にいる間だけ」その確認の次へを押して先へ進める。券種選択画面に着いたらそこで停止
-    //（券種＝料金は自動選択しない。ユーザーが選ぶ）。
+    // CDP×Brave では waitForNavigation が不安定なので、本文マーカーが変わるまでポーリングして進める。
+    var waitFor = function (reSrc, ms) { return page.waitForFunction(function (s) { return new RegExp(s).test(document.body.innerText || ''); }, reSrc, { timeout: ms || 12000 }).then(function () { return true; }).catch(function () { return false; }); };
+    var urlLeft = function (frag, ms) { return page.waitForFunction(function (f) { return location.href.indexOf(f) < 0; }, frag, { timeout: ms || 12000 }).then(function () { return true; }).catch(function () { return false; }); };
+    // 座席ページの「次へ（#resv-purchase）」＝ここで席を確保
     await page.evaluate(function () {
       var b = document.querySelector('#resv-purchase') || [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /購入手続|次へ|進む|決定/.test((e.innerText || e.value || '')) && e.offsetParent; });
       if (b) b.click();
     }).catch(function () {});
-    await sleep(1200);
-    // まだ座席ページ（resv_shw_ppt）なら、座席確認ポップアップの「次へ」を押して券種/次画面へ遷移
-    if (/resv_shw_ppt/.test(page.url())) {
-      await Promise.all([
-        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {}),
-        page.evaluate(function () {
-          var pop = [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /次へ|進む|購入手続|OK|はい/.test((e.innerText || e.value || '')) && e.offsetParent && !/戻|キャンセル|閉じ/.test(e.innerText || ''); });
-          if (pop) { pop.click(); return; }
-          if (typeof nextPopupAction === 'function') nextPopupAction();
-        }).catch(function () {})
-      ]);
-      await sleep(800);
+    // 座席確認ポップアップが出る場合があるので、座席ページに居る間はその「次へ」を押して抜ける
+    for (var sc = 0; sc < 4; sc++) {
+      if (!/resv_shw_ppt/.test(page.url())) break;
+      await sleep(700);
+      if (!/resv_shw_ppt/.test(page.url())) break;
+      await page.evaluate(function () {
+        // 「青年対象作品」等の年齢確認ポップアップ／座席確認の確認ボタンを押す
+        var pop = [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /次へ|進む|購入手続|OK|はい|同意|確認|上記/.test((e.innerText || e.value || '')) && e.offsetParent && !/戻|キャンセル|閉じ|いいえ/.test(e.innerText || ''); });
+        var href = pop && pop.getAttribute && pop.getAttribute('href');
+        var m = href && href.match(/([a-zA-Z_$][\w$]*)\(\s*'?([^')]*)'?\s*\)/);
+        if (m && typeof window[m[1]] === 'function') { window[m[1]](m[2]); }
+        else if (pop) { pop.click(); }
+        else if (typeof nextPopupAction === 'function') nextPopupAction();
+      }).catch(function () {});
+      await urlLeft('resv_shw_ppt', 8000);
     }
-    // ここで停止（券種選択画面 or 券種の無い上映では次画面）。これ以上は自動で進めない。
+    // 遷移で page ハンドルが古くなることがあるので 109 タブを取り直す
+    var reacq = function () { var ps = ctx.pages().filter(function (pp) { return /109cinemas/.test(pp.url()); }); if (ps.length) page = ps[ps.length - 1]; };
+    reacq();
+    // 「利用規約・購入内容の確認」は席確定だけの同意ステップ（券種＝料金ではない）。同意チェック(#form_check1)を
+    // 入れて通過し、券種選択 or お客様情報の手前まで運ぶ。券種選択画面が出たら絶対に進めない。
+    for (var step = 0; step < 3; step++) {
+      reacq();
+      // 規約ページが描画されるまで待つ（waitForSelector は innerText 判定より安定）
+      var onTerms = await page.waitForSelector('#form_check1', { timeout: 15000, state: 'attached' }).then(function () { return true; }).catch(function () { return false; });
+      if (!onTerms) break;
+      var acted = await page.evaluate(function () {
+        var cb = document.querySelector('#form_check1');
+        if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('click', { bubbles: true })); cb.dispatchEvent(new Event('change', { bubbles: true })); }
+        var b = [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /同意して次へ/.test((e.innerText || e.value || '')) && e.offsetParent; });
+        var href = b && b.getAttribute && b.getAttribute('href');
+        var m = href && href.match(/([a-zA-Z_$][\w$]*)\(\s*'([^']*)'\s*\)/);
+        if (m && typeof window[m[1]] === 'function') { window[m[1]](m[2]); return 'fn:' + m[1]; }
+        if (b) { b.click(); return 'click'; }
+        return 'no-button';
+      }).catch(function (e) { return 'err:' + e.message.slice(0, 40); });
+      log('規約同意→次へ: ' + acted);
+      // 規約ページを離れるまで待つ（#form_check1 が消える）
+      await page.waitForSelector('#form_check1', { state: 'detached', timeout: 12000 }).catch(function () {});
+      await sleep(700); reacq();
+    }
+    // ここで停止（券種選択画面 or 券種の無い上映ではお客様情報）。これ以上は自動で進めない。
+    reacq();
+    var u = page.url();
     var state = await page.evaluate(function () {
       var t = document.body.innerText || '';
-      return {
-        held: !(/正常に処理できませんでした|予約情報が取得できません/.test(t)),
-        seatShown: /枚数|座席番号|G-0|席［|席\[/.test(t),
-        terms: /利用規約|同意して次へ|購入内容/.test(t),
-        ticket: /券種を選択|券種選択|券種名/.test(t),
-        info: /お客様情報入力|氏名（かな）|購入完了メール/.test(t)
-      };
+      return { held: !(/正常に処理できませんでした|予約情報が取得できません/.test(t)) };
     }).catch(function () { return { held: false }; });
     if (state.held && sel.picked.length === holdPlan.keys.length) {
-      var where = state.ticket ? '券種選択画面（券種はご自身で選んでください）'
-        : state.terms ? '利用規約・購入内容の確認（席は確保済み。「同意して次へ」→券種選択はご自身で）'
-        : state.info ? 'お客様情報入力（この上映は券種選択なし）' : '次画面';
-      log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (Date.now() - tH) + 'ms）→ 停止: ' + where + ' [' + page.url().slice(38) + ']');
+      var where = /purchase_pre_ticket/.test(u) ? '券種選択画面（券種はご自身で選んでください）'
+        : /purchase_pre\.cgi/.test(u) ? 'お客様情報入力（席は確保済み。氏名・連絡先を入力→次へ→お支払いはご自身で）'
+        : /purchase_auth/.test(u) ? '利用規約・購入内容の確認（「同意して次へ」はご自身で）'
+        : '次画面';
+      log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (Date.now() - tH) + 'ms）→ 停止: ' + where + ' [' + u.slice(38) + ']');
     } else {
       log('△ 確保を確認できませんでした。開いているブラウザで席選択→購入手続きを確認してください。現在: ' + page.url().slice(38));
     }
