@@ -27,6 +27,7 @@
 
 const { Kinezo } = require('./lib/kinezo');
 const { K109 } = require('./lib/k109');
+const { Toho } = require('./lib/toho');
 const { loadCreds } = require('./config');
 const { request } = require('./lib/http');
 
@@ -54,12 +55,26 @@ var THEATERS_109 = {
   kawasaki:         { chain: '109', alias: 'I1', name: '109シネマズ川崎' },
   premium_shinjuku: { chain: '109', alias: 'X1', name: '109シネマズプレミアム新宿' }
 };
+/* TOHOシネマズ（vit）。全73館を劇場コードで指定できる（--theater toho076）。
+   主要館には読みやすい別名。一覧は runner/data/toho-theaters.json。 */
+var TOHO_ALIAS = {
+  toho_shinjuku: '076', toho_hibiya: '081', toho_shibuya: '043', toho_roppongi: '009', toho_ikebukuro: '084', toho_ueno: '080',
+  toho_nihonbashi: '073', toho_tachikawa: '085', toho_kawasaki: '010', toho_lalaport_yokohama: '036', toho_ebina: '007'
+};
+function tohoTheater(key) {
+  var code = TOHO_ALIAS[key] || ((key.match(/^toho[_-]?(\d{3})$/) || [])[1]);
+  if (!code) return null;
+  var list = []; try { list = require('./data/toho-theaters.json'); } catch (e) { list = []; }
+  var t = list.find(function (x) { return x.code === code; });
+  return { chain: 'toho', code: code, name: t ? t.name : ('TOHOシネマズ ' + code) };
+}
 var THEATER_KEY = String(arg('theater', 'yokohama')).toLowerCase();
-var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY];
-if (!TH) { console.error('--theater は次から指定: ' + Object.keys(THEATERS).concat(Object.keys(THEATERS_109)).join(', ')); process.exit(2); }
-/** 劇場のチェーンに応じたアダプタを作る（どちらも同じメソッド面を持つ） */
+var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY] || tohoTheater(THEATER_KEY);
+if (!TH) { console.error('--theater は次から指定: ' + Object.keys(THEATERS).concat(Object.keys(THEATERS_109), Object.keys(TOHO_ALIAS)).join(', ') + '（TOHO は toho<劇場コード3桁> でも可）'); process.exit(2); }
+/** 劇場のチェーンに応じたアダプタを作る（どれも同じメソッド面を持つ） */
 function makeAdapter(th) {
   if (th.chain === '109') return new K109({ alias: th.alias, name: th.name });
+  if (th.chain === 'toho') return new Toho({ code: th.code, name: th.name });
   return new Kinezo({ theaterPath: th.path, theaterId: th.id });
 }
 function ts() { var d = new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
@@ -179,6 +194,7 @@ async function enterSeatMap(k, show, creds) {
     }
     if (kind === 'notonsale') { await sleep(300); continue; } // 発売枠に入るのを待つ
     if (kind === 'login') {
+      if (!creds) throw new Error('ログイン画面に遷移しましたが認証情報がありません（ゲストで進めない上映回の可能性）。安全のため停止: ' + (op.url || ''));
       if (reloginTried) throw new Error('再ログイン後もログイン画面に戻されます。安全のため停止');
       reloginTried = true;
       log('セッション切れを検出。再ログインします');
@@ -200,10 +216,16 @@ async function enterSeatMap(k, show, creds) {
   await k.init();
 
   // 1) ログイン（HTTP）。--at より前に済ませる＝発売時のロスにならない。
-  log('ログインします（' + maskEmail(creds.email) + '）');
-  var lr = await k.login(creds.email, creds.password);
-  if (!lr.ok) { console.error('✗ ' + lr.reason); process.exit(2); }
-  log('✓ ' + lr.reason);
+  //    認証情報が無いチェーン（TOHO など）はゲスト（ログインせずに購入）で進める。
+  if (creds) {
+    log('ログインします（' + maskEmail(creds.email) + '）');
+    var lr = await k.login(creds.email, creds.password);
+    if (!lr.ok && k.guestOk) { log('ログインできないためゲストで続行します: ' + lr.reason); creds = null; }
+    else if (!lr.ok) { console.error('✗ ' + lr.reason); process.exit(2); }
+    else log('✓ ' + lr.reason);
+  } else {
+    log('認証情報なし → ゲスト（ログインせずに購入）で進めます');
+  }
   if (loginOnly) { log('--login-only のため終了します。'); return; }
 
   var date = arg('date'), title = arg('title'), time = arg('time');
@@ -227,6 +249,7 @@ async function enterSeatMap(k, show, creds) {
     log('目標(発売): ' + fmtMs(targetLocal) + '（サーバ時刻基準）');
     log('発火予定: ローカル ' + fmtMs(fireAt) + ' に実行');
     var keepAlive = async function () {
+      if (!creds) return; // ゲスト運用ではログイン維持は不要
       var ok = await k.isLoggedIn().catch(function () { return false; });
       if (ok) { log('セッション維持OK'); return; }
       log('セッションが切れたため再ログインします');

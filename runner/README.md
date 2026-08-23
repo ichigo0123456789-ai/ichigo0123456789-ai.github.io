@@ -125,7 +125,9 @@ KINEZO 系の劇場は `--theater <key>` で切り替えます（既定は `yoko
 | `umeda` | T・ジョイ梅田 | 7スクリーン・1,390席（実データ 2026-08-23） |
 | `burg13` | 横浜ブルク13 | 12スクリーン・2,246席（実データ 2026-08-23） |
 | `kawasaki` | 109シネマズ川崎 | **109シネマズ（別システム・`lib/k109.js`）**。10スクリーン・1,838席（実データ 2026-08-23） |
-| `premium_shinjuku` | 109シネマズプレミアム新宿 | 109シネマズ。実データ 2026-08-23 |
+| `premium_shinjuku` | 109シネマズプレミアム新宿 | 109シネマズ。7スクリーン・670席（プレミアム席/一般席の別売りを統合） |
+| `toho_shinjuku` / `toho_hibiya` / `toho_shibuya` / `toho_roppongi` / `toho_kawasaki` / `toho_lalaport_yokohama` / `toho_ikebukuro` | TOHOシネマズ 主要館 | **TOHO（vit・`lib/toho.js`）**。ログインなしの「ゲスト購入」経路で座席指定まで自動。座席レイアウト登録済み |
+| `toho<劇場コード3桁>`（例 `toho080`＝上野） | TOHOシネマズ 全73館 | runner はコード指定で全館対応（`runner/data/toho-theaters.json`）。サイトに座席表を出すには `add-theater.js <code> <key> ... --chain toho` で採取 |
 
 ```bash
 node runner/reserve-hybrid.js --theater wald9 --date 2026-08-24 --title 作品名 --time 18:00 --seats "H-10,H-11"

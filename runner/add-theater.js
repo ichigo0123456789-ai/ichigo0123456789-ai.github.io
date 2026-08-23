@@ -19,6 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const { Kinezo } = require('./lib/kinezo');
 const { K109 } = require('./lib/k109');
+const { Toho } = require('./lib/toho');
 
 var ROOT = path.join(__dirname, '..');
 var argv = process.argv.slice(2);
@@ -35,7 +36,7 @@ function dateStr(d) { return new Date(Date.now() + 9 * 3600000 + d * 86400000).t
 function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
 (async function () {
-  var k = CHAIN === '109' ? new K109({ alias: spec, name: name }) : new Kinezo({ theaterPath: spec });
+  var k = CHAIN === '109' ? new K109({ alias: spec, name: name }) : (CHAIN === 'toho' ? new Toho({ code: spec, name: name }) : new Kinezo({ theaterPath: spec }));
   var init = await k.init();
   var tid = init.theaterId;
   if (!tid) throw new Error('theaterId を取得できません: ' + spec);
@@ -65,7 +66,7 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
     blocks.push('      // ' + scName + '：' + n + '席\r\n      screen(\'s' + scNum + '\', \'' + q(scName) + '\', [\r\n' + rowLines.join(',\r\n') + '\r\n      ], { gridWidth: ' + gw + ' })');
   }
   var today = dateStr(0);
-  var chainId = CHAIN === '109' ? 'c109' : 'tjoy';
+  var chainId = CHAIN === '109' ? 'c109' : (CHAIN === 'toho' ? 'toho' : 'tjoy');
   var entryId = chainId + '-' + key;
 
   // 1) theaters.js に挿入
@@ -75,7 +76,9 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
   else {
     var sys = CHAIN === '109'
       ? "      c109: { alias: '" + q(spec) + "', tsc: '" + q(tid) + "' },"
-      : "      kinezo: { path: '" + q(spec) + "', theaterId: '" + q(tid) + "' },";
+      : (CHAIN === 'toho'
+        ? "      toho: { code: '" + q(spec) + "' },"
+        : "      kinezo: { path: '" + q(spec) + "', theaterId: '" + q(tid) + "' },");
     var entry = [",", "    {", "      id: '" + entryId + "',", "      chain: '" + chainId + "',", "      name: '" + q(name) + "',",
       "      area: '" + q(area || '') + "',", "      pref: '" + q(pref || '') + "',",
       "      map: { x: " + mapX + ", y: " + mapY + " },",
@@ -90,9 +93,10 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
     fs.writeFileSync(tf, ts);
   }
 
-  // 2) runner のテーブルにキー追加
+  // 2) runner のテーブルにキー追加（TOHO は劇場コード/別名で自動解決されるので不要）
   var rf = path.join(ROOT, 'runner/reserve-hybrid.js');
   var rs = fs.readFileSync(rf, 'utf8');
+  if (CHAIN === 'toho') { console.log('✓ ' + name + ' (toho ' + spec + ') key=' + key + ' : ' + scount + 'スクリーン / ' + total + '席 → theaters.js 更新（runner は toho' + spec + ' / 別名で解決）'); return; }
   var line = CHAIN === '109'
     ? "  " + key + ": { chain: '109', alias: '" + q(spec) + "', name: '" + q(name) + "' }"
     : "  " + key + ": { path: '" + q(spec) + "', id: '" + q(tid) + "', name: '" + q(name) + "' }";

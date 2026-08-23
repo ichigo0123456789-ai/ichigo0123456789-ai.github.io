@@ -27,10 +27,13 @@ function fromEnvFile(file) {
 /* チェーンごとの環境変数名。劇場チェーンが増えたらここに1行足す。 */
 var CHAIN_VARS = {
   kinezo: { user: 'KINEZO_EMAIL', pass: 'KINEZO_PASSWORD', label: 'KINEZO（T・ジョイ系）会員のメール/パスワード' },
-  '109':  { user: 'C109_ID',      pass: 'C109_PASSWORD',   label: '109シネマズ シネマポイント会員の ID(メール/会員番号)/パスワード' }
+  '109':  { user: 'C109_ID',      pass: 'C109_PASSWORD',   label: '109シネマズ シネマポイント会員の ID(メール/会員番号)/パスワード' },
+  /* TOHO はログインなし（ゲスト購入）で座席指定まで進めるので任意。先行販売を使う場合のみ TOHO-ONE を設定。 */
+  toho:   { user: 'TOHO_ID',      pass: 'TOHO_PASSWORD',   label: 'TOHO-ONE 会員の ID/パスワード（任意・無ければゲスト購入）', optional: true }
 };
 
-/** 指定チェーンの認証情報を返す { email, password, chain }。無ければ分かりやすいエラー。 */
+/** 指定チェーンの認証情報を返す { email, password, chain }。
+ *  optional なチェーンで未設定なら null（＝ゲストで進める）。それ以外で無ければ分かりやすいエラー。 */
 function loadCreds(chain) {
   chain = chain || 'kinezo';
   var v = CHAIN_VARS[chain];
@@ -42,6 +45,7 @@ function loadCreds(chain) {
     user = user || f[v.user];
     pass = pass || f[v.pass];
   }
+  if ((!user || !pass) && v.optional) return null;
   if (!user || !pass) {
     throw new Error(
       '認証情報が見つかりません（' + v.label + '）。次のいずれかで設定してください:\n' +
