@@ -1457,7 +1457,7 @@
          横浜は既定なので省略。対応表は runner/reserve-hybrid.js の THEATERS と揃える。 */
       var th = D.theater(S.plan.theaterId);
       var kinezoPath = th && th.kinezo && th.kinezo.path;
-      var THEATER_KEYS = { 'shinjuku_wald9': 'wald9' };
+      var THEATER_KEYS = { 'shinjuku_wald9': 'wald9', 't-joy_kyoto': 'kyoto', 't-joy_umeda': 'umeda', 'yokohama_burg13': 'burg13' };
       if (kinezoPath && THEATER_KEYS[kinezoPath]) parts.push('--theater ' + THEATER_KEYS[kinezoPath]);
       parts.push('--date ' + S.plan.date,
         '--title ' + cmdQuote(S.plan.title),

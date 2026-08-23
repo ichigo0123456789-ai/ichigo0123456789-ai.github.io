@@ -35,7 +35,10 @@ var BASE = 'https://tjoy.jp';
    同じ KINEZO なので劇場パスと theaterId が違うだけで、ログイン/座席/確保は共通。 */
 var THEATERS = {
   yokohama: { path: 't-joy_yokohama', id: '190', name: 'T・ジョイ横浜' },
-  wald9:    { path: 'shinjuku_wald9', id: '140', name: '新宿バルト9' }
+  wald9:    { path: 'shinjuku_wald9', id: '140', name: '新宿バルト9' },
+  kyoto: { path: 't-joy_kyoto', id: '360', name: 'T・ジョイ京都' },
+  umeda: { path: 't-joy_umeda', id: '320', name: 'T・ジョイ梅田' },
+  burg13: { path: 'yokohama_burg13', id: '170', name: '横浜ブルク13' }
 };
 
 function arg(name, def) {
