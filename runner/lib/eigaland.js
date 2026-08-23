@@ -30,8 +30,20 @@ function Eigaland(opt) {
   this.base = APP; this.chain = 'eigaland'; this.guestOk = true;
   this._clToken = null; this._member = false;
   this._schedule = null; this._hold = null; this._txn = null; this._kind = null; this._lastMap = null;
+  /* eigaland は「確保したセッション」でしか確保が見えない。API で確保して別セッションの
+     ブラウザに引き継ぐと「座席選択を解除」になるため、確保はブラウザ側で行う。 */
+  this.browserGrab = true;
 }
 Eigaland.prototype.homeUrl = function () { return APP + '/'; };
+Eigaland.prototype.getScheduleId = function () { return this._scheduleId; };
+Eigaland.prototype.getCinemaId = function () { return this.cinemaId; };
+Eigaland.prototype.bookingPageUrl = function () { return APP + '/booking?scheduleId=' + (this._scheduleId || ''); };
+/* ブラウザ内で確保→取引作成を行うためのデータ（席の sid・scheduleId・cinemaId）。 */
+Eigaland.prototype.grabData = function (seatIds, seatMap) {
+  var m = seatMap || this._lastMap || {};
+  var sids = (seatIds || []).map(function (id) { return (m[id] && m[id].sid) || id; });
+  return { sids: sids, scheduleId: this._scheduleId, cinemaId: this.cinemaId };
+};
 Eigaland.prototype.handoffUrl = function () {
   if (this._txn) return APP + '/payment?cinemaId=' + this.cinemaId + '&token=&transactionId=' + this._txn.transactionId + '&scheduleId=' + this._scheduleId;
   return APP + '/booking?scheduleId=' + (this._scheduleId || '');

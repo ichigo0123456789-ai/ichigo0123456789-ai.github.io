@@ -438,6 +438,11 @@ async function enterSeatMap(k, show, creds) {
     if (!holdPlan.ok) { console.error('✗ 確保計画を作れません: ' + holdPlan.reason); process.exit(4); }
     log('席を選定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + '）。確保はブラウザで実行します（109）');
     sr = { ok: true, browserNative: true };
+  } else if (k.browserGrab) {
+    // eigaland：API では確保せず、席を選定だけしてブラウザのセッションで確保する。
+    chosenSeats = groups[firstOk]; chosenRank = firstOk + 1;
+    sr = { ok: true, browserGrab: true };
+    log('席を選定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + '）。確保はブラウザ側のセッションで行います（eigaland）');
   } else {
     for (var gi = firstOk; gi < groups.length && !sr; gi++) {
       if (!allAvail(map, groups[gi])) continue;
@@ -463,9 +468,9 @@ async function enterSeatMap(k, show, creds) {
   // 5) 決済ブラウザを用意（発売前ログインで先に起動済みなら再利用）
   var pb = await ensurePaymentBrowser();
   var ctx = pb.ctx, external = pb.external;
-  if (!k.browserNativeHold) await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE)); // 109 はブラウザ自身でログインするため注入しない
-  if (k.prepareHandoff) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
-  if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
+  if (!k.browserNativeHold && !k.browserGrab) await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE)); // 109/eigaland はブラウザ自身のセッションで確保するため注入しない
+  if (k.prepareHandoff && !k.browserGrab) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
+  if (k.handoffInitScript && !k.browserGrab) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
   var page = (!external && ctx.pages && ctx.pages().length) ? ctx.pages()[0] : await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
   var hp = k.handoffPost && k.handoffPost();
@@ -573,6 +578,59 @@ async function enterSeatMap(k, show, creds) {
       log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (Date.now() - tH) + 'ms）→ 停止: ' + where + ' [' + u.slice(38) + ']');
     } else {
       log('△ 確保を確認できませんでした。開いているブラウザで席選択→購入手続きを確認してください。現在: ' + page.url().slice(38));
+    }
+  } else if (k.browserGrab) {
+    // eigaland：ブラウザで booking ページを開き、その「ブラウザ自身のセッション」で
+    // holdSeat → 取引作成 → payment へ進む。確保したセッションのまま決済に入るので「座席解除」が起きない。
+    var gd = k.grabData(chosenSeats, map);
+    gd.brandId = k.brandId || '';
+    gd.email = (creds && creds.email) || '';
+    gd.password = (creds && creds.password) || '';
+    await page.goto(k.bookingPageUrl(), { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    await sleep(1300); // SPA 初期化（ログイン状態・セッションの読込）を待つ
+    var gr = await page.evaluate(async function (d) {
+      function api(p, opt) { return fetch(p, Object.assign({ headers: { 'Accept': 'application/json, text/plain, */*', 'Content-Type': 'application/json;charset=UTF-8' } }, opt || {})).then(function (r) { return r.json(); }).catch(function (e) { return { success: false, _err: String(e) }; }); }
+      // ① 会員なら先にブラウザのセッションでログインして clToken を得る（guest だと取引が 500 になる館があるため）
+      var clToken = '';
+      try {
+        clToken = localStorage.getItem('clToken') || '';
+        if (!clToken) { var raw = localStorage.getItem('userInfo') || localStorage.getItem('user') || localStorage.getItem('memberInfo'); if (raw) { var u = JSON.parse(raw); clToken = u.clToken || u.token || (u.data && (u.data.clToken || u.data.token)) || ''; } }
+      } catch (e) {}
+      if (!clToken && d.email && d.password && d.brandId) {
+        var lg = await api('/api/webShoppingCart/login?brandId=' + encodeURIComponent(d.brandId) + '&email=' + encodeURIComponent(d.email) + '&password=' + encodeURIComponent(d.password), { method: 'POST', body: '{}' });
+        if (lg && lg.success && lg.data) { clToken = (typeof lg.data === 'string') ? lg.data : (lg.data.token || lg.data.clToken || ''); }
+        else return { ok: false, step: 'login', resp: lg };
+      }
+      // ② 席を確保（holdSeat）
+      var token = null;
+      for (var i = 0; i < d.sids.length; i++) {
+        var h = await api('/api/webShoppingCart/holdSeat?seatSid=' + encodeURIComponent(d.sids[i]) + '&scheduleId=' + d.scheduleId);
+        if (!h || h.success === false) return { ok: false, step: 'hold', sid: d.sids[i], resp: h };
+        token = h.data;
+      }
+      // ③ 取引作成（clToken 付き）
+      var tr = await api('/api/webShoppingCart/createWebShoppingCartTransaction', { method: 'POST', body: JSON.stringify({ scheduleId: d.scheduleId, token: token, clToken: clToken, loading: true, isDefaultAlertTips: true }) });
+      if (!(tr && tr.data && tr.data.transactionId)) return { ok: false, step: 'transaction', resp: tr, token: token, member: !!clToken };
+      // ④ SPA が payment 画面で読む状態を localStorage に反映（同一オリジンなので遷移後も残る）
+      try {
+        localStorage.setItem('token', token);
+        localStorage.setItem('cinemaId', d.cinemaId);
+        localStorage.setItem('scheduleId', d.scheduleId);
+        if (clToken) localStorage.setItem('clToken', clToken);
+        localStorage.setItem('shoppingCartInfo', JSON.stringify({ shoppingCartId: tr.data.shoppingCartId, transactionId: tr.data.transactionId, token: token }));
+        localStorage.setItem('trans', JSON.stringify([{ scheduleId: d.scheduleId, transactionId: tr.data.transactionId }]));
+      } catch (e) {}
+      return { ok: true, transactionId: tr.data.transactionId, shoppingCartId: tr.data.shoppingCartId, member: !!clToken, token: token };
+    }, gd).catch(function (e) { return { ok: false, step: 'evaluate', err: e.message }; });
+    if (gr && gr.ok) {
+      log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (gr.member ? '会員' : 'ゲスト') + '）。券種選択から続けられます');
+      // 券種選択を飛ばして /payment に直行すると /error になるため、booking ページに戻して
+      // SPA の通常フロー（席は確保済み → 券種選択 → 決済）を人が続けられるようにする。
+      await page.goto(k.bookingPageUrl(), { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+      await sleep(1500);
+    } else {
+      log('△ ブラウザでの確保に失敗（' + (gr && (gr.step + (gr.resp && gr.resp.message ? ':' + gr.resp.message : ''))) + '）。開いているブラウザで座席を選び直して購入してください。現在: ' + page.url());
+      await page.goto(k.bookingPageUrl(), { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
     }
   } else if (hp) {
     // POST 遷移専用ページ（TOHO の券種選択など）：まず同一オリジンの GET ページを開いてから、
