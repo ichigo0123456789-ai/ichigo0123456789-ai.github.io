@@ -275,7 +275,11 @@ async function enterSeatMap(k, show, creds) {
 
   // 1) ログイン（HTTP）。--at より前に済ませる＝発売時のロスにならない。
   //    認証情報が無いチェーン（TOHO など）はゲスト（ログインせずに購入）で進める。
-  if (creds) {
+  //    browserNativeHold（109）は購入セッションが発行元に紐づくため、ログイン〜確保まで全部ブラウザで行う。
+  //    Node は空き確認（席key取得）だけ＝ログイン不要。
+  if (k.browserNativeHold) {
+    log('※ ' + (TH.name || TH.chain) + ' はログイン〜席確保まで全てブラウザで実行します（Node は空き確認のみ）');
+  } else if (creds) {
     log('ログインします（' + maskEmail(creds.email) + '）');
     var lr = await k.login(creds.email, creds.password);
     if (!lr.ok && k.guestOk) { log('ログインできないためゲストで続行します: ' + lr.reason); creds = null; }
@@ -307,7 +311,7 @@ async function enterSeatMap(k, show, creds) {
     log('目標(発売): ' + fmtMs(targetLocal) + '（サーバ時刻基準）');
     log('発火予定: ローカル ' + fmtMs(fireAt) + ' に実行');
     var keepAlive = async function () {
-      if (!creds) return; // ゲスト運用ではログイン維持は不要
+      if (!creds || k.browserNativeHold) return; // ゲスト運用／109(ブラウザ完結)では Node のログイン維持は不要
       var ok = await k.isLoggedIn().catch(function () { return false; });
       if (ok) { log('セッション維持OK'); return; }
       log('セッションが切れたため再ログインします');
@@ -350,7 +354,7 @@ async function enterSeatMap(k, show, creds) {
   var dOpen = Date.now() - tB;
   // (1) 第1候補は空席確認を飛ばして即確保（blindFirst 対応チェーン・本番のみ）。失敗したら座席表を取って従来どおり次候補へ
   var blindTried = false, sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
-  if (!dry && k.blindFirst && groups.length) {
+  if (!dry && k.blindFirst && !k.browserNativeHold && groups.length) {
     var tBl = Date.now();
     var bl = await k.secure(groups[0]);
     dSecure = Date.now() - tBl; blindTried = true;
@@ -379,18 +383,29 @@ async function enterSeatMap(k, show, creds) {
     if (k.cancelTransaction) await k.cancelTransaction().catch(function () {}); // SPA 型は開いた取引を閉じておく
     return;
   }
-  for (var gi = firstOk; gi < groups.length && !sr; gi++) {
-    if (!allAvail(map, groups[gi])) continue;
-    var tSec = Date.now();
-    var attempt = await k.secure(groups[gi]);
-    dSecure = Date.now() - tSec;
-    if (attempt.ok) { sr = attempt; chosenSeats = groups[gi]; chosenRank = gi + 1; break; }
-    log('第' + (gi + 1) + '候補 ' + groups[gi].join(',') + ' は確保できず（' + attempt.reason + '）。次候補を試します');
-    await k.openShow(show); // 競合。座席表を取り直して残り候補の空きを最新化
-    map = await k.fetchSeatMap();
+  // 109 など browserNativeHold：Node では確保せず（トークン使い捨てのため引き継げない）、
+  // 空きグループを1つ選んで「確保計画」を作り、実際の確保はブラウザ側で行う（後段）。
+  var holdPlan = null;
+  if (k.browserNativeHold) {
+    chosenSeats = groups[firstOk]; chosenRank = firstOk + 1;
+    holdPlan = k.holdPlan(chosenSeats);
+    if (!holdPlan.ok) { console.error('✗ 確保計画を作れません: ' + holdPlan.reason); process.exit(4); }
+    log('席を選定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + '）。確保はブラウザで実行します（109）');
+    sr = { ok: true, browserNative: true };
+  } else {
+    for (var gi = firstOk; gi < groups.length && !sr; gi++) {
+      if (!allAvail(map, groups[gi])) continue;
+      var tSec = Date.now();
+      var attempt = await k.secure(groups[gi]);
+      dSecure = Date.now() - tSec;
+      if (attempt.ok) { sr = attempt; chosenSeats = groups[gi]; chosenRank = gi + 1; break; }
+      log('第' + (gi + 1) + '候補 ' + groups[gi].join(',') + ' は確保できず（' + attempt.reason + '）。次候補を試します');
+      await k.openShow(show); // 競合。座席表を取り直して残り候補の空きを最新化
+      map = await k.fetchSeatMap();
+    }
   }
   if (!sr) { console.error('✗ すべての候補席を確保できませんでした（競合で埋まった可能性）'); process.exit(4); }
-  log('✓✓ 席を掴みました＝勝敗確定（第' + chosenRank + '候補 / 座席確保 ' + dSecure + 'ms ｜ T0からの合計 ' + (Date.now() - t0) + 'ms ' +
+  if (!holdPlan) log('✓✓ 席を掴みました＝勝敗確定（第' + chosenRank + '候補 / 座席確保 ' + dSecure + 'ms ｜ T0からの合計 ' + (Date.now() - t0) + 'ms ' +
       '＝解決 ' + dRes + '＋座席画面 ' + dOpen + '＋確保 ' + dSecure + 'ms）: ' + chosenSeats.join(', '));
   // 5) 券種選択画面へ前進（勝敗確定後の後処理。決済は人間）
   var tAdv = Date.now();
@@ -431,13 +446,67 @@ async function enterSeatMap(k, show, creds) {
       log('決済ブラウザ: Playwright Chromium ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
     }
   }
-  await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE));
+  if (!k.browserNativeHold) await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE)); // 109 はブラウザ自身でログインするため注入しない
   if (k.prepareHandoff) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
   if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
   var page = (!external && ctx.pages && ctx.pages().length) ? ctx.pages()[0] : await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
   var hp = k.handoffPost && k.handoffPost();
-  if (hp) {
+  if (holdPlan) {
+    // 109：ブラウザで会員ログイン → 座席ページ（新トークン）→ purchase_auth を POST＝ここで席を確保。
+    // 券種選択・決済はそのまま同じブラウザで人間が続けられる。
+    // 109：購入セッションが発行元クライアントに紐づくため、ブラウザで完結させる。
+    // 古いCookieを消す → ログイン → 座席ページ（JSが座席AJAXを実行）→ 席をクリック → 購入ボタン。
+    var tH = Date.now();
+    if (!creds) { console.error('✗ 109 は会員ログインが必要ですが認証情報がありません（runner/.env の C109_ID / C109_PASSWORD）'); process.exit(5); }
+    try { await ctx.clearCookies({ domain: holdPlan.cookieDomain }); } catch (e) { try { await ctx.clearCookies(); } catch (e2) {} }
+    await page.goto(holdPlan.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    log('ブラウザで109にログインします（' + maskEmail(creds.email) + '）');
+    await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
+    await page.fill('#id', creds.email).catch(function () {});
+    await page.fill('#pw', creds.password).catch(function () {});
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {}),
+      page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {})
+    ]);
+    var nowIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+    log(nowIn ? '✓ 109 ログイン成功（ブラウザ）' : '△ ログイン状態を確認できません（そのまま座席選択を試みます）');
+    // 座席ページ → 座席AJAXの描画を待つ
+    await page.goto(holdPlan.seatUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    await page.waitForFunction(function () { return document.querySelectorAll('.seat[data-seat-key]').length > 0; }, { timeout: 15000 }).catch(function () {});
+    await sleep(400);
+    // 目的の席（data-seat-key）をクリックして選択
+    var sel = await page.evaluate(function (p) {
+      var picked = [], miss = [];
+      p.keys.forEach(function (key) {
+        var el = document.querySelector('.seat[data-seat-key="' + key + '"]');
+        if (!el) { miss.push(key); return; }
+        if (el.disabled || /disabled|sold|none/.test(el.className)) { miss.push(key + '(不可)'); return; }
+        el.click(); picked.push(key);
+      });
+      return { picked: picked, miss: miss };
+    }, holdPlan).catch(function (e) { return { picked: [], miss: ['evaluate: ' + e.message] }; });
+    if (sel.miss.length) log('△ 一部の席をクリックできません: ' + sel.miss.join(',') + '（画面で選び直してください）');
+    await sleep(300);
+    // 「次へ（購入手続きへ）」ボタン（#resv-purchase）を押す。確認ポップアップが出たら中の「次へ」も押す
+    await page.evaluate(function () {
+      var b = document.querySelector('#resv-purchase') || [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /購入手続|次へ|進む|決定|購入する/.test((e.innerText || e.value || '')) && e.offsetParent; });
+      if (b) b.click();
+    }).catch(function () {});
+    await sleep(1200);
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {}),
+      page.evaluate(function () {
+        var pop = [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /次へ|進む|購入手続|OK|はい/.test((e.innerText || e.value || '')) && e.offsetParent && !/戻|キャンセル|閉じ/.test(e.innerText || ''); });
+        if (pop) { pop.click(); return; }
+        if (typeof nextPopupAction === 'function') nextPopupAction();
+      }).catch(function () {})
+    ]);
+    await sleep(1000);
+    var okTicket = await page.evaluate(function () { var t = document.body.innerText || ''; return /券種|チケット|料金|お支払|購入枚数/.test(t) && !/正常に処理できませんでした|予約情報が取得できません/.test(t); }).catch(function () { return false; });
+    if (okTicket && sel.picked.length === holdPlan.keys.length) log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (Date.now() - tH) + 'ms）: ' + page.url().slice(38));
+    else log('△ 券種画面を確認できませんでした。開いているブラウザで席選択→購入手続きを確認してください。現在: ' + page.url().slice(38));
+  } else if (hp) {
     // POST 遷移専用ページ（TOHO の券種選択など）：まず同一オリジンの GET ページを開いてから、
     // 確保時と同じ POST フォームをブラウザから再送して次画面を表示する（Cookie は同一サイトで送られる）
     await page.goto(k.homeUrl(), { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});

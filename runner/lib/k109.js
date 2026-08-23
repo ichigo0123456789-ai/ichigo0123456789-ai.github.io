@@ -29,6 +29,10 @@ function title(html) { return decode((html.match(/<title>([^<]*)<\/title>/i) || 
 function K109(opt) {
   this.alias = opt.alias; this.tsc = opt.tsc || null; this.name = opt.name || '';
   this.jar = new CookieJar(); this.base = BASE; this.chain = '109';
+  /* 109 は券種ページが「使い捨てトークン付き POST 応答」にしか存在せず、
+     Node で確保すると別ブラウザに引き継げない。よって確保(purchase_auth)は
+     ブラウザ側で実行する（runner がログイン→座席ページ→POST を駆動）。 */
+  this.browserNativeHold = true;
 }
 K109.prototype.homeUrl = function () { return CGI + '/site/det.cgi?tsc=' + (this.tsc || this.alias); };
 
@@ -147,6 +151,32 @@ K109.prototype.secure = async function (seatIds) {
   if (/座席選択/.test(t) && /エラー|正しく行われ/.test(text)) return { ok: false, code: 'error', reason: '座席ページに戻されました: ' + (text.match(/.{0,60}(エラー|正しく行われ).{0,40}/) || [''])[0].trim() };
   if (/券種|チケット|購入|お支払|決済|鑑賞券|料金/.test(t + ' ' + text.slice(0, 800))) return { ok: true, code: 'done', reason: '席を掴みました（' + t + '）', ticketUrl: res.url };
   return { ok: false, code: 'unknown', reason: '想定外の画面（' + t + '）。安全のため停止' };
+};
+
+/** 確保はせず、ブラウザに渡す確保計画を返す。
+ *  Node は「ログイン＋座席ページ取得(openShow)」まで済ませ crt/mit 等を保持している前提。
+ *  purchase_auth は POST していない＝トークン未消費なので、同じ Cookie を注入したブラウザから
+ *  この fields をそのまま1回だけ POST すれば券種ページが表示され、決済まで人間が続けられる。 */
+K109.prototype.holdPlan = function (seatIds) {
+  var map = this._lastMap || {}; var keys = [], vi = null;
+  for (var i = 0; i < seatIds.length; i++) {
+    var s = map[seatIds[i]];
+    if (!s) return { ok: false, reason: '席が見つかりません: ' + seatIds[i] };
+    if (s.state !== 'available') return { ok: false, reason: '席が空いていません: ' + seatIds[i] };
+    if (vi === null) vi = s.variant || 0;
+    else if ((s.variant || 0) !== vi) return { ok: false, reason: '席クラスをまたいで一度に確保はできません' };
+    keys.push(s.key);
+  }
+  var V = this._variants[vi || 0];
+  if (!V) return { ok: false, reason: '座席ページ情報がありません（openShow 未実行？）' };
+  if (V.limit && keys.length > V.limit) return { ok: false, reason: '一度に選べる席数(' + V.limit + ')を超えています' };
+  // 109 は購入セッションが発行元クライアントに強く紐づくため、ブラウザ側で
+  // ログイン → 座席ページ（JSが resv_screen_ppt を実行）→ purchase_auth の順に完結させる。
+  // Node は席key（座席位置由来で安定）と座席ページURLだけ渡す。
+  return {
+    ok: true, keys: keys, count: keys.length, seatUrl: V.url, host: BASE,
+    loginUrl: CGI + '/login.cgi?tsc=' + this.tsc, authAction: '/cgi-bin/pc/resv/purchase_auth.cgi', cookieDomain: 'cinema.109cinemas.net'
+  };
 };
 
 K109.prototype.advanceToTicket = async function () { return { ok: true, atTicket: !!this._ticketUrl, ticketUrl: this._ticketUrl }; };
