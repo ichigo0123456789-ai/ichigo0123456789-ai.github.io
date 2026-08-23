@@ -32,6 +32,7 @@ const { K109 } = require('./lib/k109');
 const { Toho } = require('./lib/toho');
 const { Cinecitta } = require('./lib/cinecitta');
 const { Sunshine } = require('./lib/sunshine');
+ const { Eigaland } = require('./lib/eigaland');
 const { loadCreds } = require('./config');
 const { request } = require('./lib/http');
 
@@ -76,7 +77,9 @@ function tohoTheater(key) {
 var THEATERS_OTHER = {
   cinecitta: { chain: 'cinecitta', project: 'cinecitta-production', theaterCode: '001', name: 'チネチッタ' },
   /* シネマサンシャイン（cinerino + COA。lib/sunshine.js。ゲスト購入） */
-  gdcs: { chain: 'sunshine', theaterCode: '020', slug: 'gdcs', name: 'グランドシネマサンシャイン 池袋' }
+  gdcs: { chain: 'sunshine', theaterCode: '020', slug: 'gdcs', name: 'グランドシネマサンシャイン 池袋' },
+  /* 新文芸坐（eigaland。lib/eigaland.js。ゲスト購入・holdSeat 確保） */
+  shinbungeiza: { chain: 'eigaland', cinemaId: '621c87d50a861337f2dd38ec', brandId: '621c83f80a861337f2dd3715', name: '新文芸坐' }
 };
 var THEATER_KEY = String(arg('theater', 'yokohama')).toLowerCase();
 var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY] || THEATERS_OTHER[THEATER_KEY] || tohoTheater(THEATER_KEY);
@@ -87,6 +90,7 @@ function makeAdapter(th) {
   if (th.chain === 'toho') return new Toho({ code: th.code, name: th.name });
   if (th.chain === 'cinecitta') return new Cinecitta({ project: th.project, theaterCode: th.theaterCode, name: th.name });
   if (th.chain === 'sunshine') return new Sunshine({ theaterCode: th.theaterCode, slug: th.slug, name: th.name });
+  if (th.chain === 'eigaland') return new Eigaland({ cinemaId: th.cinemaId, brandId: th.brandId, name: th.name });
   return new Kinezo({ theaterPath: th.path, theaterId: th.id });
 }
 /** 常駐ブラウザ（Brave/Chrome）を専用プロファイルで起動 or 再利用し、CDP で接続する */

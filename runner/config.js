@@ -32,7 +32,9 @@ var CHAIN_VARS = {
   toho:   { user: 'TOHO_ID',      pass: 'TOHO_PASSWORD',   label: 'TOHO-ONE 会員の ID/パスワード（任意・無ければゲスト購入）', optional: true },
   /* チネチッタもゲスト購入で座席指定まで進める（会員ログインの自動化は未対応） */
   cinecitta: { user: 'CINECITTA_ID', pass: 'CINECITTA_PASSWORD', label: 'チネチッタ会員（任意・無ければゲスト購入）', optional: true },
-  sunshine:  { user: 'SUNSHINE_ID',  pass: 'SUNSHINE_PASSWORD',  label: 'シネマサンシャイン会員（任意・無ければゲスト購入）', optional: true }
+  sunshine:  { user: 'SUNSHINE_ID',  pass: 'SUNSHINE_PASSWORD',  label: 'シネマサンシャイン会員（任意・無ければゲスト購入）', optional: true },
+  /* 新文芸坐ほか eigaland。ゲスト購入可。会員先行を使う場合は eigaland 友の会の会員情報を設定（アダプタは実装中）。 */
+  eigaland:  { user: 'EIGALAND_ID',   pass: 'EIGALAND_PASSWORD',  label: 'eigaland（新文芸坐 友の会など）会員の ID/パスワード（任意・無ければゲスト購入）', optional: true }
 };
 
 /** 指定チェーンの認証情報を返す { email, password, chain }。
