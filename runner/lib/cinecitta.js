@@ -32,7 +32,7 @@ function Cinecitta(opt) {
   this.theaterCode = opt.theaterCode || '001';
   this.name = opt.name || 'チネチッタ';
   this.jar = new CookieJar();
-  this.base = R; this.chain = 'cinecitta'; this.guestOk = true;
+  this.base = R; this.chain = 'cinecitta'; this.guestOk = true; this.blindFirst = true;
   this.termsNote = 'CiNE-T の座席画面「利用規約に同意して次へ」は runner が API で代行できません。利用規約に同意のうえ使ってください。引き継いだブラウザの券種選択では「非会員」を選んで進めます（確保はゲストで行っています）。';
   this._cred = null; this._seller = null; this._theater = null;
   this._event = null; this._catalog = {}; this._sections = null; this._seats = null; this._txn = null; this._auth = null; this._kind = null;
@@ -125,6 +125,18 @@ Cinecitta.prototype.prewarm = async function (show) {
   }
   this._seats = seats; this._seatsRoom = room;
   return { ok: true, seats: Object.keys(seats).length };
+};
+
+/** 取引だけ先に開く（passport→start）。発売前でも可。席には触れない */
+Cinecitta.prototype.prestart = async function () {
+  if (this._txn && new Date(this._txn.expires).getTime() - Date.now() > 3 * 60000) return { ok: true, reused: true };
+  var pr = await this._api('POST', W + '/projects/' + this.project + '/passports', { scope: 'Transaction:PlaceOrder:' + this._seller.id });
+  if (!pr.json || !pr.json.token) return { ok: false, reason: 'passport ' + pr.status };
+  var st = await this._api('POST', T + '/projects/' + this.project + '/transactions/PlaceOrder/start', {
+    agent: { identifier: [{ name: 'userAgent', value: UA }, { name: 'application:version', value: APP_VERSION }, { name: 'analysis:transactionStartDate', value: new Date().toISOString() }] },
+    object: { passport: { token: pr.json.token } }, seller: { id: this._seller.id } });
+  if (!st.json || !st.json.id) return { ok: false, reason: 'start ' + st.status };
+  this._txn = st.json; this._auth = null; return { ok: true, txn: st.json.id };
 };
 
 /** 上映回を開く＝最新の回情報＋座席一覧を取り、入場券(passport)→取引開始まで済ませる。

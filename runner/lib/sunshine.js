@@ -33,7 +33,7 @@ function Sunshine(opt) {
   this.slug = opt.slug || 'gdcs';
   this.name = opt.name || 'グランドシネマサンシャイン 池袋';
   this.jar = new CookieJar();
-  this.base = F; this.chain = 'sunshine'; this.guestOk = true;
+  this.base = F; this.chain = 'sunshine'; this.guestOk = true; this.blindFirst = true;
   /* 座席画面の「利用規約に同意」チェックは API 経由では通らないため、runner 利用＝規約同意の上で使う */
   this.termsNote = 'シネマサンシャインの座席画面にある「利用規約に同意」チェックは runner が API で代行できません。利用規約（https://www.cinemasunshine.co.jp/）に同意のうえ使ってください。引き継いだブラウザでは券種（最初は「一般」で仮確保）を選び直して進めます。';
   this._cred = null; this._seller = null; this._config = null; this._screens = null;
@@ -132,6 +132,18 @@ Sunshine.prototype.prewarm = async function (show) {
     (this._ticketsFor === eventId && this._tickets) ? Promise.resolve() : this._front('/api/master/getSalesTickets?' + q + '&flgMember=0').then(function (t) { self._tickets = t || []; self._ticketsFor = eventId; }).catch(function () {})
   ]);
   return { ok: true, tickets: (this._tickets || []).length };
+};
+
+/** 取引だけ先に開く（passport→start）。発売前でも可。席には触れない。openShow は有効な取引があれば使い回す */
+Sunshine.prototype.prestart = async function () {
+  if (this._txn && new Date(this._txn.expires).getTime() - Date.now() > 3 * 60000) return { ok: true, reused: true };
+  var pr = await this._api('POST', W + '/projects/' + P + '/passports', { scope: 'Transaction:PlaceOrder:' + this._seller.id });
+  if (!pr.json || !pr.json.token) return { ok: false, reason: 'passport ' + pr.status };
+  var st = await this._api('POST', T + '/projects/' + P + '/transactions/PlaceOrder/start', {
+    agent: { identifier: [{ name: 'userAgent', value: UA }, { name: 'application:version', value: APP_VERSION }] },
+    object: { passport: { token: pr.json.token } }, seller: { id: this._seller.id } });
+  if (!st.json || !st.json.id) return { ok: false, reason: 'start ' + st.status };
+  this._txn = st.json; this._auth = null; return { ok: true, txn: st.json.id };
 };
 
 /** 上映回を開く：回の情報(coaInfo)＋券種＋レイアウト → passport → 取引開始 */

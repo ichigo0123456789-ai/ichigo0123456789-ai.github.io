@@ -293,6 +293,8 @@ async function enterSeatMap(k, show, creds) {
       // ① 予約URL先読み（発売前でも取れれば T=0 の番組表取得を省ける）
       preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
       if (preShow && k.prewarm && !prewarmed) { try { await k.prewarm(preShow); prewarmed = true; } catch (e) { log('先読み（prewarm）失敗・続行: ' + e.message); } }
+      // (2) 取引の前倒し開始（SPA 型：passport→start。席には触れない＝先取りではない）
+      if (k.prestart) { try { var ps2 = await k.prestart(); if (ps2 && ps2.ok) log('取引を前倒し開始（T0 は席の確保だけ）'); } catch (e) { log('取引の前倒し開始に失敗・T0 で開始: ' + e.message); } }
       log(preShow ? '事前準備OK（予約URLを先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
     };
     var fired = await waitUntil(fireAt, keepAlive, onApproach, onEarly);
@@ -310,10 +312,20 @@ async function enterSeatMap(k, show, creds) {
   var tB = Date.now();
   var op = await enterSeatMap(k, show, creds); // 待機列は正直に待って座席画面まで到達
   var dOpen = Date.now() - tB;
-  var map = await k.fetchSeatMap();
+  // (1) 第1候補は空席確認を飛ばして即確保（blindFirst 対応チェーン・本番のみ）。失敗したら座席表を取って従来どおり次候補へ
+  var blindTried = false, sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
+  if (!dry && k.blindFirst && groups.length) {
+    var tBl = Date.now();
+    var bl = await k.secure(groups[0]);
+    dSecure = Date.now() - tBl; blindTried = true;
+    if (bl.ok) { sr = bl; chosenSeats = groups[0]; chosenRank = 1; log('第1候補を空席確認なしで即確保（' + dSecure + 'ms）'); }
+    else log('第1候補 ' + groups[0].join(',') + ' は即確保できず（' + bl.reason + '）。座席表を取得して次候補へ');
+  }
+  var map = sr ? {} : await k.fetchSeatMap();
   // 優先順に「全席空いているグループ」を探す（第1候補→第2候補…）
   var firstOk = -1;
-  for (var gi0 = 0; gi0 < groups.length; gi0++) { if (allAvail(map, groups[gi0])) { firstOk = gi0; break; } }
+  for (var gi0 = (blindTried ? 1 : 0); gi0 < groups.length; gi0++) { if (allAvail(map, groups[gi0])) { firstOk = gi0; break; } }
+  if (sr) firstOk = 0;
   if (firstOk < 0) {
     console.error('✗ どの候補席も確保できません（全グループに売切/存在しない席あり）');
     groups.forEach(function (g, i) {
@@ -331,8 +343,7 @@ async function enterSeatMap(k, show, creds) {
     if (k.cancelTransaction) await k.cancelTransaction().catch(function () {}); // SPA 型は開いた取引を閉じておく
     return;
   }
-  var sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
-  for (var gi = firstOk; gi < groups.length; gi++) {
+  for (var gi = firstOk; gi < groups.length && !sr; gi++) {
     if (!allAvail(map, groups[gi])) continue;
     var tSec = Date.now();
     var attempt = await k.secure(groups[gi]);
