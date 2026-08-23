@@ -1055,7 +1055,8 @@
     var t = D.theater(S.plan.theaterId);
     if (!t || !S.plan.title || !S.plan.showtime || !S.plan.date) { setSeatRunnerNote('', ''); return; }
     var key = seatShowKey();
-    if (S.runnerSeatMap && S.runnerSeatMap.key === key) {
+    /* 席がある実データを持っているときだけキャッシュ採用。空(=以前失敗)なら取り直す。 */
+    if (S.runnerSeatMap && S.runnerSeatMap.key === key && S.runnerSeatMap.seats.length) {
       setSeatRunnerNote('ok', '実際の座席図（' + esc(S.runnerSeatMap.screenName ? S.runnerSeatMap.screenName + '・' : '') + '空席反映）を表示しています');
       return;
     }

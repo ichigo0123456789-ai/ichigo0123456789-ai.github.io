@@ -18,7 +18,31 @@
    ============================================================ */
 'use strict';
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { resolveTheater, makeAdapter, allKeys } = require('./lib/venues');
+
+/* 静的サイト（cinema/）をこのサーバ自身から配信する。
+   こうすると http://127.0.0.1:8790/ で開いたサイトは API と同一オリジンになり、
+   https のデプロイ版で起きる mixed-content / Private Network Access の問題が一切起きない。 */
+const CINEMA_DIR = path.join(__dirname, '..', 'cinema');
+const MIME = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2', '.map': 'application/json'
+};
+function serveStatic(req, res, pathname) {
+  var rel = decodeURIComponent(pathname).replace(/^\/cinema\//, '/');
+  if (rel === '/' || rel === '') rel = '/index.html';
+  var file = path.normalize(path.join(CINEMA_DIR, rel));
+  if (file.indexOf(CINEMA_DIR) !== 0) { res.writeHead(403); res.end('forbidden'); return; }
+  fs.readFile(file, function (e, buf) {
+    if (e) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('not found'); return; }
+    res.writeHead(200, { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+    res.end(buf);
+  });
+}
 
 function argv(name, def) {
   var i = process.argv.indexOf('--' + name);
@@ -40,6 +64,9 @@ function setCors(req, res) {
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  /* Private Network Access: https の公開サイト(github.io)から 127.0.0.1 への
+     アクセスは、この応答が無いと最近のChrome/Braveがブロック（プリフライトが通らずハング）する。 */
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
 }
 
 /* 仕様タグ（字幕/吹替/IMAX/Dolby/4DX/3D…）をタイトル・スクリーン名から拾う */
@@ -220,12 +247,19 @@ const server = http.createServer(async function (req, res) {
     return;
   }
 
+  /* それ以外は静的サイト配信（同一オリジンでサイトを開ける） */
+  if (req.method === 'GET') { serveStatic(req, res, u.pathname); return; }
+
   sendJson(res, 404, { ok: false, error: 'not found' });
 });
 
 server.listen(PORT, '127.0.0.1', function () {
   console.log('番組表サーバ起動: http://127.0.0.1:' + PORT + '  （Ctrl+C で停止）');
+  console.log('');
+  console.log('  ★ サイトはこのURLで開いてください（実番組表・実座席図が確実に動きます）:');
+  console.log('      http://127.0.0.1:' + PORT + '/');
+  console.log('');
+  console.log('  ※ https のデプロイ版（github.io）からでも接続を試みますが、ブラウザの制限で');
+  console.log('     ローカルへ繋げないことがあります。上のローカルURLなら同一オリジンで確実です。');
   console.log('  health   : http://127.0.0.1:' + PORT + '/health');
-  console.log('  schedule : http://127.0.0.1:' + PORT + '/schedule?theater=shinbungeiza&date=2026-08-25');
-  console.log('サイト（' + '予約プランナー' + '）の「日にちと作品」画面が、これを見つけて実番組表を表示します。');
 });
