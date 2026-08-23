@@ -107,7 +107,8 @@
       id: 'cinecitta',
       name: 'チネチッタ（CiNE-T）',
       onSaleRule: { daysBefore: 3, time: '00:00' },
-      note: 'CiNE-T（インターネット購入）は上映日の3日前 0:00 から（予約APIの validFrom で確認）。番組は毎週月曜 0:00 に翌週分が掲載。会員でなくてもゲスト購入で座席指定まで進める。',
+      memberOnSaleRule: { daysBefore: 4, time: '22:00' },
+      note: 'CiNE-T（インターネット購入）は一般が上映日の3日前 0:00 から。CINE CLUB（チネクラブ）会員は4日前 22:00 から先行。番組は毎週月曜 0:00 に翌週分が掲載。会員でなくてもゲスト購入で座席指定まで進める。',
       memberProgram: 'チネチッタ会員',
       rules: {
         maxSeats: 6,
@@ -125,7 +126,8 @@
       id: 'sunshine',
       name: 'シネマサンシャイン',
       onSaleRule: { daysBefore: 2, time: '00:00' },
-      note: 'インターネット購入は上映日の2日前 0:00 から一般発売（番組表 rsv_start_day で確認）。会員は3日前 21:00 から先行。会員でなくてもゲスト購入で座席指定まで進める。',
+      memberOnSaleRule: { daysBefore: 3, time: '21:00' },
+      note: 'インターネット購入は一般が上映日の2日前 0:00 から（番組表 rsv_start_day で確認）。会員は3日前 21:00 から先行。会員でなくてもゲスト購入で座席指定まで進める。',
       memberProgram: 'シネマサンシャイン会員',
       rules: {
         maxSeats: 6,
@@ -143,7 +145,8 @@
       id: 'toho',
       name: 'TOHOシネマズ（vit）',
       onSaleRule: { daysBefore: 2, time: '00:00' },
-      note: 'インターネットチケット vit は鑑賞日の2日前 0:00 から一般発売。TOHO-ONE 会員は3日前 21:00 から先行。会員でなくても「ログインせずに購入」で座席指定まで進める。',
+      memberOnSaleRule: { daysBefore: 3, time: '21:00' },
+      note: 'インターネットチケット vit は一般が鑑賞日の2日前 0:00 から。TOHO-ONE（シネマイレージ）会員は3日前 21:00 から先行。会員でなくても「ログインせずに購入」で座席指定まで進める。',
       memberProgram: 'TOHO-ONE',
       rules: {
         maxSeats: 6,
