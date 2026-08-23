@@ -400,10 +400,12 @@ async function enterSeatMap(k, show, creds) {
   var blindTried = false, sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
   if (!dry && k.blindFirst && !k.browserNativeHold && groups.length) {
     var tBl = Date.now();
-    var bl = await k.secure(groups[0]);
+    var bl;
+    try { bl = await k.secure(groups[0]); }
+    catch (e) { bl = { ok: false, reason: '即確保で一時エラー: ' + (e && e.message ? e.message : String(e)) }; }
     dSecure = Date.now() - tBl; blindTried = true;
     if (bl.ok) { sr = bl; chosenSeats = groups[0]; chosenRank = 1; log('第1候補を空席確認なしで即確保（' + dSecure + 'ms）'); }
-    else log('第1候補 ' + groups[0].join(',') + ' は即確保できず（' + bl.reason + '）。座席表を取得して次候補へ');
+    else log('第1候補 ' + groups[0].join(',') + ' は即確保できず（' + bl.reason + '）。座席表を取得して通常手順で確保します');
   }
   var map = sr ? {} : await k.fetchSeatMap();
   // 優先順に「全席空いているグループ」を探す（第1候補→第2候補…）
@@ -440,12 +442,14 @@ async function enterSeatMap(k, show, creds) {
     for (var gi = firstOk; gi < groups.length && !sr; gi++) {
       if (!allAvail(map, groups[gi])) continue;
       var tSec = Date.now();
-      var attempt = await k.secure(groups[gi]);
+      var attempt;
+      try { attempt = await k.secure(groups[gi]); }
+      catch (e) { attempt = { ok: false, reason: '一時エラー: ' + (e && e.message ? e.message : String(e)) }; }
       dSecure = Date.now() - tSec;
       if (attempt.ok) { sr = attempt; chosenSeats = groups[gi]; chosenRank = gi + 1; break; }
       log('第' + (gi + 1) + '候補 ' + groups[gi].join(',') + ' は確保できず（' + attempt.reason + '）。次候補を試します');
-      await k.openShow(show); // 競合。座席表を取り直して残り候補の空きを最新化
-      map = await k.fetchSeatMap();
+      await k.openShow(show).catch(function () {}); // 競合。座席表を取り直して残り候補の空きを最新化
+      map = await k.fetchSeatMap().catch(function () { return map; });
     }
   }
   if (!sr) { console.error('✗ すべての候補席を確保できませんでした（競合で埋まった可能性）'); process.exit(4); }
@@ -599,4 +603,8 @@ async function enterSeatMap(k, show, creds) {
 
   if (external) { log('ブラウザは常駐したまま runner を終了します（タブはそのまま残ります）'); await sleep(500); process.exit(0); }
   await new Promise(function () {}); // 決済のため開いたまま待機（終わったら閉じる / Ctrl+C）
-})().catch(function (e) { console.error('ERROR:', e.message); process.exit(1); });
+})().catch(function (e) {
+  console.error('ERROR: ' + (e && e.message ? e.message : String(e)));
+  if (e && e.stack) console.error(String(e.stack).split('\n').slice(0, 4).join('\n'));
+  process.exit(1);
+});

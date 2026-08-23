@@ -147,7 +147,9 @@ function normalize(key, th, date, raw) {
             screenCode: s.screenCode != null ? String(s.screenCode) : null,
             screenName: scName,
             status: s.status != null ? s.status : null,
-            remaining: (s.remaining != null ? s.remaining : (s.freeSeat != null ? (s.freeSeat ? null : 0) : null)),
+            /* remaining は実数がある場合のみ（cinecitta/sunshine）。eigaland の freeSeat は
+               「自由席かどうか」のフラグで空席数ではないため、満席判定には使わない。 */
+            remaining: (s.remaining != null ? s.remaining : null),
             allSeats: s.allSeats || null,
             tags: tags,
             showId: s.showId != null ? String(s.showId) : null

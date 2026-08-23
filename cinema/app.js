@@ -473,8 +473,25 @@
       .catch(function (e) { if (to) clearTimeout(to); throw e; });
   }
 
+  /* 一過性の失敗（タイムアウト/接続失敗＝サーバ起動直後など）は自動再試行する。
+     サーバが返した本当のエラー（対象回なし等）は再試行せず即座に投げる。 */
+  async function fetchJsonRetry(url, ms, tries) {
+    tries = tries || 3;
+    var lastErr;
+    for (var i = 0; i < tries; i++) {
+      try { return await fetchJson(url, ms); }
+      catch (e) {
+        lastErr = e;
+        var transient = e && (e.name === 'AbortError' || /Failed to fetch|NetworkError|load failed|ERR_|timed out|Load failed/i.test(String(e.message)));
+        if (!transient || i === tries - 1) throw e;
+        await new Promise(function (r) { setTimeout(r, 350 + i * 350); });
+      }
+    }
+    throw lastErr;
+  }
+
   function fetchRunnerSchedule(key, date) {
-    return fetchJson(runnerBase() + '/schedule?theater=' + encodeURIComponent(key) + '&date=' + encodeURIComponent(date), 15000);
+    return fetchJsonRetry(runnerBase() + '/schedule?theater=' + encodeURIComponent(key) + '&date=' + encodeURIComponent(date), 15000, 3);
   }
 
   /* runner 接続状態の帯表示 */
@@ -1065,7 +1082,7 @@
       var url = runnerBase() + '/seatmap?theater=' + encodeURIComponent(t.runnerKey || 'yokohama') +
         '&date=' + encodeURIComponent(S.plan.date) + '&title=' + encodeURIComponent(S.plan.title) +
         '&time=' + encodeURIComponent(S.plan.showtime);
-      var data = await fetchJson(url, 20000);
+      var data = await fetchJsonRetry(url, 20000, 3);
       var byId = {}; (data.seats || []).forEach(function (s0) { byId[s0.id] = s0; });
       S.runnerSeatMap = { key: key, seats: data.seats || [], byId: byId, screenName: data.screenName || '', cols: data.cols || 0 };
       /* 選択済みだった席のうち、実座席に存在しないものは外す（偽レイアウトからの引き継ぎ対策） */
