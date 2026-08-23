@@ -28,6 +28,7 @@
 const { Kinezo } = require('./lib/kinezo');
 const { K109 } = require('./lib/k109');
 const { Toho } = require('./lib/toho');
+const { Cinecitta } = require('./lib/cinecitta');
 const { loadCreds } = require('./config');
 const { request } = require('./lib/http');
 
@@ -68,13 +69,18 @@ function tohoTheater(key) {
   var t = list.find(function (x) { return x.code === code; });
   return { chain: 'toho', code: code, name: t ? t.name : ('TOHOシネマズ ' + code) };
 }
+/* チネチッタ川崎（SMART THEATER / cinerino API。lib/cinecitta.js。ゲスト購入） */
+var THEATERS_OTHER = {
+  cinecitta: { chain: 'cinecitta', project: 'cinecitta-production', theaterCode: '001', name: 'チネチッタ' }
+};
 var THEATER_KEY = String(arg('theater', 'yokohama')).toLowerCase();
-var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY] || tohoTheater(THEATER_KEY);
-if (!TH) { console.error('--theater は次から指定: ' + Object.keys(THEATERS).concat(Object.keys(THEATERS_109), Object.keys(TOHO_ALIAS)).join(', ') + '（TOHO は toho<劇場コード3桁> でも可）'); process.exit(2); }
+var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY] || THEATERS_OTHER[THEATER_KEY] || tohoTheater(THEATER_KEY);
+if (!TH) { console.error('--theater は次から指定: ' + Object.keys(THEATERS).concat(Object.keys(THEATERS_109), Object.keys(THEATERS_OTHER), Object.keys(TOHO_ALIAS)).join(', ') + '（TOHO は toho<劇場コード3桁> でも可）'); process.exit(2); }
 /** 劇場のチェーンに応じたアダプタを作る（どれも同じメソッド面を持つ） */
 function makeAdapter(th) {
   if (th.chain === '109') return new K109({ alias: th.alias, name: th.name });
   if (th.chain === 'toho') return new Toho({ code: th.code, name: th.name });
+  if (th.chain === 'cinecitta') return new Cinecitta({ project: th.project, theaterCode: th.theaterCode, name: th.name });
   return new Kinezo({ theaterPath: th.path, theaterId: th.id });
 }
 function ts() { var d = new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
@@ -296,6 +302,7 @@ async function enterSeatMap(k, show, creds) {
   if (dry) {
     log('--dry。確保の直前で停止（席は取っていません）。確保予定: 第' + (firstOk + 1) + '候補 ' + groups[firstOk].join(',') +
         ' ｜ 内訳: 上映回解決 ' + dRes + 'ms／座席画面 ' + dOpen + 'ms');
+    if (k.cancelTransaction) await k.cancelTransaction().catch(function () {}); // SPA 型は開いた取引を閉じておく
     return;
   }
   var sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
@@ -330,6 +337,7 @@ async function enterSeatMap(k, show, creds) {
   var browser = await chromium.launch({ headless: false, args: ['--no-first-run', '--no-default-browser-check'] });
   var ctx = await browser.newContext({ locale: 'ja-JP' });
   await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE));
+  if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ）は取引状態を sessionStorage に注入して引き継ぐ
   var page = await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
   await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});

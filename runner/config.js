@@ -29,7 +29,9 @@ var CHAIN_VARS = {
   kinezo: { user: 'KINEZO_EMAIL', pass: 'KINEZO_PASSWORD', label: 'KINEZO（T・ジョイ系）会員のメール/パスワード' },
   '109':  { user: 'C109_ID',      pass: 'C109_PASSWORD',   label: '109シネマズ シネマポイント会員の ID(メール/会員番号)/パスワード' },
   /* TOHO はログインなし（ゲスト購入）で座席指定まで進めるので任意。先行販売を使う場合のみ TOHO-ONE を設定。 */
-  toho:   { user: 'TOHO_ID',      pass: 'TOHO_PASSWORD',   label: 'TOHO-ONE 会員の ID/パスワード（任意・無ければゲスト購入）', optional: true }
+  toho:   { user: 'TOHO_ID',      pass: 'TOHO_PASSWORD',   label: 'TOHO-ONE 会員の ID/パスワード（任意・無ければゲスト購入）', optional: true },
+  /* チネチッタもゲスト購入で座席指定まで進める（会員ログインの自動化は未対応） */
+  cinecitta: { user: 'CINECITTA_ID', pass: 'CINECITTA_PASSWORD', label: 'チネチッタ会員（任意・無ければゲスト購入）', optional: true }
 };
 
 /** 指定チェーンの認証情報を返す { email, password, chain }。

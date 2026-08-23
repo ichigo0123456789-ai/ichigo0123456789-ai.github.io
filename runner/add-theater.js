@@ -8,8 +8,8 @@
    を自動で行う。出力は要約のみ。サイト側は各エントリの runnerKey を参照する。
 
    使い方:
-     node runner/add-theater.js <spec> <key> "<劇場名>" "<エリア>" "<都道府県>" [mapX mapY] [--chain kinezo|109] [--days N]
-       spec … KINEZO: 劇場パス(例 t-joy_kyoto) / 109: サイト別名(例 I1)
+     node runner/add-theater.js <spec> <key> "<劇場名>" "<エリア>" "<都道府県>" [mapX mapY] [--chain kinezo|109|toho|cinecitta] [--days N]
+       spec … KINEZO: 劇場パス(例 t-joy_kyoto) / 109: サイト別名(例 I1) / TOHO: 劇場コード(例 076) / cinecitta: プロジェクト名(cinecitta-production)
    例:
      node runner/add-theater.js t-joy_kyoto kyoto "T・ジョイ京都" "京都 / 九条" "京都府" 560 590
      node runner/add-theater.js I1 kawasaki "109シネマズ川崎" "川崎 / ラゾーナ" "神奈川県" 598 560 --chain 109
@@ -20,6 +20,7 @@ const path = require('path');
 const { Kinezo } = require('./lib/kinezo');
 const { K109 } = require('./lib/k109');
 const { Toho } = require('./lib/toho');
+const { Cinecitta } = require('./lib/cinecitta');
 
 var ROOT = path.join(__dirname, '..');
 var argv = process.argv.slice(2);
@@ -36,7 +37,7 @@ function dateStr(d) { return new Date(Date.now() + 9 * 3600000 + d * 86400000).t
 function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
 (async function () {
-  var k = CHAIN === '109' ? new K109({ alias: spec, name: name }) : (CHAIN === 'toho' ? new Toho({ code: spec, name: name }) : new Kinezo({ theaterPath: spec }));
+  var k = CHAIN === '109' ? new K109({ alias: spec, name: name }) : (CHAIN === 'toho' ? new Toho({ code: spec, name: name }) : (CHAIN === 'cinecitta' ? new Cinecitta({ project: spec, name: name }) : new Kinezo({ theaterPath: spec })));
   var init = await k.init();
   var tid = init.theaterId;
   if (!tid) throw new Error('theaterId を取得できません: ' + spec);
@@ -63,7 +64,7 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
     var s = null, map = {}, cand = byScreen[codes[i]];
     for (var c = 0; c < cand.length && !Object.keys(map).length; c++) {
       s = cand[c];
-      try { await k.openShow(s); map = await k.fetchSeatMap(); } catch (e) { map = {}; }
+      try { map = k.fetchSeatLayout ? await k.fetchSeatLayout(s) : (await k.openShow(s), await k.fetchSeatMap()); } catch (e) { map = {}; }
     }
     var rows = {};
     Object.keys(map).forEach(function (id) { var m = id.match(/^([A-Z]+)-?(\d+)$/); if (!m) return; (rows[m[1]] = rows[m[1]] || []).push(+m[2]); });
@@ -77,7 +78,7 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
     blocks.push('      // ' + scName + '：' + n + '席\r\n      screen(\'s' + scNum + '\', \'' + q(scName) + '\', [\r\n' + rowLines.join(',\r\n') + '\r\n      ], { gridWidth: ' + gw + ' })');
   }
   var today = dateStr(0);
-  var chainId = CHAIN === '109' ? 'c109' : (CHAIN === 'toho' ? 'toho' : 'tjoy');
+  var chainId = CHAIN === '109' ? 'c109' : (CHAIN === 'toho' ? 'toho' : (CHAIN === 'cinecitta' ? 'cinecitta' : 'tjoy'));
   var entryId = chainId + '-' + key;
 
   // 1) theaters.js に挿入
@@ -89,7 +90,9 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
       ? "      c109: { alias: '" + q(spec) + "', tsc: '" + q(tid) + "' },"
       : (CHAIN === 'toho'
         ? "      toho: { code: '" + q(spec) + "' },"
-        : "      kinezo: { path: '" + q(spec) + "', theaterId: '" + q(tid) + "' },");
+        : (CHAIN === 'cinecitta'
+          ? "      cinecitta: { project: '" + q(spec) + "', theaterCode: '" + q(tid) + "' },"
+          : "      kinezo: { path: '" + q(spec) + "', theaterId: '" + q(tid) + "' },"));
     var entry = [",", "    {", "      id: '" + entryId + "',", "      chain: '" + chainId + "',", "      name: '" + q(name) + "',",
       "      area: '" + q(area || '') + "',", "      pref: '" + q(pref || '') + "',",
       "      map: { x: " + mapX + ", y: " + mapY + " },",
@@ -107,6 +110,7 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
   // 2) runner のテーブルにキー追加（TOHO は劇場コード/別名で自動解決されるので不要）
   var rf = path.join(ROOT, 'runner/reserve-hybrid.js');
   var rs = fs.readFileSync(rf, 'utf8');
+  if (CHAIN === 'cinecitta') { console.log('✓ ' + name + ' (cinecitta ' + spec + ') key=' + key + ' : ' + scount + 'スクリーン / ' + total + '席 → theaters.js 更新（runner は --theater ' + key + '）'); return; }
   if (CHAIN === 'toho') { console.log('✓ ' + name + ' (toho ' + spec + ') key=' + key + ' : ' + scount + 'スクリーン / ' + total + '席 → theaters.js 更新（runner は toho' + spec + ' / 別名で解決）'); return; }
   var line = CHAIN === '109'
     ? "  " + key + ": { chain: '109', alias: '" + q(spec) + "', name: '" + q(name) + "' }"
