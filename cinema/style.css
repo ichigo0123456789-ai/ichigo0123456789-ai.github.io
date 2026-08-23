@@ -120,10 +120,19 @@ select{cursor:pointer}
 .chip .chip-n{font-size:11px;font-weight:800;opacity:.65}
 .chip.on .chip-n{opacity:.9}
 
-.theater-groups{display:flex;flex-direction:column;gap:22px;margin-top:22px}
-.tgroup-head{display:flex;align-items:baseline;gap:9px;margin:0 2px 11px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.tgroup-name{font-size:15px;font-weight:800;color:var(--ink)}
-.tgroup-n{font-size:11px;font-weight:700;color:var(--faint)}
+.theater-groups{display:flex;flex-direction:column;gap:6px;margin-top:20px}
+/* 都県セクション見出し（地方バッジ＋都県名）。カテゴリの主見出し。 */
+.tpref-head{display:flex;align-items:baseline;gap:9px;margin:20px 2px 12px;padding-bottom:7px;border-bottom:2px solid var(--line-2)}
+.tpref:first-child .tpref-head{margin-top:2px}
+.tpref-region{font-size:10.5px;font-weight:800;color:#fff;background:var(--ink);border-radius:5px;padding:2px 8px;letter-spacing:.04em;align-self:center}
+.tpref-name{font-size:16px;font-weight:900;color:var(--ink)}
+.tpref-n{font-size:11px;font-weight:700;color:var(--faint)}
+/* サブエリア見出し（池袋・横浜…）。従属レベルなので控えめに。 */
+.tgroup{margin:0 0 4px 2px}
+.tgroup-head{display:flex;align-items:baseline;gap:8px;margin:2px 2px 8px}
+.tgroup-name{font-size:12.5px;font-weight:800;color:var(--sub);position:relative;padding-left:11px}
+.tgroup-name::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.tgroup-n{font-size:10.5px;font-weight:700;color:var(--faint)}
 .theater-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
 .theater-card{display:flex;flex-direction:column;gap:5px;text-align:left;border:1px solid var(--line);
   background:var(--panel);border-radius:var(--r);padding:13px 15px;cursor:pointer;transition:.13s;box-shadow:var(--shadow-sm)}
