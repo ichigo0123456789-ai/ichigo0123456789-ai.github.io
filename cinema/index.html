@@ -73,11 +73,12 @@
   <div class="grid-2">
     <div class="card">
       <h2>日にちと作品を決める</h2>
-      <p class="note">日にちを選び、観たい作品の時間帯をタップしてください。作品は T・ジョイ横浜で上映中のラインナップ（2026/8/19時点）ですが、<b>時間帯はサンプル</b>です（Phase 2 で実際の番組表に置き換えます）。</p>
+      <p class="note">日にちを選ぶと、手元の runner が取得した<b>実際の上映回</b>が並びます（字幕/吹替・IMAX/Dolby などの仕様つき）。観たい上映回をタップして選んでください。</p>
       <div class="selection-bar" id="plan-selbar"></div>
 
       <div class="date-strip" id="date-strip"></div>
 
+      <div id="runner-status" class="runner-status" hidden></div>
       <div id="schedule-list" class="schedule-list"></div>
       <p class="hint" id="chain-note"></p>
 
@@ -94,28 +95,17 @@
     </div>
 
     <div class="card">
-      <h2>発売開始と枚数</h2>
+      <h2>発売開始日時</h2>
 
       <div class="field">
         <label for="f-onsale">発売開始日時</label>
         <input id="f-onsale" type="datetime-local">
         <div class="inline-actions">
-          <button class="btn ghost sm" id="btn-onsale-auto">上映日の2日前 0:00 に合わせる</button>
+          <button class="btn ghost sm" id="btn-onsale-auto">発売時刻（会員先行/一般）に合わせる</button>
         </div>
-        <p class="hint">KINEZO の一般発売の慣例から計算します。作品や上映回によって例外があるので、公式の発売日時を必ず確認して上書きしてください。</p>
+        <p class="hint">チェーンの発売慣例から自動計算します（会員先行があるチェーンは先行時刻）。作品や上映回によって例外があるので、公式の発売日時を必ず確認して上書きしてください。</p>
       </div>
-
-      <div class="field">
-        <label for="f-count">枚数</label>
-        <input id="f-count" type="number" min="1" max="8" value="2">
-        <p class="hint" id="count-hint">この枚数ぶんの席をひとまとまりとして確保します。</p>
-      </div>
-
-      <div class="field">
-        <label>券種の内訳</label>
-        <div id="ticket-rows" class="ticket-rows"></div>
-        <p class="hint" id="ticket-sum">—</p>
-      </div>
+      <p class="hint">※ <b>枚数</b>は次の「座席を選ぶ」画面で指定します。<b>券種</b>（大人/学生など）は価格ミス防止のため自動選択しません（決済時にご自身で選択）。</p>
     </div>
   </div>
 
@@ -151,11 +141,16 @@
     <p class="note" id="seat-context">—</p>
 
     <div class="seat-toolbar">
-      <span class="pick-guide">1席ずつクリックして枚数分選んでください（もう一度クリックで解除）</span>
+      <div class="count-field">
+        <label for="f-count">枚数</label>
+        <input id="f-count" type="number" min="1" max="8" value="2">
+      </div>
+      <span class="pick-guide">この枚数ぶん、1席ずつクリックして選んでください（もう一度クリックで解除）</span>
       <div class="spacer"></div>
       <button class="btn ghost sm" id="btn-auto-pick">中央の見やすい席を選ぶ</button>
       <button class="btn ghost sm" id="btn-clear-pick">選択を解除</button>
     </div>
+    <p class="hint" id="count-hint">この枚数ぶんの席をひとまとまりとして確保します。</p>
 
     <div class="pick-tray" id="pick-tray">
       <span class="tray-label">確保する座席</span>
@@ -341,11 +336,11 @@
 
   <div class="card">
     <h2>カレンダーに登録</h2>
-    <p class="note">確保できた上映回を Google カレンダーに追加します。開映の前に着けるよう、開始時刻の20分前から予定を作ります（変更可）。</p>
+    <p class="note">確保できた上映回を Google カレンダーに追加します。既定は<b>開映時刻ちょうど</b>を開始、通知は<b>1時間前</b>。タイトルは「【映画】作品名」で登録します。</p>
     <div class="row-2">
       <div class="field">
         <label for="c-lead">何分前から予定にするか</label>
-        <input id="c-lead" type="number" min="0" max="120" step="5" value="20">
+        <input id="c-lead" type="number" min="0" max="120" step="5" value="0">
       </div>
       <div class="field">
         <label for="c-remind">通知（分前）</label>
@@ -356,7 +351,7 @@
       <a class="btn primary" id="btn-gcal" target="_blank" rel="noopener">Google カレンダーに追加</a>
       <button class="btn" id="btn-ics">.ics をダウンロード</button>
     </div>
-    <p class="hint">Google カレンダーのボタンは予定作成画面を開くだけで、この端末の外へデータを送りません。.ics は Apple カレンダー等でも読み込めます。</p>
+    <p class="hint">色は「みかん（Tangerine）」を想定。Google の追加リンクは仕様上あらかじめ色を付けられないため、Google では登録後に色を「みかん」に変更してください（.ics には色情報を埋めています＝Apple カレンダー等では反映）。リンクは予定作成画面を開くだけで、端末の外へデータを送りません。</p>
   </div>
 
   <div class="card">

@@ -67,6 +67,9 @@ main{max-width:1180px;margin:0 auto;padding:22px 20px 70px}
 .hint{font-size:11.5px;color:var(--faint);margin-top:5px;line-height:1.6}
 .hr{height:1px;background:var(--line);margin:20px 0 16px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+/* グリッド子は min-width:auto だと中の横スクロール要素（日付ストリップ等）で
+   トラックが膨張し、狭幅で横はみ出しする。0 にして縮められるようにする。 */
+.grid-2>*{min-width:0}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 @media(max-width:860px){.grid-2,.row-2,.row-3{grid-template-columns:1fr}}
@@ -161,6 +164,12 @@ select{cursor:pointer}
 .date-chip .dc-day{display:block;font-size:16px;font-weight:800;font-family:var(--mono)}
 .date-chip .dc-sat{color:var(--cool)} .date-chip .dc-sun{color:var(--accent)}
 .date-chip.on .dc-sat,.date-chip.on .dc-sun{color:#fff}
+/* 今日を強調：大きめ・アクセント枠・「今日」ラベルを目立たせる */
+.date-chip.today{min-width:74px;border-color:var(--accent);border-width:2px;box-shadow:0 0 0 3px var(--accent-soft);background:var(--bg-2)}
+.date-chip.today .dc-dow{color:var(--accent);font-size:11px;font-weight:900}
+.date-chip.today .dc-day{font-size:19px;color:var(--accent)}
+.date-chip.today.on{background:var(--accent);box-shadow:0 0 0 3px var(--accent-line)}
+.date-chip.today.on .dc-dow,.date-chip.today.on .dc-day{color:#fff}
 
 .schedule-list{display:flex;flex-direction:column;gap:14px}
 .movie-block{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;background:var(--bg-2)}
@@ -208,6 +217,69 @@ select{cursor:pointer}
 .plan-item .pi-del:hover{color:var(--err);background:var(--err-soft)}
 .empty{font-size:12.5px;color:var(--faint);padding:14px;text-align:center;
   border:1px dashed var(--line-2);border-radius:var(--r-sm)}
+
+/* ---- ② 番組表（手元 runner の実データ）---- */
+.runner-status{margin:2px 0 12px;padding:9px 13px;border-radius:var(--r-sm);font-size:12.5px;border:1px solid var(--line)}
+.runner-status .rs-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.runner-status.ok{background:var(--ok-soft);border-color:var(--ok-line);color:var(--ok)}
+.runner-status.ok .rs-dot{background:var(--ok)}
+.runner-status.checking{background:var(--panel-2);border-color:var(--line-2);color:var(--sub)}
+.runner-status.checking .rs-dot{background:var(--amber)}
+.runner-status.down{background:var(--amber-soft);border-color:var(--amber-line);color:var(--ink)}
+.runner-status.down .rs-title{font-weight:800;margin-bottom:3px}
+.runner-status.down .rs-body{font-size:12px;color:var(--sub);line-height:1.6}
+.runner-status code{background:#fff;border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;font-family:var(--mono);font-size:11.5px}
+.runner-status .rs-actions{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+
+.sched-loading{font-size:12.5px;color:var(--sub);padding:16px;text-align:center}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--line-2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sched-day{font-size:12px;font-weight:700;color:var(--sub);margin:2px 0}
+.sched-day .sched-src{font-size:10.5px;font-weight:700;color:var(--ok);background:var(--ok-soft);border:1px solid var(--ok-line);border-radius:5px;padding:1px 7px;margin-left:6px}
+.sched-empty{font-size:12.5px;color:var(--faint);padding:18px;text-align:center;border:1px dashed var(--line-2);border-radius:var(--r-sm)}
+
+.sched-movie{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--bg-2);overflow:visible}
+.sm-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:10px 13px 8px;border-bottom:1px solid var(--line)}
+.sm-title{font-size:14px;font-weight:800}
+.sm-runtime{font-size:11px;color:var(--faint);margin-left:auto}
+.sm-shows{display:flex;flex-wrap:wrap;gap:8px;padding:11px 13px}
+
+.show-chip{position:relative;display:inline-flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line-2);background:var(--panel);border-radius:9px;padding:7px 11px;cursor:pointer;transition:.12s}
+.show-chip:hover{border-color:var(--accent-line);background:var(--accent-soft)}
+.show-chip.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.show-chip.full{opacity:.55}
+.show-chip.full .sc-time{text-decoration:line-through}
+.sc-time{font-size:14px;font-weight:800;font-family:var(--mono)}
+.sc-screen{position:relative;font-size:11.5px;color:var(--sub);display:inline-flex;align-items:center;gap:5px}
+.sc-avail{font-size:10.5px;font-weight:800;color:var(--ok);background:var(--ok-soft);border-radius:5px;padding:1px 6px}
+.sc-avail.full{color:var(--err);background:var(--err-soft)}
+
+.sc-info{width:15px;height:15px;border-radius:50%;background:var(--panel-3);color:var(--sub);font-size:10px;font-weight:800;font-style:normal;display:inline-flex;align-items:center;justify-content:center;cursor:help;font-family:var(--mono)}
+.sc-info:hover{background:var(--cool);color:#fff}
+.screen-pop{position:absolute;left:0;bottom:calc(100% + 8px);z-index:20;width:212px;background:var(--panel);border:1px solid var(--line-2);border-radius:9px;box-shadow:var(--shadow);padding:10px 12px;font-style:normal;color:var(--ink);opacity:0;visibility:hidden;transform:translateY(4px);transition:.12s;pointer-events:none;white-space:normal;text-align:left}
+.sc-info:hover .screen-pop,.sc-info:focus .screen-pop,.sc-info.open .screen-pop{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+.sp-name{font-size:12.5px;font-weight:800;margin-bottom:4px}
+.sp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
+.sp-cap,.sp-fmt{font-size:11px;color:var(--sub)}
+.sp-note{font-size:10.5px;color:var(--faint);margin-top:5px;line-height:1.5}
+
+.tg{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:4px;letter-spacing:.02em;background:var(--panel-3);color:var(--sub);line-height:1.7}
+.tg.tg-imax{background:#0a2540;color:#fff}
+.tg.tg-dolby{background:#141414;color:#e7c66b}
+.tg.tg-motion{background:#0b6fb8;color:#fff}
+.tg.tg-sub{background:var(--cool-soft);color:var(--cool)}
+.tg.tg-dub{background:var(--amber-soft);color:var(--amber)}
+.tg.tg-threed{background:#7b2ff7;color:#fff}
+
+.count-field{display:inline-flex;align-items:center;gap:6px}
+.count-field label{font-size:12px;font-weight:700;color:var(--sub)}
+.count-field input{width:58px;text-align:center;font-weight:800;padding:6px 8px}
+
+@media(max-width:520px){
+  .sm-shows{gap:7px}
+  .show-chip{padding:7px 9px}
+  .screen-pop{width:180px;left:auto;right:0}
+}
 
 /* ---- 座席マップ ---- */
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--sub)}

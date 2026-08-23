@@ -6,7 +6,8 @@
   "scripts": {
     "reserve": "node reserve.js",
     "reserve:browser": "node reserve-browser.js",
-    "probe": "node probe.js"
+    "probe": "node probe.js",
+    "serve": "node serve.js"
   },
   "dependencies": {
     "playwright": "^1.48.0"

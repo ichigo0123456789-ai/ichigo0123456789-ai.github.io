@@ -38,15 +38,8 @@ const { request } = require('./lib/http');
 
 var BASE = 'https://tjoy.jp';
 
-/* KINEZO 系の対応劇場。--theater <key> で切替（既定 yokohama）。
-   同じ KINEZO なので劇場パスと theaterId が違うだけで、ログイン/座席/確保は共通。 */
-var THEATERS = {
-  yokohama: { path: 't-joy_yokohama', id: '190', name: 'T・ジョイ横浜' },
-  wald9:    { path: 'shinjuku_wald9', id: '140', name: '新宿バルト9' },
-  kyoto: { path: 't-joy_kyoto', id: '360', name: 'T・ジョイ京都' },
-  umeda: { path: 't-joy_umeda', id: '320', name: 'T・ジョイ梅田' },
-  burg13: { path: 'yokohama_burg13', id: '170', name: '横浜ブルク13' }
-};
+/* 劇場キー→設定→アダプタの解決は lib/venues.js に集約（serve.js と共有） */
+const { resolveTheater, makeAdapter, allKeys } = require('./lib/venues');
 
 function arg(name, def) {
   var i = process.argv.indexOf('--' + name);
@@ -55,44 +48,9 @@ function arg(name, def) {
   return (v == null || String(v).startsWith('--')) ? true : v;
 }
 
-/* 109シネマズ系（KINEZO とは別システム。lib/k109.js）。--theater のキーは上と共通の名前空間。 */
-var THEATERS_109 = {
-  kawasaki:         { chain: '109', alias: 'I1', name: '109シネマズ川崎' },
-  premium_shinjuku: { chain: '109', alias: 'X1', name: '109シネマズプレミアム新宿' }
-};
-/* TOHOシネマズ（vit）。全73館を劇場コードで指定できる（--theater toho076）。
-   主要館には読みやすい別名。一覧は runner/data/toho-theaters.json。 */
-var TOHO_ALIAS = {
-  toho_shinjuku: '076', toho_hibiya: '081', toho_shibuya: '043', toho_roppongi: '009', toho_ikebukuro: '084', toho_ueno: '080',
-  toho_nihonbashi: '073', toho_tachikawa: '085', toho_kawasaki: '010', toho_lalaport_yokohama: '036', toho_ebina: '007'
-};
-function tohoTheater(key) {
-  var code = TOHO_ALIAS[key] || ((key.match(/^toho[_-]?(\d{3})$/) || [])[1]);
-  if (!code) return null;
-  var list = []; try { list = require('./data/toho-theaters.json'); } catch (e) { list = []; }
-  var t = list.find(function (x) { return x.code === code; });
-  return { chain: 'toho', code: code, name: t ? t.name : ('TOHOシネマズ ' + code) };
-}
-/* チネチッタ川崎（SMART THEATER / cinerino API。lib/cinecitta.js。ゲスト購入） */
-var THEATERS_OTHER = {
-  cinecitta: { chain: 'cinecitta', project: 'cinecitta-production', theaterCode: '001', name: 'チネチッタ' },
-  /* シネマサンシャイン（cinerino + COA。lib/sunshine.js。ゲスト購入） */
-  gdcs: { chain: 'sunshine', theaterCode: '020', slug: 'gdcs', name: 'グランドシネマサンシャイン 池袋' },
-  /* 新文芸坐（eigaland。lib/eigaland.js。ゲスト購入・holdSeat 確保） */
-  shinbungeiza: { chain: 'eigaland', cinemaId: '621c87d50a861337f2dd38ec', brandId: '621c83f80a861337f2dd3715', name: '新文芸坐' }
-};
 var THEATER_KEY = String(arg('theater', 'yokohama')).toLowerCase();
-var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY] || THEATERS_OTHER[THEATER_KEY] || tohoTheater(THEATER_KEY);
-if (!TH) { console.error('--theater は次から指定: ' + Object.keys(THEATERS).concat(Object.keys(THEATERS_109), Object.keys(THEATERS_OTHER), Object.keys(TOHO_ALIAS)).join(', ') + '（TOHO は toho<劇場コード3桁> でも可）'); process.exit(2); }
-/** 劇場のチェーンに応じたアダプタを作る（どれも同じメソッド面を持つ） */
-function makeAdapter(th) {
-  if (th.chain === '109') return new K109({ alias: th.alias, name: th.name });
-  if (th.chain === 'toho') return new Toho({ code: th.code, name: th.name });
-  if (th.chain === 'cinecitta') return new Cinecitta({ project: th.project, theaterCode: th.theaterCode, name: th.name });
-  if (th.chain === 'sunshine') return new Sunshine({ theaterCode: th.theaterCode, slug: th.slug, name: th.name });
-  if (th.chain === 'eigaland') return new Eigaland({ cinemaId: th.cinemaId, brandId: th.brandId, name: th.name });
-  return new Kinezo({ theaterPath: th.path, theaterId: th.id });
-}
+var TH = resolveTheater(THEATER_KEY);
+if (!TH) { console.error('--theater は次から指定: ' + allKeys().join(', ') + '（TOHO は toho<劇場コード3桁> でも可）'); process.exit(2); }
 /** 常駐ブラウザ（Brave/Chrome）を専用プロファイルで起動 or 再利用し、CDP で接続する */
 async function openExternalBrowser(chromium, exe, profDir, launchArgs) {
   var port = parseInt(arg('cdp-port', '9333'), 10) || 9333;
@@ -173,13 +131,16 @@ async function syncServerClock(k, samples) {
  * 最後の数十msはビジースピンでミリ秒精度に寄せる。待機中は keepAlive を回す。
  * 発火した実時刻(ms)を返す。
  */
-async function waitUntil(fireAt, keepAlive, onApproach, onEarly) {
+async function waitUntil(fireAt, keepAlive, onApproach, onEarly, earlyMs) {
+  earlyMs = earlyMs || 20000;
   var lastPing = Date.now(), lastSec = -1, lastMin = -1, approached = false, early = false;
   while (true) {
     var remain = fireAt - Date.now();
     if (remain <= 0) break;
-    // 発火の約20秒前に一度だけ「チェーン固有の先読み」（券種一覧など数秒かかるものをここで済ませる）
-    if (onEarly && !early && remain <= 20000) {
+    // 接続ウォームアップ＋チェーン固有の先読み（券種一覧・座席URL等）を発火の earlyMs 前に前倒しで済ませる。
+    // 既定は T-90s（1〜2分前）。20秒前だと座席描画待ちで競り負ける余地があるため。
+    // ※ 再ログインはしない（ログインは preLogin で更に早く済ませる）ので、ここでの前倒しでログアウトはしない。
+    if (onEarly && !early && remain <= earlyMs) {
       early = true;
       try { await onEarly(); } catch (e) { log('先読みで警告: ' + e.message); }
     }
@@ -188,7 +149,7 @@ async function waitUntil(fireAt, keepAlive, onApproach, onEarly) {
       approached = true;
       try { await onApproach(); } catch (e) { log('事前準備で警告: ' + e.message); }
     }
-    if (keepAlive && remain > 5000 && Date.now() - lastPing > 180000) {
+    if (keepAlive && remain > 5000 && Date.now() - lastPing > 60000) {
       lastPing = Date.now();
       try { await keepAlive(); } catch (e) { log('セッション維持で警告: ' + e.message); }
     }
@@ -419,7 +380,8 @@ async function enterSeatMap(k, show, creds) {
       if (k.prestart) { try { var ps2 = await k.prestart(); if (ps2 && ps2.ok) log('取引を前倒し開始（T0 は席の確保だけ）'); } catch (e) { log('取引の前倒し開始に失敗・T0 で開始: ' + e.message); } }
       log(preShow ? '事前準備OK（予約URL先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
     };
-    var fired = await waitUntil(fireAt, keepAlive, onApproach, onEarly);
+    var EARLY_MS = (parseInt(arg('prewarm-sec', '90'), 10) || 90) * 1000;  // 接続ウォーム開始（既定 T-90s）。--prewarm-sec で調整
+    var fired = await waitUntil(fireAt, keepAlive, onApproach, onEarly, EARLY_MS);
     var firedServer = fired + clockOffset;
     var diff = firedServer - targetLocal;
     log('発火: ローカル ' + fmtMs(fired) + ' ／ サーバ時刻換算 ' + fmtMs(firedServer) +

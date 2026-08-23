@@ -215,6 +215,10 @@
       /* 劇場が変われば座席の意味が変わる */
       S.plan.candidates = []; S.pick = [];
     }
+    /* 隠しフォーム（readForm がここから読む）へ同期。これをしないと
+       タブ切替時の readForm が古い #f-theater 値で theaterId を上書きしてしまう。 */
+    fillTheaters(S.plan.theaterId);
+    fillScreens(S.plan.theaterId, S.plan.screenId);
     renderTheaterPicker();
     $('btn-to-plan').disabled = false;
   }
@@ -358,7 +362,7 @@
         var dowLabel = i === 0 ? '今日' : (i === 1 ? '明日' : '日月火水木金土'[dow]);
         var chip = document.createElement('button');
         chip.type = 'button';
-        chip.className = 'date-chip' + (ds === scheduleDate ? ' on' : '');
+        chip.className = 'date-chip' + (ds === scheduleDate ? ' on' : '') + (i === 0 ? ' today' : '');
         chip.innerHTML =
           '<span class="dc-dow' + (dow === 0 ? ' dc-sun' : dow === 6 ? ' dc-sat' : '') + '">' + dowLabel + '</span>' +
           '<span class="dc-day' + (dow === 0 ? ' dc-sun' : dow === 6 ? ' dc-sat' : '') + '">' +
@@ -418,24 +422,235 @@
     presale: '<span class="st-presale">発売前</span>'
   };
 
-  /* ② 上映回の指定（データ保守ゼロ版）
-     上映スケジュールはこのサイトに持たない（毎日の更新を不要にするため）。
-     作品名・開映時刻・スクリーンを入力し、runner が実行時に劇場サイトの最新番組表と
-     突き合わせる（--title は部分一致、--dry で実在確認）。選択内容は従来どおり
-     隠しフォーム（f-title / f-date / f-time / f-screen / f-runtime）へ同期する。 */
+  /* ② 上映回の指定（手元 runner の実番組表から選ぶ）
+     ------------------------------------------------------------
+     静的サイトは各映画館の実番組表を安定取得できない（CORS）。そこで手元PCで
+     runner の番組表サーバ（node runner/serve.js, 127.0.0.1:8790）を立て、ここから
+     実際の上映回を取得してリスト表示する。runner が無ければ手動入力にフォールバック。 */
+
+  var _lastSchedule = null;    /* 直近に取得した番組表（再描画用キャッシュ） */
+  var _schedReq = 0;           /* 競合する非同期取得の識別（古い応答を捨てる） */
+
+  function runnerBase() {
+    var port = 8790;
+    try { var pv = localStorage.getItem('runnerPort'); if (pv) port = parseInt(pv, 10) || 8790; } catch (e) {}
+    return 'http://127.0.0.1:' + port;
+  }
+
+  function fetchJson(url, ms) {
+    var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var to = ctl ? setTimeout(function () { ctl.abort(); }, ms || 12000) : null;
+    return fetch(url, { signal: ctl ? ctl.signal : undefined, cache: 'no-store' })
+      .then(function (r) {
+        if (to) clearTimeout(to);
+        return r.json().then(function (j) { if (!r.ok || j.ok === false) throw new Error(j && j.error ? j.error : ('HTTP ' + r.status)); return j; });
+      })
+      .catch(function (e) { if (to) clearTimeout(to); throw e; });
+  }
+
+  function fetchRunnerSchedule(key, date) {
+    return fetchJson(runnerBase() + '/schedule?theater=' + encodeURIComponent(key) + '&date=' + encodeURIComponent(date), 15000);
+  }
+
+  /* runner 接続状態の帯表示 */
+  function setRunnerStatus(state, err) {
+    var el = $('runner-status');
+    if (!el) return;
+    if (state === 'ok') {
+      el.hidden = false;
+      el.className = 'runner-status ok';
+      el.innerHTML = '<span class="rs-dot"></span>手元の runner に接続中（実番組表を表示しています）';
+    } else if (state === 'checking') {
+      el.hidden = false;
+      el.className = 'runner-status checking';
+      el.innerHTML = '<span class="rs-dot"></span>手元の runner を確認中…';
+    } else if (state === 'down') {
+      el.hidden = false;
+      el.className = 'runner-status down';
+      el.innerHTML =
+        '<div class="rs-title">手元の runner が見つかりません</div>' +
+        '<div class="rs-body">実際の上映回を出すには、ターミナルで次を起動してください：' +
+        '<code>node runner/serve.js</code>（起動したまま）。起動後に「再試行」を押してください。</div>' +
+        '<div class="rs-actions"><button class="btn sm" id="rs-retry">再試行</button>' +
+        '<button class="btn ghost sm" id="rs-manual">runner を使わず手動で入力</button></div>';
+      var t = D.theater(S.plan.theaterId);
+      var rr = $('rs-retry'); if (rr) rr.addEventListener('click', function () { if (t) loadSchedule(t, scheduleDate); });
+      var rm = $('rs-manual'); if (rm) rm.addEventListener('click', function () { if (t) renderManualFallback(t); });
+    } else {
+      el.hidden = true; el.innerHTML = '';
+    }
+  }
+
   function renderSchedule() {
     var wrap = $('schedule-list');
-    wrap.innerHTML = '';
     var t = D.theater(S.plan.theaterId);
     if (!t) {
+      setRunnerStatus('');
       wrap.innerHTML = '<div class="empty">先に映画館を選んでください（手順1）。</div>';
       return;
     }
     if (S.plan.date !== scheduleDate) { S.plan.date = scheduleDate; $('f-date').value = scheduleDate; }
+    loadSchedule(t, scheduleDate);
+  }
+
+  async function loadSchedule(t, date) {
+    var key = t.runnerKey || 'yokohama';
+    var reqId = ++_schedReq;
+    setRunnerStatus('checking');
+    $('schedule-list').innerHTML = '<div class="sched-loading"><span class="spin"></span> 手元の runner に ' +
+      esc(t.name) + ' の上映回を問い合わせ中…</div>';
+    try {
+      var data = await fetchRunnerSchedule(key, date);
+      if (reqId !== _schedReq) return;   /* 新しい取得が始まっていたら破棄 */
+      _lastSchedule = data;
+      setRunnerStatus('ok');
+      renderScheduleList(t, data);
+    } catch (e) {
+      if (reqId !== _schedReq) return;
+      _lastSchedule = null;
+      setRunnerStatus('down', e);
+      renderManualFallback(t);
+    }
+  }
+
+  /* 空席ラベル */
+  function availLabel(show) {
+    if (show.remaining != null) return show.remaining > 0 ? '残' + show.remaining : '満席';
+    var st = show.status;
+    if (st === 'X' || st === 'soldout') return '満席';
+    if (st === 'W') return '窓口のみ';
+    if (st === 'A' || st === 'many') return '空席';
+    return '';
+  }
+
+  /* サブスクリーン情報（ポップオーバー）の中身 */
+  function screenInfoHtml(t, movie, show) {
+    var num = (String(show.screenName || show.screen || '').match(/\d+/) || [])[0];
+    var siteScreen = num ? t.screens.filter(function (sc) { return (String(sc.name).match(/\d+/) || [])[0] === num; })[0] : null;
+    var cap = (siteScreen && siteScreen.seats) || show.allSeats || null;
+    var tags = (show.tags || []);
+    var av = availLabel(show);
+    return '<div class="screen-pop">' +
+      '<div class="sp-name">' + esc(show.screenName || 'スクリーン') + '</div>' +
+      (tags.length ? '<div class="sp-tags">' + tags.map(function (x) { return '<span class="tg">' + esc(x) + '</span>'; }).join('') + '</div>' : '') +
+      '<div class="sp-cap">' + (cap ? '座席数 ' + cap + '席' : '座席数 —') + (av ? ' ／ ' + esc(av) : '') + '</div>' +
+      (siteScreen && siteScreen.format ? '<div class="sp-fmt">' + esc(siteScreen.format) + '</div>' : '') +
+      '<div class="sp-note">座席配置・マップは「座席を選ぶ」画面で確認・選択できます</div>' +
+      '</div>';
+  }
+
+  function mapScreenId(t, show) {
+    var num = (String(show.screenName || show.screen || '').match(/\d+/) || [])[0];
+    if (num) {
+      var hit = t.screens.filter(function (sc) { return (String(sc.name).match(/\d+/) || [])[0] === num; })[0];
+      if (hit) return hit.id;
+    }
+    return (t.screens[0] || {}).id;
+  }
+
+  function isRunnerSelected(movie, show) {
+    return S.plan.title === movie.title && S.plan.date === scheduleDate && S.plan.showtime === show.time;
+  }
+
+  function selectShowFromRunner(t, movie, show) {
+    S.plan.title = movie.title;
+    S.plan.date = scheduleDate;
+    S.plan.showtime = show.time;
+    S.plan.runtime = movie.runtime || S.plan.runtime || 120;
+    var sid = mapScreenId(t, show);
+    var changed = S.plan.screenId !== sid;
+    S.plan.screenId = sid;
+    S.plan.screenLabel = show.screenName || '';   /* runner の実スクリーン名（座席画面の表示に使う） */
+    if (changed) { S.plan.candidates = []; S.pick = []; }
+    $('f-title').value = movie.title; $('f-date').value = scheduleDate; $('f-time').value = show.time;
+    fillScreens(S.plan.theaterId, sid); $('f-screen').value = sid; $('f-runtime').value = S.plan.runtime;
+    var auto = autoOnSale(S.plan); if (auto) { S.plan.onSaleAt = auto; $('f-onsale').value = auto; }
+    updateSeatContext(); renderPlanSelbar(); tickCountdown();
+    if (_lastSchedule) renderScheduleList(t, _lastSchedule);
+    toast(movie.title + ' ' + show.time + '（' + (show.screenName || '') + '）を選びました');
+  }
+
+  function renderScheduleList(t, data) {
+    var wrap = $('schedule-list');
+    wrap.innerHTML = '';
+    var head = document.createElement('div');
+    head.className = 'sched-day';
+    head.innerHTML = esc(scheduleDate.replace(/-/g, '/')) + ' ／ ' + esc(t.name) +
+      ' <span class="sched-src">実番組表（runner取得）</span>';
+    wrap.appendChild(head);
+
+    var movies = (data.movies || []).slice().sort(function (a, b) {
+      var ta = (a.shows[0] && a.shows[0].time) || '99:99', tb = (b.shows[0] && b.shows[0].time) || '99:99';
+      return ta < tb ? -1 : ta > tb ? 1 : 0;
+    });
+    if (!movies.length) {
+      wrap.appendChild(el('div', 'sched-empty', 'この日に上映回が見つかりませんでした。別の日付を選んでください。'));
+      return;
+    }
+
+    movies.forEach(function (m) {
+      var block = document.createElement('div');
+      block.className = 'sched-movie';
+      var tagHtml = (m.tags || []).map(function (x) { return '<span class="tg tg-' + tagClass(x) + '">' + esc(x) + '</span>'; }).join('');
+      var hd = document.createElement('div');
+      hd.className = 'sm-head';
+      hd.innerHTML = '<span class="sm-title">' + esc(m.title) + '</span>' + tagHtml +
+        (m.runtime ? '<span class="sm-runtime">' + m.runtime + '分</span>' : '');
+      block.appendChild(hd);
+
+      var shows = document.createElement('div');
+      shows.className = 'sm-shows';
+      (m.shows || []).slice().sort(function (a, b) { return (a.time || '') < (b.time || '') ? -1 : 1; }).forEach(function (sh) {
+        var on = isRunnerSelected(m, sh);
+        var av = availLabel(sh);
+        var full = av === '満席';
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'show-chip' + (on ? ' on' : '') + (full ? ' full' : '');
+        chip.innerHTML =
+          '<span class="sc-time">' + esc(sh.time || '--:--') + '</span>' +
+          '<span class="sc-screen">' + esc(sh.screenName || 'スクリーン') +
+            '<span class="sc-info" tabindex="0" role="button" aria-label="シアター情報">i' +
+            screenInfoHtml(t, m, sh) + '</span></span>' +
+          (av ? '<span class="sc-avail' + (full ? ' full' : '') + '">' + esc(av) + '</span>' : '');
+        chip.addEventListener('click', function () { selectShowFromRunner(t, m, sh); });
+        /* シアター情報アイコン: クリックで開閉（モバイル対応）。ホバーは CSS。 */
+        var info = chip.querySelector('.sc-info');
+        if (info) info.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          var open = info.classList.contains('open');
+          var all = wrap.querySelectorAll('.sc-info.open');
+          for (var i = 0; i < all.length; i++) all[i].classList.remove('open');
+          if (!open) info.classList.add('open');
+        });
+        shows.appendChild(chip);
+      });
+      block.appendChild(shows);
+      wrap.appendChild(block);
+    });
+  }
+
+  function tagClass(x) {
+    if (/IMAX/.test(x)) return 'imax';
+    if (/Dolby/.test(x)) return 'dolby';
+    if (/4DX|MX4D|ScreenX|TCX/.test(x)) return 'motion';
+    if (/字幕/.test(x)) return 'sub';
+    if (/吹替/.test(x)) return 'dub';
+    if (/3D/.test(x)) return 'threed';
+    return 'gen';
+  }
+
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+  /* runner が無いときのフォールバック（従来の手動入力フォーム） */
+  function renderManualFallback(t) {
+    var wrap = $('schedule-list');
+    wrap.innerHTML = '';
+    if (S.plan.date !== scheduleDate) { S.plan.date = scheduleDate; $('f-date').value = scheduleDate; }
     var box = document.createElement('div');
     box.className = 'movie-block manual-show';
     box.innerHTML =
-      '<div class="movie-head"><span class="movie-title">上映回を指定</span>' +
+      '<div class="movie-head"><span class="movie-title">上映回を手動で指定</span>' +
       '<span class="movie-meta">' + esc(scheduleDate.replace(/-/g, '/')) + ' ／ ' + esc(t.name) + '</span></div>' +
       '<div class="row-2">' +
         '<div class="field"><label for="m-title">作品名（一部でOK・部分一致）</label>' +
@@ -448,9 +663,8 @@
         '<div class="field"><label for="m-runtime">上映時間（分・任意）</label>' +
         '<input id="m-runtime" type="number" min="30" max="300" value="' + (S.plan.runtime || 120) + '"></div>' +
       '</div>' +
-      '<p class="hint">上映スケジュールはこのサイトには保存していません（毎日の更新を不要にするため）。' +
-      '作品名・開映時刻・スクリーンは劇場サイトの番組表で確認してください。' +
-      '実行時は runner が劇場サイトの最新番組表と突き合わせます（<code>--dry</code> で実在確認できます）。</p>';
+      '<p class="hint">runner を起動すると、ここに実際の上映回リストが表示されます（<code>node runner/serve.js</code>）。' +
+      '手動指定の場合、実行時に runner が劇場サイトの最新番組表と突き合わせます（<code>--dry</code> で実在確認）。</p>';
     wrap.appendChild(box);
     var sel = box.querySelector('#m-screen');
     t.screens.forEach(function (sc) {
@@ -468,7 +682,7 @@
       var runtime = parseInt(box.querySelector('#m-runtime').value, 10) || 120;
       var screenChanged = S.plan.screenId !== screenId;
       S.plan.title = title; S.plan.date = scheduleDate; S.plan.showtime = time;
-      S.plan.screenId = screenId; S.plan.runtime = runtime;
+      S.plan.screenId = screenId; S.plan.runtime = runtime; S.plan.screenLabel = '';
       if (screenChanged) { S.plan.candidates = []; S.pick = []; }
       $('f-title').value = title; $('f-date').value = scheduleDate; $('f-time').value = time;
       fillScreens(S.plan.theaterId, screenId); $('f-screen').value = screenId; $('f-runtime').value = runtime;
@@ -531,6 +745,7 @@
 
   function renderTickets() {
     var wrap = $('ticket-rows');
+    if (!wrap) return;   /* 券種内訳UIは廃止（価格ミス防止のため自動選択しない） */
     wrap.innerHTML = '';
     D.ticketTypes.forEach(function (tt) {
       var row = document.createElement('div');
@@ -552,6 +767,7 @@
   }
 
   function updateTicketSum() {
+    if (!$('ticket-sum')) return;   /* 券種内訳UIは廃止 */
     var sc = currentScreen();
     var extra = sc && sc.surcharge ? sc.surcharge : 0;
     var n = 0, yen = 0;
@@ -806,8 +1022,9 @@
   function updateSeatContext() {
     var t = D.theater(S.plan.theaterId);
     var sc = currentScreen();
+    var scLabel = S.plan.screenLabel || (sc ? sc.name + (sc.format ? '（' + sc.format + '）' : '') : '?');
     $('seat-context').textContent =
-      (t ? t.name : '?') + ' ' + (sc ? sc.name + (sc.format ? '（' + sc.format + '）' : '') : '?') + ' ／ ' +
+      (t ? t.name : '?') + ' ' + scLabel + ' ／ ' +
       (S.plan.title || '（作品未入力）') + ' ／ ' + S.plan.date + ' ' + S.plan.showtime +
       ' ／ ' + S.plan.count + '枚';
   }
@@ -1294,7 +1511,7 @@
       '枚数: ' + S.plan.count + '枚'
     ];
     return {
-      title: '🎬 ' + S.plan.title + '（' + (t ? t.name : '') + '）',
+      title: '【映画】' + S.plan.title,
       location: t ? t.name : '',
       details: lines.join('\n'),
       start: range.start,
@@ -1328,7 +1545,10 @@
       'DTEND:' + utcStamp(f.end),
       'SUMMARY:' + icsEsc(f.title),
       'LOCATION:' + icsEsc(f.location),
-      'DESCRIPTION:' + icsEsc(f.details)
+      'DESCRIPTION:' + icsEsc(f.details),
+      /* みかん（Tangerine）色。COLOR は CSS3 名（RFC7986）、X-APPLE- は Apple 用の実色。 */
+      'COLOR:orangered',
+      'X-APPLE-CALENDAR-COLOR:#F5511D'
     ];
     if (remind > 0) {
       lines.push('BEGIN:VALARM', 'ACTION:DISPLAY',
@@ -1595,9 +1815,13 @@
        同期用の隠しフィールドはユーザー操作では変化しない。 */
 
     $('f-count').addEventListener('input', function () {
-      readForm();
-      S.pick = [];
-      updateSeatContext(); renderTray(); updateTicketSum();
+      readForm();               /* f-count → S.plan.count（劇場の最大席数でクランプ） */
+      S.pick = []; S.plan.candidates = [];
+      if ($('count-hint')) {
+        var mx = currentRules().maxSeats || 8;
+        $('count-hint').textContent = 'この枚数ぶんの席をひとまとまりとして確保します（この劇場は一度に最大' + mx + '席）。';
+      }
+      renderSeatEditor();
     });
 
     $('btn-onsale-auto').addEventListener('click', function () {
