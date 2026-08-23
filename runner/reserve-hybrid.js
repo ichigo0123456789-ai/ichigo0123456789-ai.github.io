@@ -393,22 +393,21 @@ async function enterSeatMap(k, show, creds) {
     };
     var prewarmed = false;
     // ③ チェーン固有の先読み（券種一覧・座席レイアウトなど発売前でも取れるもの。席の先取りはしない）。約20秒前に実行
+    // 重い先読み（番組表取得＝約1.4秒）は T-20秒 に実行し、発火を遅らせない
     var onEarly = async function () {
-      if (!k.prewarm) return;
-      var ps = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
-      if (!ps) { log('先読み: 予約導線が未掲載のため T0 直前に再試行'); return; }
-      var t0p = Date.now(); await k.prewarm(ps); prewarmed = true;
-      log('先読み完了（券種・レイアウト等 ' + (Date.now() - t0p) + 'ms）');
+      preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
+      if (!preShow) { log('先読み: 予約導線が未掲載のため T0 直前に再試行'); return; }
+      if (k.prewarm && !prewarmed) { var t0p = Date.now(); try { await k.prewarm(preShow); prewarmed = true; log('先読み完了（券種・レイアウト等 ' + (Date.now() - t0p) + 'ms）'); } catch (e) { log('先読み（prewarm）失敗・続行: ' + e.message); } }
     };
     var onApproach = async function () {
-      // ② 接続ウォームアップ（TLS/DNSを温める）
+      // ② 接続ウォームアップ（TLS/DNSを温める）＝軽い処理のみ（発火を遅らせない）
       await request({ url: k.homeUrl(), jar: k.jar }).catch(function () {});
-      // ① 予約URL先読み（発売前でも取れれば T=0 の番組表取得を省ける）
-      preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
-      if (preShow && k.prewarm && !prewarmed) { try { await k.prewarm(preShow); prewarmed = true; } catch (e) { log('先読み（prewarm）失敗・続行: ' + e.message); } }
+      // ① 予約URL先読みが未完なら短く再試行（onEarly で取れていれば省略）
+      if (!preShow) preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
+      if (preShow && k.prewarm && !prewarmed) { try { await k.prewarm(preShow); prewarmed = true; } catch (e) {} }
       // (2) 取引の前倒し開始（SPA 型：passport→start。席には触れない＝先取りではない）
       if (k.prestart) { try { var ps2 = await k.prestart(); if (ps2 && ps2.ok) log('取引を前倒し開始（T0 は席の確保だけ）'); } catch (e) { log('取引の前倒し開始に失敗・T0 で開始: ' + e.message); } }
-      log(preShow ? '事前準備OK（予約URLを先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
+      log(preShow ? '事前準備OK（予約URL先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
     };
     var fired = await waitUntil(fireAt, keepAlive, onApproach, onEarly);
     var firedServer = fired + clockOffset;
@@ -509,10 +508,12 @@ async function enterSeatMap(k, show, creds) {
       var nowIn = await login109(page, { loginUrl: holdPlan.loginUrl, cookieDomain: holdPlan.cookieDomain, homeUrl: k.homeUrl() }, creds);
       log(nowIn ? '✓ 109 ログイン成功（ブラウザ）' : '△ ログイン状態を確認できません（そのまま座席選択を試みます）');
     }
+    var tk = function (l) { log('  ⏱ ' + l + ' +' + (Date.now() - tH) + 'ms'); };
     // 座席ページ → 座席AJAXの描画を待つ
     await page.goto(holdPlan.seatUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
-    await page.waitForFunction(function () { return document.querySelectorAll('.seat[data-seat-key]').length > 0; }, { timeout: 15000 }).catch(function () {});
-    await sleep(400);
+    tk('座席ページ表示');
+    await page.waitForFunction(function () { return document.querySelectorAll('.seat[data-seat-key]').length > 0; }, { timeout: 15000, polling: 50 }).catch(function () {});
+    tk('座席描画完了');
     // 目的の席（data-seat-key）をクリックして選択
     var sel = await page.evaluate(function (p) {
       var picked = [], miss = [];
@@ -525,7 +526,7 @@ async function enterSeatMap(k, show, creds) {
       return { picked: picked, miss: miss };
     }, holdPlan).catch(function (e) { return { picked: [], miss: ['evaluate: ' + e.message] }; });
     if (sel.miss.length) log('△ 一部の席をクリックできません: ' + sel.miss.join(',') + '（画面で選び直してください）');
-    await sleep(300);
+    tk('席クリック完了');
     // CDP×Brave では waitForNavigation が不安定なので、本文マーカーが変わるまでポーリングして進める。
     var waitFor = function (reSrc, ms) { return page.waitForFunction(function (s) { return new RegExp(s).test(document.body.innerText || ''); }, reSrc, { timeout: ms || 12000 }).then(function () { return true; }).catch(function () { return false; }); };
     var urlLeft = function (frag, ms) { return page.waitForFunction(function (f) { return location.href.indexOf(f) < 0; }, frag, { timeout: ms || 12000 }).then(function () { return true; }).catch(function () { return false; }); };
@@ -535,9 +536,9 @@ async function enterSeatMap(k, show, creds) {
       if (b) b.click();
     }).catch(function () {});
     // 座席確認ポップアップが出る場合があるので、座席ページに居る間はその「次へ」を押して抜ける
-    for (var sc = 0; sc < 4; sc++) {
+    for (var sc = 0; sc < 6; sc++) {
       if (!/resv_shw_ppt/.test(page.url())) break;
-      await sleep(700);
+      await sleep(250);
       if (!/resv_shw_ppt/.test(page.url())) break;
       await page.evaluate(function () {
         // 「青年対象作品」等の年齢確認ポップアップ／座席確認の確認ボタンを押す
@@ -550,6 +551,7 @@ async function enterSeatMap(k, show, creds) {
       }).catch(function () {});
       await urlLeft('resv_shw_ppt', 8000);
     }
+    tk('★席確保（座席ページ離脱＝確保POST完了）');
     // 遷移で page ハンドルが古くなることがあるので 109 タブを取り直す
     var reacq = function () { var ps = ctx.pages().filter(function (pp) { return /109cinemas/.test(pp.url()); }); if (ps.length) page = ps[ps.length - 1]; };
     reacq();
@@ -557,8 +559,11 @@ async function enterSeatMap(k, show, creds) {
     // 入れて通過し、券種選択 or お客様情報の手前まで運ぶ。券種選択画面が出たら絶対に進めない。
     for (var step = 0; step < 3; step++) {
       reacq();
-      // 規約ページが描画されるまで待つ（waitForSelector は innerText 判定より安定）
-      var onTerms = await page.waitForSelector('#form_check1', { timeout: 15000, state: 'attached' }).then(function () { return true; }).catch(function () { return false; });
+      // すでに停止画面（券種選択 or お客様情報）なら即終了（#form_check1 の空振り待ちを避ける）
+      var atStop = await page.evaluate(function () { return /purchase_pre_ticket|purchase_pre\.cgi/.test(location.href) || /券種を選択|お客様情報入力|氏名（かな）/.test(document.body.innerText || ''); }).catch(function () { return false; });
+      if (atStop) break;
+      // 規約ページ(#form_check1)が描画されるまで短く待つ（規約ページは速い）
+      var onTerms = await page.waitForSelector('#form_check1', { timeout: 5000, state: 'attached' }).then(function () { return true; }).catch(function () { return false; });
       if (!onTerms) break;
       var acted = await page.evaluate(function () {
         var cb = document.querySelector('#form_check1');
@@ -572,8 +577,8 @@ async function enterSeatMap(k, show, creds) {
       }).catch(function (e) { return 'err:' + e.message.slice(0, 40); });
       log('規約同意→次へ: ' + acted);
       // 規約ページを離れるまで待つ（#form_check1 が消える）
-      await page.waitForSelector('#form_check1', { state: 'detached', timeout: 12000 }).catch(function () {});
-      await sleep(700); reacq();
+      await page.waitForSelector('#form_check1', { state: 'detached', timeout: 8000 }).catch(function () {});
+      await sleep(300); reacq();
     }
     // ここで停止（券種選択画面 or 券種の無い上映ではお客様情報）。これ以上は自動で進めない。
     // 画面が落ち着くまで待ってから停止位置を判定（遷移途中のURLを拾わない）
