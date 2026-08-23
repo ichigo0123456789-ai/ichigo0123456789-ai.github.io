@@ -179,7 +179,7 @@
   <!-- 実際に予約する（コマンド生成）：サイトの選択 → 手元 runner のコマンド -->
   <div class="card" id="cmd-card">
     <h2>実際に予約する（コマンド）</h2>
-    <p class="note">下のコマンドをコピーして、手元のターミナル（リポジトリのフォルダ）で実行します。発売の瞬間に席を最速で確保し、決済画面まで開きます。下のリハーサルは練習用（モック）です。</p>
+    <p class="note">下の「予約する」ボタンで、手元の runner がそのまま予約を実行します（コマンドのコピペは不要）。コマンドは記録・確認用に残しています。下のリハーサルは練習用（モック）です。</p>
     <div class="row-2">
       <div class="field">
         <label for="cmd-at">発売日時（任意・空なら今すぐ実行）</label>
@@ -291,10 +291,11 @@
       <p class="hint" id="countdown-sub">プランを選ぶとカウントダウンが始まります。</p>
 
       <div class="run-actions">
-        <button class="btn primary" id="btn-run-live">本番実行（発売時刻まで待機）</button>
-        <button class="btn" id="btn-run-rehearsal">リハーサル（早送り）</button>
+        <button class="btn primary" id="btn-run-live">この座席で予約する（本番・手元runnerが実行）</button>
+        <button class="btn" id="btn-run-rehearsal">リハーサル（早送り・練習）</button>
         <button class="btn danger" id="btn-run-abort" disabled>中止</button>
       </div>
+      <p class="hint">「予約する」を押すと、手元の runner が実際に席を確保し、決済ブラウザ（Brave/Chrome）を開きます。発売がまだ先なら発売時刻まで自動で待機します。券種選択・支払いはご自身で行います（自動選択しません）。※ サイトは <code>http://127.0.0.1:8790/</code> で開いている必要があります。</p>
 
       <div class="state-row">
         <span class="state-chip" id="state-chip" data-state="idle">待機中</span>

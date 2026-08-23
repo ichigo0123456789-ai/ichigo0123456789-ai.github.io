@@ -20,7 +20,39 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 const { resolveTheater, makeAdapter, allKeys } = require('./lib/venues');
+
+/* ---- 実予約ジョブ（サイトのボタンから reserve-hybrid.js を実際に起動する）----
+   127.0.0.1 のみ・手元でユーザーが押したときだけ動く。座席を確保し、決済画面(ブラウザ)を開く。 */
+var jobs = {};
+var jobSeq = 0;
+function startReserve(pp) {
+  var id = String(++jobSeq);
+  var args = [path.join(__dirname, 'reserve-hybrid.js'),
+    '--theater', pp.theater, '--date', pp.date, '--title', pp.title, '--time', pp.time, '--seats', pp.seats];
+  if (pp.at) args.push('--at', pp.at);
+  if (pp.dry) args.push('--dry');
+  var job = { id: id, log: [], done: false, code: null, startedAt: Date.now(), cmd: 'node reserve-hybrid.js ' + args.slice(1).join(' ') };
+  jobs[id] = job;
+  function push(chunk) { String(chunk).split(/\r?\n/).forEach(function (ln) { if (ln.length) job.log.push(ln); }); if (job.log.length > 500) job.log.splice(0, job.log.length - 500); }
+  var child;
+  try {
+    child = spawn(process.execPath, args, { cwd: __dirname, windowsHide: true });
+  } catch (e) { job.done = true; job.code = -1; push('起動に失敗: ' + e.message); return id; }
+  child.stdout.on('data', push);
+  child.stderr.on('data', push);
+  child.on('error', function (e) { push('エラー: ' + e.message); });
+  child.on('close', function (code) { job.done = true; job.code = code; push('（プロセス終了 code=' + code + '）'); });
+  return id;
+}
+function readBody(req) {
+  return new Promise(function (resolve) {
+    var b = ''; req.on('data', function (c) { b += c; if (b.length > 1e6) req.destroy(); });
+    req.on('end', function () { try { resolve(JSON.parse(b || '{}')); } catch (e) { resolve(null); } });
+    req.on('error', function () { resolve(null); });
+  });
+}
 
 /* 静的サイト（cinema/）をこのサーバ自身から配信する。
    こうすると http://127.0.0.1:8790/ で開いたサイトは API と同一オリジンになり、
@@ -244,6 +276,30 @@ const server = http.createServer(async function (req, res) {
       console.error('[seatmap] ' + stheater + ' ' + sdate + ' ' + stitle + ' ' + stime + ' -> ' + e.message);
       sendJson(res, e.status || 502, { ok: false, error: e.message });
     }
+    return;
+  }
+
+  /* 実予約の起動（サイトのボタンから）。ローカルのみ。 */
+  if (u.pathname === '/reserve' && req.method === 'POST') {
+    var body = await readBody(req);
+    if (!body || !body.theater || !body.date || !body.title || !body.time || !body.seats) {
+      sendJson(res, 400, { ok: false, error: 'theater/date/title/time/seats が必要' }); return;
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date) || !/^\d{1,2}:\d{2}$/.test(body.time)) {
+      sendJson(res, 400, { ok: false, error: 'date/time の形式が不正' }); return;
+    }
+    var id = startReserve({
+      theater: String(body.theater).toLowerCase(), date: body.date, title: String(body.title),
+      time: body.time, seats: String(body.seats), at: body.at || '', dry: !!body.dry
+    });
+    sendJson(res, 200, { ok: true, id: id, cmd: jobs[id].cmd });
+    return;
+  }
+  if (u.pathname === '/reserve/status' && req.method === 'GET') {
+    var jid = u.searchParams.get('id');
+    var job = jobs[jid];
+    if (!job) { sendJson(res, 404, { ok: false, error: 'no such job' }); return; }
+    sendJson(res, 200, { ok: true, id: job.id, log: job.log, done: job.done, code: job.code });
     return;
   }
 

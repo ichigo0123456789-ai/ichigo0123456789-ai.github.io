@@ -1386,6 +1386,66 @@
     return null;
   }
 
+  /* ---- 本物の予約（手元 runner の /reserve を叩く）---- */
+  function setReserveChip(stateKey) {
+    var chip = $('state-chip');
+    var labels = { connecting: '接続中', hunting: '確保を試行中', held: '確保成功', failed: '確保できず' };
+    chip.dataset.state = stateKey; chip.textContent = labels[stateKey] || stateKey;
+    var running = stateKey === 'connecting' || stateKey === 'hunting';
+    if ($('btn-run-live')) $('btn-run-live').disabled = running;
+    if ($('btn-run-rehearsal')) $('btn-run-rehearsal').disabled = running;
+  }
+
+  async function reserveViaRunner() {
+    var t = D.theater(S.plan.theaterId);
+    var seats = (S.plan.candidates || []).map(function (g) { return g.seats.join(','); }).join(' / ');
+    if (!t || !S.plan.title || !S.plan.showtime || !S.plan.date || !seats) { toast('先に上映回と座席を選んでください'); return; }
+    /* 発売がまだ先なら --at で待機。発売中（過去/直近）は付けずに即実行。 */
+    var at = '';
+    var ms = onSaleMs(S.plan);
+    if (S.plan.onSaleAt && !isNaN(ms) && ms > Date.now() + 2000) {
+      var v = S.plan.onSaleAt.length === 16 ? S.plan.onSaleAt + ':00' : S.plan.onSaleAt;
+      at = v + '+09:00';
+    }
+    S.rehearsal = false; renderTimeline(null);
+    $('log').innerHTML = ''; S.logs = [];
+    S.runStart = Date.now();
+    setReserveChip('connecting');
+    pushLog({ rel: 0, level: 'info', msg: '手元の runner に予約実行を依頼しました（席: ' + seats + '）' + (at ? ' ／ 発売 ' + S.plan.onSaleAt + ' まで待機します' : '（発売中：即時実行）') });
+    var body = { theater: t.runnerKey || 'yokohama', date: S.plan.date, title: S.plan.title, time: S.plan.showtime, seats: seats, at: at };
+    try {
+      var r = await fetch(runnerBase() + '/reserve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      var j = await r.json();
+      if (!j.ok) throw new Error(j.error || '起動に失敗しました');
+      pollReserve(j.id);
+    } catch (e) {
+      setReserveChip('failed');
+      pushLog({ rel: 0, level: 'warn', msg: 'runner に接続できませんでした。サイトを http://127.0.0.1:8790/ で開き、番組表サーバが起動しているか確認してください（' + e.message + '）' });
+    }
+  }
+
+  function pollReserve(id) {
+    var seen = 0;
+    var iv = setInterval(function () {
+      fetchJson(runnerBase() + '/reserve/status?id=' + encodeURIComponent(id), 8000).then(function (j) {
+        for (var i = seen; i < j.log.length; i++) {
+          var msg = j.log[i];
+          var level = /失敗|エラー|できません|不可|売切|取れませ|確保できません/.test(msg) ? 'warn' : 'info';
+          pushLog({ rel: (Date.now() - (S.runStart || Date.now())) / 1000, level: level, msg: msg });
+        }
+        seen = j.log.length;
+        if (!seen && !j.done) setReserveChip('hunting');
+        if (j.done) {
+          clearInterval(iv);
+          var ok = j.code === 0 && !j.log.some(function (l) { return /確保できません|取れませ|売切/.test(l); });
+          setReserveChip(ok ? 'held' : 'failed');
+          pushLog({ rel: (Date.now() - (S.runStart || Date.now())) / 1000, level: 'info',
+            msg: ok ? '✓ 席を確保しました。開いた決済ブラウザ（Brave/Chrome）で券種選択・支払いを進めてください（券種は自動選択しません）。' : '予約プロセスが終了しました。ログを確認してください。' });
+        }
+      }).catch(function () { /* 一時的な失敗は無視して次のポーリングへ */ });
+    }, 700);
+  }
+
   function startRun(rehearsal) {
     var err = validateForRun();
     if (err) { toast(err); return; }
@@ -1978,7 +2038,7 @@
     });
     $('btn-auto-pick').addEventListener('click', autoPick);
 
-    $('btn-run-live').addEventListener('click', function () { startRun(false); });
+    $('btn-run-live').addEventListener('click', function () { reserveViaRunner(); });
     $('btn-run-rehearsal').addEventListener('click', function () { startRun(true); });
     $('btn-run-abort').addEventListener('click', function () { if (S.runner) S.runner.abort(); });
     $('log-verbose').addEventListener('change', redrawLog);
