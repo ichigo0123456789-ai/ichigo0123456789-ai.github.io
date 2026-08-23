@@ -1038,15 +1038,11 @@
       area: '東京 / 新宿（東急歌舞伎町タワー）',
       pref: '東京都',
       map: { x: 597, y: 547 },
-      note: '全14スクリーン・682席（実データ 2026-08-23 自動採取）。runner は --theater premium_shinjuku。',
+      note: '全7スクリーン・670席（実データ 2026-08-23 自動採取）。runner は --theater premium_shinjuku。',
       runnerKey: 'premium_shinjuku',
       c109: { alias: 'X1', tsc: '2201' },
       screens: [
-      // THEATER1：5席
-      screen('s1', 'THEATER1', [
-        row('G', [[1,5]])
-      ], { gridWidth: 5 }),
-      // THEATER1：65席
+      // THEATER1：70席
       screen('s1', 'THEATER1', [
         row('A', [[1,4]]),
         row('B', [[1,5]]),
@@ -1054,33 +1050,27 @@
         row('D', [[1,5]]),
         row('E', [[1,5]]),
         row('F', [[1,5]]),
+        row('G', [[1,5]]),
         row('H', [[1,7]]),
         row('I', [[1,7]]),
         row('J', [[1,7]]),
         row('K', [[1,7]]),
         row('L', [[1,8]])
       ], { gridWidth: 8 }),
-      // THEATER2：8席
-      screen('s2', 'THEATER2', [
-        row('F', [[1,8]])
-      ], { gridWidth: 8 }),
-      // THEATER2：90席
+      // THEATER2：98席
       screen('s2', 'THEATER2', [
         row('A', [[1,4],[6,8]]),
         row('B', [[1,8]]),
         row('C', [[1,8]]),
         row('D', [[1,8]]),
         row('E', [[1,8]]),
+        row('F', [[1,8]]),
         row('G', [[1,10]]),
         row('H', [[1,10]]),
         row('I', [[1,10]]),
         row('J', [[1,10]]),
         row('K', [[1,11]])
       ], { gridWidth: 11 }),
-      // THEATER3：12席
-      screen('s3', 'THEATER3', [
-        row('F', [[1,12]])
-      ], { gridWidth: 12 }),
       // THEATER3：130席
       screen('s3', 'THEATER3', [
         row('A', [[7,8]]),
@@ -1094,64 +1084,52 @@
         row('J', [[1,15]]),
         row('K', [[1,16]])
       ], { gridWidth: 16 }),
-      // THEATER4：7席
-      screen('s4', 'THEATER4', [
-        row('F', [[1,7]])
-      ], { gridWidth: 7 }),
-      // THEATER4：68席
+      // THEATER4：75席
       screen('s4', 'THEATER4', [
         row('A', [[1,4],[6,8]]),
         row('B', [[1,8]]),
         row('C', [[1,8]]),
         row('D', [[1,8]]),
         row('E', [[1,8]]),
+        row('F', [[1,7]]),
         row('G', [[1,9]]),
         row('H', [[1,9]]),
         row('I', [[1,11]])
       ], { gridWidth: 11 }),
-      // THEATER6：8席
-      screen('s6', 'THEATER6', [
-        row('F', [[1,8]])
-      ], { gridWidth: 8 }),
-      // THEATER6：90席
+      // THEATER6：98席
       screen('s6', 'THEATER6', [
         row('A', [[1,4],[6,8]]),
         row('B', [[1,8]]),
         row('C', [[1,8]]),
         row('D', [[1,8]]),
         row('E', [[1,8]]),
+        row('F', [[1,8]]),
         row('G', [[1,10]]),
         row('H', [[1,10]]),
         row('I', [[1,10]]),
         row('J', [[1,10]]),
         row('K', [[1,11]])
       ], { gridWidth: 11 }),
-      // THEATER7：12席
-      screen('s7', 'THEATER7', [
-        row('D', [[1,12]])
-      ], { gridWidth: 12 }),
-      // THEATER7：112席
+      // THEATER7：124席
       screen('s7', 'THEATER7', [
         row('A', [[1,5],[7,8],[11,13]]),
         row('B', [[1,13]]),
         row('C', [[1,13]]),
+        row('D', [[1,12]]),
         row('E', [[1,15]]),
         row('F', [[1,15]]),
         row('G', [[1,15]]),
         row('H', [[1,15]]),
         row('I', [[1,16]])
       ], { gridWidth: 16 }),
-      // THEATER8：7席
-      screen('s8', 'THEATER8', [
-        row('F', [[1,7]])
-      ], { gridWidth: 7 }),
-      // THEATER8：68席
+      // THEATER8：75席
       screen('s8', 'THEATER8', [
         row('A', [[1,4],[6,8]]),
         row('B', [[1,8]]),
         row('C', [[1,8]]),
         row('D', [[1,8]]),
         row('E', [[1,8]]),
+        row('F', [[1,7]]),
         row('G', [[1,9]]),
         row('H', [[1,9]]),
         row('I', [[1,11]])

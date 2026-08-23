@@ -362,6 +362,11 @@
     presale: '<span class="st-presale">発売前</span>'
   };
 
+  /* ② 上映回の指定（データ保守ゼロ版）
+     上映スケジュールはこのサイトに持たない（毎日の更新を不要にするため）。
+     作品名・開映時刻・スクリーンを入力し、runner が実行時に劇場サイトの最新番組表と
+     突き合わせる（--title は部分一致、--dry で実在確認）。選択内容は従来どおり
+     隠しフォーム（f-title / f-date / f-time / f-screen / f-runtime）へ同期する。 */
   function renderSchedule() {
     var wrap = $('schedule-list');
     wrap.innerHTML = '';
@@ -370,48 +375,56 @@
       wrap.innerHTML = '<div class="empty">先に映画館を選んでください（手順1）。</div>';
       return;
     }
-    var sched = window.CINEMA_SCHEDULE.forDate(t, scheduleDate);
-
-    sched.movies.forEach(function (entry) {
-      var m = entry.movie;
-      var block = document.createElement('div');
-      block.className = 'movie-block';
-
-      var head = document.createElement('div');
-      head.className = 'movie-head';
-      head.innerHTML =
-        '<span class="movie-title">' + esc(m.title) + '</span>' +
-        (entry.shows.some(function (x) { return x.format; })
-          ? '<span class="movie-badge">DOLBY CINEMA</span>' : '') +
-        '<span class="movie-meta">' + m.runtime + '分' + (m.note ? ' ／ ' + esc(m.note) : '') + '</span>';
-      block.appendChild(head);
-
-      var row = document.createElement('div');
-      row.className = 'show-row';
-      entry.shows.forEach(function (show) {
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'show-btn' + (isSelectedShow(m, show) ? ' on' : '');
-        b.disabled = show.status === 'soldout';
-        b.innerHTML =
-          '<span class="show-time">' + show.time + ' <small>〜' + show.endTime + '</small></span>' +
-          '<span class="show-sub">' + esc(show.screenName) + ' ' + STATUS_LABEL[show.status] + '</span>';
-        if (!b.disabled) {
-          b.addEventListener('click', function () { selectShow(m, show); });
-        }
-        row.appendChild(b);
-      });
-      block.appendChild(row);
-      wrap.appendChild(block);
+    if (S.plan.date !== scheduleDate) { S.plan.date = scheduleDate; $('f-date').value = scheduleDate; }
+    var box = document.createElement('div');
+    box.className = 'movie-block manual-show';
+    box.innerHTML =
+      '<div class="movie-head"><span class="movie-title">上映回を指定</span>' +
+      '<span class="movie-meta">' + esc(scheduleDate.replace(/-/g, '/')) + ' ／ ' + esc(t.name) + '</span></div>' +
+      '<div class="row-2">' +
+        '<div class="field"><label for="m-title">作品名（一部でOK・部分一致）</label>' +
+        '<input id="m-title" type="text" placeholder="例：オークストリート" value="' + esc(S.plan.title || '') + '"></div>' +
+        '<div class="field"><label for="m-time">開映時刻</label>' +
+        '<input id="m-time" type="time" value="' + esc(S.plan.showtime || '') + '"></div>' +
+      '</div>' +
+      '<div class="row-2">' +
+        '<div class="field"><label for="m-screen">スクリーン（この座席表で席を選びます）</label><select id="m-screen"></select></div>' +
+        '<div class="field"><label for="m-runtime">上映時間（分・任意）</label>' +
+        '<input id="m-runtime" type="number" min="30" max="300" value="' + (S.plan.runtime || 120) + '"></div>' +
+      '</div>' +
+      '<p class="hint">上映スケジュールはこのサイトには保存していません（毎日の更新を不要にするため）。' +
+      '作品名・開映時刻・スクリーンは劇場サイトの番組表で確認してください。' +
+      '実行時は runner が劇場サイトの最新番組表と突き合わせます（<code>--dry</code> で実在確認できます）。</p>';
+    wrap.appendChild(box);
+    var sel = box.querySelector('#m-screen');
+    t.screens.forEach(function (sc) {
+      var o = document.createElement('option');
+      o.value = sc.id;
+      o.textContent = sc.name + (sc.format ? '（' + sc.format + '）' : '') + ' ' + sc.seats + '席';
+      sel.appendChild(o);
     });
-
-    var note = document.createElement('p');
-    note.className = 'sched-note';
-    note.textContent = (sched.onSale
-      ? '◎=空席あり ／ この日の回は発売中です。'
-      : 'この日の回はまだ発売前です（発売は上映日の2日前 0:00）。時間帯を選んでおくと、発売と同時に確保を試みます。')
-      + ' 作品は' + sched.asOf.replace(/-/g, '/') + '時点の上映ラインナップ、時間帯はサンプルです。';
-    wrap.appendChild(note);
+    if (S.plan.screenId && sel.querySelector('option[value="' + S.plan.screenId + '"]')) sel.value = S.plan.screenId;
+    else S.plan.screenId = sel.value;
+    function apply() {
+      var title = box.querySelector('#m-title').value.trim();
+      var time = box.querySelector('#m-time').value;
+      var screenId = sel.value;
+      var runtime = parseInt(box.querySelector('#m-runtime').value, 10) || 120;
+      var screenChanged = S.plan.screenId !== screenId;
+      S.plan.title = title; S.plan.date = scheduleDate; S.plan.showtime = time;
+      S.plan.screenId = screenId; S.plan.runtime = runtime;
+      if (screenChanged) { S.plan.candidates = []; S.pick = []; }
+      $('f-title').value = title; $('f-date').value = scheduleDate; $('f-time').value = time;
+      fillScreens(S.plan.theaterId, screenId); $('f-screen').value = screenId; $('f-runtime').value = runtime;
+      var auto = autoOnSale(S.plan);
+      if (auto) { S.plan.onSaleAt = auto; $('f-onsale').value = auto; }
+      updateTicketSum(); updateSeatContext(); renderPlanSelbar(); tickCountdown();
+    }
+    ['m-title', 'm-time', 'm-screen', 'm-runtime'].forEach(function (id) {
+      box.querySelector('#' + id).addEventListener('change', apply);
+    });
+    box.querySelector('#m-title').addEventListener('input', apply);
+    apply();
   }
 
   /* ---- フォーム ---------------------------------------------------- */

@@ -48,26 +48,49 @@ K109.prototype.fetchSchedule = async function (dateStr) {
 
 /** 座席選択ページを開く（ログイン不要）。crt/mit/cc 等を保持。 */
 K109.prototype.openShow = async function (show) {
-  var res = await request({ url: show.reserveUrl, jar: this.jar, followRedirect: true, headers: { Referer: this.homeUrl() } });
-  var b = res.body || '';
-  this._seatHtml = b; this._seatUrl = res.url;
-  this._crt = hidden(b, 'crt'); this._mit = hidden(b, 'mit') || ''; this._cc = hidden(b, 'cc');
-  this._pno = hidden(b, 'pno') || 'resv_shw_ppt'; this._formTsc = hidden(b, 'tsc') || this.tsc;
-  this._limit = parseInt(hidden(b, 'hiddenlimit') || '0', 10) || null;
-  var ok = !!this._crt && /座席選択/.test(title(b));
-  return { ok: ok, url: res.url, scheduleId: show.showId, limit: this._limit };
+  /* 席クラス別リンク（variants）があれば全部開く。席はクラスごとに別売りなので、
+     座席表は和集合・確保は選んだ席のクラスのセッションで行う。 */
+  var vs = (show.variants && show.variants.length) ? show.variants : [{ label: show.screenName, reserveUrl: show.reserveUrl }];
+  this._variants = [];
+  for (var i = 0; i < vs.length; i++) {
+    var res = await request({ url: vs[i].reserveUrl, jar: this.jar, followRedirect: true, headers: { Referer: this.homeUrl() } });
+    var b = res.body || '';
+    this._variants.push({
+      label: vs[i].label, cls: vs[i].cls || null, html: b, url: res.url,
+      crt: hidden(b, 'crt'), mit: hidden(b, 'mit') || '', cc: hidden(b, 'cc'),
+      pno: hidden(b, 'pno') || 'resv_shw_ppt', tsc: hidden(b, 'tsc') || this.tsc,
+      limit: parseInt(hidden(b, 'hiddenlimit') || '0', 10) || null,
+      ok: !!hidden(b, 'crt') && /座席選択/.test(title(b))
+    });
+  }
+  var first = this._variants[0];
+  this._seatHtml = first.html; this._seatUrl = first.url;
+  this._crt = first.crt; this._mit = first.mit; this._cc = first.cc; this._pno = first.pno; this._formTsc = first.tsc; this._limit = first.limit;
+  var ok = this._variants.some(function (v) { return v.ok; });
+  return { ok: ok, url: first.url, scheduleId: show.showId, limit: first.limit, variants: this._variants.length };
 };
 
 /** 座席表（AJAXフラグメント）。{ 'A-3': { state, typeSeat, key } } */
 K109.prototype.fetchSeatMap = async function () {
-  if (!this._crt) throw new Error('先に openShow() を呼んでください');
-  var res = await request({
-    method: 'POST', url: RESV + 'resv_screen_ppt.cgi', jar: this.jar,
-    headers: { 'X-Requested-With': 'XMLHttpRequest', Referer: this._seatUrl },
-    body: form({ crt: this._crt, mit: this._mit, seat_readonly: 0 })
-  });
-  this._lastMap = parseSeatMap(res.body || '');
-  return this._lastMap;
+  if (!this._variants || !this._variants.length) throw new Error('先に openShow() を呼んでください');
+  var merged = {};
+  for (var i = 0; i < this._variants.length; i++) {
+    var v = this._variants[i];
+    if (!v.crt) continue;
+    var res = await request({
+      method: 'POST', url: RESV + 'resv_screen_ppt.cgi', jar: this.jar,
+      headers: { 'X-Requested-With': 'XMLHttpRequest', Referer: v.url },
+      body: form({ crt: v.crt, mit: v.mit, seat_readonly: 0 })
+    });
+    var part = parseSeatMap(res.body || '');
+    Object.keys(part).forEach(function (id) {
+      var s = part[id]; s.variant = i; s.cls = v.cls;
+      /* 同じ席が複数クラスに出たら「空席として出ている方」を優先 */
+      if (!merged[id] || (merged[id].state !== 'available' && s.state === 'available')) merged[id] = s;
+    });
+  }
+  this._lastMap = merged;
+  return merged;
 };
 
 K109.prototype.login = async function (id, pw) {
@@ -99,18 +122,22 @@ K109.prototype.isLoggedIn = async function () {
 K109.prototype.secure = async function (seatIds) {
   if (!this._crt) throw new Error('先に openShow() を呼んでください');
   var map = this._lastMap || await this.fetchSeatMap();
-  var keys = [];
+  var keys = [], vi = null;
   for (var i = 0; i < seatIds.length; i++) {
     var s = map[seatIds[i]];
     if (!s) return { ok: false, code: 'noseat', reason: '席が見つかりません: ' + seatIds[i] };
     if (s.state !== 'available') return { ok: false, code: 'error', reason: '席が空いていません: ' + seatIds[i] };
+    if (vi === null) vi = s.variant || 0;
+    else if ((s.variant || 0) !== vi) return { ok: false, code: 'mixed', reason: '席クラス（' + (this._variants[vi].label) + ' と ' + (this._variants[s.variant || 0].label) + '）をまたいで一度に確保はできません。同じクラスの席で指定してください' };
     keys.push(s.key);
   }
-  if (this._limit && keys.length > this._limit) return { ok: false, code: 'limit', reason: '一度に選べる席数(' + this._limit + ')を超えています' };
+  var V = this._variants[vi || 0];
+  if (V.limit && keys.length > V.limit) return { ok: false, code: 'limit', reason: '一度に選べる席数(' + V.limit + ')を超えています' };
+  this._seatUrl = V.url; this._crt = V.crt; this._mit = V.mit; this._cc = V.cc;
   var res = await request({
     method: 'POST', url: RESV + 'purchase_auth.cgi', jar: this.jar, followRedirect: true,
-    headers: { Referer: this._seatUrl, Origin: BASE },
-    body: form({ mit: this._mit, crt: this._crt, pno: this._pno, tsc: this._formTsc, cc: this._cc, hiddenlimit: this._limit || '', rcmd: keys.join('_'), selectCnt: keys.length })
+    headers: { Referer: V.url, Origin: BASE },
+    body: form({ mit: V.mit, crt: V.crt, pno: V.pno, tsc: V.tsc, cc: V.cc, hiddenlimit: V.limit || '', rcmd: keys.join('_'), selectCnt: keys.length })
   });
   var b = res.body || '', t = title(b), text = b.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   this._ticketUrl = res.url; this._ticketHtml = b;
@@ -127,8 +154,14 @@ K109.prototype.handoffUrl = function () { return this._ticketUrl || this._seatUr
 K109.prototype.hold = async function (ids) { var s = await this.secure(ids); if (!s.ok) return s; return { ok: true, code: 'done', atTicket: true, ticketUrl: this._ticketUrl, reason: s.reason }; };
 
 K109.prototype.releaseHold = async function () {
-  try { await request({ method: 'POST', url: RESV + 'resv_release_ppt.cgi', jar: this.jar, headers: { 'X-Requested-With': 'XMLHttpRequest', Referer: this._seatUrl }, body: form({ crt: this._crt, mit: this._mit }) }); return { ok: true }; }
-  catch (e) { return { ok: false, reason: e.message }; }
+  try {
+    var vs = this._variants || [];
+    for (var i = 0; i < vs.length; i++) {
+      if (!vs[i].crt) continue;
+      await request({ method: 'POST', url: RESV + 'resv_release_ppt.cgi', jar: this.jar, headers: { 'X-Requested-With': 'XMLHttpRequest', Referer: vs[i].url }, body: form({ crt: vs[i].crt, mit: vs[i].mit }) });
+    }
+    return { ok: true };
+  } catch (e) { return { ok: false, reason: e.message }; }
 };
 
 K109.prototype.pageKind = function (html, url) {
@@ -159,7 +192,15 @@ function parseSchedule(html, dateStr) {
     var st = (m[2].match(/status(\d)/) || [])[1] || null;
     if (!movies[ti]) movies[ti] = { title: ti, filmCode: null, runtime: rtM ? parseInt(rtM[1], 10) : null, dolby: /Dolby/i.test(ti), shows: [] };
     var screenName = scM ? decode(scM[1]) : '';
-    movies[ti].shows.push({ showId: q.ttc, filmCode: null, screen: (screenName.match(/\d+/) || [q.tssc])[0], screenCode: q.tssc, screenName: screenName, date: q.ymd || dateStr, time: timeM ? timeM[1] : null, endTime: timeM ? timeM[2] : null, status: st, reserveUrl: href });
+    var screenNum = (screenName.match(/\d+/) || [q.tssc])[0];
+    /* 席クラス別リンク（プレミアム新宿: "THEATER1 CLASS S" / "CLASS A"）。同じ上映回の variant として束ねる。 */
+    var lab = decode(((after.match(/class="screen1"[^>]*>([^<]*)</) || [])[1] || ''));
+    var variant = { label: lab || screenName, cls: (lab.match(/CLASS\s*([A-Z])/i) || [])[1] || null, tssc: q.tssc, cs: q.cs, reserveUrl: href };
+    var t0 = timeM ? timeM[1] : null;
+    var same = movies[ti].shows.find(function (x) { return x.time === t0 && x.screenName === screenName; });
+    if (same) { same.variants.push(variant); continue; }
+    movies[ti].shows.push({ showId: q.ttc, filmCode: null, screen: screenNum, screenCode: screenNum, screenName: screenName,
+      date: q.ymd || dateStr, time: t0, endTime: timeM ? timeM[2] : null, status: st, reserveUrl: href, variants: [variant] });
   }
   return Object.keys(movies).map(function (t) { return movies[t]; });
 }

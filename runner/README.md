@@ -124,15 +124,19 @@ KINEZO 系の劇場は `--theater <key>` で切り替えます（既定は `yoko
 | `kyoto` | T・ジョイ京都 | 12スクリーン・2,117席（実データ 2026-08-23） |
 | `umeda` | T・ジョイ梅田 | 7スクリーン・1,390席（実データ 2026-08-23） |
 | `burg13` | 横浜ブルク13 | 12スクリーン・2,246席（実データ 2026-08-23） |
+| `kawasaki` | 109シネマズ川崎 | **109シネマズ（別システム・`lib/k109.js`）**。10スクリーン・1,838席（実データ 2026-08-23） |
+| `premium_shinjuku` | 109シネマズプレミアム新宿 | 109シネマズ。実データ 2026-08-23 |
 
 ```bash
 node runner/reserve-hybrid.js --theater wald9 --date 2026-08-24 --title 作品名 --time 18:00 --seats "H-10,H-11"
 ```
 
-サイト（`cinema/`）で劇場を選んでコマンド生成すると `--theater` が自動で付きます。
+サイト（`cinema/`）で劇場を選んでコマンド生成すると `--theater` が自動で付きます（各劇場の `runnerKey`）。
 
-**KINEZO 系の劇場追加は `node runner/add-theater.js <kinezoPath> <key> "<名前>" "<エリア>" "<都道府県>"` で自動**（実サイトから全スクリーンの座席を採取し、theaters.js / runner / サイトを一括更新）。
-グランドシネマサンシャイン池袋は KINEZO ではない別システムのため未対応（調査中）。
+**認証情報はチェーンごとに別**です（`runner/.env.example` 参照）：T・ジョイ系は `KINEZO_EMAIL` / `KINEZO_PASSWORD`、109シネマズは `C109_ID` / `C109_PASSWORD`。runner は `--theater` のチェーンに合わせて自動で使い分け、混用しません。
+
+**劇場追加は `node runner/add-theater.js <spec> <key> "<名前>" "<エリア>" "<都道府県>" [--chain kinezo|109]` で自動**（実サイトから全スクリーンの座席を採取し、theaters.js / runner を一括更新。KINEZO は劇場パス、109 はサイト別名（例 `I1`）を spec に渡す）。
+未対応：TOHOシネマズ / チネチッタ川崎 / グランドシネマサンシャイン池袋 / 新文芸坐（順次、別アダプタで対応予定）。
 
 ## 第2候補席の自動フォールバック
 
