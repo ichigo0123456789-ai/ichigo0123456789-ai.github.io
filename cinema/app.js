@@ -626,7 +626,8 @@
       return ta < tb ? -1 : ta > tb ? 1 : 0;
     });
     if (!movies.length) {
-      wrap.appendChild(el('div', 'sched-empty', 'この日に上映回が見つかりませんでした。別の日付を選んでください。'));
+      /* まだ発売前・番組表未公開の日（先の予約を仕込みたいケース）。手動入力で先回りできる。 */
+      renderManualFallback(t, 'この日はまだ発売前、または番組表が未公開です。先の予約を仕込むには、作品名（一部でOK）と開映時刻を手入力してください。実行時に runner が最新の番組表と自動で突き合わせます（発売時刻に自動発火するよう「発売開始日時」も設定できます）。');
       return;
     }
 
@@ -684,10 +685,11 @@
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
-  /* runner が無いときのフォールバック（従来の手動入力フォーム） */
-  function renderManualFallback(t) {
+  /* runner が無い／その日がまだ発売前 のときのフォールバック（手動入力フォーム） */
+  function renderManualFallback(t, note) {
     var wrap = $('schedule-list');
     wrap.innerHTML = '';
+    if (note) wrap.appendChild(el('div', 'sched-note', note));
     if (S.plan.date !== scheduleDate) { S.plan.date = scheduleDate; $('f-date').value = scheduleDate; }
     var box = document.createElement('div');
     box.className = 'movie-block manual-show';
