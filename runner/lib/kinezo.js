@@ -245,44 +245,53 @@ function decode(s) {
 }
 
 /** scheduleGetHtmlApi の HTML から上映回を抽出 */
+function zenHan(s) { return String(s).replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }); }
+
+/* 上映時刻（schedule-time）単位で走査する。予約リンクがある回（発売中）も、
+   リンクがまだ無い回（発売前：番組表は出ているが予約不可）も拾う。
+   発売前の回は reserveUrl=null／onSale=false で返し、サイトで先の予約を仕込めるようにする。
+   実行時（発売後）に runner が --title/--time/--date で最新番組表を突き合わせて予約URLを得る。 */
 function parseSchedule(html, defaultTheaterPath) {
   var movies = {};
-  /* 予約フローURL単位で走査（1回 = 1リンク） */
-  var re = /reservation\/index\/(\d+)\/([A-Z0-9]+)\/(\d+)\/([\d-]+)\?type=film/g;
-  var m;
-  var seen = {};
-  while ((m = re.exec(html)) !== null) {
-    var key = m[1] + '/' + m[3];
-    if (seen[key]) continue;
-    seen[key] = true;
-    var idx = m.index;
-    /* 直近の作品名（このリンクより前で最も近い js-title-film） */
+  var pathGuess = (html.match(/\/([a-z_]+)\/reservation\/index/) || [])[1] || defaultTheaterPath || 't-joy_yokohama';
+  var timeRe = /<p[^>]*class="[^"]*schedule-time[^"]*"[^>]*>\s*(\d{1,2}:\d{2})\s*<span>\s*[～〜]\s*(\d{1,2}:\d{2})/g;
+  var tm, seen = {};
+  while ((tm = timeRe.exec(html)) !== null) {
+    var idx = tm.index, time = tm[1], endTime = tm[2];
     var before = html.slice(0, idx);
     var titleM = before.match(/<h5[^>]*js-title-film[^>]*>([^<]+)<\/h5>(?![\s\S]*<h5[^>]*js-title-film)/);
     var title = titleM ? decode(titleM[1]) : '(不明)';
-    /* このリンク周辺の時刻 */
-    var around = html.slice(idx, idx + 1000);
-    var timeM = around.match(/schedule-time[^>]*>\s*(\d{1,2}:\d{2})\s*<span>\s*[～〜]\s*(\d{1,2}:\d{2})/);
+    /* この時刻の直前にある「シアターN」（スクリーン名） */
+    var scM = before.match(/<a>\s*(シアター\s*[０-９\d]+|スクリーン\s*[０-９\d]+)\s*<\/a>(?![\s\S]*<a>\s*(?:シアター|スクリーン))/);
+    var screenName = scM ? zenHan(scM[1]).replace(/\s+/g, '') : '';
+    var screenNum = (zenHan(screenName).match(/\d+/) || [''])[0];
+    /* この時刻の後ろ側に予約リンクがあれば発売中（showId等が取れる）。無ければ発売前。 */
+    var after = html.slice(idx, idx + 1400);
+    var linkM = after.match(/reservation\/index\/(\d+)\/([A-Z0-9]+)\/(\d+)\/([\d-]+)\?type=film/);
     var runtimeM = before.match(/（本編：(\d+)分）(?![\s\S]*（本編：)/);
-    var fmtDolby = /DolbyCinema/i.test(title);
-    var fid = m[2];
+    var key = title + '|' + time + '|' + screenName;
+    if (seen[key]) continue; seen[key] = true;
     if (!movies[title]) {
       movies[title] = {
-        title: title, filmCode: fid,
+        title: title, filmCode: linkM ? linkM[2] : null,
         runtime: runtimeM ? parseInt(runtimeM[1], 10) : null,
-        dolby: fmtDolby, shows: []
+        dolby: /DolbyCinema/i.test(title), shows: []
       };
     }
-    /* 予約URLの劇場パスは onclick=location.href='/t-joy_yokohama/reservation/...' から取る */
-    var pathM = around.match(/\/([a-z_]+)\/reservation\/index/);
-    var theaterPath = pathM ? pathM[1] : (defaultTheaterPath || 't-joy_yokohama');
+    if (linkM && !movies[title].filmCode) movies[title].filmCode = linkM[2];
     movies[title].shows.push({
-      showId: m[1], filmCode: m[2], screen: m[3], date: m[4],
-      time: timeM ? timeM[1] : null, endTime: timeM ? timeM[2] : null,
-      reserveUrl: '/' + theaterPath + '/reservation/index/' + m[1] + '/' + m[2] + '/' + m[3] + '/' + m[4] + '?type=film'
+      showId: linkM ? linkM[1] : null,
+      filmCode: linkM ? linkM[2] : (movies[title].filmCode || null),
+      screen: linkM ? linkM[3] : screenNum,
+      screenName: screenName,
+      date: linkM ? linkM[4] : null,
+      time: time, endTime: endTime,
+      onSale: !!linkM,
+      status: linkM ? null : 'presale',
+      reserveUrl: linkM ? ('/' + pathGuess + '/reservation/index/' + linkM[1] + '/' + linkM[2] + '/' + linkM[3] + '/' + linkM[4] + '?type=film') : null
     });
   }
-  return Object.keys(movies).map((t) => movies[t]);
+  return Object.keys(movies).map(function (t) { return movies[t]; });
 }
 
 /** choice_seat の <area> から座席状況を読む */

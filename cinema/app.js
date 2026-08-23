@@ -557,6 +557,7 @@
 
   /* 空席ラベル */
   function availLabel(show) {
+    if (show.status === 'presale' || show.onSale === false) return '発売前';
     if (show.remaining != null) return show.remaining > 0 ? '残' + show.remaining : '満席';
     var st = show.status;
     if (st === 'X' || st === 'soldout') return '満席';
