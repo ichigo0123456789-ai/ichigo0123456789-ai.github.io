@@ -447,6 +447,7 @@ async function enterSeatMap(k, show, creds) {
       document.body.appendChild(f); f.submit();
     }, hp).catch(function () {});
     await page.waitForLoadState('domcontentloaded', { timeout: 20000 }).catch(function () {});
+    await sleep(1500); // 常駐ブラウザ終了前に POST 遷移を確実に着地させる
   } else {
     await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
   }
