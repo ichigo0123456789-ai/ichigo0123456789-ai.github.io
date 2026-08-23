@@ -288,7 +288,61 @@ async function enterSeatMap(k, show, creds) {
   } else {
     log('認証情報なし → ゲスト（ログインせずに購入）で進めます');
   }
-  if (loginOnly) { log('--login-only のため終了します。'); return; }
+  // ---- 決済ブラウザ（Brave 常駐・専用プロファイル）を必要時に一度だけ用意する ----
+  var _pb = null, _preLoggedIn = false;
+  async function ensurePaymentBrowser() {
+    if (_pb) return _pb;
+    var chromium;
+    try { chromium = require('playwright').chromium; }
+    catch (e) {
+      console.log('\n決済用ブラウザ(Playwright)が未導入です。 cd runner && npm install && npx playwright install chromium'); process.exit(0);
+    }
+    var launchArgs = ['--no-first-run', '--no-default-browser-check'];
+    var want = String(arg('browser', '')).toLowerCase();
+    var exe = findBrowserExe(want || 'brave') || (want ? findBrowserExe(want) : null);
+    if (want && want !== 'chromium' && !exe) log('指定ブラウザ ' + want + ' が見つからないため Playwright 内蔵 Chromium で開きます');
+    var ctx, external = false;
+    if (arg('fresh', false) === true) {
+      var browser = await chromium.launch(Object.assign({ headless: false, args: launchArgs }, exe ? { executablePath: exe } : {}));
+      ctx = await browser.newContext({ locale: 'ja-JP' });
+    } else {
+      var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? (want || 'brave') : 'chromium'))));
+      try { fs.mkdirSync(profDir, { recursive: true }); } catch (e) {}
+      if (exe) {
+        var ext = await openExternalBrowser(chromium, exe, profDir, launchArgs);
+        ctx = ext.ctx; external = true;
+        log('決済ブラウザ: ' + exe + '（常駐・CDP ' + ext.port + '）／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
+      } else {
+        ctx = await chromium.launchPersistentContext(profDir, { headless: false, locale: 'ja-JP', viewport: null, args: launchArgs });
+        log('決済ブラウザ: Playwright Chromium ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
+      }
+    }
+    _pb = { chromium: chromium, ctx: ctx, external: external };
+    return _pb;
+  }
+  /** 109 などブラウザ確保チェーンの「発売前ログイン」。成功で _preLoggedIn=true（T0 のログイン待ちを省ける）。 */
+  async function preLogin109() {
+    if (!k.browserNativeHold || !creds || !k.loginInfo) return;
+    var li = k.loginInfo();
+    var pb = await ensurePaymentBrowser();
+    var page = (!pb.external && pb.ctx.pages().length) ? pb.ctx.pages()[0] : await pb.ctx.newPage();
+    page.on('dialog', function (d) { d.accept().catch(function () {}); });
+    log('発売前ログインを実行します（' + maskEmail(creds.email) + '）');
+    try { await pb.ctx.clearCookies({ domain: li.cookieDomain }); } catch (e) { try { await pb.ctx.clearCookies(); } catch (e2) {} }
+    await page.goto(li.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
+    await page.fill('#id', creds.email).catch(function () {});
+    await page.fill('#pw', creds.password).catch(function () {});
+    await page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {});
+    await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 25000 }).catch(function () {});
+    _preLoggedIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+    log(_preLoggedIn ? '✓ 発売前ログイン完了（T0 ではログインを省略します）' : '△ 発売前ログインを確認できず（T0 で再ログインします）');
+  }
+
+  if (loginOnly) {
+    if (k.browserNativeHold) { await preLogin109(); log('--login-only 完了（発売前ログイン）'); return; }
+    log('--login-only のため終了します。'); return;
+  }
 
   var date = arg('date'), title = arg('title'), time = arg('time');
   var groups = parseSeatGroups(arg('seats')); // 優先グループ（第1候補→第2候補…）
@@ -310,6 +364,8 @@ async function enterSeatMap(k, show, creds) {
     var fireAt = targetLocal - clockOffset; // ローカル時計でこの瞬間＝サーバ時刻で目標
     log('目標(発売): ' + fmtMs(targetLocal) + '（サーバ時刻基準）');
     log('発火予定: ローカル ' + fmtMs(fireAt) + ' に実行');
+    // 発売前ログイン（109 等）：発売のかなり前に済ませ、T0 では席確保だけにする
+    if (k.browserNativeHold && creds) await preLogin109().catch(function (e) { log('発売前ログインで警告: ' + e.message); });
     var keepAlive = async function () {
       if (!creds || k.browserNativeHold) return; // ゲスト運用／109(ブラウザ完結)では Node のログイン維持は不要
       var ok = await k.isLoggedIn().catch(function () { return false; });
@@ -412,40 +468,9 @@ async function enterSeatMap(k, show, creds) {
   var hr = await k.advanceToTicket();
   log('券種選択画面へ前進（' + (Date.now() - tAdv) + 'ms）');
 
-  // 5) 同じセッションの Cookie をブラウザへ注入して決済画面を開く
-  var chromium;
-  try { chromium = require('playwright').chromium; }
-  catch (e) {
-    console.log('\n席は確保済みですが、決済用ブラウザ(Playwright)が未導入です。');
-    console.log('  cd runner && npm install && npx playwright install chromium');
-    console.log('を実行後、ブラウザで ' + k.homeUrl() + ' にログインし、お手続き中の予約から決済してください。');
-    console.log('（この端末のログインセッションは終了するため、仮予約は時間切れになる場合があります）');
-    process.exit(0);
-  }
-  // 決済ブラウザ：既定は Brave（入っていれば）＋ runner 専用の「永続プロファイル」。
-  //   一度ログイン／カードを保存すれば次回以降も残る（Chromium 136 以降は普段使いの既定プロファイルを自動操作できないため、専用プロファイルを使う）。
-  //   --browser brave|chrome|chromium  --profile <dir>  --fresh（毎回まっさらな一時プロファイル）
-  var launchArgs = ['--no-first-run', '--no-default-browser-check'];
-  var want = String(arg('browser', '')).toLowerCase();
-  var exe = findBrowserExe(want || 'brave') || (want ? findBrowserExe(want) : null);
-  if (want && want !== 'chromium' && !exe) log('指定ブラウザ ' + want + ' が見つからないため Playwright 内蔵 Chromium で開きます');
-  var ctx, browser = null, external = false;
-  if (arg('fresh', false) === true) {
-    browser = await chromium.launch(Object.assign({ headless: false, args: launchArgs }, exe ? { executablePath: exe } : {}));
-    ctx = await browser.newContext({ locale: 'ja-JP' });
-  } else {
-    var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? (want || 'brave') : 'chromium'))));
-    try { fs.mkdirSync(profDir, { recursive: true }); } catch (e) {}
-    if (exe) {
-      // 常駐モード：Brave/Chrome を runner とは別プロセスで起動（起動済みなら再利用）し CDP で接続。runner が終了してもブラウザ・タブは残る
-      var ext = await openExternalBrowser(chromium, exe, profDir, launchArgs);
-      ctx = ext.ctx; external = true;
-      log('決済ブラウザ: ' + exe + '（常駐・CDP ' + ext.port + '）／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
-    } else {
-      ctx = await chromium.launchPersistentContext(profDir, { headless: false, locale: 'ja-JP', viewport: null, args: launchArgs });
-      log('決済ブラウザ: Playwright Chromium ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
-    }
-  }
+  // 5) 決済ブラウザを用意（発売前ログインで先に起動済みなら再利用）
+  var pb = await ensurePaymentBrowser();
+  var ctx = pb.ctx, external = pb.external;
   if (!k.browserNativeHold) await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE)); // 109 はブラウザ自身でログインするため注入しない
   if (k.prepareHandoff) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
   if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
@@ -460,17 +485,20 @@ async function enterSeatMap(k, show, creds) {
     var tH = Date.now();
     if (!creds) { console.error('✗ 109 は会員ログインが必要ですが認証情報がありません（runner/.env の C109_ID / C109_PASSWORD）'); process.exit(5); }
     page.on('dialog', function (d) { d.accept().catch(function () {}); }); // confirm/alert（年齢確認・規約同意等）を自動承認
-    try { await ctx.clearCookies({ domain: holdPlan.cookieDomain }); } catch (e) { try { await ctx.clearCookies(); } catch (e2) {} }
-    await page.goto(holdPlan.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
-    log('ブラウザで109にログインします（' + maskEmail(creds.email) + '）');
-    await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
-    await page.fill('#id', creds.email).catch(function () {});
-    await page.fill('#pw', creds.password).catch(function () {});
-    await page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {});
-    // ログイン後は login.cgi を離れる。CDP では waitForNavigation が不安定なのでポーリング
-    await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 25000 }).catch(function () {});
-    var nowIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
-    log(nowIn ? '✓ 109 ログイン成功（ブラウザ）' : '△ ログイン状態を確認できません（そのまま座席選択を試みます）');
+    if (_preLoggedIn) {
+      log('発売前ログイン済み → ログインを省略して座席確保へ');
+    } else {
+      try { await ctx.clearCookies({ domain: holdPlan.cookieDomain }); } catch (e) { try { await ctx.clearCookies(); } catch (e2) {} }
+      await page.goto(holdPlan.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+      log('ブラウザで109にログインします（' + maskEmail(creds.email) + '）');
+      await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
+      await page.fill('#id', creds.email).catch(function () {});
+      await page.fill('#pw', creds.password).catch(function () {});
+      await page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {});
+      await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 25000 }).catch(function () {});
+      var nowIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+      log(nowIn ? '✓ 109 ログイン成功（ブラウザ）' : '△ ログイン状態を確認できません（そのまま座席選択を試みます）');
+    }
     // 座席ページ → 座席AJAXの描画を待つ
     await page.goto(holdPlan.seatUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
     await page.waitForFunction(function () { return document.querySelectorAll('.seat[data-seat-key]').length > 0; }, { timeout: 15000 }).catch(function () {});
@@ -538,7 +566,9 @@ async function enterSeatMap(k, show, creds) {
       await sleep(700); reacq();
     }
     // ここで停止（券種選択画面 or 券種の無い上映ではお客様情報）。これ以上は自動で進めない。
-    reacq();
+    // 画面が落ち着くまで待ってから停止位置を判定（遷移途中のURLを拾わない）
+    await page.waitForFunction(function () { return /purchase_pre_ticket|purchase_pre\.cgi|券種を選択|お客様情報入力|氏名/.test((location.href + document.body.innerText)); }, null, { timeout: 12000 }).catch(function () {});
+    await sleep(600); reacq();
     var u = page.url();
     var state = await page.evaluate(function () {
       var t = document.body.innerText || '';

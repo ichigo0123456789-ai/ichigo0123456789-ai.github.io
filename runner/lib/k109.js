@@ -179,6 +179,9 @@ K109.prototype.holdPlan = function (seatIds) {
   };
 };
 
+/** 発売前ログイン用のログイン情報（座席解決の前でも使える）。 */
+K109.prototype.loginInfo = function () { return { loginUrl: CGI + '/login.cgi?tsc=' + (this.tsc || this.alias), homeUrl: this.homeUrl(), cookieDomain: 'cinema.109cinemas.net' }; };
+
 K109.prototype.advanceToTicket = async function () { return { ok: true, atTicket: !!this._ticketUrl, ticketUrl: this._ticketUrl }; };
 K109.prototype.handoffUrl = function () { return this._ticketUrl || this._seatUrl; };
 K109.prototype.hold = async function (ids) { var s = await this.secure(ids); if (!s.ok) return s; return { ok: true, code: 'done', atTicket: true, ticketUrl: this._ticketUrl, reason: s.reason }; };
