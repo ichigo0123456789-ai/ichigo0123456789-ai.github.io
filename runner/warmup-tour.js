@@ -75,7 +75,8 @@ async function pickTarget(t) {
     try {
       var op = await k.openShow(c.show); if (op && op.ok === false) continue;
       var map = await k.fetchSeatMap();
-      var av = Object.keys(map).filter(function (id) { return map[id].state === 'available' && !map[id].wheelchair && /^[A-Z]+-\d+$/.test(id); });
+      // 車椅子スペース（HC 行／type wheelchair）は絶対に選ばない
+      var av = Object.keys(map).filter(function (id) { return map[id].state === 'available' && !map[id].wheelchair && map[id].type !== 'wheelchair' && !/^HC/.test(id) && /^[A-Z]+-\d+$/.test(id); });
       if (av.length < 2) continue;
       // 最後列（アルファベット最大）の隣り合う2席
       var byRow = {}; av.forEach(function (id) { var m = id.match(/^([A-Z]+)-(\d+)$/); (byRow[m[1]] = byRow[m[1]] || []).push(+m[2]); });
