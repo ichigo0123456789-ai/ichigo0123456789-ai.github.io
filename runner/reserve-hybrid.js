@@ -488,24 +488,45 @@ async function enterSeatMap(k, show, creds) {
     }, holdPlan).catch(function (e) { return { picked: [], miss: ['evaluate: ' + e.message] }; });
     if (sel.miss.length) log('△ 一部の席をクリックできません: ' + sel.miss.join(',') + '（画面で選び直してください）');
     await sleep(300);
-    // 「次へ（購入手続きへ）」ボタン（#resv-purchase）を押す。確認ポップアップが出たら中の「次へ」も押す
+    // 座席ページの「次へ（#resv-purchase）」を押す＝ここで席を確保。座席確認ポップアップが出たら、
+    // 「座席ページ上にいる間だけ」その確認の次へを押して先へ進める。券種選択画面に着いたらそこで停止
+    //（券種＝料金は自動選択しない。ユーザーが選ぶ）。
     await page.evaluate(function () {
-      var b = document.querySelector('#resv-purchase') || [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /購入手続|次へ|進む|決定|購入する/.test((e.innerText || e.value || '')) && e.offsetParent; });
+      var b = document.querySelector('#resv-purchase') || [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /購入手続|次へ|進む|決定/.test((e.innerText || e.value || '')) && e.offsetParent; });
       if (b) b.click();
     }).catch(function () {});
     await sleep(1200);
-    await Promise.all([
-      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {}),
-      page.evaluate(function () {
-        var pop = [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /次へ|進む|購入手続|OK|はい/.test((e.innerText || e.value || '')) && e.offsetParent && !/戻|キャンセル|閉じ/.test(e.innerText || ''); });
-        if (pop) { pop.click(); return; }
-        if (typeof nextPopupAction === 'function') nextPopupAction();
-      }).catch(function () {})
-    ]);
-    await sleep(1000);
-    var okTicket = await page.evaluate(function () { var t = document.body.innerText || ''; return /券種|チケット|料金|お支払|購入枚数/.test(t) && !/正常に処理できませんでした|予約情報が取得できません/.test(t); }).catch(function () { return false; });
-    if (okTicket && sel.picked.length === holdPlan.keys.length) log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (Date.now() - tH) + 'ms）: ' + page.url().slice(38));
-    else log('△ 券種画面を確認できませんでした。開いているブラウザで席選択→購入手続きを確認してください。現在: ' + page.url().slice(38));
+    // まだ座席ページ（resv_shw_ppt）なら、座席確認ポップアップの「次へ」を押して券種/次画面へ遷移
+    if (/resv_shw_ppt/.test(page.url())) {
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {}),
+        page.evaluate(function () {
+          var pop = [...document.querySelectorAll('a,button,input[type=submit],input[type=button]')].find(function (e) { return /次へ|進む|購入手続|OK|はい/.test((e.innerText || e.value || '')) && e.offsetParent && !/戻|キャンセル|閉じ/.test(e.innerText || ''); });
+          if (pop) { pop.click(); return; }
+          if (typeof nextPopupAction === 'function') nextPopupAction();
+        }).catch(function () {})
+      ]);
+      await sleep(800);
+    }
+    // ここで停止（券種選択画面 or 券種の無い上映では次画面）。これ以上は自動で進めない。
+    var state = await page.evaluate(function () {
+      var t = document.body.innerText || '';
+      return {
+        held: !(/正常に処理できませんでした|予約情報が取得できません/.test(t)),
+        seatShown: /枚数|座席番号|G-0|席［|席\[/.test(t),
+        terms: /利用規約|同意して次へ|購入内容/.test(t),
+        ticket: /券種を選択|券種選択|券種名/.test(t),
+        info: /お客様情報入力|氏名（かな）|購入完了メール/.test(t)
+      };
+    }).catch(function () { return { held: false }; });
+    if (state.held && sel.picked.length === holdPlan.keys.length) {
+      var where = state.ticket ? '券種選択画面（券種はご自身で選んでください）'
+        : state.terms ? '利用規約・購入内容の確認（席は確保済み。「同意して次へ」→券種選択はご自身で）'
+        : state.info ? 'お客様情報入力（この上映は券種選択なし）' : '次画面';
+      log('✓✓ ブラウザで席を確保＝勝敗確定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + ' ／ ' + (Date.now() - tH) + 'ms）→ 停止: ' + where + ' [' + page.url().slice(38) + ']');
+    } else {
+      log('△ 確保を確認できませんでした。開いているブラウザで席選択→購入手続きを確認してください。現在: ' + page.url().slice(38));
+    }
   } else if (hp) {
     // POST 遷移専用ページ（TOHO の券種選択など）：まず同一オリジンの GET ページを開いてから、
     // 確保時と同じ POST フォームをブラウザから再送して次画面を表示する（Cookie は同一サイトで送られる）
