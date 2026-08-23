@@ -126,7 +126,7 @@ KINEZO 系の劇場は `--theater <key>` で切り替えます（既定は `yoko
 | `burg13` | 横浜ブルク13 | 12スクリーン・2,246席（実データ 2026-08-23） |
 | `kawasaki` | 109シネマズ川崎 | **109シネマズ（別システム・`lib/k109.js`）**。10スクリーン・1,838席（実データ 2026-08-23） |
 | `premium_shinjuku` | 109シネマズプレミアム新宿 | 109シネマズ。7スクリーン・670席（プレミアム席/一般席の別売りを統合） |
-| `toho_shinjuku` / `toho_hibiya` / `toho_shibuya` / `toho_roppongi` / `toho_kawasaki` / `toho_lalaport_yokohama` / `toho_ikebukuro` | TOHOシネマズ 主要館 | **TOHO（vit・`lib/toho.js`）**。ログインなしの「ゲスト購入」経路で座席指定まで自動。座席レイアウト登録済み |
+| `toho_shinjuku` 12scr/2,302席 · `toho_hibiya` 13scr/2,698席 · `toho_shibuya` 6scr/1,224席 · `toho_roppongi` 9scr/1,837席 · `toho_ikebukuro` 10scr/1,717席 · `toho_kawasaki` 9scr/1,859席 | TOHOシネマズ 主要館 | **TOHO（vit・`lib/toho.js`）**。ログインなしの「ゲスト購入」経路で座席指定まで自動。座席レイアウト登録済み（実データ 2026-08-23）。`toho_lalaport_yokohama`(036) は 8/20〜8/27 休館中のため未採取（runner からはコード指定で使える） |
 | `toho<劇場コード3桁>`（例 `toho080`＝上野） | TOHOシネマズ 全73館 | runner はコード指定で全館対応（`runner/data/toho-theaters.json`）。サイトに座席表を出すには `add-theater.js <code> <key> ... --chain toho` で採取 |
 
 ```bash
@@ -135,10 +135,10 @@ node runner/reserve-hybrid.js --theater wald9 --date 2026-08-24 --title 作品�
 
 サイト（`cinema/`）で劇場を選んでコマンド生成すると `--theater` が自動で付きます（各劇場の `runnerKey`）。
 
-**認証情報はチェーンごとに別**です（`runner/.env.example` 参照）：T・ジョイ系は `KINEZO_EMAIL` / `KINEZO_PASSWORD`、109シネマズは `C109_ID` / `C109_PASSWORD`。runner は `--theater` のチェーンに合わせて自動で使い分け、混用しません。
+**認証情報はチェーンごとに別**です（`runner/.env.example` 参照）：T・ジョイ系は `KINEZO_EMAIL` / `KINEZO_PASSWORD`、109シネマズは `C109_ID` / `C109_PASSWORD`、TOHO は任意（未設定ならゲスト購入。TOHO-ONE ログインの自動化は未対応）。runner は `--theater` のチェーンに合わせて自動で使い分け、混用しません。
 
-**劇場追加は `node runner/add-theater.js <spec> <key> "<名前>" "<エリア>" "<都道府県>" [--chain kinezo|109]` で自動**（実サイトから全スクリーンの座席を採取し、theaters.js / runner を一括更新。KINEZO は劇場パス、109 はサイト別名（例 `I1`）を spec に渡す）。
-未対応：TOHOシネマズ / チネチッタ川崎 / グランドシネマサンシャイン池袋 / 新文芸坐（順次、別アダプタで対応予定）。
+**劇場追加は `node runner/add-theater.js <spec> <key> "<名前>" "<エリア>" "<都道府県>" [--chain kinezo|109|toho]` で自動**（実サイトから全スクリーンの座席を採取し、theaters.js / runner を一括更新。KINEZO は劇場パス、109 はサイト別名（例 `I1`）を spec に渡す）。
+未対応：チネチッタ川崎 / グランドシネマサンシャイン池袋 / 新文芸坐（順次、別アダプタで対応予定）。
 
 ## 第2候補席の自動フォールバック
 

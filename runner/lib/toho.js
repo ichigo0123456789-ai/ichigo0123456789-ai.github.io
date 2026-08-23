@@ -53,6 +53,8 @@ Toho.prototype.fetchSchedule = async function (dateStr) {
             '&show_day=' + ymd(dateStr) + '&isMember=&enter_kbn=&_dc=' + Math.floor(Date.now() / 1000);
   var res = await request({ url: url, jar: this.jar, headers: { Referer: this.homeUrl(), Origin: H, Accept: 'application/json, text/javascript, */*; q=0.01' } });
   var j; try { j = JSON.parse(res.body || ''); } catch (e) { throw new Error('TOHO 番組表APIの応答を解釈できません（' + (res.status) + '）'); }
+  var d0 = (j && j.data && j.data[0]) || {};
+  this.lastApiMessage = d0.code && /^ERR/.test(d0.code) ? d0.code + ' ' + (d0.message || '') : null; // 例: ERR-1191 上映スケジュールが登録されていません（休館中など）
   return parseSchedule(j, dateStr, this.code);
 };
 

@@ -45,16 +45,27 @@ function q(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace
   var byScreen = {};
   for (var d = 0; d < DAYS; d++) {
     var mv = await k.fetchSchedule(dateStr(d));
-    mv.forEach(function (m) { m.shows.forEach(function (s) { var sk = String(s.screenCode || s.screen); if (s.reserveUrl && !byScreen[sk]) byScreen[sk] = s; }); });
+    var nowHM = d === 0 ? new Date(Date.now() + 9 * 3600000 + 30 * 60000).toISOString().slice(11, 16) : null; // 当日は開始済み(+30分)の回を除外
+    mv.forEach(function (m) { m.shows.forEach(function (s) {
+      var sk = String(s.screenCode || s.screen); if (!s.reserveUrl) return;
+      if (nowHM && s.time && s.time.replace(/^(d):/, '0$1:') < nowHM) return;
+      var arr = (byScreen[sk] = byScreen[sk] || []);
+      if (arr.length < 4 && !arr.some(function (x) { return x.date === s.date; })) arr.push(s); // 日をばらして候補に
+      else if (arr.length < 2) arr.push(s);
+    }); });
   }
-  var codes = Object.keys(byScreen).sort(function (a, b) { return (+byScreen[a].screen || 0) - (+byScreen[b].screen || 0) || (a < b ? -1 : 1); });
-  if (!codes.length) throw new Error('上映回が見つかりません（発売済みの日が無い？ --days を増やす）');
+  var codes = Object.keys(byScreen).sort(function (a, b) { return (+byScreen[a][0].screen || 0) - (+byScreen[b][0].screen || 0) || (a < b ? -1 : 1); });
+  if (!codes.length) throw new Error('上映回が見つかりません（発売済みの日が無い／休館中？ --days を増やす' + (k.lastApiMessage ? '。API: ' + k.lastApiMessage : '') + '）');
 
   var blocks = [], total = 0, scount = 0;
   for (var i = 0; i < codes.length; i++) {
-    var s = byScreen[codes[i]];
-    await k.openShow(s);
-    var map = await k.fetchSeatMap(); var rows = {};
+    // 売切・開始済みの回だと座席表が空になるので、同スクリーンの別の回も順に試す
+    var s = null, map = {}, cand = byScreen[codes[i]];
+    for (var c = 0; c < cand.length && !Object.keys(map).length; c++) {
+      s = cand[c];
+      try { await k.openShow(s); map = await k.fetchSeatMap(); } catch (e) { map = {}; }
+    }
+    var rows = {};
     Object.keys(map).forEach(function (id) { var m = id.match(/^([A-Z]+)-?(\d+)$/); if (!m) return; (rows[m[1]] = rows[m[1]] || []).push(+m[2]); });
     var labels = Object.keys(rows).sort(); var n = Object.keys(map).length;
     if (!n) { console.log('  (skip) screen ' + codes[i] + ': 座席0'); continue; }
