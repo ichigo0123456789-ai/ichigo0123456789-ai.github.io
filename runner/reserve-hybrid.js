@@ -327,14 +327,20 @@ async function enterSeatMap(k, show, creds) {
     }
     var launchArgs = ['--no-first-run', '--no-default-browser-check'];
     var want = String(arg('browser', '')).toLowerCase();
-    var exe = findBrowserExe(want || 'brave') || (want ? findBrowserExe(want) : null);
+    /* 既定は「入っているブラウザを自動検出」: brave→chrome→edge の順で探す。
+       どれも無ければ Playwright 内蔵 Chromium にフォールバック。
+       --browser <brave|chrome|edge|chromium> で明示指定も可。
+       配布先PCでも、そのPCに入っている普段のブラウザ（＝カード情報がある）を使える。 */
+    var order = (want && want !== 'chromium') ? [want] : (want === 'chromium' ? [] : ['brave', 'chrome', 'edge']);
+    var exe = null, browserName = 'chromium';
+    for (var bi = 0; bi < order.length; bi++) { var e0 = findBrowserExe(order[bi]); if (e0) { exe = e0; browserName = order[bi]; break; } }
     if (want && want !== 'chromium' && !exe) log('指定ブラウザ ' + want + ' が見つからないため Playwright 内蔵 Chromium で開きます');
     var ctx, external = false;
     if (arg('fresh', false) === true) {
       var browser = await chromium.launch(Object.assign({ headless: false, args: launchArgs }, exe ? { executablePath: exe } : {}));
       ctx = await browser.newContext({ locale: 'ja-JP' });
     } else {
-      var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? (want || 'brave') : 'chromium'))));
+      var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', browserName))));
       try { fs.mkdirSync(profDir, { recursive: true }); } catch (e) {}
       if (exe) {
         var ext = await openExternalBrowser(chromium, exe, profDir, launchArgs);

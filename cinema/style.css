@@ -101,40 +101,44 @@ select{cursor:pointer}
 .btn.danger:hover:not(:disabled){background:var(--err-soft)}
 
 /* ---- ① 劇場選択 ---- */
-.theater-layout{display:grid;grid-template-columns:minmax(300px,5fr) 7fr;gap:18px;align-items:start}
-@media(max-width:900px){.theater-layout{grid-template-columns:1fr}}
-
-.search-box{position:relative;margin-bottom:12px}
+/* ---- ① 劇場選択：検索 + エリア/チェーン絞り込み + カード ---- */
+.search-box{position:relative;margin-bottom:8px}
 .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none}
 .search-box input{padding-left:36px}
 
-.theater-list{display:flex;flex-direction:column;gap:8px;max-height:430px;overflow-y:auto}
-.theater-item{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;
-  background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);
-  padding:12px 14px;cursor:pointer;transition:.15s;box-shadow:var(--shadow-sm)}
-.theater-item:hover{border-color:var(--line-2)}
-.theater-item.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
-.theater-item .ti-pin{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
-  background:var(--accent-soft);color:var(--accent)}
-.theater-item.on .ti-pin{background:var(--accent);color:#fff}
-.theater-item .ti-name{font-size:14px;font-weight:800}
-.theater-item .ti-meta{font-size:11.5px;color:var(--sub);line-height:1.6}
-.theater-item .ti-badge{display:inline-block;font-size:10px;font-weight:800;padding:1px 7px;border-radius:5px;
-  background:var(--cool-soft);border:1px solid var(--cool-line);color:var(--cool);margin-top:3px}
-.theater-empty{font-size:12.5px;color:var(--faint);padding:16px;text-align:center;
-  border:1px dashed var(--line-2);border-radius:var(--r-sm)}
+.filter-label{font-size:11px;font-weight:800;color:var(--faint);letter-spacing:.04em;margin:14px 2px 7px}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.chip{--chip-accent:var(--accent);border:1px solid var(--line-2);background:var(--panel);color:var(--sub);
+  font-size:13px;font-weight:700;padding:6px 13px;border-radius:999px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;transition:.13s;white-space:nowrap}
+.chip:hover{border-color:var(--chip-accent);color:var(--ink)}
+.chip.on{background:var(--chip-accent);border-color:var(--chip-accent);color:#fff}
+.chip-row-sm .chip{font-size:12px;padding:5px 11px}
+.chip .chip-n{font-size:11px;font-weight:800;opacity:.65}
+.chip.on .chip-n{opacity:.9}
 
-.map-wrap{background:linear-gradient(180deg,#eef3f8,#e6edf5);border:1px solid var(--line);border-radius:var(--r);
-  padding:10px;position:relative;overflow:hidden}
-.map-wrap svg{display:block;width:100%;height:auto}
-.jp-land{fill:#ffffff;stroke:#b9c6d6;stroke-width:2;stroke-linejoin:round}
-.map-pin{cursor:pointer}
-.map-pin circle.ring{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2;opacity:.85;transition:.15s}
-.map-pin circle.core{fill:var(--accent)}
-.map-pin:hover circle.ring{r:26}
-.map-pin.on circle.ring{fill:var(--accent);opacity:.25}
-.map-pin text{font-size:26px;font-weight:800;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round}
-.map-note{position:absolute;left:14px;bottom:12px;font-size:11px;color:var(--faint)}
+.theater-groups{display:flex;flex-direction:column;gap:22px;margin-top:22px}
+.tgroup-head{display:flex;align-items:baseline;gap:9px;margin:0 2px 11px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.tgroup-name{font-size:15px;font-weight:800;color:var(--ink)}
+.tgroup-n{font-size:11px;font-weight:700;color:var(--faint)}
+.theater-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.theater-card{display:flex;flex-direction:column;gap:5px;text-align:left;border:1px solid var(--line);
+  background:var(--panel);border-radius:var(--r);padding:13px 15px;cursor:pointer;transition:.13s;box-shadow:var(--shadow-sm)}
+.theater-card:hover{border-color:var(--line-2);transform:translateY(-1px);box-shadow:var(--shadow)}
+.theater-card.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.tc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tc-badge{font-size:10.5px;font-weight:800;color:#fff;padding:2px 8px;border-radius:6px;letter-spacing:.02em}
+.tc-check{font-size:11px;font-weight:800;color:var(--accent);white-space:nowrap}
+.tc-name{font-size:14.5px;font-weight:800;color:var(--ink);line-height:1.35}
+.tc-meta{font-size:11.5px;color:var(--sub);line-height:1.5}
+.theater-empty{font-size:12.5px;color:var(--faint);padding:22px 16px;text-align:center;
+  border:1px dashed var(--line-2);border-radius:var(--r);background:var(--panel-2)}
+
+@media(max-width:520px){
+  .theater-cards{grid-template-columns:1fr}
+  .chip{font-size:12.5px;padding:7px 13px}
+  .filter-label{margin-top:12px}
+}
 
 .step-next{display:flex;justify-content:flex-end;margin-top:4px}
 

@@ -165,10 +165,38 @@
 
   /* ---- ① 劇場選択 --------------------------------------------------
 
-     検索と全国マップの両方から選べる。いまは T・ジョイ横浜の1館だけだが、
-     データを足せばそのまま並ぶ構造にしてある。 */
+     全国マップは対応館が首都圏に密集して重なるため廃止。
+     エリア（地方）チップ＋チェーンチップで絞り込み、サブエリア（池袋/新宿…）
+     ごとにカードでまとめる。館が増えてもそのまま並ぶ構造。 */
 
   var theaterQuery = '';
+  var areaFilter = 'all';   /* 地方: all / 東京 / 神奈川 / 関西 … */
+  var chainFilter = 'all';  /* チェーンキー */
+
+  var CHAIN_SHORT = { tjoy: 'T・ジョイ', c109: '109シネマズ', cinecitta: 'チネチッタ', sunshine: 'サンシャイン', eigaland: '映画ランド', toho: 'TOHO' };
+  var CHAIN_COLOR = { tjoy: '#0b6fb8', c109: '#e8541e', cinecitta: '#7b2ff7', sunshine: '#c98a06', eigaland: '#1f9d63', toho: '#c8102e' };
+
+  /* 都道府県から地方ブロックを求める（エリア絞り込みの単位） */
+  function regionOf(t) {
+    var p = t.pref || '';
+    if (p.indexOf('東京') >= 0) return '東京';
+    if (p.indexOf('神奈川') >= 0) return '神奈川';
+    if (/京都|大阪|兵庫|奈良|滋賀|和歌山/.test(p)) return '関西';
+    if (/千葉|埼玉|茨城|栃木|群馬/.test(p)) return '関東(他)';
+    if (/北海道/.test(p)) return '北海道';
+    if (/愛知|岐阜|三重|静岡/.test(p)) return '東海';
+    if (/福岡|佐賀|長崎|熊本|大分|宮崎|鹿児島|沖縄/.test(p)) return '九州・沖縄';
+    return p || 'その他';
+  }
+
+  /* 街レベルの小エリア（カードの見出し）。名前・エリア・駅から拾う。 */
+  var SUBAREA_KW = ['池袋', '新宿', '渋谷', '日比谷', '六本木', '横浜', '川崎', '京都', '梅田', '大阪', '難波'];
+  function subareaOf(t) {
+    var s = [t.area || '', t.station || '', t.name || ''].join(' ');
+    for (var i = 0; i < SUBAREA_KW.length; i++) if (s.indexOf(SUBAREA_KW[i]) >= 0) return SUBAREA_KW[i];
+    var head = (t.area || '').split('/')[0].trim();
+    return head || regionOf(t);
+  }
 
   function theaterMatches(t, q) {
     if (!q) return true;
@@ -191,63 +219,90 @@
     $('btn-to-plan').disabled = false;
   }
 
-  function renderTheaterPicker() {
-    var list = $('theater-list');
-    list.innerHTML = '';
-    var shown = D.theaters.filter(function (t) { return theaterMatches(t, theaterQuery); });
-
-    if (!shown.length) {
-      list.innerHTML = '<div class="theater-empty">「' + esc(theaterQuery) +
-        '」に一致する対応劇場はありません。<br>現在対応しているのは T・ジョイ横浜のみです。</div>';
-    }
-    shown.forEach(function (t) {
-      var on = t.id === S.plan.theaterId;
+  /* エリア/チェーンの絞り込みチップを描く */
+  function renderChips(el, items, active, onPick) {
+    if (!el) return;
+    el.innerHTML = '';
+    items.forEach(function (it) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'theater-item' + (on ? ' on' : '');
-      b.innerHTML =
-        '<span class="ti-pin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
-        '<span><span class="ti-name">' + esc(t.name) + '</span><br>' +
-        '<span class="ti-meta">' + esc((t.pref ? t.pref + ' ／ ' : '') + (t.station || t.area)) + '<br>' +
-        esc(t.note || '') + '</span>' +
-        '<span class="ti-badge">' + esc(D.chains[t.chain].name) + '</span></span>';
-      b.addEventListener('click', function () { selectTheater(t.id); });
-      list.appendChild(b);
+      b.className = 'chip' + (it.key === active ? ' on' : '');
+      if (it.color) b.style.setProperty('--chip-accent', it.color);
+      b.innerHTML = esc(it.label) + (it.count != null ? ' <span class="chip-n">' + it.count + '</span>' : '');
+      b.addEventListener('click', function () { onPick(it.key); });
+      el.appendChild(b);
     });
-
-    renderMapPins();
-    $('btn-to-plan').disabled = !S.plan.theaterId;
   }
 
-  function renderMapPins() {
-    var g = $('map-pins');
-    if (!g) return;
-    g.innerHTML = '';
-    var SVG = 'http://www.w3.org/2000/svg';
-    D.theaters.forEach(function (t) {
-      if (!t.map) return;
-      var on = t.id === S.plan.theaterId;
-      var pin = document.createElementNS(SVG, 'g');
-      pin.setAttribute('class', 'map-pin' + (on ? ' on' : ''));
-      pin.setAttribute('role', 'button');
-      pin.setAttribute('aria-label', t.name);
+  function renderTheaterPicker() {
+    var all = D.theaters;
 
-      var ring = document.createElementNS(SVG, 'circle');
-      ring.setAttribute('class', 'ring');
-      ring.setAttribute('cx', t.map.x); ring.setAttribute('cy', t.map.y);
-      ring.setAttribute('r', on ? 30 : 20);
-      var core = document.createElementNS(SVG, 'circle');
-      core.setAttribute('class', 'core');
-      core.setAttribute('cx', t.map.x); core.setAttribute('cy', t.map.y);
-      core.setAttribute('r', 8);
-      var label = document.createElementNS(SVG, 'text');
-      label.setAttribute('x', t.map.x + 38); label.setAttribute('y', t.map.y + 9);
-      label.textContent = t.name;
+    /* --- エリアチップ（件数の多い地方順、すべて先頭） --- */
+    var regionCount = {};
+    all.forEach(function (t) { var r = regionOf(t); regionCount[r] = (regionCount[r] || 0) + 1; });
+    var regions = Object.keys(regionCount).sort(function (a, b) { return regionCount[b] - regionCount[a]; });
+    var areaItems = [{ key: 'all', label: 'すべて', count: all.length }].concat(
+      regions.map(function (r) { return { key: r, label: r, count: regionCount[r] }; }));
+    renderChips($('area-chips'), areaItems, areaFilter, function (k) { areaFilter = k; renderTheaterPicker(); });
 
-      pin.appendChild(ring); pin.appendChild(core); pin.appendChild(label);
-      pin.addEventListener('click', function () { selectTheater(t.id); });
-      g.appendChild(pin);
+    /* --- チェーンチップ（現在のエリア絞り込み下の件数） --- */
+    var inArea = all.filter(function (t) { return areaFilter === 'all' || regionOf(t) === areaFilter; });
+    var chainCount = {};
+    inArea.forEach(function (t) { chainCount[t.chain] = (chainCount[t.chain] || 0) + 1; });
+    var chainKeys = Object.keys(chainCount).sort(function (a, b) { return chainCount[b] - chainCount[a]; });
+    var chainItems = [{ key: 'all', label: 'すべて', count: inArea.length }].concat(
+      chainKeys.map(function (c) { return { key: c, label: CHAIN_SHORT[c] || (D.chains[c] && D.chains[c].name) || c, count: chainCount[c], color: CHAIN_COLOR[c] }; }));
+    if (chainFilter !== 'all' && !chainCount[chainFilter]) chainFilter = 'all';
+    renderChips($('chain-chips'), chainItems, chainFilter, function (k) { chainFilter = k; renderTheaterPicker(); });
+
+    /* --- 絞り込み結果をサブエリアでグループ化してカード表示 --- */
+    var groups = $('theater-groups');
+    groups.innerHTML = '';
+    var shown = all.filter(function (t) {
+      return theaterMatches(t, theaterQuery)
+        && (areaFilter === 'all' || regionOf(t) === areaFilter)
+        && (chainFilter === 'all' || t.chain === chainFilter);
     });
+
+    if (!shown.length) {
+      groups.innerHTML = '<div class="theater-empty">条件に合う対応劇場がありません。<br>エリア・チェーンの絞り込みを「すべて」に戻すか、検索語を変えてください。</div>';
+      $('btn-to-plan').disabled = !S.plan.theaterId;
+      return;
+    }
+
+    var bySub = {};
+    shown.forEach(function (t) { var sa = subareaOf(t); (bySub[sa] = bySub[sa] || []).push(t); });
+    var subs = Object.keys(bySub).sort(function (a, b) { return bySub[b].length - bySub[a].length || a.localeCompare(b); });
+
+    subs.forEach(function (sub) {
+      var wrap = document.createElement('div');
+      wrap.className = 'tgroup';
+      var head = document.createElement('div');
+      head.className = 'tgroup-head';
+      head.innerHTML = '<span class="tgroup-name">' + esc(sub) + '</span><span class="tgroup-n">' + bySub[sub].length + '館</span>';
+      wrap.appendChild(head);
+      var cards = document.createElement('div');
+      cards.className = 'theater-cards';
+      bySub[sub].forEach(function (t) {
+        var on = t.id === S.plan.theaterId;
+        var color = CHAIN_COLOR[t.chain] || 'var(--sub)';
+        var scr = (t.screens && t.screens.length) ? t.screens.length + 'スクリーン' : '';
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'theater-card' + (on ? ' on' : '');
+        b.innerHTML =
+          '<span class="tc-top"><span class="tc-badge" style="background:' + color + '">' + esc(CHAIN_SHORT[t.chain] || D.chains[t.chain].name) + '</span>' +
+          (on ? '<span class="tc-check">✓ 選択中</span>' : '') + '</span>' +
+          '<span class="tc-name">' + esc(t.name) + '</span>' +
+          '<span class="tc-meta">' + esc(t.station || t.area || '') + (scr ? ' ・ ' + scr : '') + '</span>';
+        b.addEventListener('click', function () { selectTheater(t.id); });
+        cards.appendChild(b);
+      });
+      wrap.appendChild(cards);
+      groups.appendChild(wrap);
+    });
+
+    $('btn-to-plan').disabled = !S.plan.theaterId;
   }
 
   /* ---- ② 選択サマリー ---------------------------------------------- */

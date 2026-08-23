@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>座席オートリザーブ｜T・ジョイ横浜</title>
-<meta name="description" content="T・ジョイ横浜（KINEZO）の上映回と座席を先に決めておき、発売開始と同時に座席を確保するためのプランナー。Phase 1 はモック環境での動作検証用。">
+<title>座席オートリザーブ｜主要シネコン対応</title>
+<meta name="description" content="主要シネコン（TOHO・109・T・ジョイ・チネチッタ・シネマサンシャイン・映画ランド）の上映回と座席を先に決めておき、発売開始と同時に座席を確保するためのプランナー。実行は手元PCのrunnerが担当。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
       </div>
       <div>
         <h1>座席オートリザーブ</h1>
-        <p class="sub">T・ジョイ横浜（KINEZO）／ 予約プランを先に組み、発売と同時に押さえる</p>
+        <p class="sub">主要シネコン対応 ／ 予約プランを先に組み、発売と同時に押さえる</p>
       </div>
     </div>
     <div class="phase-chip" title="Phase 1 は実サイトへ一切アクセスしません">
@@ -47,41 +47,20 @@
 <section id="view-theater" class="view on">
   <div class="card">
     <h2>映画館を選ぶ</h2>
-    <p class="note">名前で検索するか、マップのピンから選んでください。現在対応しているのは T・ジョイ横浜のみです（対応劇場は順次追加予定）。</p>
+    <p class="note">エリアやチェーンで絞り込むか、名前で検索できます。対応館は順次追加中です。</p>
 
-    <div class="theater-layout">
-      <div>
-        <div class="search-box">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="theater-search" type="search" placeholder="劇場名・都道府県・駅名で検索" autocomplete="off">
-        </div>
-        <div id="theater-list" class="theater-list"></div>
-      </div>
-
-      <div class="map-wrap">
-        <svg id="jp-map" viewBox="0 0 1000 900" role="img" aria-label="全国マップ">
-          <!-- 簡略化した日本のシルエット -->
-          <g class="jp-land">
-            <!-- 北海道 -->
-            <path d="M735 95 L770 55 L825 45 L880 75 L900 125 L870 160 L820 150 L790 185 L745 195 L720 160 L700 125 Z"/>
-            <!-- 本州 -->
-            <path d="M745 235 L775 275 L770 330 L745 385 L715 435 L685 480
-                     L662 515 L648 545 L622 558 L600 545 L575 560 L548 572
-                     L515 578 L480 585 L452 600 L430 588 L400 585 L365 590
-                     L330 600 L295 615 L258 618 L228 605 L215 580 L235 560
-                     L275 555 L315 548 L355 540 L395 532 L430 528 L462 515
-                     L478 490 L470 462 L490 445 L520 430 L540 400 L558 362
-                     L580 320 L602 280 L630 250 L665 228 L705 215 Z"/>
-            <!-- 四国 -->
-            <path d="M395 640 L440 628 L485 632 L505 652 L488 678 L445 690 L405 678 L385 658 Z"/>
-            <!-- 九州 -->
-            <path d="M265 655 L305 640 L340 655 L352 690 L340 735 L318 775 L288 790 L258 768 L245 720 L248 680 Z"/>
-          </g>
-          <g id="map-pins"></g>
-        </svg>
-        <span class="map-note">対応劇場のみピンを表示しています</span>
-      </div>
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="theater-search" type="search" placeholder="劇場名・エリア・駅名で検索" autocomplete="off">
     </div>
+
+    <div class="filter-label">エリア</div>
+    <div id="area-chips" class="chip-row"></div>
+
+    <div class="filter-label">チェーン</div>
+    <div id="chain-chips" class="chip-row chip-row-sm"></div>
+
+    <div id="theater-groups" class="theater-groups"></div>
   </div>
 
   <div class="step-next">
@@ -220,7 +199,7 @@
     <div class="run-actions">
       <button class="btn primary" id="btn-copy-cmd">コマンドをコピー</button>
     </div>
-    <p class="hint">※ 現在は T・ジョイ横浜（KINEZO）専用。認証情報は手元の <code>runner/.env</code> から読み、サイトには一切入力しません。</p>
+    <p class="hint">※ 認証情報はチェーンごとに手元の <code>runner/.env</code> から読み込み、サイトには一切入力・保存しません。決済も手元PCのブラウザで行います。</p>
   </div>
 
   <div class="grid-2">
