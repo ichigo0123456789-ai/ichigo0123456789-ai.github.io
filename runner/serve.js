@@ -117,6 +117,54 @@ async function getSchedule(key, date) {
   return data;
 }
 
+/* 実座席図（レイアウト＋空席）を取得する。
+   fetchSchedule で対象回を特定 → openShow（読み取り：席は押さえない）→ fetchSeatMap。 */
+var seatCache = new Map();
+var SEAT_TTL = 20 * 1000;
+
+async function getSeatMap(key, date, title, time) {
+  var ck = [key, date, title, time].join('|');
+  var hit = seatCache.get(ck);
+  if (hit && (Date.now() - hit.t) < SEAT_TTL) return hit.data;
+  var th = resolveTheater(key);
+  if (!th) { var e = new Error('unknown theater: ' + key); e.status = 400; throw e; }
+  var a = makeAdapter(th);
+  if (typeof a.init === 'function') { try { await a.init(); } catch (e) {} }
+  var raw = await a.fetchSchedule(date);
+  var movies = Array.isArray(raw) ? raw : Object.keys(raw || {}).map(function (k) { return raw[k]; });
+  var show = null, mv = null;
+  for (var i = 0; i < movies.length && !show; i++) {
+    var m = movies[i];
+    if (title && String(m.title).indexOf(title) < 0 && title.indexOf(m.title) < 0) continue;
+    (m.shows || []).forEach(function (s) { if (!show && s.time === time) { show = s; mv = m; } });
+  }
+  if (!show) { var e2 = new Error('対象の上映回が見つかりません: ' + title + ' ' + time); e2.status = 404; throw e2; }
+  if (typeof a.openShow !== 'function' || typeof a.fetchSeatMap !== 'function') { var e3 = new Error('この劇場は座席図の取得に未対応です'); e3.status = 501; throw e3; }
+  await a.openShow(show);
+  var map = await a.fetchSeatMap();
+  var arr = Array.isArray(map) ? map : Object.keys(map || {}).map(function (k) { return map[k]; });
+  var seats = arr.map(function (s) {
+    return {
+      id: s.id,
+      row: s.row != null ? String(s.row) : (String(s.id).split('-')[0] || ''),
+      num: s.num != null ? s.num : parseInt((String(s.id).split('-')[1] || '0'), 10),
+      state: s.state || (s.available === false ? 'sold' : 'available'),
+      kind: s.kind || (s.wheelchair ? 'wheelchair' : (s.type || null))
+    };
+  }).filter(function (s) { return s.id; });
+  var rows = {};
+  seats.forEach(function (s) { rows[s.row] = Math.max(rows[s.row] || 0, s.num); });
+  var data = {
+    ok: true, theater: key, date: date, title: mv ? mv.title : title, time: time,
+    screenName: show.screenName || '', chain: th.chain,
+    cols: seats.reduce(function (mx, s) { return Math.max(mx, s.num); }, 0),
+    rows: Object.keys(rows).length,
+    seats: seats
+  };
+  seatCache.set(ck, { t: Date.now(), data: data });
+  return data;
+}
+
 function sendJson(res, status, obj) {
   var body = JSON.stringify(obj);
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -144,6 +192,22 @@ const server = http.createServer(async function (req, res) {
     } catch (e) {
       console.error('[schedule] ' + theater + ' ' + date + ' -> ' + e.message);
       sendJson(res, e.status || 502, { ok: false, theater: theater, date: date, error: e.message });
+    }
+    return;
+  }
+
+  if (u.pathname === '/seatmap') {
+    var stheater = (u.searchParams.get('theater') || 'yokohama').toLowerCase();
+    var sdate = u.searchParams.get('date') || '';
+    var stitle = u.searchParams.get('title') || '';
+    var stime = u.searchParams.get('time') || '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(sdate) || !/^\d{1,2}:\d{2}$/.test(stime)) { sendJson(res, 400, { ok: false, error: 'date=YYYY-MM-DD と time=HH:MM が必要' }); return; }
+    try {
+      var sm = await getSeatMap(stheater, sdate, stitle, stime);
+      sendJson(res, 200, sm);
+    } catch (e) {
+      console.error('[seatmap] ' + stheater + ' ' + sdate + ' ' + stitle + ' ' + stime + ' -> ' + e.message);
+      sendJson(res, e.status || 502, { ok: false, error: e.message });
     }
     return;
   }

@@ -140,17 +140,20 @@
     </div>
     <p class="note" id="seat-context">—</p>
 
+    <div id="seat-runner-note" class="seat-runner-note" hidden></div>
+
     <div class="seat-toolbar">
       <div class="count-field">
-        <label for="f-count">枚数</label>
-        <input id="f-count" type="number" min="1" max="8" value="2">
+        <span class="cf-label">選択中</span>
+        <span id="count-readout" class="count-readout">0席</span>
+        <input id="f-count" type="hidden" value="0">
       </div>
-      <span class="pick-guide">この枚数ぶん、1席ずつクリックして選んでください（もう一度クリックで解除）</span>
+      <span class="pick-guide">観たい席をクリックして選んでください（もう一度クリックで解除）。選んだ席の数がそのまま枚数になります。</span>
       <div class="spacer"></div>
       <button class="btn ghost sm" id="btn-auto-pick">中央の見やすい席を選ぶ</button>
       <button class="btn ghost sm" id="btn-clear-pick">選択を解除</button>
     </div>
-    <p class="hint" id="count-hint">この枚数ぶんの席をひとまとまりとして確保します。</p>
+    <p class="hint" id="count-hint">選んだ席をまとめて確保します（人数分だけ席を選んでください）。</p>
 
     <div class="pick-tray" id="pick-tray">
       <span class="tray-label">確保する座席</span>
@@ -378,8 +381,8 @@
         <tr><td>予約プラン（劇場・作品・上映回・座席候補）</td><td>この端末の localStorage</td><td class="ok">なし</td></tr>
         <tr><td>実行ログ</td><td>メモリのみ（リロードで消える）</td><td class="ok">なし</td></tr>
         <tr><td>予約者情報（氏名・電話・メール）</td><td>下の設定を ON にしたときのみ localStorage</td><td class="ok">なし</td></tr>
-        <tr><td>KINEZO（キネパス）の会員ID・パスワード</td><td>Google Drive の非公開ファイル（kinezo-credential）。このサイトは受け取らない</td><td class="ok">なし</td></tr>
-        <tr><td>クレジットカード情報</td><td class="warn-t">このツールでは扱いません</td><td class="ok">なし</td></tr>
+        <tr><td>各映画館の会員ID・パスワード</td><td>手元PCの <code>runner/.env</code>（git管理外）。このサイトは一切受け取らない</td><td class="ok">なし</td></tr>
+        <tr><td>クレジットカード情報</td><td class="warn-t">このツールでは扱いません（決済はご自身のブラウザで）</td><td class="ok">なし</td></tr>
       </tbody>
     </table>
     <p class="note">
@@ -390,32 +393,15 @@
   </div>
 
   <div class="card">
-    <h2>認証情報の方針（Phase 2）</h2>
-    <p class="note">実際に KINEZO へログインして座席を押さえる段階では、キネパスの会員IDとパスワードが要ります。決定済みの方針は次のとおりです。</p>
+    <h2>認証情報の方針</h2>
+    <p class="note">実際の予約は手元PCの runner が行います。会員情報はチェーンごとに手元だけで管理し、このサイトには一切入れません。</p>
     <ul class="policy">
-      <li><b>保管は Google Drive の非公開ファイル。</b> マイドライブ &gt; Claude &gt; <code>kinezo-credential</code> に本人が直接書き込みます。このサイトは認証情報を一切受け取りません。</li>
-      <li><b>実行はクラウドの実行体。</b> 予約の実行時にだけ Drive からファイルを読み、値はログ・チャット・コミットのどこにも出力しません。</li>
-      <li><b>ファイルは共有しない。</b> Drive の共有設定は「自分のみ」。Google アカウントの2段階認証を必須とします。</li>
-      <li><b>リポジトリには絶対に入れない。</b> 認証情報を含むファイルはコミットしません。</li>
-      <li><b>予約は自分の1件だけ。</b> 複数アカウントの並列実行や転売目的の大量確保には対応しません。</li>
-      <li><b>カード情報は保存しない。</b> 決済は KINEZO 側の登録済み手段か「あとから決済」を使います。</li>
+      <li><b>保管は手元の <code>runner/.env</code> だけ。</b> 使う映画館の会員ID/パスワードを本人が記入します（<code>.gitignore</code> 済み＝コミットされません）。このサイトは認証情報を受け取りません。</li>
+      <li><b>チェーンごとに分離。</b> KINEZO・109・TOHO・チネチッタ・サンシャイン・映画ランドで変数を分け、混用しません。</li>
+      <li><b>クラウド送信なし。</b> 認証情報はログ・チャット・コミットのどこにも出しません。</li>
+      <li><b>予約は自分の1件だけ。</b> 複数アカウントの並列実行や転売目的の大量確保はしません。行列スキップや連打もしません。</li>
+      <li><b>カード情報は保存しない。</b> 券種選択・決済は各映画館の画面でご自身が行います（自動選択しません）。</li>
     </ul>
-  </div>
-
-  <div class="card">
-    <div class="card-head">
-      <h2>ログイン準備チェック（KINEZO）</h2>
-      <span class="check-progress" id="check-progress">0/0</span>
-    </div>
-    <p class="note">
-      本番の予約実行までに確認しておく項目です。チェック状態はこの端末に保存されます。
-      静的サイトからは KINEZO へのログインを自動では試せないため（Phase 2 の実行体が担当）、
-      いまは手動確認のチェックリストです。
-    </p>
-    <div class="checklist" id="login-checklist"></div>
-    <div class="inline-actions">
-      <a class="btn sm" href="https://tjoy.jp/t-joy_yokohama" target="_blank" rel="noopener">T・ジョイ横浜を開いて手動ログインを試す</a>
-    </div>
   </div>
 
   <div class="card">
