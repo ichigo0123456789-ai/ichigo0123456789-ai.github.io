@@ -158,7 +158,7 @@
       renderSchedule();
     }
     if (name === 'seats') { renderSeatEditor(); renderRulesBox(); loadRunnerSeatMap(); }
-    if (name === 'run') { renderLiveMap(); updateRunPrecheck(); }
+    if (name === 'run') { renderLiveMap(); updateRunPrecheck(); autoSync(); }
     if (name === 'privacy') renderChecklist();
     window.scrollTo(0, 0);
   }
@@ -1056,7 +1056,7 @@
     if (!t || !S.plan.title || !S.plan.showtime || !S.plan.date) { setSeatRunnerNote('', ''); return; }
     var key = seatShowKey();
     if (S.runnerSeatMap && S.runnerSeatMap.key === key) {
-      setSeatRunnerNote('ok', '実際の座席図（' + esc(S.runnerSeatMap.screenName || '') + '・空席反映）を表示しています');
+      setSeatRunnerNote('ok', '実際の座席図（' + esc(S.runnerSeatMap.screenName ? S.runnerSeatMap.screenName + '・' : '') + '空席反映）を表示しています');
       return;
     }
     setSeatRunnerNote('checking', '<span class="spin"></span> 実際の座席図を手元の runner から取得中…');
@@ -1070,7 +1070,7 @@
       /* 選択済みだった席のうち、実座席に存在しないものは外す（偽レイアウトからの引き継ぎ対策） */
       var sel = selectedSeats().filter(function (id) { return byId[id]; });
       S.plan.candidates = sel.length ? [{ id: 'target', seats: sel.sort(seatSort) }] : [];
-      setSeatRunnerNote('ok', '実際の座席図（' + esc(data.screenName || '') + '・空席反映）を表示しています');
+      setSeatRunnerNote('ok', '実際の座席図（' + esc(data.screenName ? data.screenName + '・' : '') + '空席反映）を表示しています');
       renderSeatEditor();
     } catch (e) {
       S.runnerSeatMap = null;
@@ -1477,10 +1477,22 @@
     el.className = 'sync-result' + (cls ? ' ' + cls : '');
   }
 
+  var _lastSyncAt = 0;
+  var _syncing = false;
+
+  /* 手動操作なしで自動同期する。未同期、または前回から3分以上経っていれば測り直す。 */
+  function autoSync() {
+    if (_syncing) return;
+    var synced = S.sync && S.sync.uncertainty != null;
+    if (synced && (Date.now() - _lastSyncAt) < 180000) return;
+    doSync();
+  }
+
   function doSync() {
     var btn = $('btn-sync');
-    btn.disabled = true;
-    renderSyncResult('測定中…', 'busy');
+    if (btn) btn.disabled = true;
+    _syncing = true;
+    renderSyncResult('サーバ時刻を自動測定中…', 'busy');
     if (!S.sync) S.sync = new CS.TimeSync();
 
     return S.sync.measure(location.pathname, {
@@ -1490,20 +1502,23 @@
           '（現在の精度 ±' + Math.round(p.uncertainty) + 'ms）', 'busy');
       }
     }).then(function (r) {
-      btn.disabled = false;
+      if (btn) btn.disabled = false;
+      _syncing = false;
+      _lastSyncAt = Date.now();
       if (!r.ok) {
-        renderSyncResult('同期できませんでした（Date ヘッダが読めません）。この端末の時計をそのまま使います。', 'bad');
+        renderSyncResult('自動同期できませんでした（Date ヘッダが読めません）。この端末の時計をそのまま使います。', 'bad');
         return;
       }
       var sign = r.offset >= 0 ? '+' : '';
       renderSyncResult(
-        'この端末の時計はサーバより ' + sign + r.offset + 'ms ずれています（精度 ±' + r.uncertainty +
-        'ms / 往復 ' + r.rtt + 'ms / ' + r.samples + 'サンプル）。実行時にこのぶん補正します。',
+        '自動同期済み：この端末の時計はサーバより ' + sign + r.offset + 'ms ずれています（精度 ±' + r.uncertainty +
+        'ms / 往復 ' + r.rtt + 'ms / ' + r.samples + 'サンプル）。実行時にこのぶん自動補正します。',
         Math.abs(r.offset) > 1000 ? 'warn-t' : 'good');
       tickCountdown();
     }).catch(function () {
-      btn.disabled = false;
-      renderSyncResult('同期に失敗しました。この端末の時計をそのまま使います。', 'bad');
+      if (btn) btn.disabled = false;
+      _syncing = false;
+      renderSyncResult('自動同期に失敗しました。この端末の時計をそのまま使います。', 'bad');
     });
   }
 

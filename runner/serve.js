@@ -142,7 +142,15 @@ async function getSeatMap(key, date, title, time) {
   if (typeof a.openShow !== 'function' || typeof a.fetchSeatMap !== 'function') { var e3 = new Error('この劇場は座席図の取得に未対応です'); e3.status = 501; throw e3; }
   await a.openShow(show);
   var map = await a.fetchSeatMap();
-  var arr = Array.isArray(map) ? map : Object.keys(map || {}).map(function (k) { return map[k]; });
+  /* アダプタによっては座席IDをオブジェクトのキーで返す（KINEZO 等: { "A-5": {state,...} }）。
+     Object.values だとIDが落ちるので、キーを id として必ず保持する。 */
+  var arr = Array.isArray(map) ? map : Object.keys(map || {}).map(function (k) {
+    var v = map[k] || {};
+    return {
+      id: v.id || k, row: v.row, num: v.num, state: v.state,
+      kind: v.kind, wheelchair: v.wheelchair, type: v.type, available: v.available
+    };
+  });
   var seats = arr.map(function (s) {
     return {
       id: s.id,
@@ -156,7 +164,7 @@ async function getSeatMap(key, date, title, time) {
   seats.forEach(function (s) { rows[s.row] = Math.max(rows[s.row] || 0, s.num); });
   var data = {
     ok: true, theater: key, date: date, title: mv ? mv.title : title, time: time,
-    screenName: show.screenName || '', chain: th.chain,
+    screenName: show.screenName || (show.screen != null && show.screen !== '' ? 'スクリーン' + show.screen : ''), chain: th.chain,
     cols: seats.reduce(function (mx, s) { return Math.max(mx, s.num); }, 0),
     rows: Object.keys(rows).length,
     seats: seats

@@ -244,14 +244,15 @@
 
       <div class="speed-item">
         <div class="sync-head">
-          <b>サーバ時刻と同期する</b>
-          <button class="btn sm" id="btn-sync">いま同期する</button>
+          <b>サーバ時刻と同期（自動）</b>
+          <button class="btn sm ghost" id="btn-sync">手動で測り直す</button>
         </div>
         <p class="hint">
-          手元の時計が2秒遅れていれば、どれだけ速いコードでも2秒出遅れます。体感で最も効くのはここです。
+          手元の時計が2秒遅れていれば、どれだけ速いコードでも2秒出遅れます。
+          <b>この実行画面を開くと自動で測定</b>し、実行時にズレを自動補正します（3分ごとに測り直し）。
           HTTP の Date ヘッダを繰り返し測り、秒境界をまたぐサンプルを交差させてサブ秒まで絞り込みます。
         </p>
-        <div class="sync-result" id="sync-result">未同期（この端末の時計をそのまま使います）</div>
+        <div class="sync-result" id="sync-result">実行画面を開くと自動で同期します</div>
       </div>
 
       <div class="speed-item">
