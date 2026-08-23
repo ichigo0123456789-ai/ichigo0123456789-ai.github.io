@@ -89,6 +89,27 @@ function makeAdapter(th) {
   if (th.chain === 'sunshine') return new Sunshine({ theaterCode: th.theaterCode, slug: th.slug, name: th.name });
   return new Kinezo({ theaterPath: th.path, theaterId: th.id });
 }
+/** 常駐ブラウザ（Brave/Chrome）を専用プロファイルで起動 or 再利用し、CDP で接続する */
+async function openExternalBrowser(chromium, exe, profDir, launchArgs) {
+  var port = parseInt(arg('cdp-port', '9333'), 10) || 9333;
+  var http = require('http');
+  function alive() {
+    return new Promise(function (res) {
+      var rq = http.get({ host: '127.0.0.1', port: port, path: '/json/version', timeout: 1500 }, function (r) { res(r.statusCode === 200); r.resume(); });
+      rq.on('error', function () { res(false); }); rq.on('timeout', function () { rq.destroy(); res(false); });
+    });
+  }
+  if (!(await alive())) {
+    var spawn = require('child_process').spawn;
+    var child = spawn(exe, launchArgs.concat(['--user-data-dir=' + profDir, '--remote-debugging-port=' + port, '--lang=ja', 'about:blank']), { detached: true, stdio: 'ignore' });
+    child.unref();
+    for (var i = 0; i < 80 && !(await alive()); i++) await sleep(250);
+    if (!(await alive())) throw new Error('決済ブラウザ（' + exe + '）の起動を確認できません（CDP ' + port + '）');
+  }
+  var browser = await chromium.connectOverCDP('http://127.0.0.1:' + port);
+  var ctx = browser.contexts()[0] || await browser.newContext({ locale: 'ja-JP' });
+  return { browser: browser, ctx: ctx, port: port };
+}
 /** 手元のブラウザ実行ファイルを探す（Windows / macOS の標準配置） */
 function findBrowserExe(name) {
   var home = process.env.USERPROFILE || process.env.HOME || '';
@@ -393,20 +414,27 @@ async function enterSeatMap(k, show, creds) {
   var want = String(arg('browser', '')).toLowerCase();
   var exe = findBrowserExe(want || 'brave') || (want ? findBrowserExe(want) : null);
   if (want && want !== 'chromium' && !exe) log('指定ブラウザ ' + want + ' が見つからないため Playwright 内蔵 Chromium で開きます');
-  var ctx, browser = null;
+  var ctx, browser = null, external = false;
   if (arg('fresh', false) === true) {
     browser = await chromium.launch(Object.assign({ headless: false, args: launchArgs }, exe ? { executablePath: exe } : {}));
     ctx = await browser.newContext({ locale: 'ja-JP' });
   } else {
     var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? (want || 'brave') : 'chromium'))));
     try { fs.mkdirSync(profDir, { recursive: true }); } catch (e) {}
-    ctx = await chromium.launchPersistentContext(profDir, Object.assign({ headless: false, locale: 'ja-JP', viewport: null, args: launchArgs }, exe ? { executablePath: exe } : {}));
-    log('決済ブラウザ: ' + (exe ? exe : 'Playwright Chromium') + ' ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
+    if (exe) {
+      // 常駐モード：Brave/Chrome を runner とは別プロセスで起動（起動済みなら再利用）し CDP で接続。runner が終了してもブラウザ・タブは残る
+      var ext = await openExternalBrowser(chromium, exe, profDir, launchArgs);
+      ctx = ext.ctx; external = true;
+      log('決済ブラウザ: ' + exe + '（常駐・CDP ' + ext.port + '）／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
+    } else {
+      ctx = await chromium.launchPersistentContext(profDir, { headless: false, locale: 'ja-JP', viewport: null, args: launchArgs });
+      log('決済ブラウザ: Playwright Chromium ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
+    }
   }
   await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE));
   if (k.prepareHandoff) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
   if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
-  var page = (ctx.pages && ctx.pages().length) ? ctx.pages()[0] : await ctx.newPage();
+  var page = (!external && ctx.pages && ctx.pages().length) ? ctx.pages()[0] : await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
   await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
   // 券種画面でなくログイン等に飛ばされたら、座席画面から続ける保険
@@ -422,5 +450,6 @@ async function enterSeatMap(k, show, creds) {
   console.log('  ※ カード情報はツールでは扱いません（人間が入力）。');
   console.log('  ※ 券種選択画面が出ていない場合は、同ウィンドウで「お手続き中の予約」から進めてください。');
 
+  if (external) { log('ブラウザは常駐したまま runner を終了します（タブはそのまま残ります）'); await sleep(500); process.exit(0); }
   await new Promise(function () {}); // 決済のため開いたまま待機（終わったら閉じる / Ctrl+C）
 })().catch(function (e) { console.error('ERROR:', e.message); process.exit(1); });
