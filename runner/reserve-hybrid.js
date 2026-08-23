@@ -436,7 +436,20 @@ async function enterSeatMap(k, show, creds) {
   if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
   var page = (!external && ctx.pages && ctx.pages().length) ? ctx.pages()[0] : await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
-  await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
+  var hp = k.handoffPost && k.handoffPost();
+  if (hp) {
+    // POST 遷移専用ページ（TOHO の券種選択など）：まず同一オリジンの GET ページを開いてから、
+    // 確保時と同じ POST フォームをブラウザから再送して次画面を表示する（Cookie は同一サイトで送られる）
+    await page.goto(k.homeUrl(), { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
+    await page.evaluate(function (h) {
+      var f = document.createElement('form'); f.method = 'POST'; f.action = h.action; f.acceptCharset = 'Shift_JIS';
+      Object.keys(h.fields).forEach(function (key) { var i = document.createElement('input'); i.type = 'hidden'; i.name = key; i.value = h.fields[key]; f.appendChild(i); });
+      document.body.appendChild(f); f.submit();
+    }, hp).catch(function () {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 20000 }).catch(function () {});
+  } else {
+    await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
+  }
   // 券種画面でなくログイン等に飛ばされたら、座席画面から続ける保険
   if (/\/login/.test(page.url())) {
     await page.goto(/^https?:/.test(show.reserveUrl) ? show.reserveUrl : (k.base || BASE) + show.reserveUrl, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});

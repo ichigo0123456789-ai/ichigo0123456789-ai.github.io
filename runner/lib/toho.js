@@ -109,6 +109,7 @@ Toho.prototype.secure = async function (seatIds) {
   if (this._limit && seatIds.length > this._limit) return { ok: false, code: 'limit', reason: '一度に選べる席数(' + this._limit + ')を超えています' };
   var sorted = seatIds.slice().sort(function (a, b) { var pa = a.split('-'), pb = b.split('-'); return pa[0] === pb[0] ? (+pa[1] - +pb[1]) : (pa[0] < pb[0] ? -1 : 1); });
   var body = Object.assign({}, this._book.hidden, { seat_no: sorted.join(','), kakutei_flg: '1' });
+  this._bookBody = body; this._bookAction = /^https?:/.test(this._book.action) ? this._book.action : H + this._book.action;
   var res = await request({ method: 'POST', url: /^https?:/.test(this._book.action) ? this._book.action : H + this._book.action, jar: this.jar, followRedirect: true,
     headers: { Referer: this._seatUrl, Origin: H }, body: form(body) });
   var b = res.body || '', t = title(b), text = b.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
@@ -122,6 +123,9 @@ Toho.prototype.secure = async function (seatIds) {
 
 Toho.prototype.advanceToTicket = async function () { return { ok: true, atTicket: !!this._ticketUrl, ticketUrl: this._ticketUrl }; };
 Toho.prototype.handoffUrl = function () { return this._ticketUrl || this._seatUrl; };
+/** ブラウザ引き継ぎ：券種ページ(TNPI2010J02)は POST 遷移専用で GET では開けないため、
+ *  同一オリジンに居るブラウザから確保時と同じ POST を再送させて券種ページを表示する。 */
+Toho.prototype.handoffPost = function () { return this._bookBody ? { action: this._bookAction, fields: this._bookBody } : null; };
 Toho.prototype.hold = async function (ids) { var s = await this.secure(ids); if (!s.ok) return s; return { ok: true, code: 'done', atTicket: true, ticketUrl: this._ticketUrl, reason: s.reason }; };
 
 Toho.prototype.releaseHold = async function () {
