@@ -442,7 +442,7 @@ async function enterSeatMap(k, show, creds) {
     // eigaland：API では確保せず、席を選定だけしてブラウザのセッションで確保する。
     chosenSeats = groups[firstOk]; chosenRank = firstOk + 1;
     sr = { ok: true, browserGrab: true };
-    log('狙い目の席を確認（第' + chosenRank + '候補 ' + chosenSeats.join(',') + '）。新文芸坐は予約ページを開いて席選択→購入を人が進めます（自動確保なし）');
+    log('席を選定（第' + chosenRank + '候補 ' + chosenSeats.join(',') + '）。予約ページで座席をクリックして確保します（eigaland）');
   } else {
     for (var gi = firstOk; gi < groups.length && !sr; gi++) {
       if (!allAvail(map, groups[gi])) continue;
@@ -580,13 +580,33 @@ async function enterSeatMap(k, show, creds) {
       log('△ 確保を確認できませんでした。開いているブラウザで席選択→購入手続きを確認してください。現在: ' + page.url().slice(38));
     }
   } else if (k.browserGrab) {
-    // eigaland：座席マップが SVG/canvas で個別の識別子が無く、API 確保するとその席が SPA 上で
-    // 「確保済み＝選べない」状態になり人が詰む。予約サイトの仕様上、自動確保はせず、発売と同時に
-    // 予約ページ（座席・券種選択）を開いて、席選択〜購入を人が進める（この方式が確実に成立する）。
-    var seatHint = chosenSeats.join(', ');
+    // eigaland：予約ページを開き、SPA 上で座席をクリックして確保する。クリックで holdSeat が
+    // 呼ばれ、ブラウザ自身のセッションのカートに座席が入る＝券種選択・決済まで解除されない。
+    // 座席セルは class="… seat-sid-<sid小文字>"（例 seat-sid-h6）で特定できる。
+    var gd = k.grabData(chosenSeats, map);
     await page.goto(k.bookingPageUrl(), { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
-    await sleep(1200);
-    log('新文芸坐（eigaland）は自動確保に非対応のため、予約ページを開きました。空席の狙い目: ' + seatHint + ' ／ 座席を選んで券種選択→購入を進めてください。');
+    await page.waitForFunction(function () { return document.querySelectorAll('[class*=seat-sid-]').length > 10; }, { timeout: 15000 }).catch(function () {});
+    await sleep(500);
+    var cr = await page.evaluate(async function (d) {
+      var done = [], fail = [];
+      for (var i = 0; i < d.sids.length; i++) {
+        var sid = String(d.sids[i]).toLowerCase();
+        var el = document.querySelector('.seat-sid-' + sid);
+        if (!el) { fail.push(d.sids[i] + ':座席なし'); continue; }
+        var a = el.querySelector('a') || el;
+        a.click();
+        await new Promise(function (r) { setTimeout(r, 550); });
+        var bg = getComputedStyle(el.querySelector('a') || el).backgroundColor;
+        if (bg === 'rgb(62, 193, 87)') done.push(d.sids[i]); else fail.push(d.sids[i] + ':選択不可(' + bg + ')');
+      }
+      return { done: done, fail: fail };
+    }, gd).catch(function (e) { return { done: [], fail: ['スクリプトエラー:' + e.message] }; });
+    if (cr.done.length) {
+      sr.selectedInSpa = cr.done;
+      log('✓✓ ブラウザで座席を確保（' + cr.done.join(',') + '）＝勝敗確定。' + (cr.fail.length ? '取れなかった席: ' + cr.fail.join(',') + '。' : '') + 'この画面で券種を選んで購入を進めてください（券種は自動選択しません）。');
+    } else {
+      log('△ 座席をブラウザで確保できませんでした（' + cr.fail.join(' / ') + '）。開いた画面で空席を選んで購入してください。');
+    }
   } else if (hp) {
     // POST 遷移専用ページ（TOHO の券種選択など）：まず同一オリジンの GET ページを開いてから、
     // 確保時と同じ POST フォームをブラウザから再送して次画面を表示する（Cookie は同一サイトで送られる）
@@ -607,11 +627,12 @@ async function enterSeatMap(k, show, creds) {
   }
 
   if (sr && sr.browserGrab) {
-    console.log('\n──────── 予約ページを開きました（この画面で座席を選んで購入してください） ────────');
+    var got = (sr.selectedInSpa && sr.selectedInSpa.length) ? sr.selectedInSpa.join(', ') : null;
+    console.log('\n──────── ' + (got ? '席を確保しました（この画面で券種を選んで購入してください）' : '予約ページを開きました（この画面で座席を選んで購入してください）') + ' ────────');
     console.log('  作品: ' + title + ' / ' + date + ' ' + show.time + ' ｼｱﾀｰ' + show.screen);
-    console.log('  空席の狙い目: ' + chosenSeats.join(', ') + '（サイトで選んだ席。実際の選択はこの画面で）');
+    console.log('  座席: ' + (got || chosenSeats.join(', ') + '（狙い目。この画面で選択）'));
     console.log('  現在の画面: ' + page.url());
-    console.log('  ▶ この画面で「座席」→「券種」を選び、購入まで進めてください（新文芸坐は自動確保に非対応）。');
+    console.log('  ▶ この画面で券種を選び、購入まで進めてください（券種は自動選択しません）。');
     console.log('  ※ カード情報はツールでは扱いません（人間が入力）。');
   } else {
     console.log('\n──────── 席を確保しました（このブラウザで決済してください） ────────');
