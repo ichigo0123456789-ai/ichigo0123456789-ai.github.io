@@ -122,6 +122,18 @@ Sunshine.prototype.fetchSchedule = async function (dateStr) {
   return Object.keys(movies).map(function (t) { return movies[t]; });
 };
 
+/** 発売前の先読み（runner の事前準備で呼ばれる）：券種一覧(COA・約4秒)とレイアウトを取っておき、T0 の openShow を軽くする */
+Sunshine.prototype.prewarm = async function (show) {
+  var p = (show && show.params) || {}; var eventId = p.eventId || (show && show.showId); if (!eventId) return;
+  var q = 'theaterCode=' + p.theaterCode + '&dateJouei=' + p.dateJouei + '&titleCode=' + p.titleCode + '&titleBranchNum=' + p.titleBranchNum + '&timeBegin=' + p.timeBegin;
+  var self = this;
+  await Promise.all([
+    this._layouts().catch(function () {}),
+    (this._ticketsFor === eventId && this._tickets) ? Promise.resolve() : this._front('/api/master/getSalesTickets?' + q + '&flgMember=0').then(function (t) { self._tickets = t || []; self._ticketsFor = eventId; }).catch(function () {})
+  ]);
+  return { ok: true, tickets: (this._tickets || []).length };
+};
+
 /** 上映回を開く：回の情報(coaInfo)＋券種＋レイアウト → passport → 取引開始 */
 Sunshine.prototype.openShow = async function (show) {
   var p = (show && show.params) || {}; var eventId = p.eventId || (show && show.showId);

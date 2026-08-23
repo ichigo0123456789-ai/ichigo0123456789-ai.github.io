@@ -133,11 +133,16 @@ async function syncServerClock(k, samples) {
  * 最後の数十msはビジースピンでミリ秒精度に寄せる。待機中は keepAlive を回す。
  * 発火した実時刻(ms)を返す。
  */
-async function waitUntil(fireAt, keepAlive, onApproach) {
-  var lastPing = Date.now(), lastSec = -1, lastMin = -1, approached = false;
+async function waitUntil(fireAt, keepAlive, onApproach, onEarly) {
+  var lastPing = Date.now(), lastSec = -1, lastMin = -1, approached = false, early = false;
   while (true) {
     var remain = fireAt - Date.now();
     if (remain <= 0) break;
+    // 発火の約20秒前に一度だけ「チェーン固有の先読み」（券種一覧など数秒かかるものをここで済ませる）
+    if (onEarly && !early && remain <= 20000) {
+      early = true;
+      try { await onEarly(); } catch (e) { log('先読みで警告: ' + e.message); }
+    }
     // 発火の約1.6秒前に一度だけ「接続ウォームアップ＋予約URL先読み」を実行
     if (onApproach && !approached && remain <= 1600) {
       approached = true;
@@ -273,14 +278,24 @@ async function enterSeatMap(k, show, creds) {
       var re = await k.login(creds.email, creds.password);
       log(re.ok ? '✓ 再ログイン成功' : '✗ 再ログイン失敗: ' + re.reason);
     };
+    var prewarmed = false;
+    // ③ チェーン固有の先読み（券種一覧・座席レイアウトなど発売前でも取れるもの。席の先取りはしない）。約20秒前に実行
+    var onEarly = async function () {
+      if (!k.prewarm) return;
+      var ps = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
+      if (!ps) { log('先読み: 予約導線が未掲載のため T0 直前に再試行'); return; }
+      var t0p = Date.now(); await k.prewarm(ps); prewarmed = true;
+      log('先読み完了（券種・レイアウト等 ' + (Date.now() - t0p) + 'ms）');
+    };
     var onApproach = async function () {
       // ② 接続ウォームアップ（TLS/DNSを温める）
       await request({ url: k.homeUrl(), jar: k.jar }).catch(function () {});
       // ① 予約URL先読み（発売前でも取れれば T=0 の番組表取得を省ける）
       preShow = await resolveShowOnce(k, date, title, time).catch(function () { return null; });
+      if (preShow && k.prewarm && !prewarmed) { try { await k.prewarm(preShow); prewarmed = true; } catch (e) { log('先読み（prewarm）失敗・続行: ' + e.message); } }
       log(preShow ? '事前準備OK（予約URLを先読み・接続ウォーム済み）' : '事前準備OK（接続ウォーム済み。予約URLは発売時に取得）');
     };
-    var fired = await waitUntil(fireAt, keepAlive, onApproach);
+    var fired = await waitUntil(fireAt, keepAlive, onApproach, onEarly);
     var firedServer = fired + clockOffset;
     var diff = firedServer - targetLocal;
     log('発火: ローカル ' + fmtMs(fired) + ' ／ サーバ時刻換算 ' + fmtMs(firedServer) +

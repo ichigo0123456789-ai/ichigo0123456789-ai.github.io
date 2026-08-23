@@ -110,6 +110,23 @@ Cinecitta.prototype.fetchSchedule = async function (dateStr) {
   return Object.keys(movies).map(function (t) { return movies[t]; });
 };
 
+/** 発売前の先読み：座席レイアウト（セクション・座席一覧）を取っておき、T0 の openShow を軽くする */
+Cinecitta.prototype.prewarm = async function (show) {
+  var p = (show && show.params) || {}; var eventId = p.eventId || (show && show.showId); if (!eventId) return;
+  var evs = await this._get(C + '/projects/' + this.project + '/events?limit=1&page=1&typeOf=ScreeningEvent&id%5B%24eq%5D=' + eventId);
+  var e = (evs || [])[0]; if (!e) return; var room = (e.location || {}).branchCode;
+  if (this._seats && this._seatsRoom === room) return { ok: true };
+  var base = C + '/projects/' + this.project + ':' + this._seller.id;
+  this._sections = await this._all(base + '/seatSections?movieTheaterCode=' + this.theaterCode + '&roomCode=' + room);
+  var seats = {};
+  for (var i = 0; i < this._sections.length; i++) {
+    var sc = this._sections[i].branchCode;
+    (await this._all(base + '/seats?movieTheaterCode=' + this.theaterCode + '&roomCode=' + room + '&sectionCode=' + sc)).forEach(function (s) { seats[s.branchCode] = Object.assign({ section: sc }, s); });
+  }
+  this._seats = seats; this._seatsRoom = room;
+  return { ok: true, seats: Object.keys(seats).length };
+};
+
 /** 上映回を開く＝最新の回情報＋座席一覧を取り、入場券(passport)→取引開始まで済ませる。
  *  発売前なら kind='notonsale'、混雑(waiter が 429/503)なら kind='waiting' として ok:false を返す。 */
 Cinecitta.prototype.openShow = async function (show) {
