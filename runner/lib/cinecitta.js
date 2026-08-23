@@ -33,6 +33,7 @@ function Cinecitta(opt) {
   this.name = opt.name || 'チネチッタ';
   this.jar = new CookieJar();
   this.base = R; this.chain = 'cinecitta'; this.guestOk = true;
+  this.termsNote = 'CiNE-T の座席画面「利用規約に同意して次へ」は runner が API で代行できません。利用規約に同意のうえ使ってください。引き継いだブラウザの券種選択では「非会員」を選んで進めます（確保はゲストで行っています）。';
   this._cred = null; this._seller = null; this._theater = null;
   this._event = null; this._catalog = {}; this._sections = null; this._seats = null; this._txn = null; this._auth = null; this._kind = null;
 }
@@ -135,20 +136,6 @@ Cinecitta.prototype.openShow = async function (show) {
     }
     this._seats = seats; this._seatsRoom = room;
   }
-  if (!this._catalog.eventId || this._catalog.eventId !== eventId) {
-    var P = C + '/projects/' + this.project; var sup = e.superEvent || {}; var wp = sup.workPerformed || {};
-    var c = { eventId: eventId };
-    var rs = await Promise.all([
-      this._get(P + '/eventSeries?location%5BbranchCode%5D%5B%24eq%5D=' + this.theaterCode + '&id%5B%24in%5D%5B0%5D=' + sup.id + '&page=1&limit=100&typeOf=ScreeningEventSeries'),
-      this._get(P + '/creativeWorks/movie?page=1&limit=100&identifier%5B%24in%5D%5B0%5D=' + wp.identifier),
-      this._get(P + '/places/ScreeningRoom?branchCode%5B%24eq%5D=' + room + '&containedInPlace%5BbranchCode%5D%5B%24eq%5D=' + this.theaterCode + '&page=1&limit=100'),
-      this._get(P + '/events/' + eventId + '/hasOfferCatalog?limit=10&page=1&typeOf=ScreeningEvent').catch(function () { return []; })
-    ]);
-    c.series = (rs[0] || [])[0] || null; c.movie = (rs[1] || [])[0] || null; c.screen = (rs[2] || [])[0] || null;
-    var cat = (rs[3] || [])[0]; c.items = [];
-    if (cat && cat.id) { try { c.items = await this._all(P + '/events/' + eventId + '/offerCatalogItems?includedInDataCatalog%5Bid%5D=' + cat.id); } catch (err) { c.items = []; } }
-    this._catalog = c;
-  }
   // 3) 入場券 → 取引開始（既に有効な取引があれば使い回す）
   if (this._txn && new Date(this._txn.expires).getTime() - Date.now() > 3 * 60000) { this._kind = 'seat'; return { ok: true, url: R + '/#/purchase/cinema/seat', txn: this._txn.id }; }
   var pr = await this._api('POST', W + '/projects/' + this.project + '/passports', { scope: 'Transaction:PlaceOrder:' + this._seller.id });
@@ -163,6 +150,25 @@ Cinecitta.prototype.openShow = async function (show) {
   }
   this._txn = st.json; this._auth = null; this._kind = 'seat';
   return { ok: true, url: R + '/#/purchase/cinema/seat', txn: st.json.id, expires: st.json.expires };
+};
+
+/** 引き継ぎ用カタログ（作品・シリーズ・スクリーン・券種カタログ）を取る。確保後に runner から呼ばれる（T0 の経路には入れない） */
+Cinecitta.prototype.prepareHandoff = async function () {
+  var e = this._event; if (!e) return; var eventId = e.id; var room = (e.location || {}).branchCode;
+  if (!this._catalog.eventId || this._catalog.eventId !== eventId) {
+    var P = C + '/projects/' + this.project; var sup = e.superEvent || {}; var wp = sup.workPerformed || {};
+    var c = { eventId: eventId };
+    var rs = await Promise.all([
+      this._get(P + '/eventSeries?location%5BbranchCode%5D%5B%24eq%5D=' + this.theaterCode + '&id%5B%24in%5D%5B0%5D=' + sup.id + '&page=1&limit=100&typeOf=ScreeningEventSeries'),
+      this._get(P + '/creativeWorks/movie?page=1&limit=100&identifier%5B%24in%5D%5B0%5D=' + wp.identifier),
+      this._get(P + '/places/ScreeningRoom?branchCode%5B%24eq%5D=' + room + '&containedInPlace%5BbranchCode%5D%5B%24eq%5D=' + this.theaterCode + '&page=1&limit=100'),
+      this._get(P + '/events/' + eventId + '/hasOfferCatalog?limit=10&page=1&typeOf=ScreeningEvent').catch(function () { return []; })
+    ]);
+    c.series = (rs[0] || [])[0] || null; c.movie = (rs[1] || [])[0] || null; c.screen = (rs[2] || [])[0] || null;
+    var cat = (rs[3] || [])[0]; c.items = [];
+    if (cat && cat.id) { try { c.items = await this._all(P + '/events/' + eventId + '/offerCatalogItems?includedInDataCatalog%5Bid%5D=' + cat.id); } catch (err) { c.items = []; } }
+    this._catalog = c;
+  }
 };
 
 /** 座席状況 → { 'I-17': {id,row,num,state,section} } state: available|taken */

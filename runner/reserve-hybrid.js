@@ -29,6 +29,7 @@ const { Kinezo } = require('./lib/kinezo');
 const { K109 } = require('./lib/k109');
 const { Toho } = require('./lib/toho');
 const { Cinecitta } = require('./lib/cinecitta');
+const { Sunshine } = require('./lib/sunshine');
 const { loadCreds } = require('./config');
 const { request } = require('./lib/http');
 
@@ -71,7 +72,9 @@ function tohoTheater(key) {
 }
 /* チネチッタ川崎（SMART THEATER / cinerino API。lib/cinecitta.js。ゲスト購入） */
 var THEATERS_OTHER = {
-  cinecitta: { chain: 'cinecitta', project: 'cinecitta-production', theaterCode: '001', name: 'チネチッタ' }
+  cinecitta: { chain: 'cinecitta', project: 'cinecitta-production', theaterCode: '001', name: 'チネチッタ' },
+  /* シネマサンシャイン（cinerino + COA。lib/sunshine.js。ゲスト購入） */
+  gdcs: { chain: 'sunshine', theaterCode: '020', slug: 'gdcs', name: 'グランドシネマサンシャイン 池袋' }
 };
 var THEATER_KEY = String(arg('theater', 'yokohama')).toLowerCase();
 var TH = THEATERS[THEATER_KEY] || THEATERS_109[THEATER_KEY] || THEATERS_OTHER[THEATER_KEY] || tohoTheater(THEATER_KEY);
@@ -81,6 +84,7 @@ function makeAdapter(th) {
   if (th.chain === '109') return new K109({ alias: th.alias, name: th.name });
   if (th.chain === 'toho') return new Toho({ code: th.code, name: th.name });
   if (th.chain === 'cinecitta') return new Cinecitta({ project: th.project, theaterCode: th.theaterCode, name: th.name });
+  if (th.chain === 'sunshine') return new Sunshine({ theaterCode: th.theaterCode, slug: th.slug, name: th.name });
   return new Kinezo({ theaterPath: th.path, theaterId: th.id });
 }
 function ts() { var d = new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
@@ -161,9 +165,15 @@ async function waitUntil(fireAt, keepAlive, onApproach) {
 /** 対象上映回を1回だけ探す（予約導線が無ければ null）。 */
 async function resolveShowOnce(k, date, title, time) {
   var sched = await k.fetchSchedule(date);
-  var movie = sched.find(function (m) { return m.title.indexOf(title) >= 0; });
-  if (!movie) return null;
-  return movie.shows.find(function (s) { return s.time === time && s.reserveUrl; }) || null;
+  // 同名作品が複数版（字幕/吹替/IMAX 等）あるので、部分一致した全作品から時刻一致の回を探す（完全一致タイトルを優先）
+  var norm = function (t) { return String(t || '').replace(/^0/, ''); };
+  var movies = sched.filter(function (m) { return m.title.indexOf(title) >= 0; });
+  movies.sort(function (a, b) { return (a.title === title ? 0 : 1) - (b.title === title ? 0 : 1); });
+  for (var i = 0; i < movies.length; i++) {
+    var hit = movies[i].shows.find(function (s) { return norm(s.time) === norm(time) && s.reserveUrl; });
+    if (hit) return hit;
+  }
+  return null;
 }
 
 /** 対象上映回を解決。発売直後は予約導線が出るまで遅延があるので短間隔でリトライ。 */
@@ -220,6 +230,7 @@ async function enterSeatMap(k, show, creds) {
 
   var k = makeAdapter(TH);
   await k.init();
+  if (k.termsNote) log('※ ' + k.termsNote);
 
   // 1) ログイン（HTTP）。--at より前に済ませる＝発売時のロスにならない。
   //    認証情報が無いチェーン（TOHO など）はゲスト（ログインせずに購入）で進める。
@@ -337,7 +348,8 @@ async function enterSeatMap(k, show, creds) {
   var browser = await chromium.launch({ headless: false, args: ['--no-first-run', '--no-default-browser-check'] });
   var ctx = await browser.newContext({ locale: 'ja-JP' });
   await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE));
-  if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ）は取引状態を sessionStorage に注入して引き継ぐ
+  if (k.prepareHandoff) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
+  if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
   var page = await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
   await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
