@@ -1454,10 +1454,13 @@
         if (!seen && !j.done) setReserveChip('hunting');
         if (j.done) {
           clearInterval(iv);
+          var openOnly = j.log.some(function (l) { return /自動確保に非対応|予約ページを開きました/.test(l); });
           var ok = j.code === 0 && !j.log.some(function (l) { return /確保できません|取れませ|売切/.test(l); });
           setReserveChip(ok ? 'held' : 'failed');
           pushLog({ rel: (Date.now() - (S.runStart || Date.now())) / 1000, level: 'info',
-            msg: ok ? '✓ 席を確保しました。開いた決済ブラウザ（Brave/Chrome）で券種選択・支払いを進めてください（券種は自動選択しません）。' : '予約プロセスが終了しました。ログを確認してください。' });
+            msg: !ok ? '予約プロセスが終了しました。ログを確認してください。'
+              : openOnly ? '開いたブラウザの予約ページで、座席を選んで券種選択→購入を進めてください（新文芸坐は予約サイトの仕様上、自動確保に非対応です）。'
+              : '✓ 席を確保しました。開いた決済ブラウザ（Brave/Chrome）で券種選択・支払いを進めてください（券種は自動選択しません）。' });
         }
       }).catch(function () { /* 一時的な失敗は無視して次のポーリングへ */ });
     }, 700);
