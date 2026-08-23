@@ -24,6 +24,8 @@
      → 第1候補 G-10,G-11 が埋まっていれば F-10,F-11 → H-8,H-9 の順で自動確保。
    ============================================================ */
 'use strict';
+const fs = require('fs');
+const path = require('path');
 
 const { Kinezo } = require('./lib/kinezo');
 const { K109 } = require('./lib/k109');
@@ -86,6 +88,19 @@ function makeAdapter(th) {
   if (th.chain === 'cinecitta') return new Cinecitta({ project: th.project, theaterCode: th.theaterCode, name: th.name });
   if (th.chain === 'sunshine') return new Sunshine({ theaterCode: th.theaterCode, slug: th.slug, name: th.name });
   return new Kinezo({ theaterPath: th.path, theaterId: th.id });
+}
+/** 手元のブラウザ実行ファイルを探す（Windows / macOS の標準配置） */
+function findBrowserExe(name) {
+  var home = process.env.USERPROFILE || process.env.HOME || '';
+  var local = process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local');
+  var pf = process.env['ProgramFiles'] || 'C:\\Program Files', pf86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
+  var cands = {
+    brave: [path.join(local, 'BraveSoftware', 'Brave-Browser', 'Application', 'brave.exe'), path.join(pf, 'BraveSoftware', 'Brave-Browser', 'Application', 'brave.exe'), path.join(pf86, 'BraveSoftware', 'Brave-Browser', 'Application', 'brave.exe'), '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser'],
+    chrome: [path.join(pf, 'Google', 'Chrome', 'Application', 'chrome.exe'), path.join(pf86, 'Google', 'Chrome', 'Application', 'chrome.exe'), path.join(local, 'Google', 'Chrome', 'Application', 'chrome.exe'), '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'],
+    edge: [path.join(pf86, 'Microsoft', 'Edge', 'Application', 'msedge.exe'), path.join(pf, 'Microsoft', 'Edge', 'Application', 'msedge.exe')]
+  }[name] || [];
+  for (var i = 0; i < cands.length; i++) { try { if (fs.existsSync(cands[i])) return cands[i]; } catch (e) {} }
+  return null;
 }
 function ts() { var d = new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
 function fmtMs(t) { var d = new Date(t); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
@@ -371,12 +386,27 @@ async function enterSeatMap(k, show, creds) {
     console.log('（この端末のログインセッションは終了するため、仮予約は時間切れになる場合があります）');
     process.exit(0);
   }
-  var browser = await chromium.launch({ headless: false, args: ['--no-first-run', '--no-default-browser-check'] });
-  var ctx = await browser.newContext({ locale: 'ja-JP' });
+  // 決済ブラウザ：既定は Brave（入っていれば）＋ runner 専用の「永続プロファイル」。
+  //   一度ログイン／カードを保存すれば次回以降も残る（Chromium 136 以降は普段使いの既定プロファイルを自動操作できないため、専用プロファイルを使う）。
+  //   --browser brave|chrome|chromium  --profile <dir>  --fresh（毎回まっさらな一時プロファイル）
+  var launchArgs = ['--no-first-run', '--no-default-browser-check'];
+  var want = String(arg('browser', '')).toLowerCase();
+  var exe = findBrowserExe(want || 'brave') || (want ? findBrowserExe(want) : null);
+  if (want && want !== 'chromium' && !exe) log('指定ブラウザ ' + want + ' が見つからないため Playwright 内蔵 Chromium で開きます');
+  var ctx, browser = null;
+  if (arg('fresh', false) === true) {
+    browser = await chromium.launch(Object.assign({ headless: false, args: launchArgs }, exe ? { executablePath: exe } : {}));
+    ctx = await browser.newContext({ locale: 'ja-JP' });
+  } else {
+    var profDir = path.resolve(String(arg('profile', path.join(__dirname, '.browser-profile', exe ? path.basename(path.dirname(path.dirname(path.dirname(exe)))).toLowerCase() : 'chromium'))));
+    try { fs.mkdirSync(profDir, { recursive: true }); } catch (e) {}
+    ctx = await chromium.launchPersistentContext(profDir, Object.assign({ headless: false, locale: 'ja-JP', viewport: null, args: launchArgs }, exe ? { executablePath: exe } : {}));
+    log('決済ブラウザ: ' + (exe ? exe : 'Playwright Chromium') + ' ／ プロファイル: ' + profDir + '（ログイン・カード情報はここに残ります）');
+  }
   await ctx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE));
   if (k.prepareHandoff) await k.prepareHandoff().catch(function (e) { log('引き継ぎ情報の取得に失敗（続行）: ' + e.message); });
   if (k.handoffInitScript) await ctx.addInitScript(k.handoffInitScript()); // SPA 型（チネチッタ／シネマサンシャイン）は取引状態を sessionStorage に注入して引き継ぐ
-  var page = await ctx.newPage();
+  var page = (ctx.pages && ctx.pages().length) ? ctx.pages()[0] : await ctx.newPage();
   var target = (k.handoffUrl && k.handoffUrl()) || hr.ticketUrl || (BASE + '/' + TH.path + '/reservation/choice_ticket');
   await page.goto(target, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
   // 券種画面でなくログイン等に飛ばされたら、座席画面から続ける保険
