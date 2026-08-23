@@ -7,7 +7,8 @@
     "reserve": "node reserve.js",
     "reserve:browser": "node reserve-browser.js",
     "probe": "node probe.js",
-    "serve": "node serve.js"
+    "serve": "node serve.js",
+    "doctor": "node doctor.js"
   },
   "dependencies": {
     "playwright": "^1.48.0"

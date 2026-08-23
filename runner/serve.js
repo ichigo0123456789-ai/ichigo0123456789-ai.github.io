@@ -311,13 +311,19 @@ const server = http.createServer(async function (req, res) {
   sendJson(res, 404, { ok: false, error: 'not found' });
 });
 
-server.listen(PORT, '127.0.0.1', function () {
-  console.log('番組表サーバ起動: http://127.0.0.1:' + PORT + '  （Ctrl+C で停止）');
-  console.log('');
-  console.log('  ★ サイトはこのURLで開いてください（実番組表・実座席図が確実に動きます）:');
-  console.log('      http://127.0.0.1:' + PORT + '/');
-  console.log('');
-  console.log('  ※ https のデプロイ版（github.io）からでも接続を試みますが、ブラウザの制限で');
-  console.log('     ローカルへ繋げないことがあります。上のローカルURLなら同一オリジンで確実です。');
-  console.log('  health   : http://127.0.0.1:' + PORT + '/health');
-});
+/* 直接実行したときだけサーバを起動する（require で読み込んでも起動しない）。
+   これにより doctor.js が getSchedule/getSeatMap を再利用できる。 */
+if (require.main === module) {
+  server.listen(PORT, '127.0.0.1', function () {
+    console.log('番組表サーバ起動: http://127.0.0.1:' + PORT + '  （Ctrl+C で停止）');
+    console.log('');
+    console.log('  ★ サイトはこのURLで開いてください（実番組表・実座席図が確実に動きます）:');
+    console.log('      http://127.0.0.1:' + PORT + '/');
+    console.log('');
+    console.log('  ※ https のデプロイ版（github.io）からでも接続を試みますが、ブラウザの制限で');
+    console.log('     ローカルへ繋げないことがあります。上のローカルURLなら同一オリジンで確実です。');
+    console.log('  health   : http://127.0.0.1:' + PORT + '/health');
+  });
+}
+
+module.exports = { getSchedule: getSchedule, getSeatMap: getSeatMap, PORT: PORT };
