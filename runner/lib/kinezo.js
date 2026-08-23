@@ -56,7 +56,12 @@ function Kinezo(opt) {
   this.theaterId = opt.theaterId;
   this.jar = new CookieJar();
   this.csrf = null;
+  this.base = BASE; this.chain = 'kinezo';
 }
+/** 劇場トップURL（時刻同期・接続ウォームアップ・ログイン判定に使う）。他チェーンのアダプタと共通の面。 */
+Kinezo.prototype.homeUrl = function () { return BASE + '/' + this.theaterPath; };
+/** 確保後にブラウザで開くURL（券種選択）。 */
+Kinezo.prototype.handoffUrl = function () { return this._ticketUrl || null; };
 
 /** 劇場トップを開いて CSRF とセッションを確立 */
 Kinezo.prototype.init = async function () {

@@ -1456,9 +1456,9 @@
       /* 劇場を runner の --theater キーに変換（KINEZO 劇場パス → キー）。
          横浜は既定なので省略。対応表は runner/reserve-hybrid.js の THEATERS と揃える。 */
       var th = D.theater(S.plan.theaterId);
-      var kinezoPath = th && th.kinezo && th.kinezo.path;
-      var THEATER_KEYS = { 'shinjuku_wald9': 'wald9', 't-joy_kyoto': 'kyoto', 't-joy_umeda': 'umeda', 'yokohama_burg13': 'burg13' };
-      if (kinezoPath && THEATER_KEYS[kinezoPath]) parts.push('--theater ' + THEATER_KEYS[kinezoPath]);
+      /* 各劇場エントリの runnerKey をそのまま使う（チェーン共通）。横浜は runner の既定なので省略。 */
+      var runnerKey = th && th.runnerKey;
+      if (runnerKey && runnerKey !== 'yokohama') parts.push('--theater ' + runnerKey);
       parts.push('--date ' + S.plan.date,
         '--title ' + cmdQuote(S.plan.title),
         '--time ' + S.plan.showtime,

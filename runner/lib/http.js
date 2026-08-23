@@ -41,6 +41,21 @@ class CookieJar {
   }
 }
 
+
+/* 文字コードを見て本文をデコードする。109/TOHO など Shift_JIS の旧来サイト向け。
+   Content-Type の charset → 先頭2KBの <meta charset> → utf8 の順で判定。 */
+function decodeBody(buf, contentType) {
+  var cs = (String(contentType || '').match(/charset=["']?([a-z0-9_-]+)/i) || [])[1];
+  if (!cs) {
+    var head = buf.slice(0, 2048).toString('latin1');
+    cs = (head.match(/<meta[^>]*charset=["']?([a-z0-9_-]+)/i) || [])[1];
+  }
+  cs = (cs || 'utf-8').toLowerCase().replace(/^x-/, '');
+  if (cs === 'shift-jis' || cs === 'sjis' || cs === 'windows-31j' || cs === 'ms932') cs = 'shift_jis';
+  if (cs === 'utf8') cs = 'utf-8';
+  try { return new TextDecoder(cs).decode(buf); } catch (e) { return buf.toString('utf8'); }
+}
+
 /** プロキシ環境なら CONNECT トンネルの socket を、なければ null（直結）を返す */
 function connectSocket(host, port) {
   var proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
@@ -102,7 +117,7 @@ async function request(opt) {
     var req = lib.request(reqOpts, (r) => {
       var chunks = [];
       r.on('data', (c) => chunks.push(c));
-      r.on('end', () => resolve({ status: r.statusCode, headers: r.headers, body: Buffer.concat(chunks).toString('utf8') }));
+      r.on('end', () => { var buf = Buffer.concat(chunks); resolve({ status: r.statusCode, headers: r.headers, buf: buf, body: decodeBody(buf, r.headers['content-type']) }); });
     });
     req.on('error', reject);
     req.setTimeout(30000, () => req.destroy(new Error('request timeout')));
