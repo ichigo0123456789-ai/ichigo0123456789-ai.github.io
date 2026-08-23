@@ -288,6 +288,30 @@ async function enterSeatMap(k, show, creds) {
   } else {
     log('認証情報なし → ゲスト（ログインせずに購入）で進めます');
   }
+  // ---- 109 ブラウザログイン（#id が 0x0 で非表示のため、fill でなく evaluate で値設定＋送信＝約1秒） ----
+  async function login109(page, li, creds) {
+    // 既にログイン済みなら再利用（発売前ログインの永続化・二重ログイン回避）
+    var home = li.homeUrl || (k.homeUrl && k.homeUrl());
+    if (home) {
+      await page.goto(home, { waitUntil: 'domcontentloaded', timeout: 20000 }).catch(function () {});
+      var already = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+      if (already) return true;
+    }
+    await page.goto(li.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    await page.waitForSelector('#id', { state: 'attached', timeout: 15000 }).catch(function () {});
+    var res = await page.evaluate(function (c) {
+      var id = document.getElementById('id'), pw = document.getElementById('pw');
+      if (!id || !pw) return 'no-input';
+      id.value = c.id; pw.value = c.pw;
+      id.dispatchEvent(new Event('input', { bubbles: true })); pw.dispatchEvent(new Event('input', { bubbles: true }));
+      var f = document.forms['loginfrm'] || id.form || document.querySelector('form'); if (!f) return 'no-form';
+      HTMLFormElement.prototype.submit.call(f); return 'submitted';
+    }, { id: creds.email, pw: creds.password }).catch(function (e) { return 'err:' + e.message.slice(0, 40); });
+    if (res !== 'submitted') { log('109ログイン: フォーム操作に失敗（' + res + '）'); return false; }
+    // login.cgi を離れる or logoff リンク出現をタイトにポーリング（最大15秒）
+    await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 15000, polling: 200 }).catch(function () {});
+    return await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+  }
   // ---- 決済ブラウザ（Brave 常駐・専用プロファイル）を必要時に一度だけ用意する ----
   var _pb = null, _preLoggedIn = false;
   async function ensurePaymentBrowser() {
@@ -328,14 +352,7 @@ async function enterSeatMap(k, show, creds) {
     var page = (!pb.external && pb.ctx.pages().length) ? pb.ctx.pages()[0] : await pb.ctx.newPage();
     page.on('dialog', function (d) { d.accept().catch(function () {}); });
     log('発売前ログインを実行します（' + maskEmail(creds.email) + '）');
-    try { await pb.ctx.clearCookies({ domain: li.cookieDomain }); } catch (e) { try { await pb.ctx.clearCookies(); } catch (e2) {} }
-    await page.goto(li.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
-    await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
-    await page.fill('#id', creds.email).catch(function () {});
-    await page.fill('#pw', creds.password).catch(function () {});
-    await page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {});
-    await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 25000 }).catch(function () {});
-    _preLoggedIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+    _preLoggedIn = await login109(page, li, creds);
     log(_preLoggedIn ? '✓ 発売前ログイン完了（T0 ではログインを省略します）' : '△ 発売前ログインを確認できず（T0 で再ログインします）');
   }
 
@@ -488,15 +505,8 @@ async function enterSeatMap(k, show, creds) {
     if (_preLoggedIn) {
       log('発売前ログイン済み → ログインを省略して座席確保へ');
     } else {
-      try { await ctx.clearCookies({ domain: holdPlan.cookieDomain }); } catch (e) { try { await ctx.clearCookies(); } catch (e2) {} }
-      await page.goto(holdPlan.loginUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
       log('ブラウザで109にログインします（' + maskEmail(creds.email) + '）');
-      await page.waitForSelector('#id', { timeout: 15000 }).catch(function () {});
-      await page.fill('#id', creds.email).catch(function () {});
-      await page.fill('#pw', creds.password).catch(function () {});
-      await page.evaluate(function () { var f = document.forms['loginfrm'] || document.querySelector('form'); if (f) HTMLFormElement.prototype.submit.call(f); }).catch(function () {});
-      await page.waitForFunction(function () { return location.href.indexOf('login.cgi') < 0 || /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }, null, { timeout: 25000 }).catch(function () {});
-      var nowIn = await page.evaluate(function () { return /logoff\.cgi|ログアウト/.test(document.documentElement.innerHTML); }).catch(function () { return false; });
+      var nowIn = await login109(page, { loginUrl: holdPlan.loginUrl, cookieDomain: holdPlan.cookieDomain, homeUrl: k.homeUrl() }, creds);
       log(nowIn ? '✓ 109 ログイン成功（ブラウザ）' : '△ ログイン状態を確認できません（そのまま座席選択を試みます）');
     }
     // 座席ページ → 座席AJAXの描画を待つ
