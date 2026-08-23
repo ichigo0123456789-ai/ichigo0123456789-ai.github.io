@@ -141,6 +141,23 @@
         asOf: '2026-08-23'
       }
     },
+    eigaland: {
+      id: 'eigaland',
+      name: '映画ランド（eigaland）',
+      onSaleRule: { daysBefore: 7, time: '00:00' },
+      note: '新文芸坐ほか eigaland 系。発売時刻は上映回ごとに異なる（週替わりでまとめて掲載）。正確な発売時刻は予約サイト/APIの値を使う。ゲスト購入可・会員先行あり。',
+      memberProgram: '友の会など',
+      rules: {
+        maxSeats: 4,
+        singleGap: { enforce: false, warn: true, note: '席の間隔ルールは未確認' },
+        notes: [
+          'ゲスト購入可（会員なら会員先行）',
+          '一度に選べる座席は最大4席',
+          '確保(holdSeat)は約0.2秒。券種・決済は人間がブラウザで続ける'
+        ],
+        asOf: '2026-08-23'
+      }
+    },
     toho: {
       id: 'toho',
       name: 'TOHOシネマズ（vit）',
@@ -2577,6 +2594,36 @@
         row('Q', [[1,10],[31,40]]),
         row('R', [[5,20],[31,40]])
       ], { gridWidth: 40 })
+      ]
+    },
+    {
+      id: 'eigaland-shinbungeiza',
+      chain: 'eigaland',
+      name: '新文芸坐',
+      area: '池袋 / 東口',
+      pref: '東京都',
+      map: { x: 620, y: 505 },
+      note: 'eigaland。ゲスト購入可・holdSeat 確保。runner は --theater shinbungeiza。座席は SCR1 実データ 2026-08-23。',
+      runnerKey: 'shinbungeiza',
+      eigaland: { cinemaId: '621c87d50a861337f2dd38ec', brandId: '621c83f80a861337f2dd3715' },
+      screens: [
+      // SCR1：256席
+      screen('s1', 'SCR1', [
+        row('A', [[1,13],[16,19]]),
+        row('B', [[1,13],[16,19]]),
+        row('C', [[2,18]]),
+        row('D', [[1,19]]),
+        row('E', [[1,19]]),
+        row('F', [[1,19]]),
+        row('G', [[1,19]]),
+        row('H', [[2,18]]),
+        row('I', [[2,18]]),
+        row('J', [[1,19]]),
+        row('K', [[1,19]]),
+        row('L', [[1,19]]),
+        row('M', [[1,19]]),
+        row('N', [[1,19]])
+      ], { gridWidth: 19 })
       ]
     }
   ];
