@@ -87,7 +87,8 @@
       id: 'c109',
       name: '109シネマズ',
       onSaleRule: { daysBefore: 2, time: '00:00' },
-      note: '109シネマズのネット販売は上映2日前の0:00から（2025/7〜）。シネマポイント会員は先行販売あり。',
+      memberOnSaleRule: { daysBefore: 3, time: '21:00' },
+      note: '一般は鑑賞日の2日前0:00から。シネマポイント会員は3日前21:00から先行販売（会員なら3日前21:00で予約可）。',
       memberProgram: 'シネマポイント会員',
       rules: {
         maxSeats: 8,

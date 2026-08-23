@@ -132,7 +132,8 @@
   function autoOnSale(plan) {
     var sd = showDate(plan);
     if (!sd) return '';
-    var rule = D.chains[plan.chain].onSaleRule;
+    var ch = D.chains[plan.chain];
+    var rule = ch.memberOnSaleRule || ch.onSaleRule; // 会員先行があればそちらを既定に（本ツールは会員利用前提）
     var d = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate());
     d.setDate(d.getDate() - rule.daysBefore);
     var t = rule.time.split(':');
