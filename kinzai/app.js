@@ -564,7 +564,12 @@ function renderStats() {
   });
 }
 
-$("#navStats").addEventListener("click", () => { renderStats(); show("stats"); });
+$("#navStats").addEventListener("click", () => {
+  // 成績表示中にもう一度押すと閉じてホームへ戻る（トグル）
+  if (views.stats.classList.contains("on")) { goHome(); return; }
+  renderStats();
+  show("stats");
+});
 $("#btnStatsHome").addEventListener("click", goHome);
 $("#btnResetHist").addEventListener("click", () => {
   if (confirm("解答履歴（正誤・チェック）をすべて削除します。よろしいですか？")) {
