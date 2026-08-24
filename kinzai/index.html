@@ -21,6 +21,7 @@
       </div>
     </div>
     <nav class="topnav">
+      <button id="navUser" class="navbtn" hidden>ログイン</button>
       <button id="navStats" class="navbtn">成績</button>
     </nav>
   </div>
@@ -67,6 +68,37 @@
       <button class="btn primary big" id="btnStartShuffle">シャッフル開始</button>
     </div>
     <p class="hint" id="homeHint">解答履歴は端末（ブラウザ）に保存されます。</p>
+    <p class="hint sync-status"></p>
+  </div>
+</section>
+
+<!-- ============ ログイン ============ -->
+<section id="view-login" class="view">
+  <div class="card login-card">
+    <h2 class="card-title" id="loginTitle">ログイン</h2>
+    <div class="login-form">
+      <label class="login-field">
+        <span>ID（半角英数字3〜20文字）</span>
+        <input id="loginId" type="text" autocomplete="username" maxlength="20"
+               placeholder="例: ichigo" autocapitalize="off" autocorrect="off" spellcheck="false">
+      </label>
+      <label class="login-field">
+        <span>PIN（数字4桁）</span>
+        <input id="loginPin" type="password" inputmode="numeric" pattern="[0-9]*"
+               maxlength="4" autocomplete="current-password" placeholder="####">
+      </label>
+      <label class="mark-check">
+        <input type="checkbox" id="chkTakeover" checked>
+        <span>この端末のこれまでの成績をアカウントに引き継ぐ</span>
+      </label>
+      <p class="login-msg" id="loginMsg"></p>
+      <div class="result-actions">
+        <button class="btn primary" id="btnDoLogin">ログイン</button>
+        <button class="btn" id="btnLoginBack">戻る</button>
+      </div>
+      <button class="login-switch" id="btnToRegister">はじめての人はこちら（新規登録）</button>
+      <p class="hint">アカウントを作ると、成績がサーバーに保存され、別の端末でも続きから学習できます。</p>
+    </div>
   </div>
 </section>
 
@@ -153,6 +185,7 @@
     <h2 class="card-title">単元ごとの得点率</h2>
     <div id="statsBody"></div>
     <p class="hint">得点率は各問題の直近の解答で集計しています。</p>
+    <p class="hint sync-status"></p>
   </div>
   <div class="card">
     <h2 class="card-title">履歴の管理</h2>
@@ -169,6 +202,7 @@
   <p>解答履歴はこの端末のブラウザにのみ保存されます。</p>
 </footer>
 
+<script src="config.js"></script>
 <script src="data/zaimu.js"></script>
 <script src="data/houmu.js"></script>
 <script src="data/zeimu.js"></script>

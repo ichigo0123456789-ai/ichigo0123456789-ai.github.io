@@ -40,12 +40,20 @@ SUBJECTS.forEach(s => {
   });
 });
 
-/* ---------- 履歴 (localStorage) ---------- */
-const LS_KEY = "kinzai-dojo-v1";
+/* ---------- アカウント・履歴 (localStorage + サーバー同期) ---------- */
+const SYNC_URL = String(window.KINZAI_SYNC_URL || "").trim();
+const GUEST_KEY = "kinzai-dojo-v1";
+const ACCOUNT_KEY = "kinzai-dojo-account";
 
-function loadStore() {
+let account = null;   // {id, pin} ログイン中のアカウント。null＝ゲスト（従来どおり端末内のみ）
+try { account = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || "null"); } catch (e) { account = null; }
+if (!account || !account.id || !account.pin || !SYNC_URL) account = null;
+
+function lsKey() { return account ? `kinzai-dojo-user-${account.id}` : GUEST_KEY; }
+
+function loadStoreRaw(key) {
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    const raw = localStorage.getItem(key);
     if (raw) {
       const s = JSON.parse(raw);
       if (s && typeof s === "object") return { hist: s.hist || {}, sel: s.sel || null };
@@ -53,10 +61,92 @@ function loadStore() {
   } catch (e) { /* 破損時は初期化 */ }
   return { hist: {}, sel: null };
 }
+function loadStore() { return loadStoreRaw(lsKey()); }
+function saveStoreLocal() {
+  try { localStorage.setItem(lsKey(), JSON.stringify(store)); } catch (e) { /* 容量超過などは無視 */ }
+}
 function saveStore() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) { /* 容量超過などは無視 */ }
+  saveStoreLocal();
+  scheduleSync();
 }
 let store = loadStore();
+
+// 履歴のマージ：問題ごとに解答数(c+w)が多い側を採用、チェック(mark)はOR。
+// 同じデータ同士なら結果が変わらないため、繰り返し実行しても安全
+function mergeHist(a, b) {
+  const out = {};
+  new Set([...Object.keys(a || {}), ...Object.keys(b || {})]).forEach(k => {
+    const x = (a || {})[k], y = (b || {})[k];
+    if (!x || !y) {
+      const p = x || y;
+      out[k] = { c: p.c || 0, w: p.w || 0, last: p.last || null, mark: !!p.mark };
+      return;
+    }
+    const p = ((y.c || 0) + (y.w || 0)) >= ((x.c || 0) + (x.w || 0)) ? y : x;
+    out[k] = { c: p.c || 0, w: p.w || 0, last: p.last || null, mark: !!(x.mark || y.mark) };
+  });
+  return out;
+}
+
+/* ---------- サーバー同期 ---------- */
+let syncTimer = null, syncBusy = false, syncDirty = false;
+
+async function api(body) {
+  const r = await fetch(SYNC_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },  // preflight回避のためtext/plain
+    body: JSON.stringify(body),
+  });
+  return await r.json();
+}
+
+function setSyncStatus(text) {
+  document.querySelectorAll(".sync-status").forEach(el => { el.textContent = text; });
+}
+
+function scheduleSync() {
+  if (!account || !SYNC_URL) return;
+  syncDirty = true;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncNow(), 15000);
+}
+
+async function syncNow() {
+  if (!account || !SYNC_URL || syncBusy) return;
+  syncBusy = true;
+  clearTimeout(syncTimer);
+  try {
+    const res = await api({ action: "sync", id: account.id, pin: account.pin, hist: store.hist });
+    if (res.ok) {
+      store.hist = mergeHist(store.hist, res.hist);
+      saveStoreLocal();
+      syncDirty = false;
+      setSyncStatus(`${account.id}｜同期済み（${new Date().toLocaleTimeString()}）`);
+    } else if (res.error === "wrong_pin" || res.error === "not_found") {
+      setSyncStatus("認証エラー。ログインし直してください");
+    } else if (res.error === "locked") {
+      setSyncStatus("PINエラーが続いたため一時ロック中です");
+    } else {
+      setSyncStatus("同期エラー（成績は端末に保存済み）");
+    }
+  } catch (e) {
+    setSyncStatus("オフライン（成績は端末に保存済み。次回接続時に同期）");
+  } finally {
+    syncBusy = false;
+  }
+}
+
+// タブを閉じる・離れるときに未同期分を送る
+window.addEventListener("pagehide", () => {
+  if (!account || !SYNC_URL || !syncDirty) return;
+  try {
+    fetch(SYNC_URL, {
+      method: "POST", keepalive: true,
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "sync", id: account.id, pin: account.pin, hist: store.hist }),
+    });
+  } catch (e) { /* 無視 */ }
+});
 
 // hist[id] = {c:正解数, w:不正解数, last:"ok"|"ng"|null, mark:bool}
 function histOf(id) {
@@ -83,6 +173,7 @@ const views = {
   quiz:   $("#view-quiz"),
   result: $("#view-result"),
   stats:  $("#view-stats"),
+  login:  $("#view-login"),
 };
 function show(name) {
   Object.values(views).forEach(v => v.classList.remove("on"));
@@ -507,6 +598,7 @@ function showResult() {
   });
 
   show("result");
+  syncNow();   // 演習が一区切りしたタイミングで即同期
 }
 
 $("#btnRetryWrong").addEventListener("click", () => {
@@ -591,10 +683,106 @@ brand.addEventListener("keydown", (e) => {
   if (e.key === "Enter" || e.key === " ") goHome();
 });
 
+/* ============================================================
+   ログイン／アカウント（config.js で同期サーバーURL設定時のみ有効）
+   ============================================================ */
+const navUser = $("#navUser");
+let loginMode = "login";
+
+function updateAccountUI() {
+  if (!SYNC_URL) { navUser.hidden = true; return; }
+  navUser.hidden = false;
+  navUser.textContent = account ? account.id : "ログイン";
+  setSyncStatus(account ? `${account.id} でログイン中` : "未ログイン（成績はこの端末のみに保存されます）");
+}
+
+function setLoginMode(mode) {
+  loginMode = mode;
+  $("#loginTitle").textContent = mode === "login" ? "ログイン" : "新規登録";
+  $("#btnDoLogin").textContent = mode === "login" ? "ログイン" : "登録する";
+  $("#btnToRegister").textContent = mode === "login" ? "はじめての人はこちら（新規登録）" : "アカウントがある人はこちら（ログイン）";
+  $("#loginMsg").textContent = "";
+}
+
+navUser.addEventListener("click", () => {
+  if (account) {
+    if (confirm(`${account.id} からログアウトしますか？\n（この端末はゲストの記録に戻ります。アカウントの成績はサーバーに保存済みです）`)) {
+      syncNow();
+      account = null;
+      localStorage.removeItem(ACCOUNT_KEY);
+      store = loadStore();
+      if (!store.sel) store.sel = {};
+      updateAccountUI();
+      renderShuffleTree();
+      goHome();
+    }
+  } else {
+    setLoginMode("login");
+    show("login");
+  }
+});
+
+$("#btnToRegister").addEventListener("click", () => setLoginMode(loginMode === "login" ? "register" : "login"));
+$("#btnLoginBack").addEventListener("click", goHome);
+$("#btnDoLogin").addEventListener("click", doAuth);
+["loginId", "loginPin"].forEach(idName => {
+  document.getElementById(idName).addEventListener("keydown", (e) => {
+    if (e.key === "Enter") doAuth();
+  });
+});
+
+async function doAuth() {
+  const id = $("#loginId").value.trim();
+  const pin = $("#loginPin").value.trim();
+  const msg = $("#loginMsg");
+  if (!/^[A-Za-z0-9_-]{3,20}$/.test(id)) { msg.textContent = "IDは半角英数字3〜20文字で入力してください（-、_も可）"; return; }
+  if (!/^[0-9]{4}$/.test(pin)) { msg.textContent = "PINは数字4桁で入力してください"; return; }
+  msg.textContent = "通信中…";
+  $("#btnDoLogin").disabled = true;
+  try {
+    const takeover = $("#chkTakeover").checked;
+    const guestHist = loadStoreRaw(GUEST_KEY).hist;
+    const payload = { action: loginMode, id, pin };
+    if (loginMode === "register" && takeover) payload.hist = guestHist;
+    const res = await api(payload);
+    if (!res.ok) {
+      msg.textContent = {
+        id_taken: "そのIDはすでに使われています。別のIDにするか、ログインしてください",
+        not_found: "そのIDは登録されていません（「新規登録」から作成してください）",
+        wrong_pin: "PINが違います",
+        locked: "PINの間違いが続いたため一時ロック中です。10分ほどおいて再試行してください",
+        bad_id: "IDの形式が正しくありません",
+        bad_pin: "PINは数字4桁です",
+      }[res.error] || "エラーが発生しました";
+      return;
+    }
+    account = { id, pin };
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+    // サーバーの履歴と、この端末に残っているアカウントの履歴（＋引き継ぎ指定ならゲスト履歴）をマージ
+    const cached = loadStoreRaw(lsKey());
+    let hist = mergeHist(cached.hist, res.hist || {});
+    if (takeover) hist = mergeHist(hist, guestHist);
+    store = { hist, sel: cached.sel || loadStoreRaw(GUEST_KEY).sel || null };
+    if (!store.sel) store.sel = {};
+    saveStoreLocal();
+    $("#loginPin").value = "";
+    updateAccountUI();
+    renderShuffleTree();
+    goHome();
+    syncNow();   // マージ結果をサーバーへ反映
+  } catch (e) {
+    msg.textContent = "サーバーに接続できませんでした。通信環境を確認してください";
+  } finally {
+    $("#btnDoLogin").disabled = false;
+  }
+}
+
 /* ---------- 初期描画 ---------- */
 renderSubjTabs();
 renderUnitList();
 renderShuffleTree();
 updateShuffleCount();
+updateAccountUI();
+if (account) syncNow();   // 起動時にサーバーの最新成績を取り込む
 
 })();

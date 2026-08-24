@@ -284,6 +284,25 @@ kbd{
 .stat-bar{height:8px;background:#e2e7ef;border-radius:4px;overflow:hidden;margin-top:6px}
 .stat-bar > div{height:100%;background:var(--ok);border-radius:4px}
 
+/* ================= ログイン ================= */
+.login-card{max-width:420px;margin:0 auto 16px}
+.login-form{display:flex;flex-direction:column;gap:14px}
+.login-field{display:flex;flex-direction:column;gap:5px}
+.login-field span{font-size:12.5px;font-weight:700;color:var(--sub)}
+.login-field input{
+  border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;
+  font-size:16px;font-family:inherit;background:#fbfcfe;
+}
+.login-field input:focus{outline:none;border-color:var(--blue);background:#fff}
+#loginPin{letter-spacing:.4em}
+.login-msg{font-size:13px;color:var(--ng);min-height:1.4em;font-weight:600}
+.login-switch{
+  border:0;background:none;color:var(--blue);font-size:13px;font-weight:700;
+  text-decoration:underline;padding:4px 0;align-self:center;
+}
+.sync-status{color:var(--blue-dark)}
+.sync-status:empty{display:none}
+
 /* ================= フッター ================= */
 .foot{max-width:760px;margin:0 auto;padding:0 16px 32px;color:var(--sub);font-size:11.5px;text-align:center}
 
