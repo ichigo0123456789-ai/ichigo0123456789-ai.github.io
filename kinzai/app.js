@@ -97,7 +97,13 @@ async function api(body) {
     headers: { "Content-Type": "text/plain;charset=utf-8" },  // preflight回避のためtext/plain
     body: JSON.stringify(body),
   });
-  return await r.json();
+  const text = await r.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    // JSONでない応答＝Apps Script側の設定不備（ログインページやエラーHTMLが返ってきた）
+    throw new Error("bad_response");
+  }
 }
 
 function setSyncStatus(text) {
@@ -771,7 +777,9 @@ async function doAuth() {
     goHome();
     syncNow();   // マージ結果をサーバーへ反映
   } catch (e) {
-    msg.textContent = "サーバーに接続できませんでした。通信環境を確認してください";
+    msg.textContent = e && e.message === "bad_response"
+      ? "サーバーの応答が不正です（Apps Scriptのデプロイ設定「アクセス: 全員」と、最新コードのデプロイを確認してください）"
+      : "サーバーに接続できませんでした（通信環境、またはApps Scriptのデプロイ設定を確認してください）";
   } finally {
     $("#btnDoLogin").disabled = false;
   }
