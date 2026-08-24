@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1e5aa8">
+<title>金財試験 過去問道場｜財務・法務・税務</title>
+<meta name="description" content="金財試験対策の一問一答。財務・法務・税務の理解度チェックテスト・〇×問題・練習問題を、順番・シャッフルで演習。解答履歴はブラウザに保存。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header class="top">
+  <div class="in">
+    <div class="brand" id="brandHome" role="button" tabindex="0" title="ホームへ戻る">
+      <div class="mark">金</div>
+      <div>
+        <h1>金財試験 過去問道場</h1>
+        <p class="sub">財務・法務・税務 一問一答</p>
+      </div>
+    </div>
+    <nav class="topnav">
+      <button id="navStats" class="navbtn">成績</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ ホーム ============ -->
+<section id="view-home" class="view on">
+
+  <div class="card">
+    <h2 class="card-title">順番に解く</h2>
+    <div class="tabs" id="subjTabs"></div>
+    <div class="unit-list" id="unitList"></div>
+    <p class="hint">単元を選ぶと問題一覧が開き、好きな問題から順番に解けます。</p>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">シャッフルで解く</h2>
+    <p class="hint" style="margin:0 0 10px">出題したい単元にチェックを入れて開始します。</p>
+    <div id="shuffleTree"></div>
+
+    <div class="opt-row">
+      <span class="opt-label">出題範囲</span>
+      <div class="seg" id="optRange">
+        <button class="seg-btn on" data-val="all">すべて</button>
+        <button class="seg-btn" data-val="wrong">間違えた問題</button>
+        <button class="seg-btn" data-val="unseen">未解答</button>
+        <button class="seg-btn" data-val="marked">チェック済み</button>
+      </div>
+    </div>
+
+    <div class="opt-row">
+      <span class="opt-label">出題数</span>
+      <div class="seg" id="optCount">
+        <button class="seg-btn" data-val="10">10問</button>
+        <button class="seg-btn on" data-val="25">25問</button>
+        <button class="seg-btn" data-val="50">50問</button>
+        <button class="seg-btn" data-val="0">すべて</button>
+      </div>
+    </div>
+
+    <div class="start-row">
+      <button class="btn primary big" id="btnStartShuffle">シャッフル開始</button>
+    </div>
+    <p class="hint" id="homeHint">解答履歴は端末（ブラウザ）に保存されます。</p>
+  </div>
+</section>
+
+<!-- ============ 問題一覧（単元内） ============ -->
+<section id="view-qlist" class="view">
+  <div class="qlist-head">
+    <button class="quit" id="btnQlistBack">← 単元選択へ</button>
+  </div>
+  <div class="card">
+    <h2 class="card-title" id="qlistTitle">単元名</h2>
+    <div class="qlist-meta" id="qlistMeta"></div>
+    <button class="btn primary" id="btnUnitStart">最初から順番に解く</button>
+    <div class="qgrid" id="qGrid"></div>
+    <div class="legend">
+      <span><i class="lg lg-ok"></i>正解</span>
+      <span><i class="lg lg-ng"></i>不正解</span>
+      <span><i class="lg lg-unseen"></i>未解答</span>
+      <span><i class="lg lg-mark"></i>チェック</span>
+    </div>
+    <p class="hint">番号を押すと、その問題から順番に解きます。</p>
+  </div>
+</section>
+
+<!-- ============ 演習 ============ -->
+<section id="view-quiz" class="view">
+  <div class="quiz-head">
+    <span class="badge" id="qCat">財務</span>
+    <span class="qnum" id="qNum">1 / 25</span>
+    <span class="run-acc" id="runAcc">正答率 —</span>
+    <button class="quit" id="btnQuit">終了する</button>
+  </div>
+  <div class="progress"><div class="bar" id="qBar"></div></div>
+
+  <div class="card qcard">
+    <p class="qtext" id="qText">問題文</p>
+
+    <div id="answerArea"></div>
+
+    <div class="judge" id="judgeBox" hidden>
+      <div class="judge-head">
+        <span class="judge-mark" id="judgeMark">正解！</span>
+        <span class="judge-ans" id="judgeAns">正解は 〇</span>
+      </div>
+      <div class="exp" id="expBox">
+        <h3>解説</h3>
+        <p id="expText">解説文</p>
+      </div>
+      <div class="judge-foot">
+        <label class="mark-check">
+          <input type="checkbox" id="chkMark">
+          <span>あとで見直す（チェック）</span>
+        </label>
+        <button class="next" id="btnNext">次の問題へ</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="key-hint">キー操作：〇×は <kbd>O</kbd> / <kbd>X</kbd>、選択肢は <kbd>1</kbd>〜<kbd>4</kbd>、<kbd>Enter</kbd> 次へ</p>
+</section>
+
+<!-- ============ 結果 ============ -->
+<section id="view-result" class="view">
+  <div class="card result-card">
+    <h2 class="card-title">結果</h2>
+    <div class="score-ring-wrap">
+      <div class="score-big"><span id="scorePct">0</span><small>%</small></div>
+      <p class="score-detail" id="scoreDetail">0問中 0問正解</p>
+    </div>
+    <div class="result-actions">
+      <button class="btn primary" id="btnRetryWrong">間違えた問題をもう一度</button>
+      <button class="btn" id="btnBackHome">ホームへ戻る</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">解答一覧</h2>
+    <ul class="review-list" id="reviewList"></ul>
+  </div>
+</section>
+
+<!-- ============ 成績 ============ -->
+<section id="view-stats" class="view">
+  <div class="card">
+    <h2 class="card-title">単元ごとの得点率</h2>
+    <div id="statsBody"></div>
+    <p class="hint">得点率は各問題の直近の解答で集計しています。</p>
+  </div>
+  <div class="card">
+    <h2 class="card-title">履歴の管理</h2>
+    <div class="result-actions">
+      <button class="btn danger" id="btnResetHist">解答履歴をリセット</button>
+      <button class="btn" id="btnStatsHome">ホームへ戻る</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>解答履歴はこの端末のブラウザにのみ保存されます。</p>
+</footer>
+
+<script src="data/zaimu.js"></script>
+<script src="data/houmu.js"></script>
+<script src="data/zeimu.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+/* ================= 基本 ================= */
+:root{
+  --blue:#1e5aa8;
+  --blue-dark:#15427c;
+  --bg:#f2f4f8;
+  --card:#ffffff;
+  --ink:#1c2330;
+  --sub:#5b6675;
+  --line:#dde3ec;
+  --ok:#1a9850;
+  --ok-bg:#e8f6ee;
+  --ng:#d43d3d;
+  --ng-bg:#fdecec;
+  --mark:#c9a227;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(20,40,80,.08), 0 4px 16px rgba(20,40,80,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.7;
+}
+button{font-family:inherit;cursor:pointer}
+kbd{
+  border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
+  padding:0 5px;font-size:.85em;background:#fff;
+}
+
+/* ================= ヘッダー ================= */
+.top{
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);
+  color:#fff;
+  padding:env(safe-area-inset-top) 0 0;
+}
+.top .in{
+  max-width:760px;margin:0 auto;padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.mark{
+  width:44px;height:44px;border-radius:10px;flex:none;
+  background:var(--mark);color:#fff;
+  display:grid;place-items:center;
+  font-size:24px;font-weight:800;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);
+}
+.brand h1{font-size:18px;font-weight:800;letter-spacing:.02em}
+.brand .sub{font-size:11.5px;opacity:.85}
+.navbtn{
+  background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);
+  border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;
+}
+.navbtn:hover{background:rgba(255,255,255,.24)}
+
+/* ================= レイアウト ================= */
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px 40px}
+.view{display:none}
+.view.on{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px 18px;margin-bottom:16px;
+}
+.card-title{
+  font-size:15px;font-weight:800;color:var(--blue-dark);
+  padding-bottom:10px;margin-bottom:14px;border-bottom:2px solid var(--line);
+}
+.hint{font-size:12.5px;color:var(--sub);margin-top:12px}
+
+/* ================= 分野タブ・単元リスト ================= */
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{
+  flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;
+  padding:9px 0;font-size:14.5px;font-weight:800;color:var(--sub);transition:.12s;
+}
+.tab.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+.unit-list{display:flex;flex-direction:column;gap:6px}
+.unit-row{
+  display:flex;align-items:center;gap:10px;text-align:left;
+  border:1.5px solid var(--line);border-radius:10px;background:#fbfcfe;
+  padding:12px 14px;transition:.12s;
+}
+.unit-row:not(:disabled):hover{border-color:var(--blue);background:#f0f5fc}
+.unit-row.empty{opacity:.5;cursor:default}
+.unit-name{font-size:14.5px;font-weight:700;color:var(--blue-dark)}
+.unit-meta{margin-left:auto;font-size:12px;color:var(--sub);white-space:nowrap}
+.unit-arrow{font-size:18px;color:var(--sub);line-height:1}
+
+/* ================= シャッフル：単元チェック ================= */
+.sel-group{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.sel-head{
+  display:flex;align-items:center;gap:9px;cursor:pointer;
+  background:#eef3fa;padding:9px 12px;font-size:14px;font-weight:800;color:var(--blue-dark);
+}
+.sel-row{
+  display:flex;align-items:center;gap:9px;cursor:pointer;
+  padding:8px 12px 8px 26px;font-size:13.5px;border-top:1px dashed var(--line);
+}
+.sel-row.empty{opacity:.5;cursor:default}
+.sel-row small{margin-left:auto;color:var(--sub);font-size:11.5px}
+.sel-head input,.sel-row input{width:17px;height:17px;accent-color:var(--blue);flex:none}
+.start-row{display:flex;justify-content:center;margin-top:16px}
+.btn.big{padding:12px 34px;font-size:15px}
+
+/* ================= 問題一覧（番号グリッド） ================= */
+.qlist-head{margin-bottom:8px}
+.qlist-meta{font-size:13px;color:var(--sub);margin:-6px 0 12px}
+.qgrid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));
+  gap:7px;margin-top:14px;
+}
+.qcell{
+  position:relative;border:1.5px solid var(--line);border-radius:8px;background:#fff;
+  padding:10px 0;font-size:14px;font-weight:700;color:var(--sub);transition:.12s;
+}
+.qcell:hover{border-color:var(--blue);color:var(--blue)}
+.qcell.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.qcell.ng{background:var(--ng-bg);border-color:var(--ng);color:var(--ng)}
+.qcell.marked::after{
+  content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;
+  border-radius:50%;background:var(--mark);
+}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--sub)}
+.legend span{display:flex;align-items:center;gap:5px}
+.lg{width:12px;height:12px;border-radius:4px;display:inline-block;border:1.5px solid var(--line)}
+.lg-ok{background:var(--ok-bg);border-color:var(--ok)}
+.lg-ng{background:var(--ng-bg);border-color:var(--ng)}
+.lg-unseen{background:#fff}
+.lg-mark{background:var(--mark);border-color:var(--mark);border-radius:50%}
+
+/* ================= 出題設定 ================= */
+.opt-row{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:10px 0;border-bottom:1px dashed var(--line);
+}
+.opt-row:last-of-type{border-bottom:0}
+.opt-label{font-size:13px;font-weight:700;color:var(--sub);min-width:60px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg-btn{
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;
+  padding:6px 14px;font-size:13px;font-weight:600;color:var(--sub);transition:.12s;
+}
+.seg-btn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ================= 演習 ================= */
+.quiz-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.badge{
+  background:var(--blue);color:#fff;border-radius:6px;
+  font-size:12.5px;font-weight:700;padding:3px 10px;
+}
+.qnum{font-size:13.5px;font-weight:700;color:var(--sub)}
+.run-acc{
+  font-size:12.5px;font-weight:700;color:var(--blue-dark);
+  background:#e7eefa;border-radius:999px;padding:3px 10px;white-space:nowrap;
+}
+.quit{
+  margin-left:auto;border:1px solid var(--line);background:#fff;color:var(--sub);
+  border-radius:999px;padding:5px 14px;font-size:12.5px;font-weight:600;
+}
+.quit:hover{color:var(--ng);border-color:var(--ng)}
+.progress{height:6px;background:#e2e7ef;border-radius:3px;overflow:hidden;margin-bottom:14px}
+.bar{height:100%;width:0;background:var(--blue);border-radius:3px;transition:width .25s ease}
+
+.qcard{padding:24px 20px}
+.qtext{font-size:16.5px;font-weight:600;line-height:1.9;min-height:3.4em;white-space:pre-wrap}
+
+.answer-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.ans-btn{
+  border:2px solid var(--line);border-radius:14px;background:#fbfcfe;
+  padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:.12s;
+}
+.ans-btn:disabled{opacity:.45;cursor:default}
+.ans-symbol{font-size:34px;font-weight:800;line-height:1.2}
+.ans-word{font-size:12.5px;font-weight:700;color:var(--sub)}
+.ans-o .ans-symbol{color:var(--ok)}
+.ans-x .ans-symbol{color:var(--ng)}
+.ans-o:not(:disabled):hover{border-color:var(--ok);background:var(--ok-bg)}
+.ans-x:not(:disabled):hover{border-color:var(--ng);background:var(--ng-bg)}
+.ans-btn.picked-correct{border-color:var(--ok);background:var(--ok-bg);opacity:1}
+.ans-btn.picked-wrong{border-color:var(--ng);background:var(--ng-bg);opacity:1}
+
+/* 多肢選択（3択・4択） */
+.mc-col{display:flex;flex-direction:column;gap:9px;margin-top:22px}
+.mc-btn{
+  display:flex;align-items:flex-start;gap:10px;text-align:left;
+  border:2px solid var(--line);border-radius:12px;background:#fbfcfe;
+  padding:12px 14px;font-size:14.5px;line-height:1.7;transition:.12s;
+}
+.mc-btn:not(:disabled):hover{border-color:var(--blue);background:#f0f5fc}
+.mc-btn:disabled{opacity:.55;cursor:default}
+.mc-num{font-weight:800;color:var(--blue-dark);flex:none}
+.mc-txt{flex:1}
+.mc-btn.mc-correct{border-color:var(--ok);background:var(--ok-bg);opacity:1}
+.mc-btn.mc-correct .mc-num{color:var(--ok)}
+.mc-btn.mc-wrong{border-color:var(--ng);background:var(--ng-bg);opacity:1}
+.mc-btn.mc-wrong .mc-num{color:var(--ng)}
+
+/* 判定・解説 */
+.judge{margin-top:20px;border-top:1px dashed var(--line);padding-top:16px}
+.judge-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.judge-mark{font-size:20px;font-weight:800}
+.judge-mark.ok{color:var(--ok)}
+.judge-mark.ng{color:var(--ng)}
+.judge-ans{font-size:14px;font-weight:700;color:var(--sub)}
+.exp{
+  margin-top:12px;background:#f7f9fc;border:1px solid var(--line);
+  border-left:4px solid var(--blue);border-radius:8px;padding:12px 14px;
+}
+.exp h3{font-size:12.5px;color:var(--blue-dark);margin-bottom:4px}
+.exp p{font-size:14px;line-height:1.85;white-space:pre-wrap}
+.judge-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;margin-top:14px;
+}
+.mark-check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--sub);cursor:pointer}
+.mark-check input{width:17px;height:17px;accent-color:var(--mark)}
+.next{
+  background:var(--blue);color:#fff;border:0;border-radius:999px;
+  padding:11px 28px;font-size:14.5px;font-weight:800;
+  box-shadow:0 2px 6px rgba(30,90,168,.35);transition:.12s;
+}
+.next:hover{background:var(--blue-dark)}
+.key-hint{font-size:11.5px;color:var(--sub);text-align:center;margin-top:14px}
+@media (hover:none){.key-hint{display:none}}
+
+/* ================= 結果 ================= */
+.result-card{text-align:center}
+.score-ring-wrap{padding:8px 0 4px}
+.score-big{font-size:56px;font-weight:800;color:var(--blue);line-height:1.1}
+.score-big small{font-size:24px;margin-left:2px}
+.score-detail{font-size:14px;color:var(--sub);margin-top:2px}
+.result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{
+  border:1.5px solid var(--line);background:#fff;color:var(--ink);
+  border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;transition:.12s;
+}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--blue-dark);color:#fff}
+.btn.danger{color:var(--ng);border-color:var(--ng)}
+.btn.danger:hover{background:var(--ng);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+
+.review-list{list-style:none}
+.review-item{border-bottom:1px solid var(--line)}
+.review-item:last-child{border-bottom:0}
+.review-item summary{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:11px 4px;cursor:pointer;list-style:none;font-size:14px;
+}
+.review-item summary::-webkit-details-marker{display:none}
+.rv-mark{font-weight:800;flex:none;width:1.4em;text-align:center}
+.rv-mark.ok{color:var(--ok)}
+.rv-mark.ng{color:var(--ng)}
+.rv-q{flex:1;line-height:1.6}
+.rv-ans{flex:none;font-size:12px;color:var(--sub);white-space:nowrap;padding-top:2px}
+.rv-exp{
+  margin:0 4px 12px calc(1.4em + 10px);
+  background:#f7f9fc;border:1px solid var(--line);border-radius:8px;
+  padding:10px 12px;font-size:13px;line-height:1.8;white-space:pre-wrap;
+}
+
+/* ================= 成績 ================= */
+.stat-subject{padding:8px 0 14px;border-bottom:1px solid var(--line)}
+.stat-subject:last-child{border-bottom:0}
+.stat-row{padding:6px 0}
+.stat-unit{
+  display:flex;align-items:baseline;gap:10px;
+  padding:4px 0 4px 14px;font-size:13px;color:var(--sub);
+}
+.su-name{flex:1}
+.su-nums{white-space:nowrap}
+.su-pct{font-weight:800;color:var(--blue-dark);min-width:3.2em;text-align:right}
+.stat-top{display:flex;align-items:baseline;gap:10px;font-size:14px}
+.stat-name{font-weight:800;color:var(--blue-dark);min-width:5em}
+.stat-nums{color:var(--sub);font-size:13px}
+.stat-pct{margin-left:auto;font-weight:800;font-size:16px;color:var(--blue)}
+.stat-bar{height:8px;background:#e2e7ef;border-radius:4px;overflow:hidden;margin-top:6px}
+.stat-bar > div{height:100%;background:var(--ok);border-radius:4px}
+
+/* ================= フッター ================= */
+.foot{max-width:760px;margin:0 auto;padding:0 16px 32px;color:var(--sub);font-size:11.5px;text-align:center}
+
+/* ================= スマホ ================= */
+@media (max-width:480px){
+  .brand h1{font-size:16px}
+  .qtext{font-size:15.5px}
+  .opt-row{align-items:flex-start;flex-direction:column;gap:6px}
+  .unit-meta{font-size:11px}
+}
