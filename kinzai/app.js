@@ -839,9 +839,18 @@ function renderStats() {
   });
 }
 
+let statsFrom = null;   // 成績を開く直前に表示していた画面（閉じたらそこへ戻す）
 $("#navStats").addEventListener("click", () => {
-  // 成績表示中にもう一度押すと閉じてホームへ戻る（トグル）
-  if (views.stats.classList.contains("on")) { goHome(); return; }
+  // 成績表示中にもう一度押すと閉じて元の画面へ戻る（演習中なら演習の続きへ）
+  if (views.stats.classList.contains("on")) {
+    if (statsFrom && statsFrom !== "home" && statsFrom !== "stats" && views[statsFrom]) {
+      show(statsFrom);
+    } else {
+      goHome();
+    }
+    return;
+  }
+  statsFrom = Object.keys(views).find(k => views[k].classList.contains("on")) || "home";
   renderStats();
   show("stats");
 });
