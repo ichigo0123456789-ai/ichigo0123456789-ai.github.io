@@ -137,6 +137,21 @@
 
     <div id="answerArea"></div>
 
+    <!-- 手書き計算メモ（問題ごとにクリア） -->
+    <div class="memo" id="memoWrap">
+      <button class="memo-toggle" id="memoToggle" aria-expanded="false">
+        <span class="memo-toggle-icon">✏️</span>計算メモ<span class="memo-arrow">▾</span>
+      </button>
+      <div class="memo-body" id="memoBody" hidden>
+        <div class="memo-tools">
+          <button class="memo-tool on" id="memoPen">ペン</button>
+          <button class="memo-tool" id="memoEraser">消しゴム</button>
+          <button class="memo-tool memo-clear" id="memoClear">リセット</button>
+        </div>
+        <canvas id="memoCanvas"></canvas>
+      </div>
+    </div>
+
     <div class="judge" id="judgeBox" hidden>
       <div class="judge-head">
         <span class="judge-mark" id="judgeMark">正解！</span>

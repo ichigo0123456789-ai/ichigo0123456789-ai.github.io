@@ -201,6 +201,37 @@ kbd{
 .mc-btn.mc-wrong{border-color:var(--ng);background:var(--ng-bg);opacity:1}
 .mc-btn.mc-wrong .mc-num{color:var(--ng)}
 
+/* 手書き計算メモ */
+.memo{margin-top:18px}
+.memo-toggle{
+  display:flex;align-items:center;gap:6px;
+  border:1.5px dashed var(--line);background:#fbfcfe;border-radius:10px;
+  padding:9px 14px;font-size:13px;font-weight:700;color:var(--sub);width:100%;
+  justify-content:center;transition:.12s;
+}
+.memo-toggle:hover{border-color:var(--blue);color:var(--blue)}
+.memo-toggle.open{border-style:solid;border-color:var(--blue);color:var(--blue-dark);background:#f0f5fc}
+.memo-arrow{font-size:11px;transition:transform .15s}
+.memo-toggle.open .memo-arrow{transform:rotate(180deg)}
+.memo-body{margin-top:8px}
+.memo-tools{display:flex;gap:6px;margin-bottom:6px}
+.memo-tool{
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;
+  padding:6px 16px;font-size:12.5px;font-weight:700;color:var(--sub);transition:.12s;
+}
+.memo-tool.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.memo-clear{margin-left:auto;color:var(--ng)}
+.memo-clear:active{background:var(--ng-bg)}
+#memoCanvas{
+  display:block;width:100%;height:240px;
+  border:1.5px solid var(--line);border-radius:10px;
+  background:
+    repeating-linear-gradient(#fff 0 27px, #eef2f8 27px 28px),
+    #fff;
+  touch-action:none;               /* 描画中のスクロールを防止 */
+  cursor:crosshair;
+}
+
 /* 判定・解説 */
 .judge{margin-top:20px;border-top:1px dashed var(--line);padding-top:16px}
 .judge-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}

@@ -454,6 +454,10 @@ function renderQuestion() {
   elQText.textContent = q.q;
   judgeBox.hidden = true;
 
+  // 計算メモは問題ごとにクリア（パネルの開閉状態は維持、ツールはペンに戻す）
+  memoClearAll();
+  memoSetTool("pen");
+
   answerArea.innerHTML = "";
   if (q.t === "ox") {
     const row = document.createElement("div");
@@ -535,6 +539,92 @@ chkMark.addEventListener("change", () => {
   histOf(cur().id).mark = chkMark.checked;
   saveStore();
 });
+
+/* ---------- 手書き計算メモ ----------
+   ペンは黒・太さ固定。消しゴムとリセットのみ。問題が変わるたびに消去。
+   開閉状態は演習中維持される。 */
+const memoToggle = $("#memoToggle"), memoBody = $("#memoBody"), memoCanvas = $("#memoCanvas");
+const memoCtx = memoCanvas.getContext("2d");
+const PEN_WIDTH = 3, ERASER_WIDTH = 26;
+let memoTool = "pen";
+let memoDrawing = false, memoLastX = 0, memoLastY = 0;
+
+function memoResize() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = memoCanvas.getBoundingClientRect();
+  if (rect.width === 0) return;
+  const w = Math.round(rect.width * dpr), h = Math.round(rect.height * dpr);
+  if (memoCanvas.width === w && memoCanvas.height === h) return;
+  // リサイズ時は描画内容を引き継ぐ（スマホのアドレスバー伸縮などで消えないように）
+  let snap = null;
+  if (memoCanvas.width > 0 && memoCanvas.height > 0) {
+    snap = document.createElement("canvas");
+    snap.width = memoCanvas.width; snap.height = memoCanvas.height;
+    snap.getContext("2d").drawImage(memoCanvas, 0, 0);
+  }
+  memoCanvas.width = w; memoCanvas.height = h;
+  memoCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  memoCtx.lineCap = "round";
+  memoCtx.lineJoin = "round";
+  if (snap) memoCtx.drawImage(snap, 0, 0, snap.width, snap.height, 0, 0, rect.width, rect.height);
+}
+
+function memoClearAll() {
+  memoCtx.save();
+  memoCtx.setTransform(1, 0, 0, 1, 0, 0);
+  memoCtx.clearRect(0, 0, memoCanvas.width, memoCanvas.height);
+  memoCtx.restore();
+}
+
+function memoPos(e) {
+  const rect = memoCanvas.getBoundingClientRect();
+  return [e.clientX - rect.left, e.clientY - rect.top];
+}
+
+function memoStroke(x0, y0, x1, y1) {
+  memoCtx.globalCompositeOperation = memoTool === "pen" ? "source-over" : "destination-out";
+  memoCtx.strokeStyle = "#1c2330";
+  memoCtx.lineWidth = memoTool === "pen" ? PEN_WIDTH : ERASER_WIDTH;
+  memoCtx.beginPath();
+  memoCtx.moveTo(x0, y0);
+  memoCtx.lineTo(x1, y1);
+  memoCtx.stroke();
+}
+
+memoCanvas.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  memoCanvas.setPointerCapture(e.pointerId);
+  memoDrawing = true;
+  [memoLastX, memoLastY] = memoPos(e);
+  memoStroke(memoLastX, memoLastY, memoLastX + 0.01, memoLastY + 0.01);  // 点も描けるように
+});
+memoCanvas.addEventListener("pointermove", (e) => {
+  if (!memoDrawing) return;
+  e.preventDefault();
+  const [x, y] = memoPos(e);
+  memoStroke(memoLastX, memoLastY, x, y);
+  [memoLastX, memoLastY] = [x, y];
+});
+["pointerup", "pointercancel"].forEach(ev =>
+  memoCanvas.addEventListener(ev, () => { memoDrawing = false; }));
+
+memoToggle.addEventListener("click", () => {
+  const open = memoBody.hidden;
+  memoBody.hidden = !open;
+  memoToggle.classList.toggle("open", open);
+  memoToggle.setAttribute("aria-expanded", String(open));
+  if (open) memoResize();
+});
+
+function memoSetTool(tool) {
+  memoTool = tool;
+  $("#memoPen").classList.toggle("on", tool === "pen");
+  $("#memoEraser").classList.toggle("on", tool === "eraser");
+}
+$("#memoPen").addEventListener("click", () => memoSetTool("pen"));
+$("#memoEraser").addEventListener("click", () => memoSetTool("eraser"));
+$("#memoClear").addEventListener("click", memoClearAll);
+window.addEventListener("resize", () => { if (!memoBody.hidden) memoResize(); });
 
 $("#btnNext").addEventListener("click", nextQuestion);
 function nextQuestion() {
