@@ -56,10 +56,10 @@ function loadStoreRaw(key) {
     const raw = localStorage.getItem(key);
     if (raw) {
       const s = JSON.parse(raw);
-      if (s && typeof s === "object") return { hist: s.hist || {}, sel: s.sel || null };
+      if (s && typeof s === "object") return { hist: s.hist || {}, sel: s.sel || null, session: s.session || null };
     }
   } catch (e) { /* 破損時は初期化 */ }
-  return { hist: {}, sel: null };
+  return { hist: {}, sel: null, session: null };
 }
 function loadStore() { return loadStoreRaw(lsKey()); }
 function saveStoreLocal() {
@@ -415,6 +415,49 @@ const quiz = {
 
 function curAnswer() { return quiz.answers[quiz.idx] || null; }
 
+/* ---------- 演習セッションの保存・復元（リロード対策） ----------
+   出題リスト・現在位置・解答済みの判定を端末に保存し、
+   リロードしても演習の途中から再開できるようにする（この端末のみ・同期対象外） */
+function saveSession() {
+  store.session = {
+    ids: quiz.list.map(q => q.id),
+    idx: quiz.idx,
+    answers: quiz.answers.map(a => a || null),
+    label: quiz.label,
+    unitKey: quiz.unit ? quiz.unit.key : null,
+  };
+  saveStoreLocal();
+}
+
+function clearSession() {
+  if (store.session) {
+    store.session = null;
+    saveStoreLocal();
+  }
+}
+
+function findUnitByKey(key) {
+  for (const s of SUBJECTS) for (const u of s.units) if (u.key === key) return u;
+  return null;
+}
+
+function restoreSession() {
+  const s = store.session;
+  if (!s || !Array.isArray(s.ids) || s.ids.length === 0) return false;
+  const byId = new Map(BANK.map(q => [q.id, q]));
+  const list = s.ids.map(id => byId.get(id));
+  if (list.some(q => !q)) { clearSession(); return false; }  // データ更新でIDが変わった場合は復元しない
+  quiz.list = list;
+  quiz.idx = Math.min(Math.max(0, s.idx | 0), list.length - 1);
+  quiz.answers = (s.answers || []).map(a => (a && typeof a === "object") ? a : undefined);
+  quiz.label = s.label || "演習";
+  quiz.unit = s.unitKey ? findUnitByKey(s.unitKey) : null;
+  updateRunAcc();
+  show("quiz");
+  renderQuestion();
+  return true;
+}
+
 // 解答済みの問題を出題順に並べたセッション結果
 function sessionResults() {
   const out = [];
@@ -499,6 +542,7 @@ function renderQuestion() {
   const ans = curAnswer();
   if (ans) applyJudgeUI(q, ans.my, ans.correct);
   updateNav();
+  saveSession();   // リロードしてもこの位置から再開できるように保存
 }
 
 function updateNav() {
@@ -535,6 +579,7 @@ function answer(my) {           // ox: true/false, mc: 選択index
   quiz.answers[quiz.idx] = { my, correct };
   updateRunAcc();
   applyJudgeUI(q, my, correct);
+  saveSession();
 }
 
 // 解答直後・解答済み問題への復帰時の判定表示（ボタンのハイライト＋解説）
@@ -699,6 +744,7 @@ document.addEventListener("keydown", (e) => {
    結果
    ============================================================ */
 function showResult() {
+  clearSession();   // 演習終了。リロード時の再開対象から外す
   const results = sessionResults();
   const total = results.length;
   const ok = results.filter(r => r.correct).length;
@@ -810,6 +856,7 @@ $("#btnResetHist").addEventListener("click", () => {
 
 /* ---------- ホームへ ---------- */
 function goHome() {
+  clearSession();   // 演習を離れたら再開対象から外す
   renderUnitList();
   updateShuffleCount();
   show("home");
@@ -923,5 +970,6 @@ renderShuffleTree();
 updateShuffleCount();
 updateAccountUI();
 if (account) syncNow();   // 起動時にサーバーの最新成績を取り込む
+restoreSession();         // 演習の途中でリロードされた場合は、その位置から再開
 
 })();
