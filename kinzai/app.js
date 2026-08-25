@@ -970,6 +970,6 @@ renderShuffleTree();
 updateShuffleCount();
 updateAccountUI();
 if (account) syncNow();   // 起動時にサーバーの最新成績を取り込む
-restoreSession();         // 演習の途中でリロードされた場合は、その位置から再開
+try { restoreSession(); } catch (e) { /* 復元に失敗してもホーム表示は維持する */ }
 
 })();
