@@ -608,6 +608,11 @@ memoCanvas.addEventListener("pointermove", (e) => {
 ["pointerup", "pointercancel"].forEach(ev =>
   memoCanvas.addEventListener(ev, () => { memoDrawing = false; }));
 
+// 長押しによる選択・コンテキストメニュー・拡大鏡を抑止（書いている途中に出ると邪魔なため）
+memoCanvas.addEventListener("contextmenu", (e) => e.preventDefault());
+memoCanvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+$("#memoWrap").addEventListener("selectstart", (e) => e.preventDefault());
+
 memoToggle.addEventListener("click", () => {
   const open = memoBody.hidden;
   memoBody.hidden = !open;

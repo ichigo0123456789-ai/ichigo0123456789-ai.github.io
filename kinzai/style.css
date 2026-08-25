@@ -203,6 +203,11 @@ kbd{
 
 /* 手書き計算メモ */
 .memo{margin-top:18px}
+.memo, .memo *{
+  -webkit-user-select:none;         /* 長押しでの選択を防止 */
+  user-select:none;
+  -webkit-touch-callout:none;       /* iOSの長押しメニューを防止 */
+}
 .memo-toggle{
   display:flex;align-items:center;gap:6px;
   border:1.5px dashed var(--line);background:#fbfcfe;border-radius:10px;
