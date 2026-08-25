@@ -410,9 +410,20 @@ const quiz = {
   idx: 0,
   label: "",
   unit: null,      // 単元通し演習のときだけセット（バッジに問番号を出す）
-  answered: false,
-  results: [],     // {q, my, correct}
+  answers: [],     // answers[idx] = {my, correct}（未解答はundefined。前後移動・スキップ対応）
 };
+
+function curAnswer() { return quiz.answers[quiz.idx] || null; }
+
+// 解答済みの問題を出題順に並べたセッション結果
+function sessionResults() {
+  const out = [];
+  quiz.list.forEach((q, i) => {
+    const a = quiz.answers[i];
+    if (a) out.push({ q, my: a.my, correct: a.correct });
+  });
+  return out;
+}
 
 const elQCat = $("#qCat"), elQNum = $("#qNum"), elQBar = $("#qBar"), elRunAcc = $("#runAcc");
 const elQText = $("#qText"), answerArea = $("#answerArea");
@@ -424,7 +435,7 @@ function startQuiz(list, label, { unit } = {}) {
   quiz.idx = 0;
   quiz.label = label;
   quiz.unit = unit || null;
-  quiz.results = [];
+  quiz.answers = [];
   updateRunAcc();
   show("quiz");
   renderQuestion();
@@ -433,9 +444,10 @@ function startQuiz(list, label, { unit } = {}) {
 function cur() { return quiz.list[quiz.idx]; }
 
 function updateRunAcc() {
-  const n = quiz.results.length;
+  const done = quiz.answers.filter(Boolean);
+  const n = done.length;
   if (n === 0) { elRunAcc.textContent = "正答率 —"; return; }
-  const ok = quiz.results.filter(r => r.correct).length;
+  const ok = done.filter(a => a.correct).length;
   elRunAcc.textContent = `正答率 ${Math.round((ok / n) * 100)}%（${ok}/${n}）`;
 }
 
@@ -446,7 +458,6 @@ function correctLabel(q) {
 
 function renderQuestion() {
   const q = cur();
-  quiz.answered = false;
 
   elQCat.textContent = quiz.unit ? `${q.subjectName} 問${q.no}` : `${q.subjectName}・${q.unit.name} 問${q.no}`;
   elQNum.textContent = `${quiz.idx + 1} / ${quiz.list.length}`;
@@ -483,6 +494,23 @@ function renderQuestion() {
     });
     answerArea.append(col);
   }
+
+  // 解答済みの問題に戻ってきた場合は、判定・解説を復元表示
+  const ans = curAnswer();
+  if (ans) applyJudgeUI(q, ans.my, ans.correct);
+  updateNav();
+}
+
+function updateNav() {
+  $("#btnNavPrev").disabled = quiz.idx === 0;
+  $("#btnNavNext").disabled = quiz.idx >= quiz.list.length - 1;
+}
+
+function navTo(delta) {
+  const ni = quiz.idx + delta;
+  if (ni < 0 || ni >= quiz.list.length) return;
+  quiz.idx = ni;
+  renderQuestion();
 }
 
 function makeOxBtn(val) {
@@ -495,8 +523,7 @@ function makeOxBtn(val) {
 }
 
 function answer(my) {           // ox: true/false, mc: 選択index
-  if (quiz.answered) return;
-  quiz.answered = true;
+  if (curAnswer()) return;
   const q = cur();
   const correct = (my === q.a);
 
@@ -505,10 +532,13 @@ function answer(my) {           // ox: true/false, mc: 選択index
   h.last = correct ? "ok" : "ng";
   saveStore();
 
-  quiz.results.push({ q, my, correct });
+  quiz.answers[quiz.idx] = { my, correct };
   updateRunAcc();
+  applyJudgeUI(q, my, correct);
+}
 
-  // ボタンのハイライト
+// 解答直後・解答済み問題への復帰時の判定表示（ボタンのハイライト＋解説）
+function applyJudgeUI(q, my, correct) {
   if (q.t === "ox") {
     answerArea.querySelectorAll(".ans-btn").forEach(b => {
       b.disabled = true;
@@ -529,7 +559,7 @@ function answer(my) {           // ox: true/false, mc: 選択index
   judgeMark.className = `judge-mark ${correct ? "ok" : "ng"}`;
   judgeAns.textContent = `正解は ${correctLabel(q)}`;
   expText.textContent = q.exp;
-  chkMark.checked = h.mark;
+  chkMark.checked = histOf(q.id).mark;
   judgeBox.hidden = false;
   elQBar.style.width = `${((quiz.idx + 1) / quiz.list.length) * 100}%`;
   $("#btnNext").textContent = quiz.idx + 1 >= quiz.list.length ? "結果を見る" : "次の問題へ";
@@ -633,14 +663,17 @@ window.addEventListener("resize", () => { if (!memoBody.hidden) memoResize(); })
 
 $("#btnNext").addEventListener("click", nextQuestion);
 function nextQuestion() {
-  if (!quiz.answered) return;
+  if (!curAnswer()) return;
+  if (quiz.idx + 1 >= quiz.list.length) return showResult();
   quiz.idx++;
-  if (quiz.idx >= quiz.list.length) return showResult();
   renderQuestion();
 }
 
+$("#btnNavPrev").addEventListener("click", () => navTo(-1));
+$("#btnNavNext").addEventListener("click", () => navTo(1));
+
 $("#btnQuit").addEventListener("click", () => {
-  if (quiz.results.length > 0) showResult();
+  if (quiz.answers.some(Boolean)) showResult();
   else goHome();
 });
 
@@ -650,7 +683,9 @@ document.addEventListener("keydown", (e) => {
   const q = cur();
   if (!q) return;
   if (e.key === "Enter") { e.preventDefault(); nextQuestion(); return; }
-  if (quiz.answered) return;
+  if (e.key === "ArrowLeft") { navTo(-1); return; }
+  if (e.key === "ArrowRight") { navTo(1); return; }
+  if (curAnswer()) return;
   if (q.t === "ox") {
     if (e.key === "o" || e.key === "O") answer(true);
     else if (e.key === "x" || e.key === "X") answer(false);
@@ -664,15 +699,16 @@ document.addEventListener("keydown", (e) => {
    結果
    ============================================================ */
 function showResult() {
-  const total = quiz.results.length;
-  const ok = quiz.results.filter(r => r.correct).length;
+  const results = sessionResults();
+  const total = results.length;
+  const ok = results.filter(r => r.correct).length;
   $("#scorePct").textContent = total ? Math.round((ok / total) * 100) : 0;
   $("#scoreDetail").textContent = `${quiz.label}｜${total}問中 ${ok}問正解`;
   $("#btnRetryWrong").disabled = (ok === total);
 
   const ul = $("#reviewList");
   ul.innerHTML = "";
-  quiz.results.forEach((r, i) => {
+  results.forEach((r, i) => {
     const li = document.createElement("li");
     li.className = "review-item";
     const details = document.createElement("details");
@@ -703,7 +739,7 @@ function showResult() {
 }
 
 $("#btnRetryWrong").addEventListener("click", () => {
-  const wrongs = quiz.results.filter(r => !r.correct).map(r => r.q);
+  const wrongs = sessionResults().filter(r => !r.correct).map(r => r.q);
   if (wrongs.length) startQuiz(shuffle(wrongs), "間違い直し", {});
 });
 $("#btnBackHome").addEventListener("click", goHome);
