@@ -6,3 +6,7 @@ runner/.env
 runner/**/secret*
 node_modules/
 runner/.browser-profile/
+
+# scratch clone used by the scheduled news-digest routine to build & push
+# directly to origin/main (see editorial-spec.md) — not part of this session branch
+/repo/
