@@ -1020,6 +1020,20 @@
     "trades.json T0055"
    ],
    "adoption_count": 0
+  },
+  {
+   "date": "2026-08-28",
+   "category": "運用ガバナンス・データ開示",
+   "lesson": "反対尋問(2026-08-28)は、⑥仮想運用のTier1 NAV(FANG+98,212円・ゴールド26,493円、いずれもas of 2026-08-26)が2営業日連続でcarry-forwardされているにもかかわらず、⑥本文・サマリー表に『carry-forward○日目』という明示的な開示表記が欠落している点を指摘した(教訓2026-08-24が定める休場/取得失敗/公表遅延の区別明記ルールに未準拠)。また58日連続hold・裁量アクション57日連続なしという長期停滞について、playbook.md原則3(hold判断の反証可能性原則)に基づく解除条件が形骸化しつつある懸念、および④⑤が本日のニュース素材(韓国CPTPP加入論議・沖縄知事選・ネパール土石流・生成AIエージェントの誤作動事案・マイナンバーアプリ不具合)を一切反映していない点(シナリオカバレッジの偏り)を指摘した。今後、NAV表示には確定/carry-forward(○日目)の別を機械的に併記する運用を徹底し、月次メタレビュー(次回2026-09-01)を待たずhold構造化リスクを継続監視する。",
+   "regime_tags": [
+    "governance",
+    "data_quality",
+    "nav_carryforward_disclosure",
+    "hold_discipline"
+   ],
+   "evidence": "反対尋問(進行2.7、2026-08-28)による指摘。data/bench_navs.json(FANG+/ゴールドの8/26以降の新規値未取得)、data/trades.json T0056(hold58日連続)。",
+   "status": "仮説",
+   "adoption_count": 0
   }
  ]
 }
