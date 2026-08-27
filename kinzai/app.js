@@ -1,7 +1,7 @@
 /* ============================================================
    金財試験 過去問道場
    - 問題データは data/*.js が定義する KINZAI_ZAIMU / KINZAI_HOUMU /
-     KINZAI_ZEIMU（subject → units → questions）を読む
+     KINZAI_ZEIMU / KINZAI_GAITAME（subject → units → questions）を読む
    - 問題形式: t:"ox"（〇×） / t:"mc"（多肢選択, c:選択肢配列, a:正解index）
    - 解答履歴は localStorage("kinzai-dojo-v1") に保存
    ============================================================ */
@@ -11,7 +11,7 @@
 const CIRCLED = ["①", "②", "③", "④", "⑤", "⑥"];
 
 /* ---------- 問題データの取り込み ---------- */
-const SUBJECTS = [window.KINZAI_ZAIMU, window.KINZAI_HOUMU, window.KINZAI_ZEIMU].filter(Boolean);
+const SUBJECTS = [window.KINZAI_ZAIMU, window.KINZAI_HOUMU, window.KINZAI_ZEIMU, window.KINZAI_GAITAME].filter(Boolean);
 
 // 全問題のフラットなリスト。id = "subject/unitId/連番"
 const BANK = [];
