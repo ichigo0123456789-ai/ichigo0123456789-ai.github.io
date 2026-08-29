@@ -1073,6 +1073,14 @@
     "nikkei_zone": "高値圏"
    },
    "evidence": "反対尋問(進行2.7、2026-08-29)の指摘。"
+  },
+  {
+   "date": "2026-08-30",
+   "category": "検証部・週次通信簿(データ品質・帰属分解の方法論)",
+   "lesson": "週次rolling判断効果(判断効果=実PF−凍結初期)をcounterfactual.jsonのjudgment_effect_dailyから機械集計する際、運用部runと検証部run(独立WebSearch backfill)の実行タイミング差により、real_pf_total_jpyとfrozen_total_jpyの間に一時的な数千円規模の残差が生じることがある(実例：2026-08-06訂正時の残差¥10,880〈counterfactual.json 2026-08-06エントリ注記〉、2026-08-18 diff_jpy=+4,676、2026-08-19 diff_jpy=+4,008、2026-08-28 diff_jpy=▼14,592)。これらはいずれも当日中に解消し翌日以降ゼロへ復帰しており、6/29以降の保有口数が実PF・凍結初期で完全一致している(裁量売買なし)という構造上、実体のある判断効果ではなくNAV反映タイミングの噪音と判定できる。今後、週次スナップショットで rolling 判断効果を算出する際は、単日のdiff_jpyのスパイクを『今週の判断効果』と早合点せず、複数日にわたる水準(前後の安定した値)で判断し、スパイクが生じた日は注記で明示的に除外理由を書くべき。",
+   "status": "仮説",
+   "regime_tags": ["data_quality", "system_health", "judgment_effect", "governance", "scorecard_methodology"],
+   "evidence": ["data/counterfactual.json judgment_effect_daily 2026-08-06(残差¥10,880の注記)・2026-08-18(diff_jpy=4676)・2026-08-19(diff_jpy=4008)・2026-08-28(diff_jpy=-14592)エントリ", "data/nav_history.json 2026-08-06エントリ実PF総額(¥5,518,231)とcounterfactual.json同日real_pf_total_jpy(¥5,507,351)の突合", "検証部2026-08-30週次通信簿・帰属分解計算時に検出"]
   }
  ]
 }

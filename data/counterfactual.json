@@ -637,6 +637,21 @@
     },
     "total_value_jpy": 5764523,
     "note": "口数固定(715,459/245,984/214,160、現金¥0、無裁量ベース)。運用部が独立WebSearchで取得したTier1新値(オルカン38,842円 as of 8/28・FANG+98,519円 as of 8/27・ゴールド26,248円 as of 8/28予想)を反映。裁量売買なし、59日超hold継続。"
+   },
+   {
+    "date": "2026-08-30",
+    "navs": {
+     "orukan": 38842,
+     "fangplus": 98519,
+     "gold": 26248
+    },
+    "units": {
+     "orukan": 715459,
+     "fangplus": 245984,
+     "gold": 214160
+    },
+    "total_value_jpy": 5764523,
+    "note": "口数固定(715,459/245,984/214,160、現金¥0、無裁量ベース)。本日は日曜で東証・米国市場とも休場のためTier1新規基準価額の発表なし。検証部が独立WebSearchで日本経済新聞・Yahoo!ファイナンス・三菱UFJ銀行・マネックス証券・みんかぶ投信・大和アセットマネジメント・SBIアセットマネジメントを複数クエリで照会したが、itf.minkabu.jp/finance.yahoo.co.jp/emaxis.am.mufg.jp/fund.monex.co.jp/www.daiwa-am.co.jp/www.sbiam.co.jpはいずれもネットワークegressプロキシでWebFetch不可、WebSearch要約でも前営業日基準(オルカンas of 8/28・FANG+as of 8/27)を超える新規確定値は取得できず(FANG+98,519円 as of 8/27は再照会で確認一致)。前日(8/29掲載)Tier1 NAVをcarry-forward。裁量売買なし、60日超hold継続。"
    }
   ]
  },
@@ -981,6 +996,13 @@
    "frozen_total_jpy": 5764523,
    "diff_jpy": 0,
    "note": "運用部が本日分run確定。実PF・frozenとも同一のTier1新値(オルカン38,842円・FANG+98,519円・ゴールド26,248円)を採用し、6/29以降の保有口数が完全一致(裁量売買なし、59日超hold継続)しているため差額¥0(判断効果ゼロ)。8/28分エントリで生じた評価基準日ズレの会計上の誤差は本日分で解消。"
+  },
+  {
+   "date": "2026-08-30",
+   "real_pf_total_jpy": 5764523,
+   "frozen_total_jpy": 5764523,
+   "diff_jpy": 0,
+   "note": "運用部T0058で本日分run確定(日曜のため東証・米国市場とも休場)。real_pf_total_jpy=5,764,523は運用部がTier1(オルカン38,842円 as of 8/28・FANG+98,519円 as of 8/27・ゴールド26,248円 as of 8/28、いずれもcarry-forward、ゴールドは『予想』表記から確定値へ格上げ)を反映して確定させた値であり、検証部が先行して置いていた暫定値と完全一致したため差し替え不要。frozen_total_jpyは検証部が独立WebSearchでTier1新値取得を試みたが、東証・米国市場とも休場で新規基準価額の発表なく、finance.yahoo.co.jp/itf.minkabu.jp等の直接照会もegressプロキシでブロックされたため、前日(8/29)値(オルカン38,842円 as of 8/28・FANG+98,519円 as of 8/27・ゴールド26,248円 as of 8/28予想)をcarry-forwardして算出。両者とも同一NAV・同一口数(6/29以降完全一致、裁量売買なし、60日超hold継続)のため差額¥0(判断効果ゼロ)。"
   }
  ],
  "branches": [
