@@ -1079,8 +1079,36 @@
    "category": "検証部・週次通信簿(データ品質・帰属分解の方法論)",
    "lesson": "週次rolling判断効果(判断効果=実PF−凍結初期)をcounterfactual.jsonのjudgment_effect_dailyから機械集計する際、運用部runと検証部run(独立WebSearch backfill)の実行タイミング差により、real_pf_total_jpyとfrozen_total_jpyの間に一時的な数千円規模の残差が生じることがある(実例：2026-08-06訂正時の残差¥10,880〈counterfactual.json 2026-08-06エントリ注記〉、2026-08-18 diff_jpy=+4,676、2026-08-19 diff_jpy=+4,008、2026-08-28 diff_jpy=▼14,592)。これらはいずれも当日中に解消し翌日以降ゼロへ復帰しており、6/29以降の保有口数が実PF・凍結初期で完全一致している(裁量売買なし)という構造上、実体のある判断効果ではなくNAV反映タイミングの噪音と判定できる。今後、週次スナップショットで rolling 判断効果を算出する際は、単日のdiff_jpyのスパイクを『今週の判断効果』と早合点せず、複数日にわたる水準(前後の安定した値)で判断し、スパイクが生じた日は注記で明示的に除外理由を書くべき。",
    "status": "仮説",
-   "regime_tags": ["data_quality", "system_health", "judgment_effect", "governance", "scorecard_methodology"],
-   "evidence": ["data/counterfactual.json judgment_effect_daily 2026-08-06(残差¥10,880の注記)・2026-08-18(diff_jpy=4676)・2026-08-19(diff_jpy=4008)・2026-08-28(diff_jpy=-14592)エントリ", "data/nav_history.json 2026-08-06エントリ実PF総額(¥5,518,231)とcounterfactual.json同日real_pf_total_jpy(¥5,507,351)の突合", "検証部2026-08-30週次通信簿・帰属分解計算時に検出"]
+   "regime_tags": [
+    "data_quality",
+    "system_health",
+    "judgment_effect",
+    "governance",
+    "scorecard_methodology"
+   ],
+   "evidence": [
+    "data/counterfactual.json judgment_effect_daily 2026-08-06(残差¥10,880の注記)・2026-08-18(diff_jpy=4676)・2026-08-19(diff_jpy=4008)・2026-08-28(diff_jpy=-14592)エントリ",
+    "data/nav_history.json 2026-08-06エントリ実PF総額(¥5,518,231)とcounterfactual.json同日real_pf_total_jpy(¥5,507,351)の突合",
+    "検証部2026-08-30週次通信簿・帰属分解計算時に検出"
+   ]
+  },
+  {
+   "date": "2026-08-31",
+   "category": "反対尋問・複合ショック耐性/機会費用の未定量化",
+   "lesson": "反対尋問(進行2.7)が指摘：①9/5-9/11の指標密集週(毎月勤労統計・米PPI・米CPI)がいずれもインフレ高止まり・円安加速方向に出た場合、FANG+・ゴールドの含み益(合計¥2,985,537、総資産の約52%)を3ヶ月反対売買制限(〜9/29)下で一切ヘッジできない『制度的無防備』状態にある。②候補ファンド未特定のまま概念枝(B0007/B0009/B0011/B0012)で8/12新設から8/31まで一度も具体化できておらず、待機判断の機会費用が反実仮想側で事後的にも定量化できない構造になっている。③財務省概算要求『130兆円超』は一次ソース未確定のまま複数予測の前提材料として扱われており、例年12月の予算編成で圧縮される慣行・市場の織り込み済み反応という経路がconsidered_scenariosに欠落していた(P-E126/P-E127へ追記済み)。今後、概念枝が2週間以上具体化しない場合は運用部が次回runで候補ファンド特定を優先課題とすること、および未確定の一次情報(概算要求等)を前提に使う予測には『確定は年末』等の時間軸の留保を明記すること。",
+   "status": "仮説",
+   "regime_tags": [
+    "counter_argument",
+    "opportunity_cost",
+    "governance",
+    "lockup_risk",
+    "data_provenance"
+   ],
+   "evidence": [
+    "反対尋問(進行2.7、2026-08-31)出力A)反対ケース①②③",
+    "data/counterfactual.json branches B0007/B0009/B0011/B0012(候補ファンド未特定・total_value_jpy:null)",
+    "data/predictions.json P-E126/P-E127 considered_scenarios(反対尋問2026-08-31追加分)"
+   ]
   }
  ]
 }
