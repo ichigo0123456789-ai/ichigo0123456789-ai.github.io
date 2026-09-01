@@ -32,11 +32,26 @@ SUBJECTS.forEach(s => {
         q: item.q,
         c: item.c || null,
         a: item.a,
+        calc: !!item.calc,
         exp: item.exp || "（解説は準備中です）",
       };
       BANK.push(q);
       item._ref = q;
     });
+  });
+});
+
+// 計算問題（calc: true）を横断で集めた仮想単元を分野ごとに追加。
+// 問題は既存単元のものをそのまま参照するため、ID・履歴は変わらない
+SUBJECTS.forEach(s => {
+  const calcItems = [];
+  s.units.forEach(u => u.questions.forEach(item => { if (item.calc) calcItems.push(item); }));
+  if (calcItems.length === 0) return;
+  s.units.push({
+    id: "calc", virtual: true,
+    name: "計算問題", key: `${s.subject}/calc`, label: `【${s.name}】計算問題`,
+    subject: s.subject, subjectName: s.name,
+    questions: calcItems,
   });
 });
 
@@ -347,6 +362,7 @@ function renderShuffleTree() {
 
     const unitChks = [];
     s.units.forEach(u => {
+      if (u.virtual) return;   // 計算問題（横断）は出題範囲フィルタで選ぶためツリーには出さない
       const row = document.createElement("label");
       row.className = "sel-row" + (u.questions.length === 0 ? " empty" : "");
       const chk = document.createElement("input");
@@ -398,6 +414,7 @@ function shufflePool() {
   if (opts.range === "wrong")  pool = pool.filter(q => lastOf(q.id) === "ng");
   if (opts.range === "unseen") pool = pool.filter(q => lastOf(q.id) === null);
   if (opts.range === "marked") pool = pool.filter(q => histOf(q.id).mark);
+  if (opts.range === "calc")   pool = pool.filter(q => q.calc);
   return pool;
 }
 
@@ -823,6 +840,7 @@ function renderStats() {
   SUBJECTS.forEach(s => {
     let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
     s.units.forEach(u => {
+      if (u.virtual) return;   // 計算問題（横断）は他単元と重複するため分野合計から除外
       total += u.questions.length;
       const a = unitAcc(u);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
