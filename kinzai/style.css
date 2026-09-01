@@ -368,3 +368,5 @@ kbd{
 .week-nums{color:var(--sub);font-size:13px}
 .week-pct{margin-left:auto;font-weight:800;font-size:15px;color:var(--blue)}
 .week-subj{font-size:12px;color:var(--sub);margin-top:5px}
+.stat-total{background:#eef4fb;border-radius:10px;padding:10px 12px 12px;margin-bottom:6px;border-bottom:0}
+.stat-total .stat-name{color:var(--blue)}

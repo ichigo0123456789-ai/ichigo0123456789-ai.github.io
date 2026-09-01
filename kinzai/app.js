@@ -837,6 +837,37 @@ $("#btnBackHome").addEventListener("click", goHome);
 function renderStats() {
   const body = $("#statsBody");
   body.innerHTML = "";
+
+  // 全体（全分野合計）の累計
+  {
+    let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
+    SUBJECTS.forEach(s => s.units.forEach(u => {
+      if (u.virtual) return;
+      total += u.questions.length;
+      const a = unitAcc(u);
+      seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
+    }));
+    const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
+    const box = document.createElement("div");
+    box.className = "stat-subject stat-total";
+    box.innerHTML = `
+      <div class="stat-row main">
+        <div class="stat-top">
+          <span class="stat-name">全体</span>
+          <span class="stat-nums"></span>
+          <span class="stat-pct"></span>
+        </div>
+        <div class="stat-bar"><div></div></div>
+        <div class="stat-sub2"></div>
+      </div>`;
+    box.querySelector(".stat-nums").textContent = `累計 ${att}回解答・正解 ${okAtt}`;
+    box.querySelector(".stat-pct").textContent = att ? `${cumPct}%` : "—";
+    box.querySelector(".stat-bar > div").style.width = `${att ? cumPct : 0}%`;
+    box.querySelector(".stat-sub2").textContent =
+      `網羅度 ${seen}/${total}問（${total ? Math.round((seen / total) * 100) : 0}%）・習得度 ${seen ? Math.round((ok / seen) * 100) + "%" : "—"}`;
+    body.append(box);
+  }
+
   SUBJECTS.forEach(s => {
     let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
     s.units.forEach(u => {
