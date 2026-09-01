@@ -189,7 +189,7 @@ function show(name) {
 
 function unitAcc(u) {
   // seen/ok/pct     … 直近の解答ベース（習得度。問題一覧の色分けに使用）
-  // att/okAtt/cumPct … 延べ解答ベース（過去問道場方式。解き直しても不正解の記録は残る）
+  // att/okAtt/cumPct … 累計解答ベース（過去問道場方式。解き直しても不正解の記録は残る）
   let seen = 0, ok = 0, att = 0, okAtt = 0;
   u.questions.forEach(item => {
     const h = store.hist[item._ref.id];
@@ -258,7 +258,7 @@ function renderUnitList() {
     } else if (acc.att === 0) {
       meta.textContent = `${acc.total}問・未着手`;
     } else {
-      meta.textContent = `${acc.total}問・正答率${acc.cumPct}%（延べ${acc.att}回）`;
+      meta.textContent = `${acc.total}問・正答率${acc.cumPct}%（累計${acc.att}回）`;
     }
 
     const arrow = document.createElement("span");
@@ -282,7 +282,7 @@ function openQlist(u) {
   const acc = unitAcc(u);
   $("#qlistMeta").textContent = acc.att === 0
     ? `全${acc.total}問・未着手`
-    : `全${acc.total}問・正答率${acc.cumPct}%（延べ${acc.att}回）・習得度${acc.pct === null ? "—" : acc.pct + "%"}（解答済み${acc.seen}問の直近）`;
+    : `全${acc.total}問・正答率${acc.cumPct}%（累計${acc.att}回）・習得度${acc.pct === null ? "—" : acc.pct + "%"}（解答済み${acc.seen}問の直近）`;
 
   const grid = $("#qGrid");
   grid.innerHTML = "";
@@ -844,7 +844,7 @@ function renderStats() {
       <div class="stat-bar"><div></div></div>
       <div class="stat-sub2"></div>`;
     row.querySelector(".stat-name").textContent = s.name;
-    row.querySelector(".stat-nums").textContent = `延べ ${att}回解答・正解 ${okAtt}`;
+    row.querySelector(".stat-nums").textContent = `累計 ${att}回解答・正解 ${okAtt}`;
     row.querySelector(".stat-pct").textContent = att ? `${cumPct}%` : "—";
     row.querySelector(".stat-bar > div").style.width = `${att ? cumPct : 0}%`;
     row.querySelector(".stat-sub2").textContent =
@@ -858,7 +858,7 @@ function renderStats() {
       sub.className = "stat-unit";
       sub.innerHTML = `<span class="su-name"></span><span class="su-nums"></span><span class="su-pct"></span>`;
       sub.querySelector(".su-name").textContent = u.name;
-      sub.querySelector(".su-nums").textContent = `延べ${a.att}回・${a.seen}/${a.total}問`;
+      sub.querySelector(".su-nums").textContent = `累計${a.att}回・${a.seen}/${a.total}問`;
       sub.querySelector(".su-pct").textContent = a.cumPct === null ? "—" : `${a.cumPct}%`;
       box.append(sub);
     });
