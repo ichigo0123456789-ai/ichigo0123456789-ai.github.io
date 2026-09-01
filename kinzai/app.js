@@ -188,12 +188,35 @@ function show(name) {
 }
 
 function unitAcc(u) {
-  let seen = 0, ok = 0;
+  // seen/ok/pct     … 直近の解答ベース（習得度。問題一覧の色分けに使用）
+  // att/okAtt/cumPct … 延べ解答ベース（過去問道場方式。解き直しても不正解の記録は残る）
+  let seen = 0, ok = 0, att = 0, okAtt = 0;
   u.questions.forEach(item => {
-    const last = lastOf(item._ref.id);
-    if (last !== null) { seen++; if (last === "ok") ok++; }
+    const h = store.hist[item._ref.id];
+    if (!h) return;
+    att += (h.c || 0) + (h.w || 0);
+    okAtt += (h.c || 0);
+    if (h.last !== null) { seen++; if (h.last === "ok") ok++; }
   });
-  return { seen, ok, total: u.questions.length, pct: seen ? Math.round((ok / seen) * 100) : null };
+  return {
+    seen, ok, att, okAtt, total: u.questions.length,
+    pct: seen ? Math.round((ok / seen) * 100) : null,
+    cumPct: att ? Math.round((okAtt / att) * 100) : null,
+  };
+}
+
+/* ---------- 日別の解答記録（週別集計用）----------
+   hist の中に "@d/YYYY-MM-DD/分野" という擬似キーで {c,w} を持つ。
+   問題IDと衝突せず、既存の同期・マージ（解答数の多い側を採用）にそのまま乗る */
+function todayKey() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+function bumpDaily(subject, correct) {
+  const k = `@d/${todayKey()}/${subject}`;
+  const d = store.hist[k] || (store.hist[k] = { c: 0, w: 0 });
+  correct ? (d.c = (d.c || 0) + 1) : (d.w = (d.w || 0) + 1);
 }
 
 /* ============================================================
@@ -232,10 +255,10 @@ function renderUnitList() {
     meta.className = "unit-meta";
     if (acc.total === 0) {
       meta.textContent = "問題未登録";
-    } else if (acc.seen === 0) {
+    } else if (acc.att === 0) {
       meta.textContent = `${acc.total}問・未着手`;
     } else {
-      meta.textContent = `${acc.total}問・正答率${acc.pct}%（${acc.seen}問解答）`;
+      meta.textContent = `${acc.total}問・正答率${acc.cumPct}%（延べ${acc.att}回）`;
     }
 
     const arrow = document.createElement("span");
@@ -257,9 +280,9 @@ function openQlist(u) {
   qlistUnit = u;
   $("#qlistTitle").textContent = u.label;
   const acc = unitAcc(u);
-  $("#qlistMeta").textContent = acc.seen === 0
+  $("#qlistMeta").textContent = acc.att === 0
     ? `全${acc.total}問・未着手`
-    : `全${acc.total}問・解答済み${acc.seen}問・正答率${acc.pct}%`;
+    : `全${acc.total}問・正答率${acc.cumPct}%（延べ${acc.att}回）・習得度${acc.pct === null ? "—" : acc.pct + "%"}（解答済み${acc.seen}問の直近）`;
 
   const grid = $("#qGrid");
   grid.innerHTML = "";
@@ -574,6 +597,7 @@ function answer(my) {           // ox: true/false, mc: 選択index
   const h = histOf(q.id);
   correct ? h.c++ : h.w++;
   h.last = correct ? "ok" : "ng";
+  bumpDaily(q.subject, correct);
   saveStore();
 
   quiz.answers[quiz.idx] = { my, correct };
@@ -797,13 +821,14 @@ function renderStats() {
   const body = $("#statsBody");
   body.innerHTML = "";
   SUBJECTS.forEach(s => {
-    let seen = 0, ok = 0, total = 0;
+    let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
     s.units.forEach(u => {
       total += u.questions.length;
       const a = unitAcc(u);
-      seen += a.seen; ok += a.ok;
+      seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     });
-    const pct = seen ? Math.round((ok / seen) * 100) : 0;
+    const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
+    const masteryPct = seen ? Math.round((ok / seen) * 100) : null;
 
     const box = document.createElement("div");
     box.className = "stat-subject";
@@ -816,11 +841,14 @@ function renderStats() {
         <span class="stat-nums"></span>
         <span class="stat-pct"></span>
       </div>
-      <div class="stat-bar"><div></div></div>`;
+      <div class="stat-bar"><div></div></div>
+      <div class="stat-sub2"></div>`;
     row.querySelector(".stat-name").textContent = s.name;
-    row.querySelector(".stat-nums").textContent = `解答済み ${seen} / ${total}問`;
-    row.querySelector(".stat-pct").textContent = seen ? `${pct}%` : "—";
-    row.querySelector(".stat-bar > div").style.width = `${seen ? pct : 0}%`;
+    row.querySelector(".stat-nums").textContent = `延べ ${att}回解答・正解 ${okAtt}`;
+    row.querySelector(".stat-pct").textContent = att ? `${cumPct}%` : "—";
+    row.querySelector(".stat-bar > div").style.width = `${att ? cumPct : 0}%`;
+    row.querySelector(".stat-sub2").textContent =
+      `網羅度 ${seen}/${total}問（${total ? Math.round((seen / total) * 100) : 0}%）・習得度 ${masteryPct === null ? "—" : masteryPct + "%"}（解答済み問題の直近正誤）`;
     box.append(row);
 
     s.units.forEach(u => {
@@ -830,12 +858,76 @@ function renderStats() {
       sub.className = "stat-unit";
       sub.innerHTML = `<span class="su-name"></span><span class="su-nums"></span><span class="su-pct"></span>`;
       sub.querySelector(".su-name").textContent = u.name;
-      sub.querySelector(".su-nums").textContent = `${a.seen}/${a.total}問`;
-      sub.querySelector(".su-pct").textContent = a.pct === null ? "—" : `${a.pct}%`;
+      sub.querySelector(".su-nums").textContent = `延べ${a.att}回・${a.seen}/${a.total}問`;
+      sub.querySelector(".su-pct").textContent = a.cumPct === null ? "—" : `${a.cumPct}%`;
       box.append(sub);
     });
 
     body.append(box);
+  });
+  renderWeekly();
+}
+
+/* ---------- 週別の成績（月曜はじまり） ---------- */
+function renderWeekly() {
+  const body = $("#weeklyBody");
+  if (!body) return;
+  body.innerHTML = "";
+
+  // "@d/YYYY-MM-DD/分野" を週（その週の月曜の時刻値）ごとに集計
+  const weeks = new Map();   // mondayTime -> { att, ok, bySubj: {subject:{att,ok}} }
+  for (const [k, v] of Object.entries(store.hist)) {
+    if (!k.startsWith("@d/")) continue;
+    const [, dateStr, subj] = k.split("/");
+    const d = new Date(dateStr + "T00:00:00");
+    if (isNaN(d)) continue;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - ((d.getDay() + 6) % 7));   // 月曜へ戻す
+    const wk = monday.getTime();
+    const w = weeks.get(wk) || { att: 0, ok: 0, bySubj: {} };
+    const c = v.c || 0, n = c + (v.w || 0);
+    w.att += n; w.ok += c;
+    const bs = w.bySubj[subj] || (w.bySubj[subj] = { att: 0, ok: 0 });
+    bs.att += n; bs.ok += c;
+    weeks.set(wk, w);
+  }
+
+  if (weeks.size === 0) {
+    const p = document.createElement("p");
+    p.className = "hint";
+    p.textContent = "まだ週別の記録がありません。解答すると自動で記録されます。";
+    body.append(p);
+    return;
+  }
+
+  const fmt = d => `${d.getMonth() + 1}/${d.getDate()}`;
+  [...weeks.keys()].sort((a, b) => b - a).slice(0, 12).forEach(wk => {
+    const w = weeks.get(wk);
+    const mon = new Date(wk);
+    const sun = new Date(wk); sun.setDate(mon.getDate() + 6);
+    const pct = w.att ? Math.round((w.ok / w.att) * 100) : 0;
+
+    const row = document.createElement("div");
+    row.className = "week-row";
+    row.innerHTML = `
+      <div class="week-top">
+        <span class="week-range"></span>
+        <span class="week-nums"></span>
+        <span class="week-pct"></span>
+      </div>
+      <div class="stat-bar"><div></div></div>
+      <div class="week-subj"></div>`;
+    row.querySelector(".week-range").textContent = `${fmt(mon)}〜${fmt(sun)}`;
+    row.querySelector(".week-nums").textContent = `${w.att}問解答・正解${w.ok}`;
+    row.querySelector(".week-pct").textContent = `${pct}%`;
+    row.querySelector(".stat-bar > div").style.width = `${pct}%`;
+    row.querySelector(".week-subj").textContent = SUBJECTS
+      .filter(s => w.bySubj[s.subject])
+      .map(s => {
+        const b = w.bySubj[s.subject];
+        return `${s.name}${Math.round((b.ok / b.att) * 100)}%（${b.att}）`;
+      }).join("　");
+    body.append(row);
   });
 }
 

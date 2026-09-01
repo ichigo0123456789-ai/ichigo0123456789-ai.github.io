@@ -358,3 +358,13 @@ kbd{
   .opt-row{align-items:flex-start;flex-direction:column;gap:6px}
   .unit-meta{font-size:11px}
 }
+
+/* ---------- 成績: 補助表示・週別 ---------- */
+.stat-sub2{font-size:12px;color:var(--sub);margin-top:5px}
+.week-row{padding:8px 0;border-bottom:1px solid var(--line)}
+.week-row:last-child{border-bottom:0}
+.week-top{display:flex;align-items:baseline;gap:10px;font-size:14px}
+.week-range{font-weight:800;color:var(--blue-dark)}
+.week-nums{color:var(--sub);font-size:13px}
+.week-pct{margin-left:auto;font-weight:800;font-size:15px;color:var(--blue)}
+.week-subj{font-size:12px;color:var(--sub);margin-top:5px}
