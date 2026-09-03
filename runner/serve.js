@@ -30,7 +30,9 @@ var jobSeq = 0;
 function startReserve(pp) {
   var id = String(++jobSeq);
   var args = [path.join(__dirname, 'reserve-hybrid.js'),
-    '--theater', pp.theater, '--date', pp.date, '--title', pp.title, '--time', pp.time, '--seats', pp.seats];
+    '--theater', pp.theater, '--date', pp.date, '--title', pp.title, '--time', pp.time];
+  if (pp.seats) args.push('--seats', pp.seats);
+  if (pp.openSeatmap) args.push('--open-seatmap'); // 席は選ばず座席選択画面まで最速で開く
   if (pp.at) args.push('--at', pp.at);
   if (pp.dry) args.push('--dry');
   var job = { id: id, log: [], done: false, code: null, startedAt: Date.now(), cmd: 'node reserve-hybrid.js ' + args.slice(1).join(' ') };
@@ -284,15 +286,17 @@ const server = http.createServer(async function (req, res) {
   /* 実予約の起動（サイトのボタンから）。ローカルのみ。 */
   if (u.pathname === '/reserve' && req.method === 'POST') {
     var body = await readBody(req);
-    if (!body || !body.theater || !body.date || !body.title || !body.time || !body.seats) {
-      sendJson(res, 400, { ok: false, error: 'theater/date/title/time/seats が必要' }); return;
+    var needSeats = !body || !body.openSeatmap; // open-seatmap のときは席指定不要
+    if (!body || !body.theater || !body.date || !body.title || !body.time || (needSeats && !body.seats)) {
+      sendJson(res, 400, { ok: false, error: 'theater/date/title/time' + (needSeats ? '/seats' : '') + ' が必要' }); return;
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date) || !/^\d{1,2}:\d{2}$/.test(body.time)) {
       sendJson(res, 400, { ok: false, error: 'date/time の形式が不正' }); return;
     }
     var id = startReserve({
       theater: String(body.theater).toLowerCase(), date: body.date, title: String(body.title),
-      time: body.time, seats: String(body.seats), at: body.at || '', dry: !!body.dry
+      time: body.time, seats: body.seats ? String(body.seats) : '', at: body.at || '', dry: !!body.dry,
+      openSeatmap: !!body.openSeatmap
     });
     sendJson(res, 200, { ok: true, id: id, cmd: jobs[id].cmd });
     return;

@@ -22,6 +22,11 @@
    --seats は「優先グループ」を '/' で区切って第2候補以降も指定できる（各グループはカンマ区切りの席）:
      --seats "G-10,G-11 / F-10,F-11 / H-8,H-9"
      → 第1候補 G-10,G-11 が埋まっていれば F-10,F-11 → H-8,H-9 の順で自動確保。
+
+   --open-seatmap: 席は選ばず、座席選択画面まで最速で到達してブラウザで開く（席はご自身で選ぶ）。
+     予約導線の確定・座席画面セッションの確立までを高速HTTPで済ませ、実ブラウザに引き継ぐ。
+     --seats は不要。発売時刻に合わせるなら --at を併用。
+     node runner/reserve-hybrid.js --date 2026-08-27 --title ユーフォニアム --time 10:00 --open-seatmap --at "2026-08-25T00:00:00+09:00"
    ============================================================ */
 'use strict';
 const fs = require('fs');
@@ -232,6 +237,7 @@ async function enterSeatMap(k, show, creds) {
 (async () => {
   var loginOnly = arg('login-only', false);
   var dry = arg('dry', false);
+  var openSeatmap = arg('open-seatmap', false); // 席は選ばず、座席選択画面まで最速で到達してブラウザに引き継ぐ
   var creds = loadCreds(TH.chain || 'kinezo'); // チェーン別の認証情報（混用しない）
 
   var k = makeAdapter(TH);
@@ -334,7 +340,7 @@ async function enterSeatMap(k, show, creds) {
 
   var date = arg('date'), title = arg('title'), time = arg('time');
   var groups = parseSeatGroups(arg('seats')); // 優先グループ（第1候補→第2候補…）
-  if (!date || !title || !time || !groups.length) throw new Error('--date --title --time --seats を指定してください（--seats は "A-3,A-4 / B-5,B-6" で第2候補も指定可）');
+  if (!date || !title || !time || (!groups.length && !openSeatmap)) throw new Error('--date --title --time を指定してください（席を確保するなら --seats も／--open-seatmap のときは席指定は不要）');
 
   // 2) 発売時刻まで待機（サーバ時刻に同期して精密発火。待機中はセッション維持）
   //    発火の直前に ①予約URL先読み ②接続ウォームアップ を実行しておく。
@@ -396,6 +402,40 @@ async function enterSeatMap(k, show, creds) {
   var tB = Date.now();
   var op = await enterSeatMap(k, show, creds); // 待機列は正直に待って座席画面まで到達
   var dOpen = Date.now() - tB;
+
+  // ★ 座席画面まで最速到達モード：席は選ばず、座席選択画面をブラウザで開いて人間の手動選択に引き継ぐ。
+  //    T0 では「予約導線の確定＋座席画面セッションの確立」までを高速HTTPで済ませ、あとは実ブラウザで席を選ぶ。
+  if (openSeatmap) {
+    log('★座席選択画面に到達（席は選びません）｜ T0からの内訳: 上映回解決 ' + dRes + 'ms／座席画面 ' + dOpen + 'ms');
+    var pbo = await ensurePaymentBrowser();
+    var octx = pbo.ctx, oext = pbo.external;
+    // Cookie引き継ぎ型（KINEZO/TOHO/SPA）は確立済みセッションをブラウザへ注入。109/eigaland はブラウザ自身のセッションで開く。
+    if (!k.browserNativeHold && !k.browserGrab) await octx.addCookies(k.jar.toPlaywrightCookies(k.base || BASE));
+    if (k.prepareHandoff && !k.browserGrab) await k.prepareHandoff().catch(function () {});
+    if (k.handoffInitScript && !k.browserGrab) await octx.addInitScript(k.handoffInitScript());
+    var opage = (!oext && octx.pages && octx.pages().length) ? octx.pages()[0] : await octx.newPage();
+    opage.on('dialog', function (d) { d.accept().catch(function () {}); });
+    // 109 はブラウザ自身がログイン済みである必要があるので、未ログインならここでログイン
+    if (k.browserNativeHold && creds && !_preLoggedIn && k.loginInfo) {
+      var li0 = k.loginInfo();
+      await login109(opage, { loginUrl: li0.loginUrl, homeUrl: k.homeUrl() }, creds).catch(function () {});
+    }
+    var reserveEntry = (/^https?:/.test(show.reserveUrl) ? '' : (k.base || BASE)) + show.reserveUrl;
+    var seatUrl = (k.bookingPageUrl && k.bookingPageUrl()) || (k.seatPageUrl && k.seatPageUrl()) || k._seatUrl || reserveEntry;
+    await opage.goto(seatUrl, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    // KINEZO 等で座席画面が描画されなければ予約フロー入口から入り直す保険
+    if (!k.browserNativeHold && !k.browserGrab && !/choice_seat/.test(opage.url())) {
+      await opage.goto(reserveEntry, { waitUntil: 'domcontentloaded', timeout: 25000 }).catch(function () {});
+    }
+    console.log('\n──────── 座席選択画面を開きました（ここで席を選んで購入を進めてください） ────────');
+    console.log('  作品: ' + title + ' / ' + date + ' ' + show.time + ' ｼｱﾀｰ' + show.screen);
+    console.log('  現在の画面: ' + opage.url());
+    console.log('  ▶ この画面で好きな席を選択 → 券種 → 決済まで進めてください（席・券種・決済は自動化しません）。');
+    if (oext) { log('ブラウザは常駐したまま runner を終了します（タブはそのまま残ります）'); await sleep(500); process.exit(0); }
+    await new Promise(function () {}); // 選択・決済のため開いたまま待機（Ctrl+C で終了）
+    return;
+  }
+
   // (1) 第1候補は空席確認を飛ばして即確保（blindFirst 対応チェーン・本番のみ）。失敗したら座席表を取って従来どおり次候補へ
   var blindTried = false, sr = null, chosenSeats = null, chosenRank = 0, dSecure = 0;
   if (!dry && k.blindFirst && !k.browserNativeHold && groups.length) {
