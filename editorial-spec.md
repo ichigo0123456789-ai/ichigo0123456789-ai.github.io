@@ -33,7 +33,7 @@
 
 ## 全部署共通の厳守ルール（各部プロンプト冒頭に必ず貼る）
 - 日付はJST。市況数値・ニュース・URL・要約は今セッションで実取得した実データのみ（記憶想起・前日値流用・推測穴埋め禁止）。取得不可は『—』。各数値に《出典名＋基準日(as of)》併記。
-- 本文に英語の略称・固有名詞を生で混ぜない（初出のみ和名併記：米連邦準備制度（FRB）等）。ニュース見出しは媒体の日本語見出しをそのまま使う。
+- 本文に英語の略称・固有名詞を生で混ぜない（初出のみ和名併記：米連邦準備制度（FRB）等）。日本語媒体のニュース見出しはそのまま使う。**BBC・NHK WORLD等の英語ソースの見出しは自然な日本語に翻訳して使う**（原文の生英語をそのまま`<h4>`に出さない。出典名『BBC』『NHK WORLD』と実URLは保持）。
 - PII厳守：氏名・勤務先・部署/コース名・学校名など個人を特定する情報を一切出さない。読者を限定しない汎用の投資情報として書く。
 - 投資プロフィール：売買対象は投資信託・ETF中心、個別株の売買推奨はしない（例外＝三菱UFJ自社株は持株会のみ）、時間軸は中長期。『情報提供であり投資助言でない』。
 - 返すのは担当パートの整形済みHTML/データのみ（前置き・感想不要）。
@@ -46,16 +46,23 @@
 (C) ★NEW★ **Tier1保有3本のNAV**（オルカン/FANG+/ゴールド）と、取得できれば**Tier2候補**のNAVを bench_navs.json 追記用に返す（《出典+as of》。取得不可はスキップ）。
 返り値：table.mktの6つ<tr>群 ＋ regime.json用オブジェクト ＋ bench_navs.json用NAV群。
 
+### ★海外・英語ソース（BBC・NHK WORLD等／経済部・政治部・テック部の共通ルール）
+各ニュース部は日本語媒体（Yahoo）に加え、**海外・英語ソースを最低1本ずつ取り込む**（各カテゴリ 計3〜4本のうち海外1本以上）。
+- **BBC News**（RSS・curl可、Yahooと同手順で公開24h以内を優先・新しい順）：経済=https://feeds.bbci.co.uk/news/business/rss.xml ／ 国際政治=https://feeds.bbci.co.uk/news/world/rss.xml ／ テック=https://feeds.bbci.co.uk/news/technology/rss.xml
+- **NHK WORLD（English）・その他英語主要媒体**：RSS経路が不安定な場合は WebSearch/WebFetch でsite指定取得（例：`site:nhk.or.jp/nhkworld`、`site:bbc.com/news`）。公開24h以内を優先、実URL・実見出しのみ。
+- ★英語見出しは**自然な日本語に翻訳して`<h4>`に入れる**（直訳でなく読みやすい和文見出し）。`.meta`の出典名は『BBC』『NHK WORLD』等と明記し相対時刻を併記。href には海外ソースの実URL（bbc.com / nhk.or.jp 等）をそのまま使う。画像不要。
+- 当該ホストへ到達不可・記事が確認できない場合は『—（取得不可）』とし、捏造・推測・前日流用で埋めない（ファクト原則最優先）。
+
 ### 経済部（③金利・為替・相場＋イベントカレンダー）
-(A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から**公開24時間以内を優先**した見出し3本（新しい順）。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → **date -d でpubDateが新しい順にソートし、24h以内を優先して先頭3件を採る（24h以内が3本に満たない時のみ最大48hまで許容）**。★「1日前」ばかりにならないよう、可能な限り当日〜数時間前の最新記事を選ぶこと。各本 <a class="hl" href="実URL" target="_blank" rel="noopener"><h4>媒体の日本語見出し</h4><div class="meta">出典名 ・ 相対時刻</div></a> 形式。画像不要。
+(A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から**公開24時間以内を優先**した見出し3本（新しい順）。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → **date -d でpubDateが新しい順にソートし、24h以内を優先して先頭3件を採る（24h以内が3本に満たない時のみ最大48hまで許容）**。★「1日前」ばかりにならないよう、可能な限り当日〜数時間前の最新記事を選ぶこと。**加えて上記「★海外・英語ソース」からBBC Business／NHK WORLD等の英語記事を1本（和訳見出し）取り込む＝計3〜4本。** 各本 <a class="hl" href="実URL" target="_blank" rel="noopener"><h4>媒体の日本語見出し（英語ソースは和訳）</h4><div class="meta">出典名 ・ 相対時刻</div></a> 形式。画像不要。
 (B) ★NEW★ **イベントカレンダー維持**：calendar.json を読み、(1)期日を過ぎたイベントを archived へ移し実際の結果(actual)を記録、(2)今後2週間の予定イベント（日銀会合・FOMC・米雇用統計/CPI・日本CPI/短観・主要決算・政治日程）を WebSearch で実取得し upcoming に追加。日付・内容は実取得したもののみ。未確認は date:null / status:'要調査'。捏造禁止。各イベントに related_prediction_ids を紐づけ。
 返り値：3本のhl群 ＋ calendar.json更新差分。
 
 ### 政治部（③政策・国際）
-RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.jp/rss/topics/world.xml から、経済部と同手順で計3本。
+RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.jp/rss/topics/world.xml から、経済部と同手順で計3本。**加えて「★海外・英語ソース」の BBC World（https://feeds.bbci.co.uk/news/world/rss.xml）／NHK WORLD 等から英語の国際政治記事を1本（和訳見出し）取り込む＝計3〜4本。**
 
 ### テック部（③テック・AI・半導体）
-RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。
+RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。**加えて「★海外・英語ソース」の BBC Technology（https://feeds.bbci.co.uk/news/technology/rss.xml）／NHK WORLD 等から英語のテック記事を1本（和訳見出し）取り込む＝計3〜4本。**
 
 ### 投資部（④今日の結論・⑤先読み＋予測プロトコルv2）
 4部の成果（①の数値・regimeタグ・③各カテゴリの見出し・calendarの予定イベント）を必ず踏まえて書く。**書く前に playbook.md（検証済み原則）と data/lessons.json（直近教訓）を読み、適用した原則を明示的にcite**する。
@@ -153,7 +160,7 @@ index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index
 - 進行0で検証部（採点＋サプライズ監査＋カウンターファクチュアル更新）、進行2.5で運用部、**進行2.7で反対尋問**を必ず回す。data/*.json を毎run更新してpushする。
 - **予測はv2プロトコル**（type/p/scoring_spec/falsifiable、eventを週2〜5本、thesisはcheckpoints）。confidence廃止。
 - 日付はJSTで確定（UTCの前日にしない）。ファクト原則最優先（未確認は『—』・捏造/前日値流用/推測禁止）。
-- ニュースは媒体カテゴリRSSから実取得、3カテゴリ（経済/政治/テック）×各3本、**公開24h以内を優先（新しい順・不足時のみ最大48h）**、実URL（画像なし）。「1日前」ばかりを避け最新記事を厳選。本文に英語を生で混ぜない。
+- ニュースは媒体カテゴリRSSから実取得、3カテゴリ（経済/政治/テック）×各3〜4本（**うち海外・英語ソース＝BBC／NHK WORLD等を最低1本**）、**公開24h以内を優先（新しい順・不足時のみ最大48h）**、実URL（画像なし）。「1日前」ばかりを避け最新記事を厳選。英語ソースの見出しは和訳して使い（本文に生英語を混ぜない）、出典名と実URLは保持。
 - 個別株の売買推奨はしない（投信/ETF＋三菱UFJ自社株のみ）。中長期視点。情報提供であり助言でない。
 - 仮想運用は投信のみ・SBI可・つみたて1銘柄・つみたて以外3ヶ月反対売買禁止・NISA枠上限を厳守。違反案は出さない。裁量判断時は rejected_alternative を counterfactual に枝として残す。
 - ページにPII（氏名・勤務先・コース・学校）を出さない。記事本文を転載しない（見出し・リンクのみ）。
