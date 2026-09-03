@@ -124,17 +124,31 @@
       depth = screen.rows.length > 1 ? seat.rowIndex / (screen.rows.length - 1) : 0.5;
       source = 'grid';
     }
-    var soundDepth = Math.max(0, 1 - Math.abs(depth - 0.62) / 0.62);
+    /* 前後（迫力・音響・快適性）は実寸に近い物理モデルで出す。
+       実測座標は上の「中央からの左右ズレ(off)」の特定にだけ使い、前後には使わない。
+       画面の水平視野角 = 2*atan((画面幅/2)/距離)。近すぎ(角が大)は酔うので強めに減点、
+       遠すぎ(角が小)は迫力不足として弱めに減点。最適は約38°（SMPTE/THXの中間）。 */
+    var SEATW = 0.5, ROWPITCH = 1.0, FRONTGAP = 3.5, OPT = 38 * Math.PI / 180;
+    var rows = (screen.rows || []).length || 1;
+    var ri = seat.rowIndex || 0;
+    var screenW = 2 * halfSeats * SEATW;                        // 画面幅(m)≒座席の左右範囲
+    var dist = FRONTGAP + ri * ROWPITCH;                        // スクリーンまでの距離(m)
+    var angle = 2 * Math.atan((screenW / 2) / dist);           // 画面の水平視野角(rad)
+    var da = angle - OPT;
+    var comfort = da >= 0 ? Math.max(0, 1 - (da / OPT) * 1.15)  // 近すぎ＝強めに減点
+                          : Math.max(0, 1 - (-da / OPT) * 0.7);  // 遠すぎ＝弱めに減点
+    var depthFrac = rows > 1 ? ri / (rows - 1) : 0.5;
+    var soundDepth = Math.max(0, 1 - Math.abs(depthFrac - 0.6) / 0.6); // 音響は中〜後方が良い
     var sound = Math.round(100 * (0.5 * lat + 0.5 * soundDepth));
-    var impDepth = Math.max(0, 1 - Math.abs(depth - 0.33) / 0.67);
-    var impact = Math.round(100 * (0.65 * impDepth + 0.35 * lat));
-    if (seat.kind === 'front') impact = Math.round(impact * 0.85); // 最前列は近すぎて全体が視野に入らない
-    var ideal = opts.eye === 'right' ? -0.1 : (opts.eye === 'left' ? 0.1 : 0); // 同点の席のタイブレーク程度
+    var immersion = Math.max(0, Math.min(1, angle / OPT));      // 画面占有＝最適角で1.0に飽和
+    var impact = Math.round(100 * (0.6 * immersion + 0.4 * lat));
+    var ideal = opts.eye === 'right' ? -0.1 : (opts.eye === 'left' ? 0.1 : 0); // 同点席の利き目タイブレーク
     var latEye = Math.max(0, 1 - Math.abs(off - ideal) / halfSeats);
-    var rank = 0.4 * latEye + 0.3 * (sound / 100) + 0.3 * (impact / 100);
-    if (seat.gapBefore) rank = Math.min(1, rank + 0.03); // 横通路直後は足元が広い
+    /* 総合＝中央(利き目補正)と“近すぎない最適視野角(comfort)”を主軸に、音響・迫力を副次で加点。 */
+    var rank = 0.32 * latEye + 0.34 * comfort + 0.17 * (sound / 100) + 0.17 * (impact / 100);
+    if (seat.gapBefore) rank = Math.min(1, rank + 0.02); // 横通路直後は足元が広い
     var n = Math.round(Math.abs(off) * 2) / 2;
-    return { offset: off, offsetN: n, offsetDir: n === 0 ? '' : (off < 0 ? '左' : '右'), sound: sound, impact: impact, rank: rank, source: source };
+    return { offset: off, offsetN: n, offsetDir: n === 0 ? '' : (off < 0 ? '左' : '右'), sound: sound, impact: impact, comfort: Math.round(comfort * 100), angleDeg: Math.round(angle * 180 / Math.PI), rank: rank, source: source };
   }
 
   /* ---- 混雑プリセット ---------------------------------------------- */
