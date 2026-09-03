@@ -1170,15 +1170,22 @@
     var ranked = seats.map(function (s) { return { seat: s, ax: CE.seatAxes(s, screen, { eye: eye }) }; })
       .sort(function (a, b) { return b.ax.rank - a.ax.rank; }).slice(0, 10);
     var sel = selectedSeats();
-    var eyeNote = eye === 'right' ? '利き目=右：中央よりやや左を優先しています'
-      : (eye === 'left' ? '利き目=左：中央よりやや右を優先しています' : '利き目 未設定：中央を優先しています');
+    var eyeNote = eye === 'right' ? '利き目=右：右目がスクリーン中心線に来るよう、同点なら左側の席を優先（ごく僅かな補正）'
+      : (eye === 'left' ? '利き目=左：左目がスクリーン中心線に来るよう、同点なら右側の席を優先（ごく僅かな補正）' : '利き目 未設定：スクリーン中心を優先');
+    /* 列ブロック自体がスクリーン中心から寄っている列を注記（「列の真ん中」≠「スクリーン中心」の混乱を防ぐ） */
+    var gridCenter = (seats.reduce(function (m, s) { return Math.max(m, s.col); }, 0) + 1) / 2;
+    var rowMin = {}, rowMax = {};
+    seats.forEach(function (s) { var r = String(s.id).split('-')[0]; rowMin[r] = Math.min(rowMin[r] == null ? Infinity : rowMin[r], s.col); rowMax[r] = Math.max(rowMax[r] == null ? -Infinity : rowMax[r], s.col); });
+    var shifted = {};
+    Object.keys(rowMin).forEach(function (r) { var d = (rowMin[r] + rowMax[r]) / 2 - gridCenter; if (Math.abs(d) >= 0.75) { var key = (d < 0 ? '左' : '右') + Math.round(Math.abs(d) * 2) / 2; (shifted[key] = shifted[key] || []).push(r); } });
+    var rowNote = Object.keys(shifted).map(function (key) { var rs = shifted[key].sort(); return (rs.length > 2 ? rs[0] + '〜' + rs[rs.length - 1] : rs.join('・')) + '列は列全体が中心より約' + key.slice(1) + '席' + key.slice(0, 1) + '寄り'; }).join('／');
     var html = '<div class="rank-head"><div class="rank-title">この劇場のおすすめ席 TOP10（' + (screen.name || 'スクリーン') + '）</div>' +
       '<label class="rank-eye">利き目 <select id="eye-select">' +
         '<option value=""' + (eye === '' ? ' selected' : '') + '>未設定</option>' +
         '<option value="right"' + (eye === 'right' ? ' selected' : '') + '>右目</option>' +
         '<option value="left"' + (eye === 'left' ? ' selected' : '') + '>左目</option>' +
       '</select></label></div>' +
-      '<div class="rank-cols"><span></span><span>席</span><span>中央からのズレ</span><span>音響</span><span>迫力</span><span></span></div><ol class="rank-list">';
+      '<div class="rank-cols"><span></span><span>席</span><span>スクリーン中心からのズレ</span><span>音響</span><span>迫力</span><span></span></div><ol class="rank-list">';
     ranked.forEach(function (r) {
       var picked = sel.indexOf(r.seat.id) >= 0, ax = r.ax;
       var offLabel = ax.offsetN === 0 ? '中央' : ax.offsetDir + (Number.isInteger(ax.offsetN) ? ax.offsetN : ax.offsetN.toFixed(1)) + '席';
@@ -1189,7 +1196,8 @@
         '<span class="rank-pt">' + ax.impact + '<small>点</small></span>' +
         '<span class="rank-pick">' + (picked ? '選択中' : '選ぶ') + '</span></li>';
     });
-    html += '</ol><p class="rank-hint">' + eyeNote + '。音響＝中央寄り・前後2/3付近がスイートスポット／迫力＝画面が視野を満たす度合い（前寄り・中央）。' +
+    html += '</ol><p class="rank-hint">ズレは「列の真ん中」ではなく<b>スクリーンの中心線</b>からの距離です' + (rowNote ? '（' + rowNote + '。列の真ん中とスクリーン中心は一致しません）' : '') + '。' +
+      eyeNote + '。音響＝中央寄り・前後2/3付近がスイートスポット／迫力＝画面が視野を満たす度合い（前寄り・中央）。' +
       '座席配置に基づく静的な指標で、空席状況は反映していません。行クリックで選択/解除。</p>';
     box.innerHTML = html;
     box.hidden = false;
