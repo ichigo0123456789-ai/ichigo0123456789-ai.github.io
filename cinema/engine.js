@@ -93,6 +93,8 @@
    *            寄っている劇場では「列の真ん中」と一致しないことに注意。
    *   sound  : 音響 0〜100。中央寄り＋前後 0.62 付近（サラウンドの基準位置）がスイートスポット
    *   impact : 迫力 0〜100。画面が視野を満たす度合い＝前寄り（0.33 付近）で高く、中央寄りほど歪みが少ない
+   * opts.geo: { centerX, pitchX, minX, maxX, yFront, yBack }（data/seatcoords.js のシアター情報）と
+   * opts.pt : [x, y]（その席の中心 px）を渡すと実座標モード。無ければ席番号グリッドにフォールバック。
    * opts.eye: 'right' | 'left' | ''  利き目。「利き目をスクリーン中心線に置く」と顔の正中線は
    *           その分だけ逆側にずれる（右目→座席はわずかに左）。量は瞳孔間距離の半分≈3cm＝席幅の
    *           1割弱なので、順位付けでは「同点の席なら利き目側と逆（右目なら左）を優先」する程度の
@@ -101,22 +103,38 @@
    */
   function seatAxes(seat, screen, opts) {
     opts = opts || {};
-    var w = screenWidth(screen);
-    var center = (w + 1) / 2;
-    var off = center > 0 ? seat.col - center : 0;
-    var lat = center > 0 ? Math.max(0, 1 - Math.abs(off) / center) : 1;
-    var depth = screen.rows.length > 1 ? seat.rowIndex / (screen.rows.length - 1) : 0.5;
+    var off, lat, depth, halfSeats, source;
+    if (opts.geo && opts.pt) {
+      /* 実座標モード：座席図の data-coords（席の中心 px）と、PNG を画素解析して実測した
+         SCREEN バーの中心（opts.geo.centerX）から計算する。席番号や画像中心の仮定は使わない。
+         推定値（実寸 m・傾斜）は一切含まない。 */
+      var g = opts.geo;
+      off = (opts.pt[0] - g.centerX) / g.pitchX;                       // 席単位。負=左, 正=右
+      halfSeats = Math.max(0.5, ((g.maxX - g.minX) / 2) / g.pitchX);   // 客席の半幅（席単位）
+      lat = Math.max(0, 1 - Math.abs(off) / halfSeats);
+      depth = g.yBack > g.yFront ? Math.min(1, Math.max(0, (opts.pt[1] - g.yFront) / (g.yBack - g.yFront))) : 0.5; // 0=最前, 1=最後（実際の列間隔を反映）
+      source = 'coords';
+    } else {
+      /* フォールバック：席番号グリッド（実座標が未取得のシアター用） */
+      var w = screenWidth(screen);
+      var center = (w + 1) / 2;
+      off = center > 0 ? seat.col - center : 0;
+      halfSeats = center > 0 ? center : 1;
+      lat = center > 0 ? Math.max(0, 1 - Math.abs(off) / center) : 1;
+      depth = screen.rows.length > 1 ? seat.rowIndex / (screen.rows.length - 1) : 0.5;
+      source = 'grid';
+    }
     var soundDepth = Math.max(0, 1 - Math.abs(depth - 0.62) / 0.62);
     var sound = Math.round(100 * (0.5 * lat + 0.5 * soundDepth));
     var impDepth = Math.max(0, 1 - Math.abs(depth - 0.33) / 0.67);
     var impact = Math.round(100 * (0.65 * impDepth + 0.35 * lat));
     if (seat.kind === 'front') impact = Math.round(impact * 0.85); // 最前列は近すぎて全体が視野に入らない
     var ideal = opts.eye === 'right' ? -0.1 : (opts.eye === 'left' ? 0.1 : 0); // 同点の席のタイブレーク程度
-    var latEye = center > 0 ? Math.max(0, 1 - Math.abs(off - ideal) / center) : 1;
+    var latEye = Math.max(0, 1 - Math.abs(off - ideal) / halfSeats);
     var rank = 0.4 * latEye + 0.3 * (sound / 100) + 0.3 * (impact / 100);
     if (seat.gapBefore) rank = Math.min(1, rank + 0.03); // 横通路直後は足元が広い
     var n = Math.round(Math.abs(off) * 2) / 2;
-    return { offset: off, offsetN: n, offsetDir: n === 0 ? '' : (off < 0 ? '左' : '右'), sound: sound, impact: impact, rank: rank };
+    return { offset: off, offsetN: n, offsetDir: n === 0 ? '' : (off < 0 ? '左' : '右'), sound: sound, impact: impact, rank: rank, source: source };
   }
 
   /* ---- 混雑プリセット ---------------------------------------------- */

@@ -1167,18 +1167,28 @@
     var seats = CE.expandSeats(screen).filter(function (s) { return CE.isSelectable(s); });
     if (!seats.length) { box.innerHTML = ''; box.hidden = true; return; }
     var eye = getEye();
-    var ranked = seats.map(function (s) { return { seat: s, ax: CE.seatAxes(s, screen, { eye: eye }) }; })
-      .sort(function (a, b) { return b.ax.rank - a.ax.rank; }).slice(0, 10);
+    /* 実座標（data/seatcoords.js）：座席図の data-coords と実測した SCREEN バー中心。あるシアターではこちらを使う。 */
+    var ccAll = (window.CINEMA_SEATCOORDS || {})[S.plan.theaterId];
+    var cc = ccAll && ccAll[S.plan.screenId];
+    var geo = cc ? { centerX: cc.screenCenterX, pitchX: cc.pitchX, minX: cc.minX, maxX: cc.maxX, yFront: cc.yFront, yBack: cc.yBack } : null;
+    var axes = seats.map(function (s) {
+      var pt = cc && cc.seats && cc.seats[s.id];
+      return { seat: s, ax: CE.seatAxes(s, screen, { eye: eye, geo: (geo && pt) ? geo : null, pt: pt || null }) };
+    });
+    var usingCoords = axes.length && axes.every(function (a) { return a.ax.source === 'coords'; });
+    var ranked = axes.slice().sort(function (a, b) { return b.ax.rank - a.ax.rank; }).slice(0, 10);
     var sel = selectedSeats();
     var eyeNote = eye === 'right' ? '利き目=右：右目がスクリーン中心線に来るよう、同点なら左側の席を優先（ごく僅かな補正）'
       : (eye === 'left' ? '利き目=左：左目がスクリーン中心線に来るよう、同点なら右側の席を優先（ごく僅かな補正）' : '利き目 未設定：スクリーン中心を優先');
-    /* 列ブロック自体がスクリーン中心から寄っている列を注記（「列の真ん中」≠「スクリーン中心」の混乱を防ぐ） */
-    var gridCenter = (seats.reduce(function (m, s) { return Math.max(m, s.col); }, 0) + 1) / 2;
-    var rowMin = {}, rowMax = {};
-    seats.forEach(function (s) { var r = String(s.id).split('-')[0]; rowMin[r] = Math.min(rowMin[r] == null ? Infinity : rowMin[r], s.col); rowMax[r] = Math.max(rowMax[r] == null ? -Infinity : rowMax[r], s.col); });
+    /* 列ブロック自体がスクリーン中心から寄っている列を注記（「列の真ん中」≠「スクリーン中心」の混乱を防ぐ）。
+       ズレ(ax.offset)は実座標/グリッドどちらのモードでも席単位なので共通に扱える。 */
+    var rowLo = {}, rowHi = {};
+    axes.forEach(function (a) { var r = String(a.seat.id).split('-')[0]; var o = a.ax.offset; rowLo[r] = Math.min(rowLo[r] == null ? Infinity : rowLo[r], o); rowHi[r] = Math.max(rowHi[r] == null ? -Infinity : rowHi[r], o); });
     var shifted = {};
-    Object.keys(rowMin).forEach(function (r) { var d = (rowMin[r] + rowMax[r]) / 2 - gridCenter; if (Math.abs(d) >= 0.75) { var key = (d < 0 ? '左' : '右') + Math.round(Math.abs(d) * 2) / 2; (shifted[key] = shifted[key] || []).push(r); } });
+    Object.keys(rowLo).forEach(function (r) { var d = (rowLo[r] + rowHi[r]) / 2; if (Math.abs(d) >= 0.75) { var key = (d < 0 ? '左' : '右') + Math.round(Math.abs(d) * 2) / 2; (shifted[key] = shifted[key] || []).push(r); } });
     var rowNote = Object.keys(shifted).map(function (key) { var rs = shifted[key].sort(); return (rs.length > 2 ? rs[0] + '〜' + rs[rs.length - 1] : rs.join('・')) + '列は列全体が中心より約' + key.slice(1) + '席' + key.slice(0, 1) + '寄り'; }).join('／');
+    var srcNote = usingCoords ? '座標は映画館の座席図（data-coords）と、座席図PNGを画素解析して実測した<b>SCREENバーの中心</b>に基づく実測値です（' + (cc.centerSource === 'screenbar' ? 'SCREENバー検出' : '全席範囲の中心') + '・取得 ' + (cc.capturedFrom || '') + '）。実寸(m)や傾斜の推定は含みません。'
+      : 'このシアターは実座標が未取得のため、席番号グリッドから計算しています。';
     var html = '<div class="rank-head"><div class="rank-title">この劇場のおすすめ席 TOP10（' + (screen.name || 'スクリーン') + '）</div>' +
       '<label class="rank-eye">利き目 <select id="eye-select">' +
         '<option value=""' + (eye === '' ? ' selected' : '') + '>未設定</option>' +
@@ -1196,7 +1206,7 @@
         '<span class="rank-pt">' + ax.impact + '<small>点</small></span>' +
         '<span class="rank-pick">' + (picked ? '選択中' : '選ぶ') + '</span></li>';
     });
-    html += '</ol><p class="rank-hint">ズレは「列の真ん中」ではなく<b>スクリーンの中心線</b>からの距離です' + (rowNote ? '（' + rowNote + '。列の真ん中とスクリーン中心は一致しません）' : '') + '。' +
+    html += '</ol><p class="rank-hint">' + srcNote + ' ズレは「列の真ん中」ではなく<b>スクリーンの中心線</b>からの距離です' + (rowNote ? '（' + rowNote + '。列の真ん中とスクリーン中心は一致しません）' : '') + '。' +
       eyeNote + '。音響＝中央寄り・前後2/3付近がスイートスポット／迫力＝画面が視野を満たす度合い（前寄り・中央）。' +
       '座席配置に基づく静的な指標で、空席状況は反映していません。行クリックで選択/解除。</p>';
     box.innerHTML = html;
