@@ -15,6 +15,7 @@
 
   var LS_PLANS = 'cinema.plans.v1';
   var LS_PROFILE = 'cinema.profile.v1';
+  var LS_EYE = 'cinema.eye.v1';   // 利き目（個人情報ではないので「この端末に保存する」の対象外で常時保存）
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -1149,43 +1150,51 @@
     renderSeatRanking();
   }
 
+  /** 利き目の設定（'right' | 'left' | ''）。個人情報ではないので常時この端末に保存する。 */
+  function getEye() { try { return localStorage.getItem(LS_EYE) || ''; } catch (e) { return ''; } }
+  function setEye(v) { try { if (v) localStorage.setItem(LS_EYE, v); else localStorage.removeItem(LS_EYE); } catch (e) {} }
+
   /**
-   * この劇場（スクリーン）のおすすめ席ランキング TOP10 を表示する。
-   * 見やすさ＝CE.popularity（中央寄り・前後2/3付近・横通路直後を高評価）。
-   * 空席状況ではなく座席配置から決まる静的な指標。行をクリックでその席を選択。
+   * この劇場（スクリーン）のおすすめ席ランキング TOP10。
+   * 3軸で表示：中央からのズレ／音響(100点)／迫力(100点)。並び順は3軸＋利き目補正の合成スコア。
+   * 座席配置から決まる静的な指標（空席状況は反映しない）。行クリックでその席を選択/解除。
    */
   function renderSeatRanking() {
     var box = $('seat-ranking');
     if (!box) return;
     var screen = currentScreen();
-    if (!screen || !window.CinemaEngine) { box.innerHTML = ''; box.hidden = true; return; }
+    if (!screen || !window.CinemaEngine || !CE.seatAxes) { box.innerHTML = ''; box.hidden = true; return; }
     var seats = CE.expandSeats(screen).filter(function (s) { return CE.isSelectable(s); });
     if (!seats.length) { box.innerHTML = ''; box.hidden = true; return; }
-    var maxCol = seats.reduce(function (m, s) { return Math.max(m, s.col); }, 0);
-    var center = (maxCol + 1) / 2, rows = screen.rows.length;
-    var ranked = seats.map(function (s) { return { seat: s, score: CE.popularity(s, screen) }; })
-      .sort(function (a, b) { return b.score - a.score; }).slice(0, 10);
-    function posLabel(s) {
-      var d = rows > 1 ? s.rowIndex / (rows - 1) : 0.5;
-      var fb = d < 0.34 ? '前方' : (d < 0.7 ? '中央' : '後方');
-      var off = center > 0 ? Math.abs(s.col - center) / center : 0;
-      var lr = off < 0.2 ? '中央' : (s.col < center ? 'やや左' : 'やや右');
-      return fb + '・' + lr;
-    }
-    function stars(sc) { var n = Math.max(1, Math.min(5, Math.round(sc * 5))); return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+    var eye = getEye();
+    var ranked = seats.map(function (s) { return { seat: s, ax: CE.seatAxes(s, screen, { eye: eye }) }; })
+      .sort(function (a, b) { return b.ax.rank - a.ax.rank; }).slice(0, 10);
     var sel = selectedSeats();
-    var html = '<div class="rank-title">この劇場のおすすめ席 TOP10（' + (screen.name || 'スクリーン') + '）</div><ol class="rank-list">';
+    var eyeNote = eye === 'right' ? '利き目=右：中央よりやや左を優先しています'
+      : (eye === 'left' ? '利き目=左：中央よりやや右を優先しています' : '利き目 未設定：中央を優先しています');
+    var html = '<div class="rank-head"><div class="rank-title">この劇場のおすすめ席 TOP10（' + (screen.name || 'スクリーン') + '）</div>' +
+      '<label class="rank-eye">利き目 <select id="eye-select">' +
+        '<option value=""' + (eye === '' ? ' selected' : '') + '>未設定</option>' +
+        '<option value="right"' + (eye === 'right' ? ' selected' : '') + '>右目</option>' +
+        '<option value="left"' + (eye === 'left' ? ' selected' : '') + '>左目</option>' +
+      '</select></label></div>' +
+      '<div class="rank-cols"><span></span><span>席</span><span>中央からのズレ</span><span>音響</span><span>迫力</span><span></span></div><ol class="rank-list">';
     ranked.forEach(function (r) {
-      var picked = sel.indexOf(r.seat.id) >= 0;
+      var picked = sel.indexOf(r.seat.id) >= 0, ax = r.ax;
+      var offLabel = ax.offsetN === 0 ? '中央' : ax.offsetDir + (Number.isInteger(ax.offsetN) ? ax.offsetN : ax.offsetN.toFixed(1)) + '席';
       html += '<li class="rank-item' + (picked ? ' picked' : '') + '" data-seat="' + r.seat.id + '">' +
         '<span class="rank-seat">' + r.seat.id + '</span>' +
-        '<span class="rank-stars">' + stars(r.score) + '</span>' +
-        '<span class="rank-pos">' + posLabel(r.seat) + '</span>' +
+        '<span class="rank-off">' + offLabel + '</span>' +
+        '<span class="rank-pt">' + ax.sound + '<small>点</small></span>' +
+        '<span class="rank-pt">' + ax.impact + '<small>点</small></span>' +
         '<span class="rank-pick">' + (picked ? '選択中' : '選ぶ') + '</span></li>';
     });
-    html += '</ol><p class="rank-hint">クリックでその席を選択に追加/解除できます（見やすさ＝中央寄り・前後2/3付近・通路直後を高評価）。空席状況は反映していません。</p>';
+    html += '</ol><p class="rank-hint">' + eyeNote + '。音響＝中央寄り・前後2/3付近がスイートスポット／迫力＝画面が視野を満たす度合い（前寄り・中央）。' +
+      '座席配置に基づく静的な指標で、空席状況は反映していません。行クリックで選択/解除。</p>';
     box.innerHTML = html;
     box.hidden = false;
+    var es = box.querySelector('#eye-select');
+    if (es) es.addEventListener('change', function () { setEye(es.value); renderSeatRanking(); });
     Array.prototype.forEach.call(box.querySelectorAll('.rank-item'), function (li) {
       li.addEventListener('click', function () {
         var id = li.getAttribute('data-seat');
@@ -1943,6 +1952,7 @@
       localStorage.removeItem(LS_PLANS);
       localStorage.removeItem(LS_PROFILE);
       localStorage.removeItem(LS_CHECKLIST);
+      localStorage.removeItem(LS_EYE);
       S.plans = [];
       S.profile = { save: false, name: '', tel: '', mail: '' };
       S.plan = blankPlan();
