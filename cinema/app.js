@@ -1101,16 +1101,39 @@
     }
   }
 
-  /* 実座席図を描画。行＝row（英字）、列＝num。空席のみクリック可。 */
+  /* 実座席図を描画。列＝実測x（KINEZO の data-coords）or 座席番号 num。空席のみクリック可。 */
   function renderRunnerSeatmap(container) {
     container.innerHTML = '';
     var m = S.runnerSeatMap; if (!m) return;
+    var seats = m.seats || [];
     var byRow = {};
-    m.seats.forEach(function (s0) { (byRow[s0.row] = byRow[s0.row] || []).push(s0); });
+    seats.forEach(function (s0) { (byRow[s0.row] = byRow[s0.row] || []).push(s0); });
     var rowKeys = Object.keys(byRow).sort();
-    var maxNum = m.cols || m.seats.reduce(function (mx, s0) { return Math.max(mx, s0.num); }, 0);
-    var cols = maxNum * 2;
     var selSet = {}; selectedSeats().forEach(function (id) { selSet[id] = 1; });
+
+    /* 列インデックスの決め方：実測座標(cx)があれば席ピッチで量子化し、
+       通路・左右のオフセットを実物どおりに再現。無ければ従来の num グリッド。 */
+    var measured = seats.some(function (s) { return s.cx != null; });
+    var colOf, totalCols, sortKey;
+    if (measured) {
+      var xs = seats.filter(function (s) { return s.cx != null; })
+                    .map(function (s) { return s.cx; }).sort(function (a, b) { return a - b; });
+      var minX = xs[0], maxX = xs[xs.length - 1];
+      var diffs = [];
+      for (var i = 1; i < xs.length; i++) { var d = xs[i] - xs[i - 1]; if (d > 2) diffs.push(d); }
+      diffs.sort(function (a, b) { return a - b; });
+      var unit = diffs.length ? diffs[Math.floor(diffs.length * 0.2)] : 40; /* ≒1席ピッチ */
+      if (!unit || unit < 6) unit = 40;
+      colOf = function (s) { return s.cx == null ? 0 : Math.round((s.cx - minX) / unit); };
+      totalCols = Math.round((maxX - minX) / unit) + 1;
+      sortKey = function (a, b) { return (a.cx || 0) - (b.cx || 0); };
+    } else {
+      var maxNum = m.cols || seats.reduce(function (mx, s0) { return Math.max(mx, s0.num); }, 0);
+      colOf = function (s) { return (s.num - 1); };
+      totalCols = maxNum;
+      sortKey = function (a, b) { return a.num - b.num; };
+    }
+    var cols = Math.max(1, totalCols) * 2;
 
     rowKeys.forEach(function (rl) {
       var rowEl = document.createElement('div');
@@ -1121,11 +1144,11 @@
       var grid = document.createElement('div');
       grid.className = 'seat-grid';
       grid.style.gridTemplateColumns = 'repeat(' + cols + ', var(--seat-half))';
-      byRow[rl].slice().sort(function (a, b) { return a.num - b.num; }).forEach(function (s0) {
+      byRow[rl].slice().sort(sortKey).forEach(function (s0) {
         var b = document.createElement('button');
         b.className = 'seat';
         b.dataset.seat = s0.id;
-        b.style.gridColumn = ((s0.num - 1) * 2 + 1) + ' / span 2';
+        b.style.gridColumn = (colOf(s0) * 2 + 1) + ' / span 2';
         b.title = s0.id;
         var st = 'free';
         if (s0.state !== 'available') st = 'taken';

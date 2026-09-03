@@ -294,17 +294,24 @@ function parseSchedule(html, defaultTheaterPath) {
   return Object.keys(movies).map(function (t) { return movies[t]; });
 }
 
-/** choice_seat の <area> から座席状況を読む */
+/** choice_seat の <area> から座席状況を読む。
+   data-coords="x1,y1,x2,y2"（実ピクセル座標）も一緒に拾い、cx/cy を付ける。
+   → 表示側で通路・左右オフセットを含む実物どおりのレイアウトを復元できる。 */
 function parseSeatMap(html) {
   var seats = {};
-  var re = /<area\s+id="([^"]+)"[^>]*type-seat="([^"]*)"[^>]*class="([^"]*)"/g;
+  var re = /<area\b([^>]*)>/g;
   var m;
   while ((m = re.exec(html)) !== null) {
-    var id = m[1];
-    if (!/^[A-Z]+-?\d+$/.test(id)) continue;
-    var cls = m[3];
+    var attrs = m[1];
+    var id = (attrs.match(/\bid="([^"]+)"/) || [])[1];
+    if (!id || !/^[A-Z]+-?\d+$/.test(id)) continue;
+    var cls = (attrs.match(/\bclass="([^"]*)"/) || [])[1] || '';
     var state = /sold-out/.test(cls) ? 'taken' : (/seat-select/.test(cls) ? 'available' : 'blocked');
-    seats[id] = { state: state, typeSeat: m[2] };
+    var ts = (attrs.match(/\btype-seat="([^"]*)"/) || [])[1] || '';
+    var seat = { state: state, typeSeat: ts };
+    var co = attrs.match(/\bcoords="(\d+),(\d+),(\d+),(\d+)"/); /* data-coords / coords 両対応 */
+    if (co) { seat.cx = (+co[1] + +co[3]) / 2; seat.cy = (+co[2] + +co[4]) / 2; }
+    seats[id] = seat;
   }
   return seats;
 }

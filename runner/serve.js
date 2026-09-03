@@ -210,7 +210,7 @@ async function getSeatMap(key, date, title, time) {
   var arr = Array.isArray(map) ? map : Object.keys(map || {}).map(function (k) {
     var v = map[k] || {};
     return {
-      id: v.id || k, row: v.row, num: v.num, state: v.state,
+      id: v.id || k, row: v.row, num: v.num, state: v.state, cx: v.cx, cy: v.cy,
       kind: v.kind, wheelchair: v.wheelchair, type: v.type, available: v.available
     };
   });
@@ -220,7 +220,9 @@ async function getSeatMap(key, date, title, time) {
       row: s.row != null ? String(s.row) : (String(s.id).split('-')[0] || ''),
       num: s.num != null ? s.num : parseInt((String(s.id).split('-')[1] || '0'), 10),
       state: s.state || (s.available === false ? 'sold' : 'available'),
-      kind: s.kind || (s.wheelchair ? 'wheelchair' : (s.type || null))
+      kind: s.kind || (s.wheelchair ? 'wheelchair' : (s.type || null)),
+      /* 実測座標（KINEZO のみ）。無ければ null → 表示側は num グリッドにフォールバック */
+      cx: (s.cx != null ? s.cx : null), cy: (s.cy != null ? s.cy : null)
     };
   }).filter(function (s) { return s.id; });
   var rows = {};
@@ -230,6 +232,7 @@ async function getSeatMap(key, date, title, time) {
     screenName: show.screenName || (show.screen != null && show.screen !== '' ? 'スクリーン' + show.screen : ''), chain: th.chain,
     cols: seats.reduce(function (mx, s) { return Math.max(mx, s.num); }, 0),
     rows: Object.keys(rows).length,
+    measured: seats.some(function (s) { return s.cx != null; }), /* 実測座標で描けるか */
     seats: seats
   };
   seatCache.set(ck, { t: Date.now(), data: data });
