@@ -1146,6 +1146,53 @@
     if (useRunnerSeatMap()) renderRunnerSeatmap($('seatmap'));
     else renderSeatmap($('seatmap'), false);
     renderTray();
+    renderSeatRanking();
+  }
+
+  /**
+   * この劇場（スクリーン）のおすすめ席ランキング TOP10 を表示する。
+   * 見やすさ＝CE.popularity（中央寄り・前後2/3付近・横通路直後を高評価）。
+   * 空席状況ではなく座席配置から決まる静的な指標。行をクリックでその席を選択。
+   */
+  function renderSeatRanking() {
+    var box = $('seat-ranking');
+    if (!box) return;
+    var screen = currentScreen();
+    if (!screen || !window.CinemaEngine) { box.innerHTML = ''; box.hidden = true; return; }
+    var seats = CE.expandSeats(screen).filter(function (s) { return CE.isSelectable(s); });
+    if (!seats.length) { box.innerHTML = ''; box.hidden = true; return; }
+    var maxCol = seats.reduce(function (m, s) { return Math.max(m, s.col); }, 0);
+    var center = (maxCol + 1) / 2, rows = screen.rows.length;
+    var ranked = seats.map(function (s) { return { seat: s, score: CE.popularity(s, screen) }; })
+      .sort(function (a, b) { return b.score - a.score; }).slice(0, 10);
+    function posLabel(s) {
+      var d = rows > 1 ? s.rowIndex / (rows - 1) : 0.5;
+      var fb = d < 0.34 ? '前方' : (d < 0.7 ? '中央' : '後方');
+      var off = center > 0 ? Math.abs(s.col - center) / center : 0;
+      var lr = off < 0.2 ? '中央' : (s.col < center ? 'やや左' : 'やや右');
+      return fb + '・' + lr;
+    }
+    function stars(sc) { var n = Math.max(1, Math.min(5, Math.round(sc * 5))); return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+    var sel = selectedSeats();
+    var html = '<div class="rank-title">この劇場のおすすめ席 TOP10（' + (screen.name || 'スクリーン') + '）</div><ol class="rank-list">';
+    ranked.forEach(function (r) {
+      var picked = sel.indexOf(r.seat.id) >= 0;
+      html += '<li class="rank-item' + (picked ? ' picked' : '') + '" data-seat="' + r.seat.id + '">' +
+        '<span class="rank-seat">' + r.seat.id + '</span>' +
+        '<span class="rank-stars">' + stars(r.score) + '</span>' +
+        '<span class="rank-pos">' + posLabel(r.seat) + '</span>' +
+        '<span class="rank-pick">' + (picked ? '選択中' : '選ぶ') + '</span></li>';
+    });
+    html += '</ol><p class="rank-hint">クリックでその席を選択に追加/解除できます（見やすさ＝中央寄り・前後2/3付近・通路直後を高評価）。空席状況は反映していません。</p>';
+    box.innerHTML = html;
+    box.hidden = false;
+    Array.prototype.forEach.call(box.querySelectorAll('.rank-item'), function (li) {
+      li.addEventListener('click', function () {
+        var id = li.getAttribute('data-seat');
+        var s = CE.expandSeats(screen).find(function (x) { return x.id === id; });
+        if (s) onSeatClick(s, screen);
+      });
+    });
   }
 
   function renderLiveMap() {
@@ -1266,14 +1313,13 @@
   }
 
   /**
-   * 中央の見やすい連席を1組だけ選ぶ。
-   * 優先順位を付けないので、返すのは常に最良の1組。
+   * 中央の見やすい席を選ぶ。既定は1席（すでに複数選択中ならその枚数分の連席）。
    */
   function autoPick() {
     var screen = currentScreen();
     if (!screen) return;
-    /* この方式では枚数は席選択で決まる。auto は現在の選択数（無ければ2席）を中央に。 */
-    var need = selectedSeats().length >= 1 ? selectedSeats().length : 2;
+    /* auto は現在の選択数を中央に。未選択なら1席だけ選ぶ（以前は2席固定だった）。 */
+    var need = selectedSeats().length >= 1 ? selectedSeats().length : 1;
     var seats = CE.expandSeats(screen);
     var byRow = {};
     seats.forEach(function (s) { (byRow[s.row] = byRow[s.row] || []).push(s); });
