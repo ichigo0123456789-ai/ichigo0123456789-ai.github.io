@@ -210,7 +210,7 @@ async function getSeatMap(key, date, title, time) {
   var arr = Array.isArray(map) ? map : Object.keys(map || {}).map(function (k) {
     var v = map[k] || {};
     return {
-      id: v.id || k, row: v.row, num: v.num, state: v.state, cx: v.cx, cy: v.cy,
+      id: v.id || k, row: v.row, num: v.num, col: v.col, state: v.state, cx: v.cx, cy: v.cy,
       kind: v.kind, wheelchair: v.wheelchair, type: v.type, available: v.available
     };
   });
@@ -221,8 +221,10 @@ async function getSeatMap(key, date, title, time) {
       num: s.num != null ? s.num : parseInt((String(s.id).split('-')[1] || '0'), 10),
       state: s.state || (s.available === false ? 'sold' : 'available'),
       kind: s.kind || (s.wheelchair ? 'wheelchair' : (s.type || null)),
-      /* 実測座標（KINEZO のみ）。無ければ null → 表示側は num グリッドにフォールバック */
-      cx: (s.cx != null ? s.cx : null), cy: (s.cy != null ? s.cy : null)
+      /* 実配置の手がかり。cx=実ピクセル(KINEZO)、col=グリッド列(109 の data-seat-key)。
+         どちらも無ければ表示側は num グリッドにフォールバック。 */
+      cx: (s.cx != null ? s.cx : null), cy: (s.cy != null ? s.cy : null),
+      col: (s.col != null ? s.col : null)
     };
   }).filter(function (s) { return s.id; });
   var rows = {};

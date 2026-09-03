@@ -1127,6 +1127,12 @@
       colOf = function (s) { return s.cx == null ? 0 : Math.round((s.cx - minX) / unit); };
       totalCols = Math.round((maxX - minX) / unit) + 1;
       sortKey = function (a, b) { return (a.cx || 0) - (b.cx || 0); };
+    } else if (seats.some(function (s) { return s.col != null; })) {
+      /* グリッド列（109 の data-seat-key 等）。列番号の飛び＝通路をそのまま再現。 */
+      var gcol = function (s) { return (s.col != null ? s.col : s.num); };
+      colOf = function (s) { return gcol(s) - 1; };
+      totalCols = seats.reduce(function (mx, s0) { return Math.max(mx, gcol(s0)); }, 0);
+      sortKey = function (a, b) { return gcol(a) - gcol(b); };
     } else {
       var maxNum = m.cols || seats.reduce(function (mx, s0) { return Math.max(mx, s0.num); }, 0);
       colOf = function (s) { return (s.num - 1); };

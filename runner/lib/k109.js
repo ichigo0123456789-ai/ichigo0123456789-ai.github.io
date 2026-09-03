@@ -250,7 +250,9 @@ function parseSeatMap(html) {
     var cls = (tag.match(/class="([^"]*)"/) || [])[1] || '';
     var disabled = /\bdisabled\b/.test(tag);
     var type = uni ? 'wheelchair' : (/executive/.test(cls) ? 'executive' : (/premium|premier/.test(cls) ? 'premium' : '1'));
-    seats[id] = { state: disabled ? 'taken' : 'available', typeSeat: type, key: key };
+    /* data-seat-key="行-列" の「列」は物理グリッド位置。通路の飛びも含め実配置を再現できる。 */
+    var col = key ? parseInt((key.split('-')[1] || ''), 10) : null;
+    seats[id] = { state: disabled ? 'taken' : 'available', typeSeat: type, key: key, col: (isNaN(col) ? null : col) };
   }
   /* 売切・販売対象外の席は <input> ではなく <i class="... seat_none" title="A -001"> で描かれる
      （プレミアム新宿で顕著）。レイアウト採取と「埋まっている席」の把握のために拾う。 */
