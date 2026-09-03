@@ -318,18 +318,22 @@ select{cursor:pointer}
 .pick-guide{font-size:12px;color:var(--sub)}
 .seat-ranking{margin-top:14px;background:var(--panel-2);border:1px solid var(--line);
   border-radius:var(--r-sm);padding:12px 15px}
-.seat-ranking .rank-title{font-size:12.5px;font-weight:800;margin-bottom:8px}
-.seat-ranking .rank-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-.seat-ranking .rank-item{display:grid;grid-template-columns:22px 66px 1fr auto;align-items:center;gap:10px;
-  padding:6px 9px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel);
+.seat-ranking .rank-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.seat-ranking .rank-title{font-size:12.5px;font-weight:800}
+.seat-ranking .rank-eye{font-size:11.5px;color:var(--sub);display:flex;align-items:center;gap:6px}
+.seat-ranking .rank-eye select{font-size:12px;padding:3px 6px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel)}
+.seat-ranking .rank-cols,.seat-ranking .rank-item{display:grid;grid-template-columns:22px 58px 1fr 56px 56px auto;align-items:center;gap:10px}
+.seat-ranking .rank-cols{font-size:10.5px;font-weight:700;color:var(--faint);padding:0 9px 4px}
+.seat-ranking .rank-list{list-style:none;margin:0;padding:0;display:grid;gap:4px;counter-reset:rank}
+.seat-ranking .rank-item{padding:6px 9px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel);
   font-size:12.5px;cursor:pointer;counter-increment:rank}
 .seat-ranking .rank-item::before{content:counter(rank);font-weight:800;color:var(--faint);text-align:center;font-size:11px}
-.seat-ranking .rank-list{counter-reset:rank}
 .seat-ranking .rank-item:hover{border-color:var(--accent,#e0574a)}
 .seat-ranking .rank-item.picked{background:var(--amber-soft);border-color:var(--amber-line)}
 .seat-ranking .rank-seat{font-weight:800}
-.seat-ranking .rank-stars{color:#e6a700;letter-spacing:1px;font-size:12px}
-.seat-ranking .rank-pos{color:var(--sub);font-size:11.5px}
+.seat-ranking .rank-off{color:var(--sub);font-size:12px}
+.seat-ranking .rank-pt{font-variant-numeric:tabular-nums;font-weight:700}
+.seat-ranking .rank-pt small{font-size:10px;font-weight:400;color:var(--faint);margin-left:1px}
 .seat-ranking .rank-pick{font-size:11px;font-weight:700;color:var(--faint)}
 .seat-ranking .rank-item.picked .rank-pick{color:var(--accent,#c0492f)}
 .seat-ranking .rank-hint{margin:8px 0 0;font-size:11px;color:var(--faint);line-height:1.6}

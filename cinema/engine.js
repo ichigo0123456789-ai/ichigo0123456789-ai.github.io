@@ -84,6 +84,34 @@
     return Math.max(0.02, Math.min(1, score));
   }
 
+  /**
+   * 席を3軸で評価する（おすすめ席ランキング用）。
+   *   offset : 中央からのズレ（席単位。負=左 / 正=右、客席からスクリーンを見た向き）
+   *   sound  : 音響 0〜100。中央寄り＋前後 0.62 付近（サラウンドの基準位置）がスイートスポット
+   *   impact : 迫力 0〜100。画面が視野を満たす度合い＝前寄り（0.33 付近）で高く、中央寄りほど歪みが少ない
+   * opts.eye: 'right' | 'left' | ''  利き目。右目なら中央よりやや左(−0.5席)、左目ならやや右を理想位置として rank に反映。
+   * rank    : 3軸＋利き目補正を合成した順位付け用スコア（0〜1）。表示は3軸、並び順は rank。
+   */
+  function seatAxes(seat, screen, opts) {
+    opts = opts || {};
+    var w = screenWidth(screen);
+    var center = (w + 1) / 2;
+    var off = center > 0 ? seat.col - center : 0;
+    var lat = center > 0 ? Math.max(0, 1 - Math.abs(off) / center) : 1;
+    var depth = screen.rows.length > 1 ? seat.rowIndex / (screen.rows.length - 1) : 0.5;
+    var soundDepth = Math.max(0, 1 - Math.abs(depth - 0.62) / 0.62);
+    var sound = Math.round(100 * (0.5 * lat + 0.5 * soundDepth));
+    var impDepth = Math.max(0, 1 - Math.abs(depth - 0.33) / 0.67);
+    var impact = Math.round(100 * (0.65 * impDepth + 0.35 * lat));
+    if (seat.kind === 'front') impact = Math.round(impact * 0.85); // 最前列は近すぎて全体が視野に入らない
+    var ideal = opts.eye === 'right' ? -0.5 : (opts.eye === 'left' ? 0.5 : 0);
+    var latEye = center > 0 ? Math.max(0, 1 - Math.abs(off - ideal) / center) : 1;
+    var rank = 0.4 * latEye + 0.3 * (sound / 100) + 0.3 * (impact / 100);
+    if (seat.gapBefore) rank = Math.min(1, rank + 0.03); // 横通路直後は足元が広い
+    var n = Math.round(Math.abs(off) * 2) / 2;
+    return { offset: off, offsetN: n, offsetDir: n === 0 ? '' : (off < 0 ? '左' : '右'), sound: sound, impact: impact, rank: rank };
+  }
+
   /* ---- 混雑プリセット ---------------------------------------------- */
 
   /* seatsPerSec: 発売直後に他ユーザーが席を埋めていく速さ（席/秒）
@@ -224,6 +252,7 @@
     expandSeats: expandSeats,
     isSelectable: isSelectable,
     popularity: popularity,
+    seatAxes: seatAxes,
     CONGESTION: CONGESTION,
     MockAdapter: MockAdapter
   };
