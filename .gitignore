@@ -6,3 +6,6 @@ runner/.env
 runner/**/secret*
 node_modules/
 runner/.browser-profile/
+
+# scheduled news-digest routine: scratch clone used to push directly to main
+/repo/
