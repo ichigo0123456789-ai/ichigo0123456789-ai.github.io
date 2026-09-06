@@ -1325,6 +1325,61 @@
         "counterfactual.json orukan_equivalent_method(external_contributionsを用いた計算式)",
         "検証部2026-09-06、frozen_initial記帳漏れ検出作業からの派生検出"
       ]
+    },
+    {
+      "date": "2026-09-07",
+      "category": "検証部・thesis予測チェックポイント運用(前提条件の逆行検知)",
+      "lesson": "P-T10は「円安加速」の継続を前提に設計されたが、2ヶ月時点の中間チェックでドル円が作成時162.24円から156.25円へ約3.7%円高方向に戻す一方、日本長期金利は2.82%→約2.96〜3%へ上昇継続という、当初想定した「円安×金利上昇」の組み合わせから「金利上昇継続×為替は反転含み」へと前提条件の一部が崩れつつある兆候を検出した。thesis型予測のcheckpointでは、最終horizonでの騰落率比較だけでなく、各checkpoint時点でregime_at_creationの各軸(jpy_trend等)が依然成立しているかを個別に点検し、崩れている軸があればconsidered_scenariosの該当シナリオ(反転ケース等)へのウェイト見直しを投資部に促す運用を明文化すべき。",
+      "status": "仮説",
+      "regime_tags": [
+        "thesis_checkpoint",
+        "jpy_trend",
+        "rate_dir",
+        "P-T10",
+        "playbook_candidate"
+      ],
+      "evidence": [
+        "predictions.json P-T10 regime_at_creation(as_of 2026-07-06、ドル円162.24円・JGB10y 2.82%)",
+        "検証部2026-09-07WebSearch取得(ドル円156.25円 as of 2026-09-04、みんかぶFX)",
+        "検証部2026-09-07WebSearch取得(日本10年国債利回り約2.96%、確度中)",
+        "predictions.json P-T10 considered_scenarios「反転ケース：想定外の円高転換」"
+      ]
+    },
+    {
+      "date": "2026-09-07",
+      "category": "反対尋問・原則3(b)の濫用リスク(構造的行動不能の自己申告)",
+      "lesson": "運用部はP-E137を機序とした国内債券・TOPIX連動型投信への分散を「対象ファンド非保有・Tier2データ未整備」を理由に却下し、playbook.md原則3(b)の第三カテゴリ(事象発生済みだが構造的に行動不能なhold)に分類した。しかし反対尋問(2026-09-07)は、国内債券インデックスファンドというテーマ自体はP-T09(2026-07-06作成)の時点で既に射程に入っており、2ヶ月間Tier2データ整備に着手してこなかった結果であるため、真に外生的な制約(NISA枠上限・3ヶ月反対売買制限等)と、編集部自身の準備不足に由来する内生的な制約を区別せず一律に「構造的行動不能」と扱うのは、原則3(b)を自己の準備不足の正当化に転用するリスクがあると指摘した。今後、原則3(b)を適用する際は、当該制約が外生的(制度・市場に起因)か内生的(データ・ファンド未整備等、編集部の対応如何で解消可能)かを明示的に区別し、内生的な制約については解消に向けた具体的な着手計画(期限付き)を併記することをルール化すべき。",
+      "status": "仮説",
+      "regime_tags": [
+        "governance",
+        "playbook_candidate",
+        "constraint_classification",
+        "P-E137",
+        "counter_examination"
+      ],
+      "evidence": [
+        "trades.json T0067 rejected_alternative(国内債券・TOPIX連動型投信への分散、Tier2データ未整備を理由に却下)",
+        "predictions.json P-T09(2026-07-06作成、資産クラスに国内債券インデックスファンドを明記、horizon 2026-10-06)",
+        "反対尋問2026-09-07指摘(原則3(b)の濫用リスク、自己の準備不足を構造的制約として正当化する隠れ蓑になっていないか)"
+      ]
+    },
+    {
+      "date": "2026-09-07",
+      "category": "NAVデータ品質・複数系統の相互矛盾(carry-forwardの隠蔽リスク)",
+      "lesson": "本日FANG+の新候補NAVが市場課(99,147円 as of9/4)と検証部(101,309円 as of8/31)の2系統で相互に矛盾し(乖離+2,162円/+2.19%)、いずれも単一ソース・独立裏取り未了として編集長裁定で不採用としcarry-forward(98,519円 as of8/27)を継続した。しかしFANG+では過去にも同種の単一ソース矛盾・取り違え(8/6・8/24・8/31等)が繰り返し発生しており、反対尋問(2026-09-07)は、playbook.md原則1が「矛盾を未然に防ぐ」のではなく「矛盾が起きた後にcarry-forwardで握りつぶす」運用になっている可能性を指摘した。carry-forwardが9営業日目まで伸びている現状で、複数候補が同時に相互矛盾する場合は、単純な不採用に留めず、(i)双方の一次配信元(運用会社公式・みんかぶ投信等)への直接照合を優先課題として次回runに申し送る、(ii)乖離幅が一定閾値(例:1%)を超える場合はcounterfactual.jsonのjudgment_effect_daily算出に不確実性の注記を付す、という運用強化を検討すべき。",
+      "status": "仮説",
+      "regime_tags": [
+        "data_quality",
+        "nav_governance",
+        "fangplus",
+        "carry_forward",
+        "counter_examination"
+      ],
+      "evidence": [
+        "bench_navs.json tier1.fangplus 過去の単一ソース矛盾事例(8/6・8/24・8/31)",
+        "本日(2026-09-07)市場課提示99,147円(as of9/4)・検証部提示101,309円(as of8/31)の相互矛盾",
+        "反対尋問2026-09-07指摘(原則1の実効性、carry-forwardによる矛盾の握りつぶしリスク)"
+      ]
     }
   ]
 }
