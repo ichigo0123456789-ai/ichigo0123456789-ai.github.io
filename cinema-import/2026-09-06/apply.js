@@ -8,7 +8,8 @@
        node <このフォルダ>/apply.js <repoPath>  … パス指定
    やること（冪等・既にあればスキップ）:
      1) cinema/data/theaters.js に 2 劇場のエントリを挿入（row() 圧縮形式・lat/lng 付き）
-     2) runner/lib/venues.js の THEATERS に prince_shinagawa / soga を追加
+     2) runner/lib/venues.js の THEATERS に prince_shinagawa / soga を追加、
+        TOHO_ALIAS に上大岡ほか関東 TOHO 14 館の別名を追加（PC-TODO.md 用）
      3) _sc_*.json を cinema/data に置き runner/merge-seatcoords.js で
         cinema/data/seatcoords.js にマージ（終わったら _sc_*.json は削除）
    データは tjoy.jp の実座席表（data-coords）と SCREEN バー実測。推定値は含まない。
@@ -52,7 +53,18 @@ Object.keys(lines).forEach(function (k) {
   if (vs === before) throw new Error('venues.js の THEATERS ブロックが見つかりません');
   addedV.push(k);
 });
-if (addedV.length) { fs.writeFileSync(vf, vs); console.log('venues.js: 追加 → ' + addedV.join(', ')); }
+// 2b) TOHO_ALIAS（PC-TODO.md の TOHO 各館を --theater の別名で呼べるようにする。劇場コードは runner/data/toho-theaters.json と一致）
+var aliases = JSON.parse(fs.readFileSync(path.join(HERE, 'toho_alias.json'), 'utf8')), addedA = [];
+Object.keys(aliases).forEach(function (k) {
+  if (new RegExp('\\b' + k + ':').test(vs)) return;
+  var before = vs;
+  vs = vs.replace(/(var TOHO_ALIAS = \{[\s\S]*?)(\r?\n\};)/, function (_, body, end) {
+    return body + ',' + (vs.indexOf('\r\n') >= 0 ? '\r\n' : '\n') + '  ' + k + ": '" + aliases[k] + "'" + end;
+  });
+  if (vs === before) throw new Error('venues.js の TOHO_ALIAS ブロックが見つかりません');
+  addedA.push(k);
+});
+if (addedV.length || addedA.length) { fs.writeFileSync(vf, vs); console.log('venues.js: 追加 → ' + addedV.concat(addedA).join(', ')); }
 else console.log('venues.js: 既にあり → スキップ');
 
 // 3) seatcoords

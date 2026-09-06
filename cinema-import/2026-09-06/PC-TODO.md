@@ -8,7 +8,7 @@ TOHO / 109 は PC（cinema-auto-reserve 直下）で下の順に実行する。�
 
 ```powershell
 node runner/doctor.js                      # チェーン別ヘルスチェック（✗/△ があれば先に直す）
-node -e "console.log(require('./runner/lib/venues.js').resolveTheater('toho_kamiooka'))"   # null なら TOHO_ALIAS に toho_kamiooka: '066' を追加
+node -e "console.log(require('./runner/lib/venues.js').resolveTheater('toho_kamiooka'))"   # null なら alias は apply.js が登録済
 ```
 
 ## 追加順
@@ -21,23 +21,23 @@ node -e "console.log(require('./runner/lib/venues.js').resolveTheater('toho_kami
 | 4 | 109シネマズ二子玉川 | 東京都 | 15.1 km | `node runner/add-theater.js <alias> futako "109シネマズ二子玉川" "二子玉川ライズ" "東京都" --chain 109` | 109 サイトの tsc/別名を確認 |
 | 5 | TOHOシネマズ 海老名 | 神奈川県 | 21.6 km | `node runner/add-theater.js 007 toho_ebina "TOHOシネマズ 海老名" "海老名 / ビナウォーク" "神奈川県" --chain toho` | alias 登録済 |
 | 6 | 109シネマズ湘南 | 神奈川県 | 22.4 km | `node runner/add-theater.js <alias> shonan "109シネマズ湘南" "辻堂 / テラスモール湘南" "神奈川県" --chain 109` | 109 サイトの tsc/別名を確認 |
-| 7 | TOHOシネマズ 府中 | 東京都 | 25.4 km | `node runner/add-theater.js 012 toho_fuchu "TOHOシネマズ 府中" "府中 / くるる" "東京都" --chain toho` | TOHO_ALIAS に toho_fuchu: '012' を追加 |
+| 7 | TOHOシネマズ 府中 | 東京都 | 25.4 km | `node runner/add-theater.js 012 toho_fuchu "TOHOシネマズ 府中" "府中 / くるる" "東京都" --chain toho` | alias は apply.js が登録済 |
 | 8 | TOHOシネマズ 日本橋 | 東京都 | 26.9 km | `node runner/add-theater.js 073 toho_nihonbashi "TOHOシネマズ 日本橋" "日本橋 / コレド室町" "東京都" --chain toho` | alias 登録済 |
 | 9 | 109シネマズ木場 | 東京都 | 27.0 km | `node runner/add-theater.js <alias> kiba "109シネマズ木場" "木場 / イトーヨーカドー木場" "東京都" --chain 109` | 109 サイトの tsc/別名を確認 |
-| 10 | TOHOシネマズ 南大沢 | 東京都 | 27.2 km | `node runner/add-theater.js 006 toho_minamiosawa "TOHOシネマズ 南大沢" "南大沢 / フレンテ" "東京都" --chain toho` | TOHO_ALIAS に toho_minamiosawa: '006' を追加 |
+| 10 | TOHOシネマズ 南大沢 | 東京都 | 27.2 km | `node runner/add-theater.js 006 toho_minamiosawa "TOHOシネマズ 南大沢" "南大沢 / フレンテ" "東京都" --chain toho` | alias は apply.js が登録済 |
 | 11 | TOHOシネマズ 上野 | 東京都 | 29.3 km | `node runner/add-theater.js 080 toho_ueno "TOHOシネマズ 上野" "上野 / 上野フロンティアタワー" "東京都" --chain toho` | alias 登録済 |
-| 12 | TOHOシネマズ 錦糸町（楽天地・オリナス） | 東京都 | 29.7 km | `node runner/add-theater.js 029 toho_kinshicho "TOHOシネマズ 錦糸町（楽天地・オリナス）" "錦糸町" "東京都" --chain toho` | TOHO_ALIAS に toho_kinshicho: '029' を追加 |
+| 12 | TOHOシネマズ 錦糸町（楽天地・オリナス） | 東京都 | 29.7 km | `node runner/add-theater.js 029 toho_kinshicho "TOHOシネマズ 錦糸町（楽天地・オリナス）" "錦糸町" "東京都" --chain toho` | alias は apply.js が登録済 |
 | 13 | TOHOシネマズ 立川立飛 | 東京都 | 32.8 km | `node runner/add-theater.js 085 toho_tachikawa "TOHOシネマズ 立川立飛" "立川 / ららぽーと立川立飛" "東京都" --chain toho` | alias 登録済 |
-| 14 | TOHOシネマズ 西新井 | 東京都 | 36.6 km | `node runner/add-theater.js 040 toho_nishiarai "TOHOシネマズ 西新井" "西新井 / アリオ西新井" "東京都" --chain toho` | TOHO_ALIAS に toho_nishiarai: '040' を追加 |
-| 15 | TOHOシネマズ 小田原 | 神奈川県 | 48.8 km | `node runner/add-theater.js 008 toho_odawara "TOHOシネマズ 小田原" "小田原 / ダイナシティ" "神奈川県" --chain toho` | TOHO_ALIAS に toho_odawara: '008' を追加 |
-| 16 | TOHOシネマズ 市川コルトンプラザ | 千葉県 | 39.6 km | `node runner/add-theater.js 003 toho_ichikawa "TOHOシネマズ 市川コルトンプラザ" "市川 / ニッケコルトンプラザ" "千葉県" --chain toho` | TOHO_ALIAS に toho_ichikawa: '003' を追加 |
-| 17 | TOHOシネマズ ららぽーと船橋 | 千葉県 | 40.3 km | `node runner/add-theater.js 018 toho_funabashi "TOHOシネマズ ららぽーと船橋" "船橋 / ららぽーとTOKYO-BAY" "千葉県" --chain toho` | TOHO_ALIAS に toho_funabashi: '018' を追加 |
-| 18 | TOHOシネマズ ららぽーと富士見 | 埼玉県 | 43.1 km | `node runner/add-theater.js 075 toho_fujimi "TOHOシネマズ ららぽーと富士見" "富士見 / ららぽーと富士見" "埼玉県" --chain toho` | TOHO_ALIAS に toho_fujimi: '075' を追加 |
-| 19 | TOHOシネマズ 八千代緑が丘 | 千葉県 | 50.0 km | `node runner/add-theater.js 028 toho_yachiyo "TOHOシネマズ 八千代緑が丘" "八千代緑が丘" "千葉県" --chain toho` | TOHO_ALIAS に toho_yachiyo: '028' を追加 |
-| 20 | TOHOシネマズ 流山おおたかの森 | 千葉県 | 51.5 km | `node runner/add-theater.js 035 toho_nagareyama "TOHOシネマズ 流山おおたかの森" "流山おおたかの森 S.C." "千葉県" --chain toho` | TOHO_ALIAS に toho_nagareyama: '035' を追加 |
-| 21 | TOHOシネマズ 柏 | 千葉県 | 53.2 km | `node runner/add-theater.js 077 toho_kashiwa "TOHOシネマズ 柏" "柏 / セブンパークアリオ柏" "千葉県" --chain toho` | TOHO_ALIAS に toho_kashiwa: '077' を追加 |
-| 22 | TOHOシネマズ 宇都宮 | 栃木県 | 125.5 km | `node runner/add-theater.js 015 toho_utsunomiya "TOHOシネマズ 宇都宮" "宇都宮 / ベルモール" "栃木県" --chain toho` | TOHO_ALIAS に toho_utsunomiya: '015' を追加 |
-| 23 | TOHOシネマズ ひたちなか | 茨城県 | 130.8 km | `node runner/add-theater.js 024 toho_hitachinaka "TOHOシネマズ ひたちなか" "ひたちなか / ファッションクルーズ" "茨城県" --chain toho` | TOHO_ALIAS に toho_hitachinaka: '024' を追加 |
+| 14 | TOHOシネマズ 西新井 | 東京都 | 36.6 km | `node runner/add-theater.js 040 toho_nishiarai "TOHOシネマズ 西新井" "西新井 / アリオ西新井" "東京都" --chain toho` | alias は apply.js が登録済 |
+| 15 | TOHOシネマズ 小田原 | 神奈川県 | 48.8 km | `node runner/add-theater.js 008 toho_odawara "TOHOシネマズ 小田原" "小田原 / ダイナシティ" "神奈川県" --chain toho` | alias は apply.js が登録済 |
+| 16 | TOHOシネマズ 市川コルトンプラザ | 千葉県 | 39.6 km | `node runner/add-theater.js 003 toho_ichikawa "TOHOシネマズ 市川コルトンプラザ" "市川 / ニッケコルトンプラザ" "千葉県" --chain toho` | alias は apply.js が登録済 |
+| 17 | TOHOシネマズ ららぽーと船橋 | 千葉県 | 40.3 km | `node runner/add-theater.js 018 toho_funabashi "TOHOシネマズ ららぽーと船橋" "船橋 / ららぽーとTOKYO-BAY" "千葉県" --chain toho` | alias は apply.js が登録済 |
+| 18 | TOHOシネマズ ららぽーと富士見 | 埼玉県 | 43.1 km | `node runner/add-theater.js 075 toho_fujimi "TOHOシネマズ ららぽーと富士見" "富士見 / ららぽーと富士見" "埼玉県" --chain toho` | alias は apply.js が登録済 |
+| 19 | TOHOシネマズ 八千代緑が丘 | 千葉県 | 50.0 km | `node runner/add-theater.js 028 toho_yachiyo "TOHOシネマズ 八千代緑が丘" "八千代緑が丘" "千葉県" --chain toho` | alias は apply.js が登録済 |
+| 20 | TOHOシネマズ 流山おおたかの森 | 千葉県 | 51.5 km | `node runner/add-theater.js 035 toho_nagareyama "TOHOシネマズ 流山おおたかの森" "流山おおたかの森 S.C." "千葉県" --chain toho` | alias は apply.js が登録済 |
+| 21 | TOHOシネマズ 柏 | 千葉県 | 53.2 km | `node runner/add-theater.js 077 toho_kashiwa "TOHOシネマズ 柏" "柏 / セブンパークアリオ柏" "千葉県" --chain toho` | alias は apply.js が登録済 |
+| 22 | TOHOシネマズ 宇都宮 | 栃木県 | 125.5 km | `node runner/add-theater.js 015 toho_utsunomiya "TOHOシネマズ 宇都宮" "宇都宮 / ベルモール" "栃木県" --chain toho` | alias は apply.js が登録済 |
+| 23 | TOHOシネマズ ひたちなか | 茨城県 | 130.8 km | `node runner/add-theater.js 024 toho_hitachinaka "TOHOシネマズ ひたちなか" "ひたちなか / ファッションクルーズ" "茨城県" --chain toho` | alias は apply.js が登録済 |
 
 ## 各劇場を追加した後
 
