@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* ============================================================
    クラウド採取分の劇場を cinema-auto-reserve に取り込む
-   （2026-09-06 / T・ジョイPRINCE品川・T・ジョイ蘇我）
+   （2026-09-06/07 / 関東 17 館: KINEZO 2・TOHO 10・109 5）
    ------------------------------------------------------------
    使い方（cinema-auto-reserve のリポジトリ直下で）:
        node <このフォルダ>/apply.js            … カレントを対象
@@ -9,11 +9,10 @@
    やること（冪等・既にあればスキップ）:
      0) runner/lib/toho.js に建屋別 site_cd 修正（patches/toho-site-cd.js）
      1) cinema/data/theaters.js に劇場エントリを挿入（row() 圧縮形式・lat/lng 付き）
-     2) runner/lib/venues.js の THEATERS に prince_shinagawa / soga を追加、
-        TOHO_ALIAS に上大岡ほか関東 TOHO 14 館の別名を追加（PC-TODO.md 用）
+     2) runner/lib/venues.js の THEATERS / THEATERS_109 にキー追加、TOHO_ALIAS に関東 TOHO の別名を追加
      3) _sc_*.json を cinema/data に置き runner/merge-seatcoords.js で
         cinema/data/seatcoords.js にマージ（終わったら _sc_*.json は削除）
-   データは tjoy.jp の実座席表（data-coords）と SCREEN バー実測。推定値は含まない。
+   データは各サイトの実座席表から採取。推定値は含まない。詳細は README.md。
    ============================================================ */
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');

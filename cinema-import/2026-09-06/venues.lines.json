@@ -1,4 +1,13 @@
 {
- "prince_shinagawa": "  prince_shinagawa: { path: 'tjoy-prince-shinagawa', id: '180', name: 'T・ジョイPRINCE品川' }",
- "soga": "  soga: { path: 't-joy_soga', id: '130', name: 'T・ジョイ蘇我' }"
+ "THEATERS": {
+  "prince_shinagawa": "  prince_shinagawa: { path: 'tjoy-prince-shinagawa', id: '180', name: 'T・ジョイPRINCE品川' }",
+  "soga": "  soga: { path: 't-joy_soga', id: '130', name: 'T・ジョイ蘇我' }"
+ },
+ "THEATERS_109": {
+  "kohoku": "  kohoku: { chain: '109', alias: '13', name: '109シネマズ港北' }",
+  "grandberry": "  grandberry: { chain: '109', alias: 'G1', name: '109シネマズグランベリーパーク' }",
+  "futako": "  futako: { chain: '109', alias: 'T1', name: '109シネマズ二子玉川' }",
+  "shonan": "  shonan: { chain: '109', alias: 'R1', name: '109シネマズ湘南' }",
+  "kiba": "  kiba: { chain: '109', alias: '20', name: '109シネマズ木場' }"
+ }
 }
