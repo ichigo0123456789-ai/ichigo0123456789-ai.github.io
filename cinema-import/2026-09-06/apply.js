@@ -21,17 +21,17 @@ const ROOT = path.resolve(process.argv[2] || process.cwd());
 if (!fs.existsSync(path.join(ROOT, 'cinema/data/theaters.js')) || !fs.existsSync(path.join(ROOT, 'runner/lib/venues.js')))
   throw new Error('cinema-auto-reserve のリポジトリ直下で実行するか、パスを引数で渡してください: ' + ROOT);
 
-var IDS = ['tjoy-prince_shinagawa', 'tjoy-soga'];
-var SOGA_HEAD = ",\r\n    {\r\n      id: 'tjoy-soga'";
+// theaters.entries.txt は ",\r\n    {\r\n      id: '…'" で始まるエントリの連結。id ごとに分割して未登録分だけ挿入する
+var ALL = fs.readFileSync(path.join(HERE, 'theaters.entries.txt'), 'utf8').replace(/\r?\n/g, '\r\n');
+var chunks = ALL.split(/(?=,\r\n    \{\r\n      id: ')/).filter(Boolean);
+var IDS = chunks.map(function (c) { return (c.match(/id: '([^']+)'/) || [])[1]; });
 
 // 1) theaters.js
 var tf = path.join(ROOT, 'cinema/data/theaters.js'), ts = fs.readFileSync(tf, 'utf8');
-var has = function (id) { return ts.indexOf("id: '" + id + "'") >= 0; };
-if (has(IDS[0]) && has(IDS[1])) console.log('theaters.js: 既に両方あり → スキップ');
+var missing = chunks.filter(function (c, i) { return ts.indexOf("id: '" + IDS[i] + "'") < 0; });
+if (!missing.length) console.log('theaters.js: ' + IDS.length + ' 劇場すべて既にあり → スキップ');
 else {
-  var entries = fs.readFileSync(path.join(HERE, 'theaters.entries.txt'), 'utf8').replace(/\r?\n/g, '\r\n');
-  if (has(IDS[0])) entries = entries.slice(entries.indexOf(SOGA_HEAD));
-  else if (has(IDS[1])) entries = entries.slice(0, entries.indexOf(SOGA_HEAD));
+  var entries = missing.join('');
   var nl = ts.indexOf('\r\n') >= 0 ? '\r\n' : '\n';
   if (nl === '\n') entries = entries.replace(/\r\n/g, '\n');
   var anchor = nl + '    }' + nl + '  ];', idx = ts.indexOf(anchor);
@@ -41,30 +41,25 @@ else {
   console.log('theaters.js: 追加 → ' + (entries.match(/id: '([^']+)'/g) || []).join(', '));
 }
 
-// 2) venues.js
+// 2) venues.js — venues.lines.json の各ブロック（THEATERS / THEATERS_109 / TOHO_ALIAS）に無いキーだけ追加
 var lines = JSON.parse(fs.readFileSync(path.join(HERE, 'venues.lines.json'), 'utf8'));
+if (fs.existsSync(path.join(HERE, 'toho_alias.json'))) {
+  var ta = JSON.parse(fs.readFileSync(path.join(HERE, 'toho_alias.json'), 'utf8'));
+  lines.TOHO_ALIAS = lines.TOHO_ALIAS || {};
+  Object.keys(ta).forEach(function (k) { if (!lines.TOHO_ALIAS[k]) lines.TOHO_ALIAS[k] = '  ' + k + ": '" + ta[k] + "'"; });
+}
 var vf = path.join(ROOT, 'runner/lib/venues.js'), vs = fs.readFileSync(vf, 'utf8'), addedV = [];
-Object.keys(lines).forEach(function (k) {
-  if (new RegExp('^\\s+' + k + ':', 'm').test(vs)) return;
-  var before = vs;
-  vs = vs.replace(/(var THEATERS = \{\r?\n[\s\S]*?)(\r?\n\};)/, function (_, body, end) {
-    return body + ',' + (vs.indexOf('\r\n') >= 0 ? '\r\n' : '\n') + lines[k] + end;
+Object.keys(lines).forEach(function (block) {
+  var re = new RegExp('(var ' + block + ' = \\{[\\s\\S]*?)(\\r?\\n\\};)');
+  Object.keys(lines[block]).forEach(function (k) {
+    if (new RegExp('^\\s+' + k + ':', 'm').test(vs) || new RegExp('[{,]\\s*' + k + ':').test(vs)) return;
+    var before = vs;
+    vs = vs.replace(re, function (_, body, end) { return body + ',' + (vs.indexOf('\r\n') >= 0 ? '\r\n' : '\n') + lines[block][k] + end; });
+    if (vs === before) throw new Error('venues.js の ' + block + ' ブロックが見つかりません');
+    addedV.push(k);
   });
-  if (vs === before) throw new Error('venues.js の THEATERS ブロックが見つかりません');
-  addedV.push(k);
 });
-// 2b) TOHO_ALIAS（PC-TODO.md の TOHO 各館を --theater の別名で呼べるようにする。劇場コードは runner/data/toho-theaters.json と一致）
-var aliases = JSON.parse(fs.readFileSync(path.join(HERE, 'toho_alias.json'), 'utf8')), addedA = [];
-Object.keys(aliases).forEach(function (k) {
-  if (new RegExp('\\b' + k + ':').test(vs)) return;
-  var before = vs;
-  vs = vs.replace(/(var TOHO_ALIAS = \{[\s\S]*?)(\r?\n\};)/, function (_, body, end) {
-    return body + ',' + (vs.indexOf('\r\n') >= 0 ? '\r\n' : '\n') + '  ' + k + ": '" + aliases[k] + "'" + end;
-  });
-  if (vs === before) throw new Error('venues.js の TOHO_ALIAS ブロックが見つかりません');
-  addedA.push(k);
-});
-if (addedV.length || addedA.length) { fs.writeFileSync(vf, vs); console.log('venues.js: 追加 → ' + addedV.concat(addedA).join(', ')); }
+if (addedV.length) { fs.writeFileSync(vf, vs); console.log('venues.js: 追加 → ' + addedV.join(', ')); }
 else console.log('venues.js: 既にあり → スキップ');
 
 // 3) seatcoords
