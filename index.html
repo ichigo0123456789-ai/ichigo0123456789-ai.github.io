@@ -209,6 +209,23 @@
   a.hl:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
   a.hl h4{margin:0;font-size:.88rem;font-weight:700;line-height:1.6;letter-spacing:.01em}
   a.hl .meta{font-family:var(--mono);font-size:.62rem;color:var(--faint);margin-top:.4rem;letter-spacing:.05em}
+  a.hl{cursor:pointer}
+  /* ---- 記事プレビュー・モーダル（タップで日本語要約＋本文リンク／恒久ブロック） ---- */
+  .na-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1.1rem}
+  .na-modal[hidden]{display:none}
+  .na-modal .ov{position:absolute;inset:0;background:rgba(3,7,5,.72);backdrop-filter:blur(4px)}
+  .na-modal .box{position:relative;z-index:1;max-width:560px;width:100%;max-height:82vh;overflow:auto;background:var(--surface);border:1px solid var(--gold-line);box-shadow:0 18px 60px rgba(0,0,0,.55),var(--glow-line);padding:1.4rem 1.4rem 1.5rem;animation:naModalIn .22s ease}
+  @keyframes naModalIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .na-modal .box::before{content:"";position:absolute;top:-1px;left:-1px;width:16px;height:16px;border:2px solid var(--gold);border-width:2px 0 0 2px;pointer-events:none}
+  .na-modal .box::after{content:"";position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border:2px solid var(--gold);border-width:0 2px 2px 0;pointer-events:none}
+  .na-modal .x{position:absolute;top:.4rem;right:.55rem;background:none;border:0;color:var(--faint);font-size:1.6rem;line-height:1;cursor:pointer;padding:.2rem .45rem}
+  .na-modal .x:hover{color:var(--gold)}
+  .na-modal .src{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--gold-ink);text-transform:uppercase;margin:0 1.6rem .55rem 0}
+  .na-modal h3{margin:0 0 .75rem;font-size:1.05rem;line-height:1.6;color:var(--ink)}
+  .na-modal .sum{margin:0 0 1.15rem;font-size:.9rem;line-height:1.95;color:var(--sub);white-space:pre-wrap}
+  .na-modal .go{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--gold-ink);text-decoration:none;border:1px solid var(--gold-line);padding:.55rem .95rem;transition:.2s}
+  .na-modal .go:hover{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+  body.na-modal-open{overflow:hidden}
 
   /* ---- 04: 今日の結論 ---- */
   .thesis{font-size:clamp(1rem,2.3vw,1.22rem);font-weight:700;line-height:1.85;letter-spacing:.02em;margin:.2rem 0 1rem;padding-left:1rem;border-left:2px solid var(--gold)}
@@ -1094,4 +1111,49 @@
 })();
 </script>
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
+<!-- 記事プレビュー・モーダル（恒久ブロック：書き換え・削除禁止。ニュースの a.hl をタップすると開く） -->
+<div class="na-modal" id="na-modal" hidden aria-hidden="true">
+  <div class="ov" data-close></div>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="na-modal-ttl">
+    <button class="x" type="button" data-close aria-label="閉じる">×</button>
+    <div class="src" id="na-modal-src"></div>
+    <h3 id="na-modal-ttl"></h3>
+    <p class="sum" id="na-modal-sum"></p>
+    <a class="go" id="na-modal-go" href="#" target="_blank" rel="noopener">本文を読む（外部サイト）→</a>
+  </div>
+</div>
+<script>
+/* 恒久ブロック：ニュース記事のタップでプレビュー（日本語要約＋本文リンク）を表示する。
+   .news 内の a.hl をクリック/タップすると、data-summary（ルーチンが差し込む日本語要約）を
+   モーダルに表示し、href（実記事URL）への外部リンクを添える。要約が無い記事もリンク付きで開く。
+   ルーチンは各 a.hl に data-summary="日本語要約" を付けるだけでよい（このブロックは変更不要）。 */
+(function(){
+  var m=document.getElementById('na-modal'); if(!m) return;
+  var elS=document.getElementById('na-modal-src'), elT=document.getElementById('na-modal-ttl'),
+      elSum=document.getElementById('na-modal-sum'), elGo=document.getElementById('na-modal-go'), last=null;
+  function open(a){
+    var h4=a.querySelector('h4'), meta=a.querySelector('.meta');
+    elT.textContent = h4 ? h4.textContent.trim() : '';
+    elS.textContent = meta ? meta.textContent.trim() : '';
+    var sum=(a.getAttribute('data-summary')||'').trim();
+    elSum.textContent = sum || 'この記事の要約は次回更新分から表示されます。下の「本文を読む」から記事をお読みください。';
+    elGo.setAttribute('href', a.getAttribute('href')||'#');
+    last=a; m.hidden=false; m.setAttribute('aria-hidden','false');
+    document.body.classList.add('na-modal-open');
+    var xb=m.querySelector('.x'); if(xb){ try{ xb.focus(); }catch(e){} }
+  }
+  function close(){
+    m.hidden=true; m.setAttribute('aria-hidden','true');
+    document.body.classList.remove('na-modal-open');
+    if(last){ try{ last.focus(); }catch(e){} }
+  }
+  document.addEventListener('click', function(e){
+    var t=e.target;
+    var a=t.closest ? t.closest('.news a.hl') : null;
+    if(a){ e.preventDefault(); open(a); return; }
+    if(t.closest && t.closest('#na-modal [data-close]')){ close(); }
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !m.hidden) close(); });
+})();
+</script>
 </body></html>
