@@ -7,7 +7,8 @@
        node <このフォルダ>/apply.js            … カレントを対象
        node <このフォルダ>/apply.js <repoPath>  … パス指定
    やること（冪等・既にあればスキップ）:
-     1) cinema/data/theaters.js に 2 劇場のエントリを挿入（row() 圧縮形式・lat/lng 付き）
+     0) runner/lib/toho.js に建屋別 site_cd 修正（patches/toho-site-cd.js）
+     1) cinema/data/theaters.js に劇場エントリを挿入（row() 圧縮形式・lat/lng 付き）
      2) runner/lib/venues.js の THEATERS に prince_shinagawa / soga を追加、
         TOHO_ALIAS に上大岡ほか関東 TOHO 14 館の別名を追加（PC-TODO.md 用）
      3) _sc_*.json を cinema/data に置き runner/merge-seatcoords.js で
@@ -20,6 +21,10 @@ const HERE = __dirname;
 const ROOT = path.resolve(process.argv[2] || process.cwd());
 if (!fs.existsSync(path.join(ROOT, 'cinema/data/theaters.js')) || !fs.existsSync(path.join(ROOT, 'runner/lib/venues.js')))
   throw new Error('cinema-auto-reserve のリポジトリ直下で実行するか、パスを引数で渡してください: ' + ROOT);
+
+// 0) runner/lib/toho.js: 複数建屋の劇場（錦糸町 楽天地）向けの site_cd 修正（冪等）
+var pr = cp.spawnSync(process.execPath, [path.join(HERE, 'patches/toho-site-cd.js'), ROOT], { stdio: 'inherit' });
+if (pr.status === 2) console.log('  → toho.js は手動修正が必要です（上のメッセージ参照）。他の取り込みは続行します');
 
 // theaters.entries.txt は ",\r\n    {\r\n      id: '…'" で始まるエントリの連結。id ごとに分割して未登録分だけ挿入する
 var ALL = fs.readFileSync(path.join(HERE, 'theaters.entries.txt'), 'utf8').replace(/\r?\n/g, '\r\n');
