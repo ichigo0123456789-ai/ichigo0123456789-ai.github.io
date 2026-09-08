@@ -1400,6 +1400,40 @@
         "predictions.json P-T35 considered_scenarios(日銀タカ派化 vs 地政学的円安の2軸併存、2026-08-11作成)",
         "bench_navs.json tier1(オルカン38,842円[8/28]→37,945円[9/4]、-2.31%)"
       ]
+    },
+    {
+      "date": "2026-09-09",
+      "category": "運用部・日付ラベリング(JST基準日の取り違え)",
+      "lesson": "運用部が本日(2026-09-09)分の評価更新を作成した際、NAV基準日『as of 2026-09-08』(前営業日引け値)と『本日の作業日=2026-09-09(JST)』を混同し、trade id T0069・portfolio.json as_of・nav_history.json該当エントリのdateフィールドをいずれも『2026-09-08』と誤記した。さらにnav_history.jsonでは前日(2026-09-08、T0068時点)の確定エントリをそのまま新値で上書きしようとし、過去の確定記録を破壊しかけた。編集長が公開前チェックで検出し、(1)nav_history.jsonの2026-09-08エントリをT0068の原値へ復元、(2)T0069のデータは新規エントリとして2026-09-09付で追加、(3)trades.json・portfolio.json・predictions.json(P-U32)のdateフィールドをいずれも2026-09-09へ訂正、して事なきを得た。今後、運用部・検証部など『市況NAVの基準日』と『本日の作業日(JST)』の両方を扱う部署は、出力の冒頭に両者を明示的に区別して記載することをplaybook.md原則1の運用チェック項目に追加すべき。また、日次データ追記は既存日付エントリの上書きではなく必ず新規追加とすることを徹底する。",
+      "status": "仮説",
+      "regime_tags": [
+        "data_quality",
+        "date_labeling",
+        "nav_vintage",
+        "unyou_bu",
+        "process"
+      ],
+      "evidence": [
+        "本runで運用部が返したtrades.json T0069・portfolio.json as_of・predictions.json P-U32のdateフィールド(いずれも初稿は2026-09-08)",
+        "nav_history.json 2026-09-08エントリがT0069値で上書きされかけた事実(編集長が復元・新規エントリ追加で訂正)"
+      ]
+    },
+    {
+      "date": "2026-09-09",
+      "category": "反対尋問・regimeタグの機械判定への過信リスク",
+      "lesson": "マーケット課が機械判定したregimeタグ『risk-off』は、日経平均▼1.70%という下落率のみに着目したものだったが、反対尋問(2026-09-09)が(1)米国株(NASDAQ100▼0.05%・S&P500▼0.45%)がほぼ無風であること、(2)典型的なrisk-offなら質への逃避で上昇するはずの金(国内小売)がむしろ全指標中最大の下落率(▼1.70%)を示していること、の2点を根拠に『グローバルなrisk-off』ではなく『日銀利上げ観測を起点とした日本単独のFX主導ショック』である可能性を指摘。編集長裁定によりregime.jsonのriskタグをrisk-offからmixedへ修正した。日経平均の下落率単体でrisk/risk-off/mixedを機械判定すると、為替が主因の国内固有ショックと真のグローバルrisk-offを混同しやすい。今後、risk判定には(a)日米株の下落率格差、(b)金など安全資産の値動きが典型的risk-offパターンと整合するか、の2点を機械判定ロジックの補助チェックとしてplaybook.md原則2(第三軸)に追加することを検討する。",
+      "status": "仮説",
+      "regime_tags": [
+        "regime_classification",
+        "risk_off_vs_fx_shock",
+        "gold",
+        "adversarial_review"
+      ],
+      "evidence": [
+        "本日市況6指標(日経平均▼1.70%/NASDAQ100▼0.05%/S&P500▼0.45%/金▼1.70%/ドル円▼1.07%)",
+        "反対尋問(2026-09-09)反対ケース①",
+        "regime.json 2026-09-09エントリ(risk-off→mixedへ編集長修正)"
+      ]
     }
   ]
 }
