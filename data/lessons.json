@@ -1474,6 +1474,41 @@
         "ECB2会合ぶり利上げ(預金金利2.5%)、米FOMC利上げ確率61.2%→71.6%、米10年債利回り4.85〜4.95%台《検証部WebSearch 2026-09-12》",
         "反対尋問(2026-09-12)指摘：円高とFOMC利上げ確率急伸の同時進行という金利差ロジックに反する矛盾"
       ]
+    },
+    {
+      "date": "2026-09-13",
+      "category": "検証部・週次メタレビュー(carry-forward失効基準の未整備)",
+      "lesson": "P-U31(2026-09-13検証)の結果、ゴールドNAVの単一系統値(25,119円 as of9/4)を『独立裏取り待ち』として不採用しcarry-forward(26,248円)を維持した保守的判断は、事後的に市場実勢から乖離していたことが判明した(外れ)。P-U30(同型、25,049円 as of9/2)は的中だったのに対し、本件は外れとなり、『単一ソースは不採用・carry-forward優先』という一律ルール(playbook.md原則1)だけでは、荒れ相場でcarry-forwardが長期化するケースの遅行バイアスを防げないことが2件の対照事例で確認された。P-U31自身のconsidered_scenariosが既に指摘していた『carry-forward累積乖離の失効基準(乖離率・据置日数)』が依然未制定であり、次回以降、乖離率(例:直近確定値比±X%)または据置営業日数(例:5営業日)のいずれかが閾値を超えた場合は複数ソース確認の有無によらず暫定採用に切り替える、といった定量ルールの検討を運用部・検証部合同で行うべきである。",
+      "status": "仮説",
+      "regime_tags": [
+        "nav_governance",
+        "carry_forward",
+        "data_quality",
+        "playbook_candidate",
+        "gold"
+      ],
+      "evidence": [
+        "predictions.json P-U31 result(verdict:外れ、brier_contrib:0.16)",
+        "predictions.json P-U30 result(verdict:的中、brier_contrib:0.2025、対照事例)",
+        "bench_navs.json Tier1ゴールド系列 2026-08-28(26,248円)→09-07(24,808円)→09-08(24,311円、3系統一致)"
+      ]
+    },
+    {
+      "date": "2026-09-13",
+      "category": "検証部・週次メタレビュー(反実仮想枝メンテナンス負債)",
+      "lesson": "counterfactual.jsonのvs_frozen型枝(B0001〜B0004)は2026-09-02以降、日次NAV反映が滞留していたことを本日発見し、2026-09-13時点の確定NAVへ直接catch-upした(日次経路の再構築はせず、口数固定オフセット+最新NAVでの再計算)。一方、vs_real_pf型の枝(B0005/B0006/B0010/B0014/B0015、いずれも一部Tier2テーマファンドNAVや税引後口数換算を伴う)は2026-09-08時点のまま今回も更新を見送った。18枝を毎日均等にメンテナンスする運用は検証部の実行キャパシティを超えており、vs_frozen型(Tier1のみで完結し機械的に追随可能)とvs_real_pf型(Tier2データ取得や複雑な口数計算を要する)とで更新頻度・優先順位を明示的に分離するルールを次回以降定めるべきである。",
+      "status": "仮説",
+      "regime_tags": [
+        "counterfactual",
+        "branch_maintenance",
+        "backlog_risk",
+        "process_discipline",
+        "scorecard_methodology"
+      ],
+      "evidence": [
+        "counterfactual.json branches_maintenance_note_2026_09_08/09_11/09_13",
+        "counterfactual.json branches[B0001-B0004].daily (2026-09-13 catch-upエントリ)"
+      ]
     }
   ]
 }
