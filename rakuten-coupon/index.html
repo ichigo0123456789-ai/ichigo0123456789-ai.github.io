@@ -3,128 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>熊本ふっこう応援割 最速ゲット作戦室</title>
+<title>熊本ふっこう応援割 クーポン獲得タイマー</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:,">
 <style>
-  /* ===== 作戦室テーマ：黒×ピンク×ネオン💖（10時ジャストに全集中できる配色） ===== */
+  /* ===== 白ベースのスッキリ配色💐 楽天っぽいクリムゾンをアクセントに ===== */
   :root{
-    --bg:#0b0710;--bg2:#140b1d;--card:#1a1026;--card2:#22143a;
-    --ink:#f7ecff;--sub:#c3a8de;--faint:#8b74a6;
-    --pink:#ff3d8f;--pink2:#ff7fb8;--pink-soft:rgba(255,61,143,.14);
-    --lime:#9dff57;--lime-soft:rgba(157,255,87,.14);
-    --cyan:#5ee7ff;--gold:#ffd166;--red:#ff4d4d;
-    --line:rgba(255,127,184,.18);
-    --mono:'JetBrains Mono','Consolas',ui-monospace,SFMono-Regular,Menlo,monospace;
-    --shadow:0 10px 30px -12px rgba(0,0,0,.7);
+    --bg:#f5f6fa;--card:#ffffff;--line:#e4e7ee;
+    --ink:#1f2330;--sub:#5b6478;--faint:#8b93a5;
+    --accent:#bf0000;--accent-soft:#fff1f1;--accent-line:#f3c1c1;
+    --ok:#15803d;--ok-soft:#ecfdf3;--ok-line:#b7e4c7;
+    --warn:#b45309;--warn-soft:#fff7e6;--warn-line:#fbd38d;
+    --bad:#b91c1c;--bad-soft:#fef2f2;--bad-line:#fecaca;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --shadow:0 1px 2px rgba(20,24,40,.05),0 6px 20px -10px rgba(20,24,40,.15);
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:radial-gradient(120% 70% at 50% -10%,#2a1140 0%,var(--bg2) 45%,var(--bg) 100%) fixed var(--bg);
-    color:var(--ink);font-family:'Noto Sans JP',system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Sans","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
-    line-height:1.7;font-size:15px;padding:0 16px 80px;-webkit-font-smoothing:antialiased}
-  a{color:var(--pink2)}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans JP",system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Sans","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+    line-height:1.7;font-size:15px;padding:0 16px 60px;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
   .wrap{max-width:1080px;margin:0 auto}
-  header{padding:22px 0 8px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-end;justify-content:space-between}
-  h1{margin:0;font-size:clamp(20px,4vw,30px);line-height:1.25;letter-spacing:.02em}
-  h1 small{display:block;font-size:12px;color:var(--sub);font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
-  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line);color:var(--sub);background:rgba(255,255,255,.03)}
-  .badge.ok{color:var(--lime);border-color:rgba(157,255,87,.4);background:var(--lime-soft)}
-  .badge.warn{color:var(--gold);border-color:rgba(255,209,102,.4);background:rgba(255,209,102,.12)}
-  .badge.bad{color:var(--red);border-color:rgba(255,77,77,.4);background:rgba(255,77,77,.12)}
+  header{padding:22px 0 14px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-end;justify-content:space-between}
+  h1{margin:0;font-size:clamp(19px,3.6vw,26px);line-height:1.3}
+  h1 small{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-bottom:2px}
+  .badges{display:flex;flex-wrap:wrap;gap:6px}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line);color:var(--sub);background:#fff}
+  .badge.ok{color:var(--ok);border-color:var(--ok-line);background:var(--ok-soft)}
+  .badge.warn{color:var(--warn);border-color:var(--warn-line);background:var(--warn-soft)}
+  .badge.bad{color:var(--bad);border-color:var(--bad-line);background:var(--bad-soft)}
 
   .grid{display:grid;grid-template-columns:1fr;gap:16px}
-  @media(min-width:900px){.grid.two{grid-template-columns:1.1fr .9fr}}
-  .card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;padding:18px 18px 16px;box-shadow:var(--shadow)}
-  .card h2{margin:0 0 10px;font-size:15px;letter-spacing:.06em;color:var(--pink2);display:flex;align-items:center;gap:8px}
-  .card h2 .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--pink);color:#fff;font-size:13px}
+  @media(min-width:900px){.grid.two{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)}}
+  .grid>section{min-width:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+  .card+.card{margin-top:16px}
+  .card h2{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:8px}
+  .card h2 .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;flex:none}
   .muted{color:var(--sub);font-size:13px}
   .tiny{color:var(--faint);font-size:12px}
 
-  /* ===== カウントダウン ===== */
-  .clockbox{text-align:center;padding:10px 0 4px}
-  .target{font-size:13px;color:var(--sub);letter-spacing:.1em}
-  .count{font-family:var(--mono);font-size:clamp(44px,11vw,104px);font-weight:700;line-height:1.05;letter-spacing:-.02em;
-    color:#fff;text-shadow:0 0 24px rgba(255,61,143,.45);font-variant-numeric:tabular-nums}
-  .count .ms{font-size:.42em;color:var(--pink2);vertical-align:baseline}
-  .count.hot{color:var(--gold);text-shadow:0 0 30px rgba(255,209,102,.6)}
-  .count.go{color:var(--lime);text-shadow:0 0 34px rgba(157,255,87,.7)}
-  .phase{margin-top:6px;font-weight:700;font-size:14px;letter-spacing:.08em}
-  .clockmeta{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--faint)}
-  .clockmeta b{color:var(--sub);font-weight:600}
+  /* ===== カウントダウン（文字幅固定でガタつきゼロ） ===== */
+  .clockbox{text-align:center;padding:6px 0 2px}
+  .target{font-size:13px;color:var(--sub)}
+  .count{font-family:var(--mono);font-size:clamp(40px,9.5vw,88px);font-weight:700;line-height:1.1;color:var(--ink);
+    display:inline-flex;align-items:baseline;justify-content:center;white-space:nowrap}
+  .count span{display:inline-block;text-align:center}
+  .count .d{width:.64em}       /* 数字1文字ぶんの幅を固定 → 数字が変わっても動かない */
+  .count .p{width:.36em}       /* コロン・ドット */
+  .count .s{width:.5em}        /* +/− の記号枠 */
+  .count .m{font-size:.42em;width:.64em;color:var(--sub)}
+  .count .m.p{width:.36em}
+  .count.hot{color:var(--warn)}
+  .count.go{color:var(--ok)}
+  .phase{height:24px;margin-top:4px;font-weight:700;font-size:14px;color:var(--sub)}
+  .clockmeta{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .clockmeta b{color:var(--sub);font-weight:600;display:inline-block;min-width:5.5em;text-align:left}
 
   /* ===== GOボタン ===== */
-  .gobtn{display:block;width:100%;border:0;border-radius:18px;padding:22px 16px;margin-top:14px;cursor:pointer;
-    font-size:clamp(22px,5vw,34px);font-weight:900;letter-spacing:.06em;color:#fff;
-    background:linear-gradient(135deg,#ff3d8f,#ff7a3d);box-shadow:0 12px 40px -10px rgba(255,61,143,.8), inset 0 -3px 0 rgba(0,0,0,.25);
-    transition:transform .08s ease,filter .2s}
-  .gobtn:active{transform:scale(.985)}
-  .gobtn[disabled]{cursor:not-allowed;filter:grayscale(.75) brightness(.55);box-shadow:none}
+  .gobtn{display:block;width:100%;border:0;border-radius:14px;padding:20px 16px;margin-top:14px;cursor:pointer;
+    font-size:clamp(20px,4.5vw,30px);font-weight:900;letter-spacing:.04em;color:#fff;background:var(--accent);
+    box-shadow:0 8px 24px -10px rgba(191,0,0,.6);transition:filter .15s}
+  .gobtn:hover{filter:brightness(1.08)}
+  .gobtn[disabled]{cursor:not-allowed;background:#cfd3dc;color:#fff;box-shadow:none}
   .gobtn.armed{animation:pulse 1s ease-in-out infinite}
-  .gobtn.fired{background:linear-gradient(135deg,#59d95d,#1fb6a6)}
-  @keyframes pulse{0%,100%{box-shadow:0 12px 40px -10px rgba(255,61,143,.8)}50%{box-shadow:0 0 0 12px rgba(255,61,143,.0),0 12px 40px -10px rgba(255,61,143,1)}}
-  .gobtn small{display:block;font-size:12px;font-weight:600;opacity:.9;letter-spacing:.1em;margin-top:2px}
+  .gobtn.fired{background:var(--ok)}
+  @keyframes pulse{0%,100%{box-shadow:0 8px 24px -10px rgba(191,0,0,.6)}50%{box-shadow:0 0 0 8px rgba(191,0,0,.15),0 8px 24px -10px rgba(191,0,0,.6)}}
+  .gobtn small{display:block;font-size:12px;font-weight:600;opacity:.92;margin-top:2px}
   .rowbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .btn{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);border-radius:12px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;line-height:1.3}
-  .btn:hover{background:rgba(255,127,184,.12);border-color:rgba(255,127,184,.5)}
-  .btn.primary{background:var(--pink-soft);border-color:rgba(255,61,143,.55);color:#fff}
-  .btn.lime{background:var(--lime-soft);border-color:rgba(157,255,87,.5);color:var(--lime)}
-  .btn.sm{padding:6px 10px;font-size:12px;border-radius:9px}
+  .btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;line-height:1.3}
+  .btn:hover{border-color:#c5cbd8;background:#fafbfd}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
+  .btn.ok{background:var(--ok-soft);border-color:var(--ok-line);color:var(--ok)}
+  .btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
   .btn[disabled]{opacity:.45;cursor:not-allowed}
-  .kbd{font-family:var(--mono);font-size:11px;border:1px solid rgba(255,255,255,.25);border-bottom-width:2px;border-radius:5px;padding:0 6px;color:#fff;background:rgba(255,255,255,.06)}
+  .kbd{font-family:var(--mono);font-size:11px;border:1px solid #c9cfda;border-bottom-width:2px;border-radius:5px;padding:0 6px;background:#f3f4f8;color:var(--ink)}
+
+  /* ===== ログイン ===== */
+  .loginbox{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+  .loginbox .big{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+  .loginstate{font-size:13px;font-weight:700}
+  .loginstate.ok{color:var(--ok)}.loginstate.bad{color:var(--bad)}
+  ul.plain{margin:6px 0 0;padding-left:18px;font-size:13px;color:var(--sub)}
+  ul.plain li{margin:3px 0}
 
   /* ===== チェックリスト ===== */
   .check{list-style:none;margin:0;padding:0}
-  .check li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 0;border-top:1px dashed var(--line);align-items:start}
-  .check li:first-child{border-top:0}
-  .check input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--pink)}
+  .check li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+  .check li:first-child{border-top:0;padding-top:0}
+  .check input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
   .check .t{font-weight:700}
   .check .d{font-size:13px;color:var(--sub)}
-  .check li.done .t{color:var(--lime)}
-  .check li.done .t::after{content:" ✔";}
+  .check li.done .t{color:var(--ok)}
+  .check li.done .t::after{content:" ✔"}
 
   /* ===== クーポン一覧 ===== */
-  .cgroup{margin:14px 0 6px;font-size:12px;letter-spacing:.12em;color:var(--faint);font-weight:700}
-  .coupon{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);margin-bottom:8px}
-  .coupon input[type=checkbox]{width:20px;height:20px;accent-color:var(--pink)}
+  .cgroup{margin:14px 0 6px;font-size:12px;color:var(--faint);font-weight:700}
+  .coupon{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:8px}
+  .coupon input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
   .coupon .name{font-weight:800;font-size:14px}
-  .coupon .name .price{color:var(--gold);font-family:var(--mono);margin-left:6px}
+  .coupon .name .price{color:var(--accent);font-family:var(--mono);margin-left:6px}
   .coupon .sub{font-size:12px;color:var(--sub)}
   .coupon .cond{font-size:11px;color:var(--faint)}
-  .coupon .st{font-size:11px;font-family:var(--mono);margin-top:2px}
-  .coupon .st.ok{color:var(--lime)}.coupon .st.bad{color:var(--red)}.coupon .st.wait{color:var(--gold)}
-  .coupon .actions{display:flex;flex-direction:column;gap:6px;align-items:stretch}
-  .coupon.scarce{border-color:rgba(255,209,102,.4)}
-  .scarcetag{font-size:10px;color:var(--gold);letter-spacing:.08em;margin-left:6px;font-weight:800}
+  .coupon .st{font-size:11px;font-family:var(--mono);min-height:16px}
+  .coupon .st.ok{color:var(--ok)}.coupon .st.bad{color:var(--bad)}
+  .coupon.scarce{border-color:var(--warn-line);background:#fffdf7}
+  .scarcetag{font-size:10px;color:var(--warn);margin-left:6px;font-weight:800}
+  .coupon .actions{display:flex;flex-direction:column;gap:6px}
   @media(max-width:560px){.coupon{grid-template-columns:auto 1fr}.coupon .actions{grid-column:1/-1;flex-direction:row}}
 
   /* ===== 設定 ===== */
   .opt{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:13px}
   .opt label{display:inline-flex;align-items:center;gap:6px}
-  .opt input[type=number]{width:80px;background:#0e0817;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-family:var(--mono)}
-  .opt input[type=checkbox]{accent-color:var(--pink);width:16px;height:16px}
+  .opt input[type=number]{width:80px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-family:var(--mono)}
+  .opt input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
 
   /* ===== ログ ===== */
-  .log{font-family:var(--mono);font-size:12px;background:#080510;border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-height:240px;overflow:auto;white-space:pre-wrap;color:var(--sub)}
-  .log .ok{color:var(--lime)}.log .bad{color:var(--red)}.log .hi{color:#fff}.log .gold{color:var(--gold)}
+  .log{font-family:var(--mono);font-size:12px;background:#f8f9fc;border:1px solid var(--line);border-radius:10px;padding:10px 12px;height:200px;overflow:auto;white-space:pre-wrap;color:var(--sub)}
+  .log .ok{color:var(--ok)}.log .bad{color:var(--bad)}.log .hi{color:var(--ink)}.log .gold{color:var(--warn)}
 
-  .alert{border:1px solid rgba(255,77,77,.5);background:rgba(255,77,77,.1);border-radius:12px;padding:10px 12px;font-size:13px;margin-top:10px}
-  .alert.ok{border-color:rgba(157,255,87,.4);background:var(--lime-soft)}
-  .alert.warn{border-color:rgba(255,209,102,.5);background:rgba(255,209,102,.1)}
-  details summary{cursor:pointer;font-weight:700;color:var(--pink2)}
-  ol.tips{padding-left:20px;font-size:13px}ol.tips li{margin:6px 0}
+  .alert{border:1px solid var(--warn-line);background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:10px}
+  details summary{cursor:pointer;font-weight:700}
+  ol.tips{padding-left:20px;font-size:13px;color:var(--sub)}ol.tips li{margin:6px 0}
   footer{margin-top:28px;font-size:12px;color:var(--faint);text-align:center}
-  #flash{position:fixed;inset:0;pointer-events:none;background:var(--lime);opacity:0;z-index:99}
-  #flash.on{animation:flash .5s ease-out}
-  @keyframes flash{0%{opacity:.55}100%{opacity:0}}
+  #flash{position:fixed;inset:0;pointer-events:none;background:var(--ok);opacity:0;z-index:99}
+  #flash.on{animation:flash .45s ease-out}
+  @keyframes flash{0%{opacity:.35}100%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.gobtn.armed{animation:none}#flash.on{animation:none}}
 </style>
 </head>
 <body>
 <div id="flash"></div>
 <div class="wrap">
 <header>
-  <h1><small>Rakuten Travel ／ 熊本ふっこう応援割</small>最速ゲット作戦室 🍓</h1>
-  <div>
+  <h1><small>楽天トラベル ／ 熊本ふっこう応援割</small>クーポン獲得タイマー</h1>
+  <div class="badges">
+    <span class="badge" id="loginBadge">ログイン 未確認</span>
     <span class="badge" id="syncBadge">時刻同期 待機中</span>
     <span class="badge" id="popupBadge">ポップアップ 未テスト</span>
     <span class="badge" id="soundBadge">音 OFF</span>
@@ -133,78 +148,99 @@
 
 <div class="grid two">
   <!-- ===== 左：カウントダウン & GO ===== -->
-  <section class="card">
-    <div class="clockbox">
-      <div class="target" id="targetLabel">解禁 2026/09/15(火) 10:00:00 JST まで</div>
-      <div class="count" id="count">--:--:--<span class="ms">.---</span></div>
-      <div class="phase" id="phase">同期中…</div>
-      <div class="clockmeta">
-        <span>サーバー時刻 <b id="srvNow">--:--:--</b></span>
-        <span>PC時計とのズレ <b id="offset">--</b></span>
-        <span>精度 <b id="acc">--</b></span>
-      </div>
-    </div>
-    <button class="gobtn" id="go" disabled>全部獲得 GO!<small>解禁になったら押せるよ／<span class="kbd">Space</span> でも発射</small></button>
-    <div class="rowbtns">
-      <button class="btn" id="forceGo" title="時間関係なく今すぐ全部開く">⚡ 強制GO（時間無視）</button>
-      <button class="btn" id="practice">🎯 リハーサル（15秒後に仮解禁）</button>
-      <button class="btn" id="resync">🔄 時刻を再同期</button>
-      <button class="btn" id="soundBtn">🔔 音をON</button>
-    </div>
-    <div class="alert warn" id="popupAlert" hidden></div>
-
-    <h2 style="margin-top:18px">⚙️ 発射設定</h2>
-    <div class="opt">
-      <label>フライング <input type="number" id="fly" value="150" step="10" min="-2000" max="3000"> ms 前に発射</label>
-      <label><input type="checkbox" id="auto"> 解禁と同時に自動発射（ポップアップ許可が必要）</label>
-      <label><input type="checkbox" id="scarceFirst" checked> 枚数少ない順に開く</label>
-    </div>
-    <p class="tiny" style="margin:8px 0 0">※回線の遅延ぶんだけ先に押すのがフライング設定。150ms前後がおすすめ。早すぎると「配布前」画面になるからその時はそのタブをリロードでOK🙆‍♀️</p>
-
-    <h2 style="margin-top:18px">📝 ログ（サーバー時刻基準）</h2>
-    <div class="log" id="log"></div>
-  </section>
-
-  <!-- ===== 右：準備チェック & クーポン ===== -->
   <section>
     <div class="card">
-      <h2><span class="n">1</span>解禁前にやること（前日〜10分前）</h2>
+      <div class="clockbox">
+        <div class="target" id="targetLabel">解禁 2026/09/15(火) 10:00:00 JST まで</div>
+        <div class="count" id="count"></div>
+        <div class="phase" id="phase">同期中…</div>
+        <div class="clockmeta">
+          <span>サーバー時刻 <b id="srvNow">--:--:--</b></span>
+          <span>PC時計とのズレ <b id="offset">--</b></span>
+          <span>精度 <b id="acc">--</b></span>
+        </div>
+      </div>
+      <button class="gobtn" id="go" disabled>全部獲得 GO<small>解禁になったら押せる／<span class="kbd">Space</span> でも発射</small></button>
+      <div class="rowbtns">
+        <button class="btn" id="forceGo" title="時間関係なく今すぐ全部開く">⚡ 強制GO（時間無視）</button>
+        <button class="btn" id="practice">🎯 リハーサル（15秒後に仮解禁）</button>
+        <button class="btn" id="resync">🔄 時刻を再同期</button>
+        <button class="btn" id="soundBtn">🔔 音をON</button>
+      </div>
+      <div class="alert" id="popupAlert" hidden></div>
+
+      <h2 style="margin-top:18px">⚙️ 発射設定</h2>
+      <div class="opt">
+        <label>フライング <input type="number" id="fly" value="150" step="10" min="-2000" max="3000"> ms 前に発射</label>
+        <label><input type="checkbox" id="auto"> 解禁と同時に自動発射（ポップアップ許可が必要）</label>
+        <label><input type="checkbox" id="scarceFirst" checked> 枚数少ない順に開く</label>
+      </div>
+      <p class="tiny" style="margin:8px 0 0">回線の遅延ぶんだけ先に押すのがフライング設定。150ms前後がおすすめ。早すぎると「配布前」画面になるので、その時はそのタブをリロード。</p>
+    </div>
+
+    <div class="card">
+      <h2>📝 ログ（サーバー時刻基準）</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+
+  <!-- ===== 右：ログイン → 準備 → クーポン ===== -->
+  <section>
+    <div class="card">
+      <h2><span class="n">0</span>楽天にログイン（これが全て）</h2>
+      <div class="loginbox">
+        <div class="muted">クーポンの獲得リンクは<b>ログイン済みのブラウザで開くだけで獲得完了</b>になる。逆に未ログインだとログイン画面に飛ばされて数十秒ロスるので、ここを先に固める。</div>
+        <div class="big">
+          <a class="btn primary" id="loginLink" target="_blank" rel="noopener">🔑 楽天トラベルにログインする</a>
+          <a class="btn" id="loginCheck" target="_blank" rel="noopener">🎫 ログインできてるか確認（myクーポン）</a>
+          <button class="btn ok" id="loginDone">✔ ログイン確認できた</button>
+        </div>
+        <div class="loginstate" id="loginState">未確認。上の確認ページで「myクーポン」の一覧が表示されればOK。</div>
+        <ul class="plain">
+          <li><b>ID・パスワードはこのサイトには入れない。</b>ここは公開ページなので入力欄は作ってない。楽天の公式ログイン画面（新しいタブ）で入力してね。</li>
+          <li>ログイン時に<b>「ログイン状態を保持する」</b>にチェック。ブラウザのパスワード保存もONにしておくと再ログインが1クリックで済む。</li>
+          <li>楽天は<b>初めてのブラウザだと認証コード（メール/SMS）</b>を求めることがある。当日そのぶんロスらないように、<b>本番で使うPC・ブラウザで前日にログイン</b>しておく。</li>
+          <li>当日は<b>9:50までにもう一度「確認」ボタン</b>で一覧が見えるかチェック。見えなければログインし直す。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">1</span>解禁前の準備</h2>
       <ul class="check" id="checklist">
-        <li data-k="login"><input type="checkbox"><div><div class="t">楽天にログインしておく（超重要）</div><div class="d">↓のボタンで「獲得済みクーポン一覧」を開く。ログイン画面が出たらログイン。一覧が見えれば準備OK。10分前にもう1回開いてセッション切れてないか確認！<div class="rowbtns"><a class="btn primary sm" id="loginLink" target="_blank" rel="noopener">🔑 ログイン確認ページを開く</a></div></div></div></li>
-        <li data-k="popup"><input type="checkbox"><div><div class="t">ポップアップ許可テスト</div><div class="d">複数タブを一気に開くからブロックされるとアウト。テストで3タブ開けばOK。ブロックされたらブラウザのアドレスバー右の🚫アイコン→「常に許可」にして再テスト。<div class="rowbtns"><button class="btn primary sm" id="popupTest">🪟 3タブ開くテスト</button><button class="btn sm" id="autoTest">🤖 自動発射テスト（クリックなしで開けるか）</button></div></div></div></li>
-        <li data-k="ana"><input type="checkbox"><div><div class="t">もう配布中のANA熊本クーポンは今のうちに取る</div><div class="d">これは9/14 10:00に始まってるから今すぐ獲得できる。先着420枚。<div class="rowbtns"><a class="btn lime sm" id="anaNow" target="_blank" rel="noopener">✈️ ANA 15,000円クーポンを今すぐ獲得</a></div></div></div></li>
-        <li data-k="prewarm"><input type="checkbox"><div><div class="t">1〜2分前：楽天トラベルのページを別タブで開いて温めておく</div><div class="d">DNS・TLS・Cookieがあったまって初回アクセスが速くなる。プランBのワンクリック獲得もここから。<div class="rowbtns"><a class="btn sm" id="pageLink" target="_blank" rel="noopener">🏯 熊本キャンペーンページ</a><a class="btn sm" id="pkgLink" target="_blank" rel="noopener">🚄 楽パッククーポンページ</a></div></div></div></li>
-        <li data-k="hotel"><input type="checkbox"><div><div class="t">泊まりたい宿を決めておく（予約も先着）</div><div class="d">クーポンは「獲得」より「利用」が先着。取ったら即予約まで行くのが勝ち筋。<div class="rowbtns"><a class="btn sm" id="hotels1" target="_blank" rel="noopener">🏨 対象施設（1泊クーポン）</a><a class="btn sm" id="hotels2" target="_blank" rel="noopener">🏨 対象施設（2泊クーポン）</a></div></div></div></li>
-        <li data-k="sound"><input type="checkbox"><div><div class="t">音ON・このタブを前面に・PC推奨</div><div class="d">10秒前からカウント音鳴らすよ。スマホは複数タブ開けないことが多いから、できればPC＋有線で。</div></div></li>
+        <li data-k="popup"><input type="checkbox"><div><div class="t">ポップアップ許可テスト</div><div class="d">複数タブを一気に開くのでブロックされると負け。テストで3タブ開けばOK。ブロックされたらアドレスバー右のアイコン→「常に許可」→再テスト。<div class="rowbtns"><button class="btn primary sm" id="popupTest">3タブ開くテスト</button><button class="btn sm" id="autoTest">自動発射テスト（クリックなしで開けるか）</button></div></div></div></li>
+        <li data-k="ana"><input type="checkbox"><div><div class="t">配布中のANA熊本クーポンは今のうちに獲得</div><div class="d">9/14 10:00に配布開始済み。先着420枚。<div class="rowbtns"><a class="btn ok sm" id="anaNow" target="_blank" rel="noopener">✈️ ANA 15,000円クーポンを今すぐ獲得</a></div></div></div></li>
+        <li data-k="prewarm"><input type="checkbox"><div><div class="t">1〜2分前：楽天トラベルのページを別タブで開いておく</div><div class="d">接続が温まって初回アクセスが速くなる。ページ上の獲得ボタンからも取れる（プランB）。<div class="rowbtns"><a class="btn sm" id="pageLink" target="_blank" rel="noopener">熊本キャンペーンページ</a><a class="btn sm" id="pkgLink" target="_blank" rel="noopener">楽パッククーポンページ</a></div></div></div></li>
+        <li data-k="hotel"><input type="checkbox"><div><div class="t">泊まりたい宿を決めておく（予約も先着）</div><div class="d">クーポンは「獲得」より「利用」が先着。取ったら即予約まで進むのが勝ち筋。<div class="rowbtns"><a class="btn sm" id="hotels1" target="_blank" rel="noopener">対象施設（1泊クーポン）</a><a class="btn sm" id="hotels2" target="_blank" rel="noopener">対象施設（2泊クーポン）</a></div></div></div></li>
+        <li data-k="sound"><input type="checkbox"><div><div class="t">音ON・このタブを前面に・PC推奨</div><div class="d">10秒前からカウント音を鳴らす。スマホは複数タブを開けないことが多いのでPC推奨。</div></div></li>
       </ul>
     </div>
 
-    <div class="card" style="margin-top:16px">
+    <div class="card">
       <h2><span class="n">2</span>ターゲットのクーポン（チェック＝GOで開く）</h2>
       <p class="tiny" style="margin:0 0 6px">数字キー <span class="kbd">1</span>〜<span class="kbd">8</span> で個別に開ける。開いた先が「獲得しました」ならOK、「配布前」ならそのタブを <span class="kbd">F5</span>。</p>
       <div id="coupons"></div>
-      <div class="rowbtns"><a class="btn sm" id="myCoupon" target="_blank" rel="noopener">🎫 獲得済みクーポン一覧で確認</a><a class="btn sm" id="howto" target="_blank" rel="noopener">📖 クーポンの使い方</a></div>
+      <div class="rowbtns"><a class="btn sm" id="myCoupon" target="_blank" rel="noopener">獲得済みクーポン一覧で確認</a><a class="btn sm" id="howto" target="_blank" rel="noopener">クーポンの使い方</a></div>
     </div>
 
-    <div class="card" style="margin-top:16px">
+    <div class="card">
       <details>
-        <summary>🎬 映画みたいに最速で取るコツ（読んどいて）</summary>
+        <summary>🎬 最速で取るコツ</summary>
         <ol class="tips">
-          <li><b>ログインは前日に済ませて、10分前にもう一度確認。</b>ログイン画面に飛ばされた瞬間に数秒〜数十秒ロスる。これが一番の敗因。</li>
-          <li><b>getCoupon リンク直叩きが最速。</b>キャンペーンページの獲得ボタンは裏でAPI叩いてるだけだから、リンクを直接開けばページ表示ぶんの時間を省ける。</li>
-          <li><b>タブは一気に開く。</b>1枚ずつ確認してると差がつく。全部開いてから結果を見る。</li>
-          <li><b>フライングは150ms前後。</b>このサイトはGitHubのサーバー時刻に同期してるからPCの時計がズレてても大丈夫。</li>
-          <li><b>「配布前」画面が出たら慌てずそのタブをリロード。</b>連打しても速くならない、1秒後に1回でOK。</li>
-          <li><b>獲得＝ゴールじゃない。</b>先着「利用」枚数なので、獲得したら即予約まで行く。宿は決めとく。</li>
-          <li><b>スマホは非推奨。</b>複数タブのポップアップが弾かれやすい。使うならクーポンごとの個別ボタンを順に押す。</li>
-          <li><b>リハーサルボタンで前日に1回練習しとく。</b>反応速度がログに出るよ。</li>
+          <li><b>ログインは前日に済ませて、9:50にもう一度確認。</b>ログイン画面に飛ばされた瞬間に負ける。</li>
+          <li><b>獲得リンク直開きが最速。</b>キャンペーンページの獲得ボタンは裏で同じ処理をしているだけなので、リンクを直接開けばページ表示ぶんを省ける。</li>
+          <li><b>タブは一気に開く。</b>1枚ずつ確認していると差がつく。全部開いてから結果を見る。</li>
+          <li><b>フライングは150ms前後。</b>このページはサーバー時刻に同期しているのでPCの時計がズレていても大丈夫。</li>
+          <li><b>「配布前」画面が出たらそのタブをリロード。</b>連打しても速くならない、1秒後に1回でOK。</li>
+          <li><b>獲得＝ゴールではない。</b>先着「利用」枚数なので、獲得したら即予約まで進む。</li>
+          <li><b>リハーサルで前日に1回練習。</b>反応速度がログに出る。</li>
         </ol>
       </details>
     </div>
   </section>
 </div>
 
-<footer>クーポン情報は 2026-09-14 時点の楽天トラベル公式ページから取得。条件は必ず公式ページで確認してね。<br>このページは楽天とは無関係の個人用ツール。ログイン情報は一切扱わない（楽天のサイトを新しいタブで開くだけ）。</footer>
+<footer>クーポン情報は 2026-09-14 時点の楽天トラベル公式ページから取得。条件は必ず公式ページで確認してください。<br>このページは楽天とは無関係の個人用ツールで、ログイン情報は一切扱いません（楽天のページを新しいタブで開くだけ）。</footer>
 </div>
 
 <script src="coupons.js"></script>
