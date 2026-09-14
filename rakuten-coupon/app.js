@@ -51,6 +51,21 @@
     saved.log = [line.outerHTML].concat(saved.log || []).slice(0, 60);
     save();
   }
+  // テキストが変わった時だけ書き換える（毎フレームDOMいじらない）
+  function setText(el, txt) { if (el.textContent !== txt) el.textContent = txt; }
+  // "HH:MM:SS.mmm" を1文字ずつ固定幅セルに流し込む。セルは初回だけ生成
+  function setCells(el, str) {
+    if (el.childNodes.length !== str.length) {
+      el.innerHTML = "";
+      for (let i = 0; i < str.length; i++) {
+        const sp = document.createElement("span");
+        const ch = str[i], small = i >= str.length - 4;   // ".mmm" は小さめ
+        sp.className = (ch === ":" || ch === "." ? "p" : (i === 0 ? "s" : "d")) + (small ? " m" : "");
+        el.appendChild(sp);
+      }
+    }
+    for (let i = 0; i < str.length; i++) { const n = el.childNodes[i]; if (n.textContent !== str[i]) n.textContent = str[i]; }
+  }
   function flash() { const f = $("#flash"); f.classList.remove("on"); void f.offsetWidth; f.classList.add("on"); }
 
   // ---------- 時刻同期 ----------
@@ -168,7 +183,7 @@
   function openAll(list, urlFn, label) {
     const t = serverNow();
     const tgt = state.practice || state.target;
-    const delta = t - tgt;
+    const delta = Math.round(t - tgt);
     log(label + "発射！ 解禁との差 " + (delta >= 0 ? "+" : "") + delta + "ms（" + list.length + "件）", "gold");
     let blocked = 0;
     list.forEach((c, i) => {
@@ -215,22 +230,25 @@
     const armAt = fly;                   // rem <= fly で押せる
     const cnt = $("#count"), ph = $("#phase"), go = $("#go");
 
-    // 表示
-    const a = Math.abs(rem);
+    // 表示（セルごとに差分更新。innerHTML作り直しはしない→ガタつかない）
+    const a = Math.floor(Math.abs(rem));   // offsetが小数になるので整数に丸める（ここ丸めないとmsが "428.75" になってセルが崩れる）
     const h = Math.floor(a / 3600000), m = Math.floor(a / 60000) % 60, s = Math.floor(a / 1000) % 60, ms = a % 1000;
-    cnt.innerHTML = (rem < 0 ? "+" : "") + (h ? pad(h) + ":" : "") + pad(m) + ":" + pad(s) + '<span class="ms">.' + pad(ms, 3) + "</span>";
+    const str = (rem < 0 ? "+" : " ") + (h ? pad(h) : "  ") + (h ? ":" : " ") + pad(m) + ":" + pad(s) + "." + pad(ms, 3);
+    setCells(cnt, str);
     cnt.className = "count" + (rem <= 0 ? " go" : rem <= 10000 ? " hot" : "");
-    $("#srvNow").textContent = fmtJST(now, true);
-    $("#offset").textContent = state.synced ? ((state.offset > 0 ? "+" : "") + Math.round(state.offset) + "ms") : "未同期";
-    $("#acc").textContent = state.acc != null ? "±" + state.acc + "ms" : "--";
+    setText($("#srvNow"), fmtJST(now));   // 秒単位。msまで出すとチラつくだけなので
+    setText($("#offset"), state.synced ? ((state.offset > 0 ? "+" : "") + Math.round(state.offset) + "ms") : "未同期");
+    setText($("#acc"), state.acc != null ? "±" + state.acc + "ms" : "--");
 
-    if (state.practice) ph.textContent = rem > 0 ? "🎯 リハーサル中… " : "🎯 リハ解禁！押せ！";
-    else if (rem > 600000) ph.textContent = "まだ余裕。チェックリスト消化タイム☕";
-    else if (rem > 60000) ph.textContent = "10分切った！ログイン確認・タブ温め！";
-    else if (rem > 10000) ph.textContent = "1分切った！指をGOボタンに置いて待機🫵";
-    else if (rem > 0) ph.textContent = "カウントダウン… " + Math.ceil(rem / 1000);
-    else if (rem > -300000) ph.textContent = "🔥 解禁中！！GO GO GO！！";
-    else ph.textContent = "解禁から時間経過。まだ残ってるかも、取ってなければGO";
+    let phase;
+    if (state.practice) phase = rem > 0 ? "リハーサル中…" : "リハ解禁！押せ！";
+    else if (rem > 600000) phase = "まだ余裕。準備チェックを消化しよう";
+    else if (rem > 60000) phase = "10分切った！ログイン確認・タブ温め";
+    else if (rem > 10000) phase = "1分切った！指をGOボタンに置いて待機";
+    else if (rem > 0) phase = "カウントダウン… " + Math.ceil(rem / 1000);
+    else if (rem > -300000) phase = "解禁中！GO！";
+    else phase = "解禁から時間経過。取ってなければGO";
+    setText(ph, phase);
 
     // ボタンの活性
     const armed = rem <= armAt;
@@ -256,7 +274,7 @@
   // ---------- イベント ----------
   function bind() {
     // リンク類
-    $("#loginLink").href = C.loginCheck; $("#myCoupon").href = C.myCoupon; $("#howto").href = C.howto;
+    $("#loginLink").href = C.login; $("#loginCheck").href = C.loginCheck; $("#myCoupon").href = C.myCoupon; $("#howto").href = C.howto;
     $("#pageLink").href = C.page; $("#pkgLink").href = C.packagePage;
     $("#hotels1").href = C.hotels1; $("#hotels2").href = C.hotels2;
     const ana = CFG.coupons.find((c) => c.alreadyOpen); if (ana) $("#anaNow").href = cUrl(ana);
@@ -268,7 +286,10 @@
       cb.addEventListener("change", () => { saved.check = saved.check || {}; saved.check[k] = cb.checked; li.classList.toggle("done", cb.checked); save(); });
     });
     const markDone = (k) => { const li = document.querySelector('#checklist li[data-k="' + k + '"]'); if (li) { li.querySelector("input").checked = true; li.classList.add("done"); saved.check = saved.check || {}; saved.check[k] = true; save(); } };
-    $("#loginLink").addEventListener("click", () => { log("ログイン確認ページを開いた。一覧が見えたらチェック入れてね", "hi"); });
+    $("#loginLink").addEventListener("click", () => log("楽天のログイン画面を開いた。ログインしたら「確認」→「ログイン確認できた」を押してね", "hi"));
+    $("#loginCheck").addEventListener("click", () => log("myクーポン一覧を開いた。一覧が見えたら「ログイン確認できた」を押してね", "hi"));
+    $("#loginDone").addEventListener("click", () => { saved.loginAt = serverNow(); save(); renderLogin(); log("ログイン確認OK（" + fmtJST(saved.loginAt) + "）", "ok"); });
+    renderLogin();
     $("#anaNow").addEventListener("click", () => { log("ANA 15,000円クーポンの獲得ページを開いた", "hi"); markDone("ana"); });
     $("#pageLink").addEventListener("click", () => markDone("prewarm"));
 
@@ -335,6 +356,16 @@
     // 画面スリープ防止（対応ブラウザのみ）
     document.addEventListener("visibilitychange", async () => { if (document.visibilityState === "visible") wake(); });
   }
+  // ログイン確認の鮮度を表示。30分以上前なら再確認を促す
+  function renderLogin() {
+    const st = $("#loginState"), badge = $("#loginBadge");
+    if (!saved.loginAt) { st.className = "loginstate bad"; st.textContent = "未確認。「確認」ページで myクーポン の一覧が表示されたら「ログイン確認できた」を押す。"; badge.className = "badge bad"; badge.textContent = "ログイン 未確認"; return; }
+    const age = serverNow() - saved.loginAt, min = Math.round(age / 60000);
+    const stale = age > 30 * 60 * 1000;
+    st.className = "loginstate " + (stale ? "bad" : "ok");
+    st.textContent = (stale ? "最終確認から" + (min >= 60 ? Math.floor(min / 60) + "時間" : min + "分") + "経過。当日は9:50までにもう一度「確認」→「ログイン確認できた」を押す。" : "ログイン確認済み（" + fmtJST(saved.loginAt) + "）。このブラウザのまま本番へ。");
+    badge.className = "badge " + (stale ? "warn" : "ok"); badge.textContent = stale ? "ログイン 要再確認" : "ログイン OK";
+  }
   async function wake() {
     try { if ("wakeLock" in navigator && !state.wakeLock) state.wakeLock = await navigator.wakeLock.request("screen"); } catch (e) { /* 非対応でも別に困らん */ }
   }
@@ -353,6 +384,7 @@
       if (before > 0) setTimeout(() => syncClock(false), before);
     });
     wake();
+    setInterval(renderLogin, 60 * 1000);
     requestAnimationFrame(tick);
   }
   init();

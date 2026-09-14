@@ -10,7 +10,9 @@ window.COUPON_CONFIG = {
     page: "https://travel.rakuten.co.jp/special/kyushuouen/kumamoto/?l-id=f_kyushuouen_top",
     // 配布開始（JST）。うちらの目標タイム✨
     startJST: "2026-09-15T10:00:00+09:00",
-    // ログイン確認用（ログインしてないとログイン画面に飛ぶ→そのまま入ればOK）
+    // 楽天トラベル公式のログイン入口（ヘッダーの「ログイン」と同じ）。ログイン後は myクーポン に戻る
+    login: "https://auth.travel.rakuten.co.jp/fwd/memberDispatcher/staticPageLogin?service_id=t01&return_url=cgi-bin/rakuten_id_reference&_guestLoginServiceKey=guestReservation&f_next_url=https%3A%2F%2Fcoupon.rakuten.co.jp%2FmyCoupon%3Fservice%3Dtravel",
+    // ログイン確認用（ログイン済みなら myクーポン の一覧が出る。未ログインならログイン画面）
     loginCheck: "https://coupon.rakuten.co.jp/myCoupon?service=travel",
     myCoupon: "https://coupon.rakuten.co.jp/myCoupon?service=travel",
     howto: "https://travel.rakuten.co.jp/coupon/help.html?l-id=kyushuouen_kumamoto_coupon_use",
