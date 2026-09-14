@@ -1553,6 +1553,62 @@
         "scenario_coverage_gap"
       ],
       "evidence": "反対尋問(進行2.7後半)指摘②『日銀サプライズ(50bp超or据え置き)がFANG+・ゴールド・オルカンに非対称かつ数値化されていない影響を与えるリスク』、および同(3)シナリオ漏れ指摘『金利急騰起点の信用イベント(地銀・生保)未言及』。P-E149(2026-09-14作成)のconsidered_scenariosには両観点とも当初未記載だった。"
+    },
+    {
+      "date": "2026-09-15",
+      "category": "サプライズ監査・想定外リスク軸(AI業界自主規制ショック)",
+      "lesson": "2026-09-14、Anthropic CEOアモデイ氏の呼びかけにマスク氏・アルトマン氏(OpenAI CEO)が同調する形で『AI開発ペースを減速すべき』という業界大手自身による安全性懸念表明が報じられ、エヌビディア(プレマーケットで▼2%超)、ソフトバンクグループ(東京市場で▼11%)、SKハイニックス(韓国市場で▼6.4%)、ASML(欧州市場で▼6%)など半導体・AI関連株が世界同時急落した。既存open予測のconsidered_scenariosは『セクター偏在ケース(決算・提携報道等の個別材料による急落・急反発)』や『AI設備投資テーマの持続性への疑念(需要飽和懸念)』は想定していたが、『業界リーダー自身による自主的な開発減速提言』という第三のトリガー経路は明記されておらず、サプライズ監査で『外』と判定した。半導体・AIテーマを機序とする予測(P-T16, P-T38等)を新設・更新する際は、決算/需要サイクル軸・規制軸に加え『業界自主規制・安全性言説』軸をconsidered_scenariosの標準項目として追加すべきである。",
+      "status": "仮説",
+      "regime_tags": [
+        "ai_theme",
+        "semiconductor",
+        "tail_risk",
+        "scenario_coverage_gap",
+        "surprise_audit"
+      ],
+      "evidence": [
+        "CNN Business \"AI stocks slide after top industry CEOs call for slowdown of technology's development\" (2026-09-14) https://us.cnn.com/2026/09/14/business/ai-stocks-slide-slowdown-development-amodei-altman-intl",
+        "Investing.com/Reuters \"AI warnings knock Nasdaq futures, pressure tech stocks\" (2026-09-14) https://www.investing.com/news/economy-news/ai-warnings-knock-nasdaq-futures-pressure-tech-stocks-4898987",
+        "predictions.json P-T16.considered_scenarios(セクター偏在ケース)/P-E122.considered_scenarios(AI設備投資テーマの持続性疑念)との比較"
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "category": "予測ポートフォリオ相関リスク(インフレ反転シナリオへの同時エクスポージャー)",
+      "lesson": "P-T16(『CPI鈍化→リスクオン→株高・金安』継続、horizon2026-09-15)とP-T39(『消費減速→9月利上げ観測後退→米国株投信への資金流入』、同horizon)は、機序の建て付け(株式相対比較 vs 為替・利上げ観測)は異なるものの、いずれも『インフレ鈍化・金融引き締め観測の後退が続く』という共通の暗黙の地合い前提を内包していた。2026-09-10前後のトランプ大統領『全成人へ5000ドル給付』表明による財政拡張・インフレ懸念と、ホルムズ海峡情勢激化(サウジパイプライン予防停止)による原油高が重なり米長期金利が急騰(10年債利回り一時4.99%)、9月FOMC利上げ確率が急伸(8月時点3割程度→9/12時点85〜90%超)したことで、両予測は『外れ』(Brier 0.2025/0.3025)という形で同時に的中しなかった。個別の機序・資産クラスが異なっていても、複数の予測が『ディスインフレ継続』という同一の暗黙のレジーム前提を共有している場合、単一の地政学・財政ショックで同時に反証されうる相関リスクが顕在化した。新規thesisを追加する際は、既存open予測群と暗黙のレジーム前提(インフレ方向・金融政策サイクルの前提)を突き合わせ、相関が高い場合はconsidered_scenariosに『共通前提の同時崩壊』シナリオを明記すべきである。",
+      "status": "仮説",
+      "regime_tags": [
+        "correlated_risk",
+        "inflation_regime_shift",
+        "fiscal_shock",
+        "thesis_cluster",
+        "rate_shock"
+      ],
+      "evidence": [
+        "日本経済新聞「米長期金利5%に急接近 原油高と共振、トランプ・インフレ市場危惧」(2026-09-11) https://www.nikkei.com/article/DGXZQOUB112T80R10C26A9000000/",
+        "FNNプライムオンライン（Yahoo!ニュース）「トランプ“5000ドルショック”で米金利急騰」(2026-09) https://news.yahoo.co.jp/articles/05d2e29130b5c09030395caf602021b57cda2269",
+        "財経新聞「原油高と米長期金利上昇続く、9月FOMCの利上げ確率71.6%へ」(2026-09-11) https://www.zaikei.co.jp/article/20260911/869587.html",
+        "predictions.json P-T16.result / P-T39.result (2026-09-15確定)"
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "category": "運用ガバナンス(概念枝の検証可能性喪失、教訓2026-08-31の再発確認)",
+      "lesson": "P-U28(『却下代替案の機会費用検証』、rejected_alternative_effect_check、2026-09-01新設)は、counterfactual.json B0016(エネルギー投信)・B0017(為替ヘッジ型投信)という2つの反実仮想枝を通じ『却下判断が機会損失を生んだか』を検証する設計だったが、両枝とも候補ファンドが最後まで(horizon 9/14・9/15双方)特定されず、total_value_jpyは想定投入額の仮計上のままdiff_vs_real_pf_jpyが一貫してnullとなり、scoring_spec(c)の機械適用により両チェックポイントとも判定保留に終わった。B0017の切替候補(三菱UFJ－つみたて先進国株式・為替ヘッジあり、03317178)は既存枝B0008(2026-07-24新設)と機序が重複しており、B0008も同一銘柄を候補としながら1年以上前倒しで基準価額確認が滞留していた(教訓2026-08-31『概念枝の具体化停滞』で既に指摘済み)。概念枝が2週間の予測horizonを通じて一度もNAV確定に至らなかった今回の事例は、『検証可能な形にする』というhold判断の反証可能性(playbook.md原則3)の理念が、データ整備の運用的な遅延によって実質的に機能しなかったことを示す。次回以降、rejected_alternative_effect_check型の予測を新設する際は、horizon到来より十分前(目安horizon-5営業日)に候補ファンド未特定のままなら『検証不能』を確定させ判定保留を早期通知する運用ルール、または既存の重複概念枝(B0008等)の統合を優先する運用改善が必要である。",
+      "status": "仮説",
+      "regime_tags": [
+        "counterfactual_governance",
+        "data_infrastructure_gap",
+        "non_falsifiability",
+        "rejected_alternative_effect_check",
+        "concept_branch_stagnation"
+      ],
+      "evidence": [
+        "counterfactual.json branches B0016/B0017(2026-09-01作成〜2026-09-15までdaily.total_value_jpy不変・diff_vs_real_pf_jpy終始null)",
+        "counterfactual.json branches B0008(2026-07-24作成、候補ファンド03317178が2026-09-15時点でも正式採用に至らず)",
+        "predictions.json P-U28.result(2026-09-15、verdict=保留)",
+        "data/lessons.json 2026-08-31エントリ(概念枝の具体化停滞、初出指摘)"
+      ]
     }
   ]
 }
