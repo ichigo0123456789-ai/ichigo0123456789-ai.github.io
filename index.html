@@ -26,9 +26,9 @@
     --glow-line:0 0 0 1px rgba(53,224,160,.4),0 0 22px rgba(53,224,160,.16);
     --mono:'JetBrains Mono','Consolas',ui-monospace,monospace;
   }
-  *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip}
+  *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip;font-size:17px}
   @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.8;font-size:15.5px;-webkit-font-smoothing:antialiased;position:relative;overflow-x:clip;width:100%;max-width:100%;
+  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16.5px;-webkit-font-smoothing:antialiased;position:relative;overflow-x:clip;width:100%;max-width:100%;
     background:radial-gradient(120% 70% at 50% -8%,#0b1d13 0%,var(--bg-1) 52%,var(--bg-0) 100%) fixed var(--bg-0)}
   img,iframe,table,.frame,.chart,.tradingview-widget-container,.tradingview-widget-container__widget{max-width:100%}
 
@@ -120,7 +120,7 @@
   .kicker .ja{font-weight:700;font-size:1.16rem;letter-spacing:.04em;white-space:nowrap}
   .kicker .tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.24em;color:var(--cool);text-transform:uppercase}
   .kicker .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--gold-line),transparent);min-width:30px}
-  .legend{font-size:.8rem;color:var(--faint);margin:.1rem 0 1rem;line-height:1.75}
+  .legend{font-size:.9rem;color:var(--faint);margin:.1rem 0 1rem;line-height:1.75}
   .note{font-size:.8rem;color:var(--faint)}
   .lead{font-size:.92rem;color:var(--sub)}
   .lead b{color:var(--ink)}
@@ -149,7 +149,7 @@
   /* ---- tables ---- */
   .tbl-shell{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden}
   .tbl-scroll{overflow-x:auto}
-  table.mkt{width:100%;border-collapse:collapse;font-size:.88rem;min-width:560px}
+  table.mkt{width:100%;border-collapse:collapse;font-size:.88rem;min-width:0}
   table.mkt th{font-family:var(--mono);font-size:.62rem;font-weight:600;color:var(--faint);text-align:left;padding:.8rem .8rem;border-bottom:1px solid var(--gold-line);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
   table.mkt td{padding:.75rem .8rem;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
   table.mkt tbody tr:last-child td{border-bottom:none}
@@ -185,7 +185,7 @@
   .analysis-card{position:relative;background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold);padding:1.05rem 1.15rem}
   .analysis-ttl{font-weight:700;font-size:.98rem;letter-spacing:.02em;margin-bottom:.6rem}
   .analysis-ttl::before{content:"// ";color:var(--gold);font-family:var(--mono);font-size:.8rem}
-  .analysis-body{font-size:.86rem;color:var(--sub);line-height:1.85;margin:0 0 .9rem}
+  .analysis-body{font-size:.97rem;color:var(--sub);line-height:1.85;margin:0 0 .9rem}
   .analysis-body strong{color:var(--ink)}
   .analysis-futures{display:block;background:var(--gold-soft);border:1px solid var(--gold-line);padding:.6rem .8rem;margin-bottom:.7rem}
   .futures-label{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
@@ -199,6 +199,28 @@
   /* ---- 03: ニュース ---- */
   .news{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
   @media(max-width:860px){.news{grid-template-columns:1fr}}
+  /* ---- スマホ読みやすさ：文字を全体に拡大／本文幅を広げる ---- */
+  @media(max-width:640px){
+    html{font-size:18px}
+    body{font-size:17px}
+    a.hl h4{font-size:1.05rem}
+    a.hl .meta{font-size:.78rem}
+    .legend{font-size:.98rem}
+    .ul-thesis p,.flow li,.analysis-body{font-size:1.03rem}
+    .na-modal .sum{font-size:1.08rem}
+    .col .ch{font-size:.72rem}
+    .wrap{padding-left:.55rem;padding-right:.55rem}
+    .panel{padding-left:.8rem;padding-right:.8rem}
+    .bar .in{padding-left:.7rem;padding-right:.7rem}
+    table.mkt{font-size:.8rem}
+    table.mkt th,table.mkt td{padding:.5rem .35rem}
+    table.mkt th{font-size:.56rem;letter-spacing:.06em}
+    .src-note{font-size:.62rem;line-height:1.45;margin-top:.2rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  }
+  @media(max-width:400px){
+    .wrap{padding-left:.4rem;padding-right:.4rem}
+    .panel{padding-left:.65rem;padding-right:.65rem}
+  }
   .col .ch{display:inline-block;font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.16em;padding:.2rem .65rem;border-radius:3px;margin-bottom:.7rem;text-transform:uppercase}
   a.hl{position:relative;display:block;color:inherit;text-decoration:none;background:var(--surface);border:1px solid var(--line);padding:.75rem .9rem;margin-bottom:.6rem;transition:border-color .25s,box-shadow .25s,transform .25s}
   a.hl::before,a.hl::after{content:"";position:absolute;width:10px;height:10px;pointer-events:none;border-color:rgba(53,224,160,.4);border-style:solid;transition:.25s}
@@ -207,8 +229,25 @@
   a.hl:hover{box-shadow:var(--glow-line);transform:translateY(-2px)}
   a.hl:hover::before,a.hl:hover::after{width:16px;height:16px;border-color:var(--gold)}
   a.hl:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
-  a.hl h4{margin:0;font-size:.88rem;font-weight:700;line-height:1.6;letter-spacing:.01em}
-  a.hl .meta{font-family:var(--mono);font-size:.62rem;color:var(--faint);margin-top:.4rem;letter-spacing:.05em}
+  a.hl h4{margin:0;font-size:1rem;font-weight:700;line-height:1.6;letter-spacing:.01em}
+  a.hl .meta{font-family:var(--mono);font-size:.72rem;color:var(--faint);margin-top:.4rem;letter-spacing:.05em}
+  a.hl{cursor:pointer}
+  /* ---- 記事プレビュー・モーダル（タップで日本語要約＋本文リンク／恒久ブロック） ---- */
+  .na-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1.1rem}
+  .na-modal[hidden]{display:none}
+  .na-modal .ov{position:absolute;inset:0;background:rgba(3,7,5,.72);backdrop-filter:blur(4px)}
+  .na-modal .box{position:relative;z-index:1;max-width:560px;width:100%;max-height:82vh;overflow:auto;background:var(--surface);border:1px solid var(--gold-line);box-shadow:0 18px 60px rgba(0,0,0,.55),var(--glow-line);padding:1.4rem 1.4rem 1.5rem;animation:naModalIn .22s ease}
+  @keyframes naModalIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .na-modal .box::before{content:"";position:absolute;top:-1px;left:-1px;width:16px;height:16px;border:2px solid var(--gold);border-width:2px 0 0 2px;pointer-events:none}
+  .na-modal .box::after{content:"";position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border:2px solid var(--gold);border-width:0 2px 2px 0;pointer-events:none}
+  .na-modal .x{position:absolute;top:.4rem;right:.55rem;background:none;border:0;color:var(--faint);font-size:1.6rem;line-height:1;cursor:pointer;padding:.2rem .45rem}
+  .na-modal .x:hover{color:var(--gold)}
+  .na-modal .src{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--gold-ink);text-transform:uppercase;margin:0 1.6rem .55rem 0}
+  .na-modal h3{margin:0 0 .75rem;font-size:1.2rem;line-height:1.6;color:var(--ink)}
+  .na-modal .sum{margin:0 0 1.15rem;font-size:1.02rem;line-height:1.95;color:var(--sub);white-space:pre-wrap}
+  .na-modal .go{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--gold-ink);text-decoration:none;border:1px solid var(--gold-line);padding:.55rem .95rem;transition:.2s}
+  .na-modal .go:hover{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+  body.na-modal-open{overflow:hidden}
 
   /* ---- 04: 今日の結論 ---- */
   .thesis{font-size:clamp(1rem,2.3vw,1.22rem);font-weight:700;line-height:1.85;letter-spacing:.02em;margin:.2rem 0 1rem;padding-left:1rem;border-left:2px solid var(--gold)}
@@ -216,7 +255,7 @@
   .ul-thesis{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
   .ul-thesis li{position:relative;display:flex;gap:.7rem;background:var(--surface);border:1px solid var(--line);padding:.8rem .95rem}
   .ul-thesis .bead{flex:none;width:7px;height:7px;transform:rotate(45deg);border:1px solid var(--gold);margin-top:.55rem}
-  .ul-thesis p{margin:0;font-size:.86rem;color:var(--sub);line-height:1.85}
+  .ul-thesis p{margin:0;font-size:.97rem;color:var(--sub);line-height:1.85}
   .ul-thesis b{color:var(--ink)}
 
   /* ---- 05: 先読み ---- */
@@ -231,7 +270,7 @@
   .card .sub{font-size:.74rem;color:var(--faint);margin:0 0 .8rem;line-height:1.7}
   .flow{list-style:none;margin:0;padding:0;position:relative}
   .flow::before{content:"";position:absolute;left:7px;top:14px;bottom:14px;width:1px;background:linear-gradient(var(--gold-line),var(--line))}
-  .flow li{position:relative;padding:.5rem 0 .5rem 1.7rem;font-size:.84rem;color:var(--sub);line-height:1.8}
+  .flow li{position:relative;padding:.5rem 0 .5rem 1.7rem;font-size:.95rem;color:var(--sub);line-height:1.8}
   .flow li::before{content:"";position:absolute;left:4px;top:1.05em;width:7px;height:7px;transform:rotate(45deg);border:1px solid var(--faint);background:var(--bg-0);z-index:1}
   .flow .stg{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;margin-bottom:.1rem}
   .flow .txt{display:block}
@@ -309,42 +348,42 @@
     <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
 <p class="legend">本日2026年9月18日（金、早朝JST時点で東証は寄り付き前）マーケット課が①市況6指標をWebSearchで実取得・再検証。直近確定値は2026-09-17(木)引け中心(日経平均・三菱UFJは東証大引け、他はNY引け)。前日比は上昇＝<span class="up">緑 ▲</span>・下落＝<span class="down">赤 ▼</span>。米国株はFOMC(9/16、0.25%利上げ確定)通過後の大幅反発を継続、ドル円は円安進行、金(ゴールド)も急伸するという非典型的な「金-株相関の崩れ」が観測された。日本銀行金融政策決定会合(9/17-18開催)の結果は本セッション時点で未公表。</p>
     <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody><tr>
-  <td>日経平均<span class="src-note">日本経済新聞／財経新聞／Investing.com(jp) WebSearch集計 as of 2026-09-17 東証大引け。FOMC後の米株反発を横目に続伸</span></td>
+  <td>日経平均<span class="src-note">日本経済新聞／Investing.com ・ as of 2026-09-17 東証大引け</span></td>
   <td>64,136.25円</td>
   <td class="up">▲ 213.25円</td>
   <td class="up">+0.33%</td>
 </tr>
 <tr>
-  <td>ナスダック100<span class="src-note">Investing.com／TradingEconomics WebSearch集計 as of 2026-09-17 NY引け。FOMC通過後の大幅反発が継続</span></td>
+  <td>ナスダック100<span class="src-note">Investing.com／TradingEconomics ・ as of 2026-09-17 NY引け</span></td>
   <td>29,415.60</td>
   <td class="up">▲ 513.78</td>
   <td class="up">+1.63%</td>
 </tr>
 <tr>
-  <td>Ｓ＆Ｐ500<span class="src-note">Investing.com／TradingEconomics WebSearch集計 as of 2026-09-17 NY引け。FOMC後の反発基調が継続</span></td>
+  <td>Ｓ＆Ｐ500<span class="src-note">Investing.com／TradingEconomics ・ as of 2026-09-17 NY引け</span></td>
   <td>7,639.06</td>
   <td class="up">▲ 86.07</td>
   <td class="up">+1.16%</td>
 </tr>
 <tr>
-  <td>ドル円（米ドル／円）<span class="src-note">日本経済新聞「外為17時」 as of 2026-09-17 17:00東京市場。一段の円安進行</span></td>
+  <td>ドル円（米ドル／円）<span class="src-note">日本経済新聞「外為17時」 ・ as of 2026-09-17 東京17:00（円安）</span></td>
   <td>155.68-70円</td>
   <td class="up">▲ 0.71円（円安）</td>
   <td class="up">+0.46%</td>
 </tr>
 <tr>
-  <td>金（ゴールド、COMEX金先物）<span class="src-note">Investing.com(XAU/USD) WebSearch集計 as of 2026-09-17。株高・ドル高と同時進行する非典型な急伸(「金-株相関の崩れ」継続)</span></td>
+  <td>金（ゴールド、COMEX金先物）<span class="src-note">Investing.com（XAU/USD） ・ as of 2026-09-17</span></td>
   <td>4,354.17ドル/オンス</td>
   <td class="up">▲ 89.91ドル</td>
   <td class="up">+2.11%</td>
 </tr>
 <tr>
-  <td>三菱ＵＦＪフィナンシャル・グループ（8306）<span class="src-note">日経電子版(株価チャートページ) WebSearch集計 as of 2026-09-17 東証大引け(15:30値)。ほぼ横ばい。※持株会拠出向け参考情報であり、個別株の売買推奨ではありません</span></td>
+  <td>三菱ＵＦＪフィナンシャル・グループ（8306）<span class="src-note">日経電子版 ・ as of 2026-09-17 東証大引け ※持株会向け参考・売買推奨ではありません</span></td>
   <td>3,652.0円</td>
   <td class="down">▼ 3.0円</td>
   <td class="down">-0.08%</td>
 </tr>
-</tbody></table></div><div class="tcap">※2026年9月18日（金）マーケット課取得・進行3.5最終リフレッシュ済み（東証は寄り付き前のため直近確定値は2026-09-17(木)引け、日経平均・三菱UFJは東証大引け、ナスダック100・Ｓ＆Ｐ500・ドル円・金はNY引け/17時値）。日経平均64,136.25円（+0.33%、日本経済新聞/財経新聞/Investing.com(jp)as of9/17東証大引け）、ナスダック100 29,415.60（+1.63%）・Ｓ＆Ｐ500 7,639.06（+1.16%、いずれもInvesting.com/TradingEconomicsas of9/17NY引け、FOMC通過後の大幅反発が継続）、ドル円155.68-70円（+0.46%、円安、日本経済新聞as of9/17 17:00）、金(COMEX)4,354.17ドル/オンス（+2.11%、Investing.comas of9/17、株高・ドル高と同時進行する非典型な急伸）、三菱UFJ3,652.0円（▼0.08%、日経電子版as of9/17東証大引け、ほぼ横ばい）。米株反発・円安・金急伸が同時進行する「金-株相関の崩れ」をregime判定はrisk=risk-on／rate_dir up（利上げ確実視）／jpy_trend weak（円安）／nikkei_zone 中位と評価。日本銀行金融政策決定会合(9/17-18開催)の結果は本セッション時点で未公表。前日比▲＝上昇（緑）、▼＝下落（赤）。</div></div>
+</tbody></table></div></div>
 <div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame frame-hero"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#0c1410","gridColor":"rgba(100,220,170,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
     <div class="charts2">
       <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#0c1410","gridColor":"rgba(100,220,170,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
@@ -434,18 +473,40 @@
   <a class="hl" href="https://news.yahoo.co.jp/articles/1db82810cb4215eb278a5e583027d487ff820fd9" target="_blank" rel="noopener"><h4>Gyazoに不正アクセス 情報漏えい</h4><div class="meta">INTERNET Watch ・ 約30時間前</div></a>
 </div></div>
   
-  </section>
+  
+  <h3 id="kaigai" style="font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;color:var(--gold-ink);text-transform:uppercase;margin:1.8rem 0 .35rem;padding-top:1.3rem;border-top:1px solid var(--line)">&#127760; 海外ニュース（主要媒体）</h3>
+  <p class="legend">AP通信・ロイター・Al Jazeera・BBC・NPR・DW・ABC（豪）・CBC・France 24・The Guardian・NHK WORLD 等の主要ニュースを日本語で掲載。見出しをタップすると要約と本文リンクを表示。※AP・BBC・ロイター・ガーディアン等はクローラー制限のため、本欄は毎朝の自動更新（04:30 JST）で各媒体を順次拡充する。以下は2026-09-18時点の実取得分。</p>
+  <div class="news">
+<div class="col"><div class="ch" style="background:var(--cool-soft);color:var(--down)">通信社・国際報道</div>
+  <a class="hl" href="https://www.aljazeera.com/news/liveblog/2026/9/18/iran-war-live-trump-weighs-big-decision-on-iran-tanker-hit-in-hormuz" target="_blank" rel="noopener" data-summary="イラン革命防衛隊が、海峡の無許可通航を試みたトーゴ船籍の船舶を標的にしたと主張した。ホルムズ海峡の緊張が一段と高まっている。"><h4>ホルムズ海峡で2隻目のタンカーが攻撃　革命防衛隊は1隻目の攻撃を認める</h4><div class="meta">Al Jazeera ・ 9月18日</div></a>
+  <a class="hl" href="https://www.aljazeera.com/news/2026/9/18/south-korea-says-us-north-korea-talks-possible-rules-out-hormuz-deployment" target="_blank" rel="noopener" data-summary="韓国は北朝鮮との外交協議が実現しうるとの見方を示す一方、中東海域での海軍活動への参加は否定した。"><h4>韓国、米朝対話の可能性に言及　ホルムズ海峡への派遣は否定</h4><div class="meta">Al Jazeera ・ 9月18日</div></a>
+  <a class="hl" href="https://www.aljazeera.com/news/2026/9/18/russias-parliamentary-election-whos-on-the-ballot-and-why-it-matters" target="_blank" rel="noopener" data-summary="ロシアの議会選挙について、候補者の顔ぶれと政治的な意味合いを整理した解説記事。"><h4>ロシア下院選、誰が立候補し何が問われるのか（解説）</h4><div class="meta">Al Jazeera ・ 9月18日</div></a>
+</div>
+
+<div class="col"><div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">公共放送（欧州）</div>
+  <a class="hl" href="https://www.france24.com/en/france/20260918-macron-orders-plan-to-protect-france-critical-infrastructure-against-russian-hybrid-attacks" target="_blank" rel="noopener" data-summary="マクロン大統領が、ロシアからの脅威の高まりを受け、重要インフラと防衛関連施設を守る対策の策定を指示した。"><h4>マクロン仏大統領、ロシアの「ハイブリッド攻撃」に備え重要インフラ防護を指示</h4><div class="meta">France 24 ・ 9月18日</div></a>
+  <a class="hl" href="https://www.france24.com/en/europe/20260918-russia-seizes-assets-of-swiss-food-giant-nestle-and-three-french-firms" target="_blank" rel="noopener" data-summary="ロシアがスイスのネスレとフランス企業3社の事業資産を接収した。地政学的な対立の激化を映す動き。"><h4>ロシアが資産接収　スイス食品大手ネスレと仏企業3社が対象</h4><div class="meta">France 24 ・ 9月18日</div></a>
+  <a class="hl" href="https://www.france24.com/en/americas/20260918-early-voting-begins-in-us-midterms-that-could-see-republicans-lose-control-of-congress" target="_blank" rel="noopener" data-summary="米国の中間選挙で期日前投票が始まった。共和党が議会の過半数を失う可能性が指摘されている。"><h4>米中間選挙の期日前投票が開始　共和党が議会多数を失う可能性</h4><div class="meta">France 24 ・ 9月18日</div></a>
+</div>
+
+<div class="col"><div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">公共放送（米）</div>
+  <a class="hl" href="https://www.npr.org/nx-s1-5973810" target="_blank" rel="noopener" data-summary="フーシ派による一連の攻撃が、サウジアラビアの石油インフラと地域の安定を脅かしている。エネルギー供給への影響が意識される。"><h4>フーシ派の攻撃が1週間続く　サウジの石油施設に脅威</h4><div class="meta">NPR ・ 9月18日</div></a>
+  <a class="hl" href="https://www.npr.org/nx-s1-5973265" target="_blank" rel="noopener" data-summary="ポーランド首相が、ロシアが「偶発」を装ってウクライナ支援国（NATO加盟国）に軍事行動を取る可能性があると警告した。"><h4>ポーランド首相、ロシアによる「偶発的」攻撃に警戒を呼びかけ</h4><div class="meta">NPR ・ 9月18日</div></a>
+</div>
+  </div>
+
+</section>
 
   <section class="panel reveal">
     <div class="kicker"><span class="no">04</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
 <p class="thesis">今日の指針：米FOMC後の株高・円安・金急伸が同時進行する<span class="hi">相関崩れ</span>(マーケット課所見)は続くが、日銀会合の結果はなお公表前で不確実性は解消していない。既知の反発と未確定の政策決定を混同せず、中長期の分散を保つ姿勢が要点です。</p>
 <ul class="ul-thesis">
-  <li><span class="bead"></span><p>2026-09-17のNY引けでNASDAQ100は29,415.60(+513.78/+1.63%、Investing.com/TradingEconomics as of 2026-09-17 NY引け)、S&amp;P500は7,639.06(+86.07/+1.16%、同)とFOMC(9/16、0.25%利上げ確定)通過後の大幅反発。日経平均も64,136.25円(+213.25円/+0.33%、日本経済新聞/財経新聞/Investing.com(jp) as of 2026-09-17東証大引け)と続伸した一方、ドル円は155.68〜70円(+0.71円/+0.46%、円安、日本経済新聞「外為17時」as of 2026-09-17 17:00東京市場)、COMEX金は4,354.17ドル(+89.91/+2.11%、Investing.com as of 2026-09-17)と、通常逆相関しやすい株高・金高・ドル高が同時進行する非典型パターン(regime.json所見「金-株相関の崩れ」、risk=risk-on/rate_dir=up/jpy_trend=weak)が継続している。三菱UFJ(8306)は3,652.0円(▼3.0円/▼0.08%、日経電子版as of 2026-09-17 15:30値、持株会拠出のみ参考情報)とほぼ横ばい。中長期の投資信託・上場投資信託(ETF)保有者にとっては、株高そのものよりもこの資産間相関の崩れが一過性か中期化するかを見極める局面。</p></li>
-  <li><span class="bead"></span><p>日銀金融政策決定会合(9/17-18開催)の結果は本稿執筆時点(9/18早朝)で未公表(市場は0.25%利上げ→政策金利1.25%程度をほぼ確実視、31年ぶり水準)。同時に2026-09-17午後、第2次高市改造内閣が正式発足(骨格4閣僚留任・日本維新の会から初入閣)した。既知の事実(FOMC実際の利上げ確定)と未確定の事実(日銀会合結果・新内閣の政策運営)を区別する姿勢は投信・ETF中心・個別株の売買推奨なし(三菱UFJ自社株は持株会のみ)という当部の方針と整合する。投資部はplaybook.md原則2(第三軸原則)を適用し新規予測4本(P-E156〜P-E158・P-T50)をscoring_spec事前登録つきで追加した。</p></li>
-  <li><span class="bead"></span><p>検証部は本日、P-E124(家計調査×TOPIX投信)・P-E126(毎月勤労統計×国内債券投信)を部分的中、P-U35(G3タカ派化ショックの顕在化検証、日経+0.20%・S&amp;P500▼1.37%で▼3%閾値未達)を外れと判定し、サプライズ監査は「内」とした。あわせて新教訓(2026-09-18、horizon＝当日発表イベントの検証可能性の欠如)を蒸留し、日銀会合のように結果公表がhorizon当日に予定されるイベントを反証条件に含める場合の構造的リスクを指摘した。この教訓を受け、本日新設した日銀会合関連予測(P-E156)はhorizonを発表当日ではなく発表後5営業日に設定し、留保ルールをscoring_specへ明記した。</p></li>
-  <li><span class="bead"></span><p><b>反対尋問(進行2.7、2026-09-18)</b>は3点を指摘した。(1)反対ケースA:「金-株相関の崩れ」中期定着仮説(P-T50)は2026-07に同種の仮説(P-E07)が既に「外れ」確定しており、FOMC・日銀会合直後の数日間のデータのみで中期レジーム定着と語るのは同じ過剰適合を繰り返すリスクがある点。(2)反対ケースB:本日公表のNAV・hold結論が、当日発表の日銀会合結果・全国CPIをいずれも含まない未確定情報のまま確定的に語られており、会合結果次第で数時間後に陳腐化しうる点。(3)反対ケースC:全国CPI(8:30発表)と日銀会合結果(9/18正午前後発表)が同日に重畳し、検証部教訓(2026-09-18、horizon＝当日発表イベントの検証可能性の欠如)と同型の相互汚染リスクがある点。これらはP-T50・P-E156・P-U41のconsidered_scenariosおよびwatchに反映済み(日経63,000円割れ・金4,300ドル割れ・ドル円154円台回帰を新規転換シグナルとして追加)。情報提供であり、投資助言ではありません。</p></li>
+  <li><span class="bead"></span><p><b>米国株が大幅反発し、日経平均も続伸。</b>9/17のニューヨーク市場でナスダック100は29,415.60（+1.63%）、Ｓ＆Ｐ500は7,639.06（+1.16%）と大きく反発しました。米FOMC（9/16に0.25%の利上げを決定）を通過して買いが戻った形です。日経平均も64,136.25円（+0.33%）と続伸し、ドル円は155.68円（+0.46%）と円安に振れました。</p></li>
+  <li><span class="bead"></span><p><b>株高・円安・金高が同時に起きる珍しい形。</b>ふつうは株高・ドル高の場面で金は買われにくいのですが、今回は金も急伸しました。「金と株の値動きの関係が崩れている」状態で、いつもの経験則が効きにくい点に注意が必要です。</p></li>
+  <li><span class="bead"></span><p><b>まだ決まっていないのは「日銀」。</b>日銀の金融政策決定会合（9/17〜18）の結果は、本稿の執筆時点（9/18早朝）でまだ公表されていません。市場は0.25%の利上げ（政策金利1.25%程度＝31年ぶりの水準）をほぼ確実視しています。9/17午後には第2次高市改造内閣が正式発足しました。<b>決まったこと（FOMC・組閣）と、まだ決まっていないこと（日銀）を区別する</b>のが今日の要点です。</p></li>
+  <li><span class="bead"></span><p><b>答え合わせと、反対意見。</b>期限が来た予測のうち2件が部分的に的中、1件は外れと判定しました（想定外の出来事はありませんでした）。反対意見としては、「金と株の関係が崩れた状態が中期的に続く」という見立てを数日のデータだけで決めつけると過去と同じ誤りを繰り返しかねない点、本日の運用判断が当日発表の日銀の結果や全国の消費者物価指数（CPI）をまだ織り込んでいない点が挙がっています。</p></li>
 </ul>
-<p class="note" style="margin-top:.6rem;font-size:.85rem;color:var(--faint)">適用原則の引用：playbook.md原則1(NAVデータ品質・確度分類)、原則2(considered_scenariosの第三軸原則)。教訓引用：2026-09-18(新規／予測設計〈horizon＝当日発表イベントの検証可能性の欠如〉)、2026-09-16(複数日程イベントへのhorizon単一日設定の問題)、2026-09-15(予測ポートフォリオ相関リスク〈共通前提の同時崩壊〉)、2026-09-14(信用イベント軸)。個別株の売買推奨は行っていません(三菱UFJ〈8306〉は持株会拠出のみ参考情報)。情報提供であり、投資助言ではありません。</p>
+<p class="note" style="margin-top:.6rem;font-size:.85rem;color:var(--faint)">情報提供であり、投資助言ではありません。個別株の売買推奨は行いません（三菱ＵＦＪ〈8306〉は持株会拠出向けの参考情報のみ）。</p>
 
   </section>
 
@@ -1088,4 +1149,48 @@
 })();
 </script>
 <script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
+<!-- 記事プレビュー・モーダル（恒久ブロック：書き換え・削除禁止。ニュースの a.hl をタップすると開く） -->
+<div class="na-modal" id="na-modal" hidden aria-hidden="true">
+  <div class="ov" data-close></div>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="na-modal-ttl">
+    <button class="x" type="button" data-close aria-label="閉じる">&times;</button>
+    <div class="src" id="na-modal-src"></div>
+    <h3 id="na-modal-ttl"></h3>
+    <p class="sum" id="na-modal-sum"></p>
+    <a class="go" id="na-modal-go" href="#" target="_blank" rel="noopener">本文を読む（外部サイト）→</a>
+  </div>
+</div>
+<script>
+/* 恒久ブロック：ニュース記事のタップでプレビュー（日本語要約＋本文リンク）を表示する。
+   .news 内の a.hl をクリック/タップすると data-summary をモーダル表示し、href へのリンクを添える。
+   ルーチンは各 a.hl に data-summary="日本語要約" を付けるだけでよい（このブロックは変更不要）。 */
+(function(){
+  var m=document.getElementById('na-modal'); if(!m) return;
+  var elS=document.getElementById('na-modal-src'), elT=document.getElementById('na-modal-ttl'),
+      elSum=document.getElementById('na-modal-sum'), elGo=document.getElementById('na-modal-go'), last=null;
+  function open(a){
+    var h4=a.querySelector('h4'), meta=a.querySelector('.meta');
+    elT.textContent = h4 ? h4.textContent.trim() : '';
+    elS.textContent = meta ? meta.textContent.trim() : '';
+    var sum=(a.getAttribute('data-summary')||'').trim();
+    elSum.textContent = sum || 'この記事の要約は次回更新分から表示されます。下の「本文を読む」から記事をお読みください。';
+    elGo.setAttribute('href', a.getAttribute('href')||'#');
+    last=a; m.hidden=false; m.setAttribute('aria-hidden','false');
+    document.body.classList.add('na-modal-open');
+    var xb=m.querySelector('.x'); if(xb){ try{ xb.focus(); }catch(e){} }
+  }
+  function close(){
+    m.hidden=true; m.setAttribute('aria-hidden','true');
+    document.body.classList.remove('na-modal-open');
+    if(last){ try{ last.focus(); }catch(e){} }
+  }
+  document.addEventListener('click', function(e){
+    var t=e.target;
+    var a=t.closest ? t.closest('.news a.hl') : null;
+    if(a){ e.preventDefault(); open(a); return; }
+    if(t.closest && t.closest('#na-modal [data-close]')){ close(); }
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !m.hidden) close(); });
+})();
+</script>
 </body></html>

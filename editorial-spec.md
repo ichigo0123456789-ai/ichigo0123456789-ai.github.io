@@ -22,7 +22,7 @@
 
 ## 進行（日次）：
 0.【前処理＋PDCA答え合わせ】clone・既存data/テンプレ読込などニュース不要の下ごしらえを先に済ませつつ、**検証部**を Task で起動し、(a)予測のうち検証期日が到来した分を実績と突合・採点（Brier記録）、(b)昨日〜今朝の重大事象が既存の considered_scenarios の内か外か（サプライズ監査）、(c)凍結初期PF・却下代替枝の評価額を当日NAVで更新、をさせ教訓を蓄積する。
-1.【1回目取材＝分析の土台】次の4部を Task で"1メッセージ内に同時記述"して並列起動し市況・ニュースを実取得：**マーケット課**(①＋regimeタグ＋Tier1/2 NAV)／**経済部**(③金利・為替・相場＋イベントカレンダー維持)／政治部(③政策・国際)／テック部(③テック・AI・半導体)。
+1.【1回目取材＝分析の土台】次の4部を Task で"1メッセージ内に同時記述"して並列起動し市況・ニュースを実取得：**マーケット課**(①＋regimeタグ＋Tier1/2 NAV)／**経済部**(③金利・為替・相場＋イベントカレンダー維持)／政治部(③政策・国際)／テック部(③テック・AI・半導体)。**あわせて国際部**(③海外ニュース欄 #kaigai)も同時起動し、海外主要媒体の見出し・日本語要約を取得する。
 2.【統合・結論】4部の成果を Task の**投資部**に渡し、④今日の結論 と ⑤先読み2枚、および本日の予測（thesis 0〜1本＋**イベント予測 event 週2〜5本ペース**）を予測プロトコルv2で書かせる。
 2.5【仮想運用】④⑤が固まったら Task の**運用部**を起動し、投資信託のみの仮想ポートフォリオを運用させ ⑥仮想運用 セクションと各 json 反映断片（rejected_alternative・cite_lessons・リスク点検1行を含む）を作らせる。
 2.7【反対尋問】★NEW★ ④⑤（と2.5の判断）を Task の**反対尋問役**に渡し、(1)最強の反対ケース3点 (2)「今週何が見えたら転換か」 (3)シナリオ漏れ点検 を出させる。投資部・運用部はこれを受けて修正 or 理由付き却下し、生成したシナリオ集合を considered_scenarios として予測に記録する。反対尋問は自己批判が弱いので必ず独立Taskで1回回す。
@@ -33,33 +33,59 @@
 
 ## 全部署共通の厳守ルール（各部プロンプト冒頭に必ず貼る）
 - 日付はJST。市況数値・ニュース・URL・要約は今セッションで実取得した実データのみ（記憶想起・前日値流用・推測穴埋め禁止）。取得不可は『—』。各数値に《出典名＋基準日(as of)》併記。
-- 本文に英語の略称・固有名詞を生で混ぜない（初出のみ和名併記：米連邦準備制度（FRB）等）。ニュース見出しは媒体の日本語見出しをそのまま使う。
+- 本文に英語の略称・固有名詞を生で混ぜない（初出のみ和名併記：米連邦準備制度（FRB）等）。日本語媒体のニュース見出しはそのまま使う。**BBC・NHK WORLD等の英語ソースの見出しは自然な日本語に翻訳して使う**（原文の生英語をそのまま`<h4>`に出さない。出典名『BBC』『NHK WORLD』と実URLは保持）。
 - PII厳守：氏名・勤務先・部署/コース名・学校名など個人を特定する情報を一切出さない。読者を限定しない汎用の投資情報として書く。
 - 投資プロフィール：売買対象は投資信託・ETF中心、個別株の売買推奨はしない（例外＝三菱UFJ自社株は持株会のみ）、時間軸は中長期。『情報提供であり投資助言でない』。
 - 返すのは担当パートの整形済みHTML/データのみ（前置き・感想不要）。
+- ★**わかりやすさ最優先（読者は一般の個人投資家）**：専門用語・略号・社内コードを本文に多用しない。(1)各パートは冒頭に**平易な1〜2文の要点（結論から先に）**を置く。(2)専門用語は初出で**かっこ書きの平易な言い換え**を添える（例：ブライアスコア（予測の当たり外れの精度指標）／レジーム（相場の地合い））。(3)予測ID（P-E153等）・スコア・considered_scenarios・NAV等の**技術的な生データは本文に羅列せず**、必要なら文末の小さな注記（`<span class="src-note">`や`.note`）に最小限だけ。詳細は data/*.json に記録すれば十分（ページに全部出さない）。(4)1項目は長くても3〜4文。数字は「何を意味するか」を一言添える。読者がスクロールで疲れないよう、量より要点。
 
 ## 各部の担当指示（Taskプロンプトに展開する）
 
 ### マーケット課（①マーケット＋レジーム＋NAV）
-(A) table.mkt の6行（日経平均 / NASDAQ100 / S&P500 / ドル円 / 金（ゴールド）/ 三菱UFJ（8306））を WebSearch で取得し、現在値・前日比・前日比%。《出典/as of基準日》併記、上昇は class="up"（緑 ▲）・下落は class="down"（赤 ▼）、取得不可は『—』。信頼ソースを優先（取引所公式・日本経済新聞・Bloomberg・Reuters・Investing.com／TradingEconomics）、個人ブログ・note・まとめサイトは数字の出所に使わない。各指標の方向が相互整合するかサニティチェック。
+(A) table.mkt の6行（日経平均 / NASDAQ100 / S&P500 / ドル円 / 金（ゴールド）/ 三菱UFJ（8306））を WebSearch で取得し、現在値・前日比・前日比%。《出典/as of基準日》併記、上昇は class="up"（緑 ▲）・下落は class="down"（赤 ▼）、取得不可は『—』。信頼ソースを優先（取引所公式・日本経済新聞・Bloomberg・Reuters・Investing.com／TradingEconomics）、個人ブログ・note・まとめサイトは数字の出所に使わない。各指標の方向が相互整合するかサニティチェック。★**src-note（各行の`<td>`内の説明）は「出典 ・ as of基準日 ・ 引け区分」の短い1行に収める**（例：`TradingEconomics ・ as of 2026-09-16 NY引け`）。相場の解説・変動理由・注記はテーブルに書かず④結論へ回す。スマホで前日比・前日比%まで横スクロールなしで見えるよう、第1列を長くしない（三菱UFJの売買推奨でない旨だけは短く付記可）。★**①指数・通貨テーブル下の総括キャプション（`.tcap`＝「※…マーケット課取得・進行3.5…」等）は付けない**（可読性優先。出典は各行src-note、regime判定は regime.json に記録すれば十分）。どうしても補足を残す場合のみ、閉じた `<details>`（初期状態で閉）に入れる。
 (B) ★NEW★ **レジームタグを機械判定**し regime.json に1行追記用データを返す：risk(risk-on/off/mixed=主要株指数が揃って上げ/下げ/まちまち)、rate_dir(up/down/flat=利上げ観測の方向)、jpy_trend(weak/strong/flat=ドル円の方向)、nikkei_zone(高値圏/中位/安値圏=直近レンジ内の位置・定性可)、note(一言)。
 (C) ★NEW★ **Tier1保有3本のNAV**（オルカン/FANG+/ゴールド）と、取得できれば**Tier2候補**のNAVを bench_navs.json 追記用に返す（《出典+as of》。取得不可はスキップ）。
 返り値：table.mktの6つ<tr>群 ＋ regime.json用オブジェクト ＋ bench_navs.json用NAV群。
 
+### ★ニュースソース方針（経済部・政治部・テック部の共通ルール・最重要）
+各ニュース部は下記の方針で見出しを選ぶ。各カテゴリ**計3〜4本**、うち**海外ソースを最低1本**。すべて**公開24h以内を優先**（不足時のみ最大48h・新しい順）、実URL・実見出しのみ。
+
+**(1) 偏りの強い媒体は控えめに**：政治的に左右いずれかに偏りが強いと一般に指摘される媒体（例：**共同通信・毎日新聞・時事通信**）は**優先度を下げ、原則1カテゴリ1本まで**。他に中立的な代替が取れる場合はそちらを優先し、これらは代替が無い時のみ最小限に使う。速報の事実（相場・災害・人事等の一次事実）に限れば可、社説・論評色の強い記事は避ける。
+
+**(2) 分野別の推奨ソース（基本的に全記事無料＝登録不要または無料登録のみ）**：
+- **通信社・国際報道**：AP News（apnews.com｜無料・登録不要）／Reuters（reuters.com｜大半無料、2024年10月以降一部に月間閲覧制限あり＝制限時は別ソースへ）／Al Jazeera English（aljazeera.com｜全文無料）
+- **公共放送系**：BBC News（bbc.com/news）／NPR（npr.org・米）／DW（dw.com・独）／ABC News（abc.net.au・豪）／CBC（cbc.ca・加）／France 24（france24.com）＝いずれも公的資金運営で無料
+- **読者支援型**：The Guardian（theguardian.com｜任意寄付モデル、有料会員限定記事なし）
+- **国内**：Yahoo!ニュース経由のカテゴリRSS（既存）に加え、上記の中立系を横断。BBCのカテゴリRSSは curl 可：経済=https://feeds.bbci.co.uk/news/business/rss.xml ／ 国際=https://feeds.bbci.co.uk/news/world/rss.xml ／ テック=https://feeds.bbci.co.uk/news/technology/rss.xml
+- RSS経路が不安定な媒体（NHK WORLD・AP・Reuters等）は **WebSearch/WebFetch で site指定取得**（例：`site:apnews.com`、`site:reuters.com`、`site:theguardian.com`、`site:nhk.or.jp/nhkworld`）。到達不可・未確認は『—（取得不可）』とし捏造・推測・前日流用で埋めない（ファクト原則最優先）。
+
+**(3) 表示は必ず日本語**：英語ソースの見出しは**自然な日本語に翻訳**して`<h4>`に入れる（直訳でなく読みやすい和文）。`.meta`の出典名は『AP通信』『ロイター』『BBC』『ガーディアン』『NHK WORLD』等と明記し相対時刻を併記。href には各ソースの**実URL**をそのまま使う。
+
+**(4) ★タップで開くプレビュー（`data-summary`）**：各記事`<a class="hl">`に、その記事の**日本語要約（2〜4文・全文転載でなく要点のみ）**を `data-summary` 属性で必ず付ける。要約は今セッションで実取得した内容に基づく事実要約とし、推測・脚色をしない。閲覧者が記事をタップすると恒久JSブロックがこの要約をモーダル表示し、`href`の実URLへ「本文を読む」リンクを添える（template.html に設置済み・ルーチンは`data-summary`を付けるだけでよい）。要約が取れない記事は`data-summary`を空にしてよい（リンクのみ表示される）。
+- `<a class="hl">` の書式：`<a class="hl" href="実URL" target="_blank" rel="noopener" data-summary="日本語の要点2〜4文"><h4>日本語見出し（英語ソースは和訳）</h4><div class="meta">出典名 ・ 相対時刻</div></a>`。画像不要。
+
 ### 経済部（③金利・為替・相場＋イベントカレンダー）
-(A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から**公開24時間以内を優先**した見出し3本（新しい順）。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → **date -d でpubDateが新しい順にソートし、24h以内を優先して先頭3件を採る（24h以内が3本に満たない時のみ最大48hまで許容）**。★「1日前」ばかりにならないよう、可能な限り当日〜数時間前の最新記事を選ぶこと。各本 <a class="hl" href="実URL" target="_blank" rel="noopener"><h4>媒体の日本語見出し</h4><div class="meta">出典名 ・ 相対時刻</div></a> 形式。画像不要。
+(A) RSS https://news.yahoo.co.jp/rss/topics/business.xml から**公開24時間以内を優先**した見出し3本（新しい順）。取得手順(bash/curl, UA=Mozilla/5.0)：curl -s -A UA URL → tr -d 改行 → grep -oP '<item>.*?</item>' → title/link/pubDate抽出 → **date -d でpubDateが新しい順にソートし、24h以内を優先して先頭3件を採る（24h以内が3本に満たない時のみ最大48hまで許容）**。★「1日前」ばかりにならないよう、可能な限り当日〜数時間前の最新記事を選ぶこと。**「★ニュースソース方針」に従い、偏りの強い媒体（共同通信・毎日新聞・時事通信）は1本まで、AP通信／ロイター／BBC Business等の中立・海外ソースを最低1本含めて計3〜4本。** 各本の書式は方針(4)のとおり `<a class="hl" href="実URL" target="_blank" rel="noopener" data-summary="日本語の要点2〜4文"><h4>日本語見出し（英語ソースは和訳）</h4><div class="meta">出典名 ・ 相対時刻</div></a>`（`data-summary`にタップ時プレビュー用の日本語要約を必ず付す）。画像不要。
 (B) ★NEW★ **イベントカレンダー維持**：calendar.json を読み、(1)期日を過ぎたイベントを archived へ移し実際の結果(actual)を記録、(2)今後2週間の予定イベント（日銀会合・FOMC・米雇用統計/CPI・日本CPI/短観・主要決算・政治日程）を WebSearch で実取得し upcoming に追加。日付・内容は実取得したもののみ。未確認は date:null / status:'要調査'。捏造禁止。各イベントに related_prediction_ids を紐づけ。
 返り値：3本のhl群 ＋ calendar.json更新差分。
 
 ### 政治部（③政策・国際）
-RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.jp/rss/topics/world.xml から、経済部と同手順で計3本。
+RSS https://news.yahoo.co.jp/rss/topics/domestic.xml と https://news.yahoo.co.jp/rss/topics/world.xml から、経済部と同手順・同書式（`data-summary`付き）で計3〜4本。**「★ニュースソース方針」を厳守し、共同通信・毎日新聞・時事通信は1本まで。国際はAP通信／ロイター／BBC World／Al Jazeera／The Guardian／France 24 等の中立・海外ソースを最低1本（和訳見出し・日本語要約）含める。**
 
 ### テック部（③テック・AI・半導体）
-RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。
+RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順・同書式（`data-summary`付き）で計3〜4本。**「★ニュースソース方針」を厳守し、BBC Technology／AP通信／ロイター等の海外ソースを最低1本（和訳見出し・日本語要約）含める。**
+
+### ★国際部（海外ニュース欄 #kaigai）★NEW★
+③ニュース section 内の国内3列の直後にある**「海外ニュース（主要媒体）」サブ欄（`<h3 id="kaigai">`＋直後の `<div class="news">`3列）**を毎run更新する。恒久の見出し(h3)・legendは保持し、`<div class="news">`内の3列の中身だけ差し替える。
+- ソースは「★ニュースソース方針」(2)の海外媒体：**AP通信・ロイター・Al Jazeera・BBC・NPR・DW・ABC(豪)・CBC・France 24・The Guardian・NHK WORLD 等**（基本的に全記事無料＝登録不要or無料登録のみ）。偏りの強い媒体は本欄でも控えめに。
+- **分野別に3列**へまとめる：①**通信社・国際報道**（AP／ロイター／Al Jazeera）②**公共放送系**（BBC／NPR／DW／ABC豪／CBC／France 24）③**読者支援型ほか**（The Guardian 等）。各列2〜4本、公開24h以内を優先（不足時48h・新しい順）。
+- 取得：直接RSS/curlが不安定・拒否される媒体が多いため **WebSearch/WebFetch でsite指定取得**（例 `site:apnews.com`、`site:reuters.com`、`site:aljazeera.com`、`site:npr.org`、`site:france24.com`、`site:theguardian.com`）。到達可能な媒体で埋め、取れない媒体はその回はスキップ（『—』でも可）。実在URL・実見出しのみ、捏造・推測・前日流用は禁止。
+- **表示は必ず日本語**：見出しは自然な和訳、各記事に `data-summary`（日本語要約2〜4文）を付す（タップで#na-modalがプレビュー＋本文リンク表示）。`.meta`は『AP通信』『ロイター』『Al Jazeera』『BBC』『NPR』『France 24』『ガーディアン』等の出典名＋相対時刻。href は各媒体の実URL。
+- 返り値：`#kaigai`直後の `<div class="news">`3列分のHTML（`a.hl`＋`data-summary`）。
 
 ### 投資部（④今日の結論・⑤先読み＋予測プロトコルv2）
 4部の成果（①の数値・regimeタグ・③各カテゴリの見出し・calendarの予定イベント）を必ず踏まえて書く。**書く前に playbook.md（検証済み原則）と data/lessons.json（直近教訓）を読み、適用した原則を明示的にcite**する。
-- ④ p.thesis に1行の『今日の指針』（強調1語を <span class="hi">…</span> で囲む。クラスは hi であって hl ではない）＋ ul.ul-thesis に箇条書き3点（中長期・投信/ETF観点、個別株推奨なし）。
+- ④ p.thesis に1行の『今日の指針』（強調1語を <span class="hi">…</span> で囲む。クラスは hi であって hl ではない）＋ ul.ul-thesis に箇条書き3点（中長期・投信/ETF観点、個別株推奨なし）。**各点は平易な2〜4文で、冒頭に太字の小見出し（例「確定した材料は『米国の利上げ』。」）を置き、結論から先に書く。**★**本文に書かないもの**：予測ID（P-E153等）・ファイル名（playbook.md／*.json）・「進行2.7」等の内部工程名・considered_scenarios/Brier/horizon等の内部用語・部署の作業報告調の書き方。これらは data/*.json に記録すれば十分。部署の議論は「何が分かったか」だけを一般読者の言葉で書く（例：×「検証部はhorizon到来の4件(P-U29/P-E132…)を検証し保留」→ ○「期限が来た予測4件を検証し、1件が部分的に的中、3件は日銀の結果待ちで保留」）。★**④末尾の注記は短い免責のみ**（『情報提供であり、投資助言ではありません。個別株の売買推奨は行いません』程度）。適用原則・教訓の引用リストなど補足説明は載せない（data/*.jsonに記録）。
 - ⑤ div.scen 内の2枚の div.card（各 ul.flow に 情勢/需給/製品/市場/最終 li.final）を『世界情勢の変化→需給の崩れ→製品価格・セクター→数ヶ月後に効く投信/ETF』の"仮説"として中立・教育的に提示。『仮説であり投資助言ではありません』を明記。
 - ★NEW★ **予測プロトコルv2**（末尾§予測プロトコル参照）で本日の予測を data/predictions.json 追記用に返す：
   - **イベント予測 type:"event"**：calendarの予定イベントに対し「イベント→初期反応」を週2〜5本ペースで。horizon 2〜10営業日。**成長エンジンなので優先**。
@@ -82,7 +108,7 @@ RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。
 - ★NEW★ **却下代替案の明示**：裁量的な判断（trim/switch/組換え）を行う時は、採用しなかった主要代替案を rejected_alternative（内容＋口数換算）として記し、counterfactual.json に枝(branch)として追加。次回同型判断時に「前回の枝はどうなったか」を必ず参照。
 - ★NEW★ **教訓引用**：判断に用いた教訓/原則の ID を cite_lessons[] に記録。
 - ★NEW★ **リスク点検1行**：「今週この判断が何に殺されるか」を1行で（最大の反対リスク）。
-④制約セルフチェックに通らない案は出さない。⑤透明性：手法/根拠を前日から変えたら理由を述べる。
+④制約セルフチェックに通らない案は出さない。⑤透明性：手法/根拠を前日から変えたら理由を述べる。⑥**ページに出す⑥仮想運用の文章は「わかりやすさ最優先」に従い平易に**：本日の判断は「何を・なぜ・ひとことリスク」を各1文で。ブライアスコアや予測ID等の専門データは本文に並べず data/*.json とフッター小注記に留める。
 返り値：(A)⑥セクション用HTML（既存クラス流用・強い免責つき）。(B)data反映断片：portfolio.json（全更新）／trades.json（本日トレード。様子見も action:"hold"。**rejected_alternative・cite_lessons・risk_check を追加**）／nav_history.json（本日1エントリ）／predictions.json（新トレードの検証ポイントを source:"unyou"・v2スキーマで追記）／counterfactual.json（新branchがあれば）。レガシー含み益は戦略リターンに算入せず、判断起因の実コスト（売却益課税20.315%等）のみ反映する方針を守る。
 
 ### 校閲部（公開ゲート）
@@ -138,12 +164,18 @@ RSS https://news.yahoo.co.jp/rss/topics/it.xml から、同手順で3本。
 売買対象は《投資信託・ETF中心》。個別株は売買不可のため個別銘柄の売買推奨はしない（例外＝三菱UFJ自社株は持株会）。時間軸＝中長期。ウォッチリスト：eMAXIS Slim S&P500 / 日経平均 / NASDAQ100 / ドル円 / 金 / 三菱UFJ(8306)＋Tier2候補(bench_navs.json)。『情報提供であり投資助言でない』と明記。
 
 ## ページ構成（この順序・名称を厳守）
-名称『News & Analytics』（旧称：朝のニュースまとめ）。<title>は『News & Analytics｜YYYY年M月D日』とし日付を必ず含める。セクション順：① マーケット → ②（既存の値動き分析チャート）→ ③ ニュース（経済/政治/テック）→ ④ 今日の結論 → ⑤ 先読み → ⑥ 仮想運用シミュレーション（→ 日曜は「今週の通信簿」を⑥直下に追加）。既存の template.html / index.html のデザイン（暗色『電脳グリーンHUD』テーマ、JetBrains Mono/Noto Sans JP、.bar/.hero/.panel/.kicker/.thesis/.ul-thesis/.scen/.card/.flow/.mkt/.tbl-shell/.chart/.charts2/.news/.col/.hl/.foot、TradingView advanced-chart、revealアニメ、スマホ対応CSS）を厳密に踏襲し、置換するのは (A)<title>・.bar .bd・.hero .date-badge・.hero .issue の日付【JST】 (B)table.mkt の6行 (C)ニュース各列 (D).thesis と .ul-thesis の3点 (E)2枚の .scen .card (F)⑥仮想運用セクション (G)フッター .dsum、(H)日曜のみ通信簿1枚 のみ。CSS・既存構造・class名・チャート設定・高さは改変しない。★恒久JSブロック（書き換え・削除禁止、data更新だけで自動反映）：冒頭ステータスバーの時計／ニュース見出し連動ティッカー／目次ナビ（スクロール現在地表示）／文字回廊レイン（canvas#na-rain・両サイドの多言語文字壁を雨が流れ、目次ジャンプ時に谷間をワープする演出）／①のKPIタイル自動生成＋直近1ヶ月スパークライン（table.mkt をJSがパースして描画するため、ルーチンは従来どおり6行の<tr>だけ差し替えればよい）／日経225ヒートマップ（全225銘柄＝nikkei225jp.com公開フィード・取得不可時はYahoo spark主要40銘柄へ自動フォールバック・業種グループ化・凡例つき）／⑥の資産推移チャート（#pfchart）と資産配分バー（data/portfolio.json から自動描画）。
+名称『News & Analytics』（旧称：朝のニュースまとめ）。<title>は『News & Analytics｜YYYY年M月D日』とし日付を必ず含める。セクション順：① マーケット → ②（既存の値動き分析チャート）→ ③ ニュース（経済/政治/テック）→ ④ 今日の結論 → ⑤ 先読み → ⑥ 仮想運用シミュレーション（→ 日曜は「今週の通信簿」を⑥直下に追加）。既存の template.html / index.html のデザイン（暗色『電脳グリーンHUD』テーマ、JetBrains Mono/Noto Sans JP、.bar/.hero/.panel/.kicker/.thesis/.ul-thesis/.scen/.card/.flow/.mkt/.tbl-shell/.chart/.charts2/.news/.col/.hl/.foot、TradingView advanced-chart、revealアニメ、スマホ対応CSS）を厳密に踏襲し、置換するのは (A)<title>・.bar .bd・.hero .date-badge・.hero .issue の日付【JST】 (B)table.mkt の6行 (C)ニュース各列（各 `a.hl` に `data-summary`＝日本語要約を付す。方針(4)参照）＋**海外ニュース欄 #kaigai の3列**（`<h3 id="kaigai">`とlegendは保持し、直後の `<div class="news">`3列の中身のみ差し替え。国際部が担当・方針(2)の海外媒体を分野別に） (D).thesis と .ul-thesis の3点 (E)2枚の .scen .card (F)⑥仮想運用セクション (G)フッター .dsum、(H)日曜のみ通信簿1枚 のみ。CSS・既存構造・class名・チャート設定・高さは改変しない。★恒久JSブロック（書き換え・削除禁止、data更新だけで自動反映）：冒頭ステータスバーの時計／ニュース見出し連動ティッカー／目次ナビ（スクロール現在地表示）／文字回廊レイン（canvas#na-rain・両サイドの多言語文字壁を雨が流れ、目次ジャンプ時に谷間をワープする演出）／①のKPIタイル自動生成＋直近1ヶ月スパークライン（table.mkt をJSがパースして描画するため、ルーチンは従来どおり6行の<tr>だけ差し替えればよい）／日経225ヒートマップ（全225銘柄＝nikkei225jp.com公開フィード・取得不可時はYahoo spark主要40銘柄へ自動フォールバック・業種グループ化・凡例つき）／⑥の資産推移チャート（#pfchart）と資産配分バー（data/portfolio.json から自動描画）／記事プレビュー・モーダル（#na-modal＝ニュースの`a.hl`タップで`data-summary`の日本語要約と本文リンクを表示。ルーチンは各`a.hl`に`data-summary`を付けるだけでよい）。
 ★⑥仮想運用セクション：⑤先読みの直後・フッターの直前に、既存 .panel/.kicker クラスで配置。構造＝(i)固定免責1行『※学習目的の仮想シミュレーション。実際の売買は行っていません。投資助言ではありません。』 **(i.5)★資産推移チャート＝`<figure id="pfchart">`＋直後の`<script>`。data/nav_history.json と data/counterfactual.json をクライアント側で読みインラインSVGで折れ線描画（実PF評価額＝実線・凍結初期PF＝破線）する自己完結ブロック。ルーチンはこのブロックを毎run"そのまま保持"する（中身を書き換えない・削除しない・data更新だけで自動反映される）。template.htmlに恒久設置済み。** (ii)サマリー表（運用資産合計/評価損益/戦略リターン/対オルカン超過、table.mkt 流用） (iii)保有一覧表（口座=NISAつみたて/NISA成長枠/特定、ファンド名・評価額・損益、3ヶ月制限日付の注記） (iv)『本日の運用判断』カード(.card)。運用部が返したHTML断片をそのまま組み込む。数値は運用部の更新値を使う。
+
+## ★デザイン／背景の変更手順（index.html巻き戻し事故の再発防止・絶対厳守）
+デザイン・背景・CSS・恒久JSブロック（文字回廊レイン等）の変更は **必ず template.html にのみ加える**。当日ページへ反映する際、**過去日の index.html スナップショットを土台に index.html を作り直してはならない**（当日のニュースを踏み潰し、公開ページが前日に巻き戻る事故の原因＝2026-07-13に実際に発生）。手順は必ず次のいずれか：
+- (A)【通常運用】日次ルーチンが進行4で「最新の template.html を正本」とし、当日ニュースを差し込んで index.html を生成する。
+- (B)【日中にデザインだけ差し替える場合】template.html を編集後、**現在の index.html に載っている当日ニュース（.date-badge・.hero .issue の日付／table.mkt の6行／③各列／④.thesis・.ul-thesis／⑤.scen .card／⑥仮想運用／フッター .dsum）をそのまま保持したまま**、template.html 側の差分（CSS・構造・class・チャート設定・恒久JSブロック）だけを index.html に適用する。ニュース内容は一切書き換えない。
+- どちらの場合も **push直前に index.html の .date-badge が JST当日** であることを必ず確認する（過去日になっていたら巻き戻し事故＝公開前に当日ニュースへ復元してから push）。template.html と index.html は日付・ニュース以外のデザイン部分が常に一致していること。
 
 ## 保存・検証・公開
 index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index.html 更新 / data/*.json（market/themes/predictions/lessons/portfolio/trades/nav_history＋v2の regime/calendar/bench_navs/counterfactual/scorecard/runlog、月次は playbook.md も）更新 / template.html を本デザイン（⑥含む）に更新。フッター .dsum に『本日のデータ取得サマリー』を記載。
-★push前の自己検証：生成index.htmlを読み返し、(a)出典/基準日のない市況数値 (b)古い基準日 (c)未来日付 (d)公開48h超のニュース (e)実在しないURL (f)PII (g)日付がJST当日か (h)④結論・⑤先読みの両方に『投資助言ではない』注記 (i)⑥仮想運用に『仮想・実売買なし・投資助言でない』注記 (j)data/*.json が妥当なJSONか (k)★新規予測がv2スキーマ(type/p/scoring_spec)を満たすか (l)★runlog.jsonに本run追記済みか を点検し『—』化／除外／修正してから push。
+★push前の自己検証：生成index.htmlを読み返し、(a)出典/基準日のない市況数値 (b)古い基準日 (c)未来日付 (d)公開48h超のニュース (e)実在しないURL (f)PII (g)日付がJST当日か (h)④結論・⑤先読みの両方に『投資助言ではない』注記 (i)⑥仮想運用に『仮想・実売買なし・投資助言でない』注記 (j)data/*.json が妥当なJSONか (k)★新規予測がv2スキーマ(type/p/scoring_spec)を満たすか (l)★runlog.jsonに本run追記済みか (m)★.date-badge がJST当日か（過去日なら巻き戻し事故＝当日ニュースへ復元）(n)★index.htmlとtemplate.htmlが日付・ニュース以外のデザイン部分で一致しているか を点検し『—』化／除外／修正してから push。
 ★clone・commit・push の認証方法は**呼び出し側プロンプトの指示に従う**（この仕様書には書かない）。commit メッセージは `News digest YYYY-MM-DD`（JST日付）。push は origin main。
 
 ## 厳守（要点）
@@ -153,8 +185,10 @@ index.html生成 / archive/YYYY-MM-DD.html 保存【JST日付】 / archive/index
 - 進行0で検証部（採点＋サプライズ監査＋カウンターファクチュアル更新）、進行2.5で運用部、**進行2.7で反対尋問**を必ず回す。data/*.json を毎run更新してpushする。
 - **予測はv2プロトコル**（type/p/scoring_spec/falsifiable、eventを週2〜5本、thesisはcheckpoints）。confidence廃止。
 - 日付はJSTで確定（UTCの前日にしない）。ファクト原則最優先（未確認は『—』・捏造/前日値流用/推測禁止）。
-- ニュースは媒体カテゴリRSSから実取得、3カテゴリ（経済/政治/テック）×各3本、**公開24h以内を優先（新しい順・不足時のみ最大48h）**、実URL（画像なし）。「1日前」ばかりを避け最新記事を厳選。本文に英語を生で混ぜない。
+- ニュースは3カテゴリ（経済/政治/テック）×各3〜4本、**公開24h以内を優先（新しい順・不足時のみ最大48h）**、実URL（画像なし）。「★ニュースソース方針」を厳守：**偏りの強い媒体（共同通信・毎日新聞・時事通信）は各カテゴリ1本まで**・中立的代替を優先／**AP通信・ロイター・Al Jazeera・BBC・NPR・DW・ABC(豪)・CBC・France 24・The Guardian・NHK WORLD 等の無料ソースを最低1本**（分野別・登録不要or無料登録のみ）。**表示は必ず日本語**（英語見出しは和訳・本文に生英語を混ぜない）、出典名と実URLは保持。**各 `a.hl` に `data-summary`＝日本語要約（2〜4文）を付け、タップでプレビュー＋本文リンクを表示**（#na-modal）。
+- **海外ニュース欄（#kaigai）**：③ニュース内の国内3列の直後に「海外ニュース（主要媒体）」欄を毎run維持。国際部が方針(2)の海外媒体（AP／ロイター／Al Jazeera／BBC／NPR／DW／ABC豪／CBC／France 24／The Guardian／NHK WORLD 等・無料）を**分野別3列**でまとめ、**日本語見出し＋`data-summary`**で掲載。恒久のh3・legendは保持し中身のみ差し替え。到達不可の媒体はスキップ（捏造禁止）。
 - 個別株の売買推奨はしない（投信/ETF＋三菱UFJ自社株のみ）。中長期視点。情報提供であり助言でない。
 - 仮想運用は投信のみ・SBI可・つみたて1銘柄・つみたて以外3ヶ月反対売買禁止・NISA枠上限を厳守。違反案は出さない。裁量判断時は rejected_alternative を counterfactual に枝として残す。
 - ページにPII（氏名・勤務先・コース・学校）を出さない。記事本文を転載しない（見出し・リンクのみ）。
+- **デザイン・背景・CSSの変更は template.html にのみ加える**。index.html は当日ニュースを保持したまま template 側の差分だけを適用し、**過去日HTMLからの再生成は禁止**（詳細は「★デザイン／背景の変更手順」参照）。
 - **最後に runlog.json へ本runを追記**してから push。
