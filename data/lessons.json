@@ -1667,6 +1667,45 @@
         "外為どっとコム マネ育チャンネル「FX個人投資家動向｜日銀0.25％利上げ後に円安進行、クロス円のショートが増加」(2026-09-18) as of 2026-09-18",
         "predictions.json P-U41.considered_scenarios(標準シナリオ:『日銀が市場想定通り利上げ決定→円高進行・グロース株逆風』)、P-E156.regime_at_creation(『市場は政策金利を1.00%から1.25%への0.25%利上げをほぼ確実視』)"
       ]
+    },
+    {
+      "date": "2026-09-20",
+      "category": "検証部・週次メタレビュー(方向的中でも機序が単一要因に帰属できないケースの多発)",
+      "lesson": "今週(9/14〜9/20)検証済みのうち方向○となった4件(P-E117・P-E129・P-U29・P-U35)を精査したところ、機序が完全に○(単一機序で説明可能)だったのはP-U35の1件のみで、残り3件(P-E117・P-E129・P-U29)はいずれも『方向は当たったが、複数の材料(ブロードコム決算・AI開発減速提言・G20不調・日銀緊急対応観測・地政学的な質への逃避等)が同時進行しており単一機序への帰属が困難』という共通のcauseパターンで機序△止まりだった。方向的中率だけを見るとA系(予測力)は好調に映るが、機序的中率(今週25%、n=4)は方向的中率と乖離しており、『方向が当たった予測の大半は、地合い複合により機序レベルでは検証しきれていない』という構造が今週初めて定量的に確認された。今後のconsidered_scenarios設計では、方向の対称シナリオだけでなく『複数材料が同時進行し単一機序へ帰属できない複合地合い』を独立した第四軸として明記し、scoring_specでも方向的中と機序的中を分けて評価する運用を徹底すべきである。",
+      "status": "仮説",
+      "regime_tags": [
+        "weekly_meta_review",
+        "mechanism_attribution_gap",
+        "direction_vs_mechanism",
+        "multi_driver_confluence",
+        "P-E117",
+        "P-E129",
+        "P-U29",
+        "P-U35"
+      ],
+      "evidence": [
+        "predictions.json P-E117.result.cause(ブロードコム決算・AI開発減速提言による半導体株急落との複合)",
+        "predictions.json P-E129.result.cause(G20不調と日銀緊急対応観測・地政学的逃避的円買いの複合)",
+        "predictions.json P-U29.result.cause(FOMC利上げと日銀観測由来の実質金利上昇の複合、寄与分離不能)",
+        "predictions.json P-U35.result(方向○・機序○の唯一の対照例)"
+      ]
+    },
+    {
+      "date": "2026-09-20",
+      "category": "検証部・週次メタレビュー(rolling60d計測方法の切替時期到来)",
+      "lesson": "nav_history.jsonの運用開始日(2026-06-29)から本日(2026-09-20)までの実営業日数(月〜金)を計算したところ60日に到達しており、直近7週にわたり『60営業日到達は未了のためsince-inception代用値』としてきたrolling_60dの算出方法を、今週から実データに基づく真の60エントリ窓(nav_history.json位置ベースでindex71〈2026-09-19〉とindex11〈2026-07-12〉の比較)へ切り替えることが可能になった。実測すると60d窓の対オルカン超過デルタ(+6.407pt)と、傾き効果デルタ(+¥341,376)・オルカン等価デルタ(-¥113,935)の関係は整合しており(帰属分解の整合性チェック済み)、before/afterで数値の跳躍がないことを確認した。ただしnav_history.jsonのエントリ数は完全な営業日カレンダーと厳密には一致せず(休場日の追記型エントリが混在するため『位置ベースの近似』である点は従来通り)、この近似の限界を毎週のnoteに明記し続ける必要がある。",
+      "status": "仮説",
+      "regime_tags": [
+        "weekly_meta_review",
+        "rolling_window_methodology",
+        "scorecard_design",
+        "counterfactual"
+      ],
+      "evidence": [
+        "data/nav_history.json history[11](2026-07-12, excess_pct=2.12)・history[71](2026-09-19, excess_pct=8.527)",
+        "data/counterfactual.json frozen_initial.daily(2026-07-12=¥5,505,623 / 2026-09-19=¥5,733,064)",
+        "data/scorecard.json snapshots[-1](週次ending2026-09-13時点で『60営業日到達は引き続き未了』と記載)"
+      ]
     }
   ]
 }
