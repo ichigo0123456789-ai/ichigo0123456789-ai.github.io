@@ -1706,6 +1706,23 @@
         "data/counterfactual.json frozen_initial.daily(2026-07-12=¥5,505,623 / 2026-09-19=¥5,733,064)",
         "data/scorecard.json snapshots[-1](週次ending2026-09-13時点で『60営業日到達は引き続き未了』と記載)"
       ]
+    },
+    {
+      "date": "2026-09-22",
+      "category": "検証部・サプライズ監査(カレンダー未反映イベント)",
+      "lesson": "米ホワイトハウス当局者が2026-09-24にトランプ大統領・習近平国家主席による米中首脳会談(習氏は9/23夕にワシントン郊外アンドルーズ空軍基地到着予定)を開催すると発表したことが報じられているが、data/calendar.jsonのupcomingリストにはこの日程が未登録であり、中国関連の既存open予測(P-E133等)のconsidered_scenariosにも同会談(関税緩和/対中規制の方向性)への言及がない。サプライズ監査上は『外』(既存considered_scenarios未反映)と判定。経済部・投資部は米中首脳会談の確定日程をcalendar.jsonへ先行登録し、中国/新興国株式関連の予測群のconsidered_scenariosに『首脳会談での関税・対中輸出規制緩和/強化の思惑』を第三軸として追加検討することが望ましい。",
+      "status": "仮説",
+      "regime_tags": [
+        "surprise_audit",
+        "calendar_gap",
+        "geopolitics",
+        "china"
+      ],
+      "evidence": [
+        "WebSearch(2026-09-22実施)『米中首脳会談 9月 2026』:ホワイトハウス当局者発表(9/24開催、習氏9/23夕到着予定)",
+        "data/calendar.json upcoming(2026-09-22時点、米中首脳会談エントリなし、EV-20260922-UNGA等11件のみ)",
+        "predictions.json P-E133 considered_scenarios(中国CPI/PPI・PMI・世界的金利連鎖のみで米中首脳会談への言及なし)"
+      ]
     }
   ]
 }
