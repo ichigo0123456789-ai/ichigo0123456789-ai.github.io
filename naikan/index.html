@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1f6f5f">
+<title>内部管理責任者 過去問道場｜理解度チェック・習熟レベルチェック</title>
+<meta name="description" content="内部管理責任者資格試験対策の一問一答。第1章〜第8章の理解度チェックテストと習熟レベルチェックテスト（計709問）を、順番・シャッフルで演習。解答履歴はブラウザに保存。">
+<link rel="stylesheet" href="style.css?v=20260925a">
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header class="top">
+  <div class="in">
+    <div class="brand" id="brandHome" role="button" tabindex="0" title="ホームへ戻る">
+      <div class="mark">内</div>
+      <div>
+        <h1>内管責 過去問道場</h1>
+        <p class="sub">内部管理責任者資格試験 一問一答</p>
+      </div>
+    </div>
+    <nav class="topnav">
+      <button id="navUser" class="navbtn" hidden>ログイン</button>
+      <button id="navStats" class="navbtn">成績</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ ホーム ============ -->
+<section id="view-home" class="view on">
+
+  <div class="card">
+    <h2 class="card-title">順番に解く</h2>
+    <div class="tabs" id="subjTabs"></div>
+    <div class="subj-head">
+      <span class="subj-name" id="subjName"></span>
+      <button class="rand-btn" id="btnRand10">この章からランダム10問</button>
+    </div>
+    <div class="unit-list" id="unitList"></div>
+    <p class="hint">単元を選ぶと問題一覧が開き、好きな問題から順番に解けます。</p>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">シャッフルで解く</h2>
+    <p class="hint" style="margin:0 0 10px">出題したい単元にチェックを入れて開始します。</p>
+    <div id="shuffleTree"></div>
+
+    <div class="opt-row">
+      <span class="opt-label">出題範囲</span>
+      <div class="seg" id="optRange">
+        <button class="seg-btn on" data-val="all">すべて</button>
+        <button class="seg-btn" data-val="wrong">間違えた問題</button>
+        <button class="seg-btn" data-val="unseen">未解答</button>
+        <button class="seg-btn" data-val="marked">チェック済み</button>
+        <button class="seg-btn" data-val="calc" id="optRangeCalc">計算問題</button>
+      </div>
+    </div>
+
+    <div class="opt-row">
+      <span class="opt-label">出題数</span>
+      <div class="seg" id="optCount">
+        <button class="seg-btn" data-val="10">10問</button>
+        <button class="seg-btn on" data-val="25">25問</button>
+        <button class="seg-btn" data-val="50">50問</button>
+        <button class="seg-btn" data-val="0">すべて</button>
+      </div>
+    </div>
+
+    <div class="start-row">
+      <button class="btn primary big" id="btnStartShuffle">シャッフル開始</button>
+    </div>
+    <p class="hint" id="homeHint">解答履歴は端末（ブラウザ）に保存されます。</p>
+    <p class="hint sync-status"></p>
+  </div>
+</section>
+
+<!-- ============ ログイン ============ -->
+<section id="view-login" class="view">
+  <div class="card login-card">
+    <h2 class="card-title" id="loginTitle">ログイン</h2>
+    <div class="login-form">
+      <label class="login-field">
+        <span>ID（半角英数字3〜20文字）</span>
+        <input id="loginId" type="text" autocomplete="username" maxlength="20"
+               placeholder="例: hanako" autocapitalize="off" autocorrect="off" spellcheck="false">
+      </label>
+      <label class="login-field">
+        <span>PIN（数字4桁）</span>
+        <input id="loginPin" type="password" inputmode="numeric" pattern="[0-9]*"
+               maxlength="4" autocomplete="current-password" placeholder="####">
+      </label>
+      <label class="mark-check">
+        <input type="checkbox" id="chkTakeover" checked>
+        <span>この端末のこれまでの成績をアカウントに引き継ぐ</span>
+      </label>
+      <p class="login-msg" id="loginMsg"></p>
+      <div class="result-actions">
+        <button class="btn primary" id="btnDoLogin">ログイン</button>
+        <button class="btn" id="btnLoginBack">戻る</button>
+      </div>
+      <button class="login-switch" id="btnToRegister">はじめての人はこちら（新規登録）</button>
+      <p class="hint">アカウントを作ると、成績がサーバーに保存され、別の端末でも続きから学習できます。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 問題一覧（単元内） ============ -->
+<section id="view-qlist" class="view">
+  <div class="qlist-head">
+    <button class="quit" id="btnQlistBack">← 単元選択へ</button>
+  </div>
+  <div class="card">
+    <h2 class="card-title" id="qlistTitle">単元名</h2>
+    <div class="qlist-meta" id="qlistMeta"></div>
+    <button class="btn primary" id="btnUnitStart">最初から順番に解く</button>
+    <div class="qgrid" id="qGrid"></div>
+    <div class="legend">
+      <span><i class="lg lg-ok"></i>正解</span>
+      <span><i class="lg lg-ng"></i>不正解</span>
+      <span><i class="lg lg-unseen"></i>未解答</span>
+      <span><i class="lg lg-mark"></i>チェック</span>
+    </div>
+    <p class="hint">番号を押すと、その問題から順番に解きます。</p>
+  </div>
+</section>
+
+<!-- ============ 演習 ============ -->
+<section id="view-quiz" class="view">
+  <div class="quiz-head">
+    <span class="badge" id="qCat">1章</span>
+    <span class="qnum" id="qNum">1 / 25</span>
+    <span class="run-acc" id="runAcc">正答率 —</span>
+    <button class="quit" id="btnQuit">終了する</button>
+  </div>
+  <div class="progress"><div class="bar" id="qBar"></div></div>
+
+  <div class="card qcard">
+    <p class="qtext" id="qText">問題文</p>
+
+    <div id="answerArea"></div>
+
+    <!-- 手書き計算メモ（問題ごとにクリア） -->
+    <div class="memo" id="memoWrap">
+      <button class="memo-toggle" id="memoToggle" aria-expanded="false">
+        <span class="memo-toggle-icon">✏️</span>計算メモ<span class="memo-arrow">▾</span>
+      </button>
+      <div class="memo-body" id="memoBody" hidden>
+        <div class="memo-tools">
+          <button class="memo-tool on" id="memoPen">ペン</button>
+          <button class="memo-tool" id="memoEraser">消しゴム</button>
+          <button class="memo-tool memo-clear" id="memoClear">リセット</button>
+        </div>
+        <canvas id="memoCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="judge" id="judgeBox" hidden>
+      <div class="judge-head">
+        <span class="judge-mark" id="judgeMark">正解！</span>
+        <span class="judge-ans" id="judgeAns">正解は 〇</span>
+      </div>
+      <div class="exp" id="expBox">
+        <h3>解説</h3>
+        <p id="expText">解説文</p>
+      </div>
+      <div class="judge-foot">
+        <label class="mark-check">
+          <input type="checkbox" id="chkMark">
+          <span>あとで見直す（チェック）</span>
+        </label>
+        <button class="next" id="btnNext">次の問題へ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="qnav">
+    <button class="qnav-btn" id="btnNavPrev">◀ 前の問題</button>
+    <button class="qnav-btn" id="btnNavNext">次の問題 ▶</button>
+  </div>
+
+  <p class="key-hint">キー操作：〇×は <kbd>O</kbd> / <kbd>X</kbd>、選択肢は <kbd>1</kbd>〜<kbd>5</kbd>、<kbd>Enter</kbd> 次へ、<kbd>←</kbd>/<kbd>→</kbd> 前後の問題</p>
+</section>
+
+<!-- ============ 結果 ============ -->
+<section id="view-result" class="view">
+  <div class="card result-card">
+    <h2 class="card-title">結果</h2>
+    <div class="score-ring-wrap">
+      <div class="score-big"><span id="scorePct">0</span><small>%</small></div>
+      <p class="score-detail" id="scoreDetail">0問中 0問正解</p>
+    </div>
+    <div class="result-actions">
+      <button class="btn primary" id="btnRetryWrong">間違えた問題をもう一度</button>
+      <button class="btn" id="btnBackHome">ホームへ戻る</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">解答一覧</h2>
+    <ul class="review-list" id="reviewList"></ul>
+  </div>
+</section>
+
+<!-- ============ 成績 ============ -->
+<section id="view-stats" class="view">
+  <div class="card">
+    <h2 class="card-title">分野・単元ごとの正答率</h2>
+    <div id="statsBody"></div>
+    <p class="hint">正答率はこれまでの全解答の累計で計算しています（解き直しても不正解の記録は残ります）。習得度は解答済み問題の直近の正誤で集計しています。</p>
+    <p class="hint sync-status"></p>
+  </div>
+  <div class="card">
+    <h2 class="card-title">週別の成績</h2>
+    <div id="weeklyBody"></div>
+    <p class="hint">月曜はじまりの1週間ごとの集計です（この機能の追加前の解答は含まれません）。</p>
+  </div>
+  <div class="card">
+    <h2 class="card-title">履歴の管理</h2>
+    <div class="result-actions">
+      <button class="btn danger" id="btnResetHist">解答履歴をリセット</button>
+      <button class="btn" id="btnStatsHome">ホームへ戻る</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>解答履歴はこの端末のブラウザにのみ保存されます。</p>
+</footer>
+
+<script src="config.js?v=20260925a"></script>
+<script src="data/ch1.js?v=20260925a"></script>
+<script src="data/ch2.js?v=20260925a"></script>
+<script src="data/ch3.js?v=20260925a"></script>
+<script src="data/ch4.js?v=20260925a"></script>
+<script src="data/ch5.js?v=20260925a"></script>
+<script src="data/ch6.js?v=20260925a"></script>
+<script src="data/ch7.js?v=20260925a"></script>
+<script src="data/ch8.js?v=20260925a"></script>
+<script src="data/level.js?v=20260925a"></script>
+<!-- 演習問題（別作業で作成。ファイルが無い章は404になるだけで動作に影響しない） -->
+<script src="data/ex/ch1.js?v=20260925a"></script>
+<script src="data/ex/ch2.js?v=20260925a"></script>
+<script src="data/ex/ch3.js?v=20260925a"></script>
+<script src="data/ex/ch4.js?v=20260925a"></script>
+<script src="data/ex/ch5.js?v=20260925a"></script>
+<script src="data/ex/ch6.js?v=20260925a"></script>
+<script src="data/ex/ch7.js?v=20260925a"></script>
+<script src="data/ex/ch8.js?v=20260925a"></script>
+<script src="app.js?v=20260925a"></script>
+</body>
+</html>
