@@ -4,7 +4,7 @@
 模擬テスト（各2回）と章別問題を、単元別の順番演習・範囲指定シャッフル・分野ごとのランダム10問で演習できる。
 「金財試験 過去問道場」（`kinzai/`）・「内管責 過去問道場」（`naikan/`）の姉妹アプリ（`naikan/` をベースに作成）。
 
-- 公開URL: `https://ichigo0123456789-ai.github.io/seiho/`
+- 公開URL: `https://ichigo0123456789-ai.github.io/hengaku/`
 - 依存なしの静的サイト（HTML/CSS/JS のみ）。ビルド不要。
 
 ## 分野（タブ）構成
@@ -23,7 +23,7 @@
 ## ファイル構成
 
 ```
-seiho/
+hengaku/
 ├── index.html        … 画面（ホーム / 問題一覧 / 演習 / 結果 / 成績）。ヘッダーの「テキスト」は text.html へ
 ├── text.html         … 学習テキスト（PDF・Googleドライブ）へのリンク一覧
 ├── style.css         … スタイル（テーマ色は紫紺 #4a3f8f）
@@ -64,7 +64,7 @@ window.SEIHO_HENGAKU_MOSHI = {
 { t: "mc", q: "問題文", c: ["選択肢1", "選択肢2", "選択肢3"],
   a: 1,   // 正解の index（0始まり。a:1 なら②が正解）
   exp: "解説",
-  img: "data/img/hengaku-r1-q06.png",   // 任意。問題文の下に表示（seiho/ からの相対パス）
+  img: "data/img/hengaku-r1-q06.png",   // 任意。問題文の下に表示（hengaku/ からの相対パス）
   topic: "出題テーマ" },                 // 任意。アプリは表示しない（データ分析用）
 ```
 
