@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#1f6f5f">
-<title>内部管理責任者 過去問道場｜理解度チェック・習熟レベルチェック</title>
-<meta name="description" content="内部管理責任者資格試験対策の一問一答。第1章〜第8章の理解度チェックテストと習熟レベルチェックテスト（計709問）を、順番・シャッフルで演習。解答履歴はブラウザに保存。">
-<link rel="stylesheet" href="style.css?v=20260925a">
+<title>内部管理責任者 過去問道場｜理解度チェック・演習・模試</title>
+<meta name="description" content="内部管理責任者資格試験対策の一問一答。第1章〜第8章の理解度チェックテスト、演習（習熟レベルチェックテスト）、模試（章別問題）の計893問を、順番・シャッフルで演習。解答履歴はブラウザに保存。">
+<link rel="stylesheet" href="style.css?v=20260925b">
 </head>
 <body>
 
@@ -22,6 +22,7 @@
     </div>
     <nav class="topnav">
       <button id="navUser" class="navbtn" hidden>ログイン</button>
+      <button id="navText" class="navbtn" onclick="location.href='text.html'">テキスト</button>
       <button id="navStats" class="navbtn">成績</button>
     </nav>
   </div>
@@ -218,6 +219,13 @@
     <p class="hint">月曜はじまりの1週間ごとの集計です（この機能の追加前の解答は含まれません）。</p>
   </div>
   <div class="card">
+    <h2 class="card-title">金財試験 過去問道場の成績</h2>
+    <div id="otherBody"></div>
+    <div class="result-actions">
+      <a class="btn" href="../kinzai/">金財アプリを開く</a>
+    </div>
+  </div>
+  <div class="card">
     <h2 class="card-title">履歴の管理</h2>
     <div class="result-actions">
       <button class="btn danger" id="btnResetHist">解答履歴をリセット</button>
@@ -232,25 +240,25 @@
   <p>解答履歴はこの端末のブラウザにのみ保存されます。</p>
 </footer>
 
-<script src="config.js?v=20260925a"></script>
-<script src="data/ch1.js?v=20260925a"></script>
-<script src="data/ch2.js?v=20260925a"></script>
-<script src="data/ch3.js?v=20260925a"></script>
-<script src="data/ch4.js?v=20260925a"></script>
-<script src="data/ch5.js?v=20260925a"></script>
-<script src="data/ch6.js?v=20260925a"></script>
-<script src="data/ch7.js?v=20260925a"></script>
-<script src="data/ch8.js?v=20260925a"></script>
-<script src="data/level.js?v=20260925a"></script>
-<!-- 演習問題（別作業で作成。ファイルが無い章は404になるだけで動作に影響しない） -->
-<script src="data/ex/ch1.js?v=20260925a"></script>
-<script src="data/ex/ch2.js?v=20260925a"></script>
-<script src="data/ex/ch3.js?v=20260925a"></script>
-<script src="data/ex/ch4.js?v=20260925a"></script>
-<script src="data/ex/ch5.js?v=20260925a"></script>
-<script src="data/ex/ch6.js?v=20260925a"></script>
-<script src="data/ex/ch7.js?v=20260925a"></script>
-<script src="data/ex/ch8.js?v=20260925a"></script>
-<script src="app.js?v=20260925a"></script>
+<script src="config.js?v=20260925b"></script>
+<script src="data/ch1.js?v=20260925b"></script>
+<script src="data/ch2.js?v=20260925b"></script>
+<script src="data/ch3.js?v=20260925b"></script>
+<script src="data/ch4.js?v=20260925b"></script>
+<script src="data/ch5.js?v=20260925b"></script>
+<script src="data/ch6.js?v=20260925b"></script>
+<script src="data/ch7.js?v=20260925b"></script>
+<script src="data/ch8.js?v=20260925b"></script>
+<script src="data/level.js?v=20260925b"></script>
+<!-- 模試（章別問題）。ファイルが無い章は404になるだけで動作に影響しない -->
+<script src="data/ex/ch1.js?v=20260925b"></script>
+<script src="data/ex/ch2.js?v=20260925b"></script>
+<script src="data/ex/ch3.js?v=20260925b"></script>
+<script src="data/ex/ch4.js?v=20260925b"></script>
+<script src="data/ex/ch5.js?v=20260925b"></script>
+<script src="data/ex/ch6.js?v=20260925b"></script>
+<script src="data/ex/ch7.js?v=20260925b"></script>
+<script src="data/ex/ch8.js?v=20260925b"></script>
+<script src="app.js?v=20260925b"></script>
 </body>
 </html>

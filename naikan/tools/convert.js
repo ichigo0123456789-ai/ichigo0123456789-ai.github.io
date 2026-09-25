@@ -38,7 +38,7 @@ const CHAPTERS = {
   7: { name: "第7章 不公正取引の規制等", expect: [21, 21, 13] },
   8: { name: "第8章 その他内部管理に関する事項", expect: [26] },
 };
-const LEVEL = { name: "習熟レベルチェックテスト", short: "習熟", expect: [50, 50, 50] };
+const LEVEL = { name: "演習（習熟レベルチェックテスト）", short: "演習", expect: [50, 50, 50] };
 const EXPECT_TOTAL = 709;
 
 const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩";
@@ -228,7 +228,7 @@ Object.keys(CHAPTERS).map(Number).forEach(ch => {
 });
 {
   const list = entries.filter(e => e.kind === "level");
-  const units = buildUnits(list, LEVEL.expect, "round", r => `第${r}回`, r => `習熟${CIRCLED_OUT[r - 1]}`);
+  const units = buildUnits(list, LEVEL.expect, "round", r => `第${r}回`, r => `演習${CIRCLED_OUT[r - 1]}`);
   subjects.push({ subject: "level", name: LEVEL.name, short: LEVEL.short, varName: "NAIKAN_LEVEL", units });
 }
 entries.filter(e => e.kind === "ch" && !CHAPTERS[e.ch]).forEach(e => allErrors.push(`${e.file}: 想定外の章`));

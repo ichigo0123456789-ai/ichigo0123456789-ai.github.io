@@ -291,6 +291,7 @@ kbd{
 .btn.danger{color:var(--ng);border-color:var(--ng)}
 .btn.danger:hover{background:var(--ng);color:#fff}
 .btn:disabled{opacity:.4;cursor:default}
+a.btn{display:inline-block;text-decoration:none}
 
 .review-list{list-style:none}
 .review-item{border-bottom:1px solid var(--line)}

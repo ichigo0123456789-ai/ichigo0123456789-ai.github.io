@@ -2,7 +2,9 @@
    内管責 過去問道場
    - 問題データは data/*.js が定義する NAIKAN_CH1〜NAIKAN_CH8 / NAIKAN_LEVEL
      （subject → units → questions）を読む
-   - 演習問題（data/ex/chN.js が定義する NAIKAN_EX[subject]）があれば各章の末尾の単元として追加
+   - 「模試」分野（章別問題）は data/ex/chN.js が定義する NAIKAN_EX.chN を単元 "chN" として登録。
+     あわせて第1章〜第8章を連結した仮想単元「全章通し」を置く（履歴は各章の単元と共有）
+   - 成績画面には、同じオリジンの金財試験 過去問道場（../kinzai/）の成績も表示する
    - 問題形式: t:"ox"（〇×） / t:"mc"（多肢選択 2〜5択, c:選択肢配列, a:正解index）
    - 解答履歴は localStorage("naikan-dojo-v1") に保存
    ============================================================ */
@@ -18,15 +20,24 @@ const SUBJECTS = [
   window.NAIKAN_LEVEL,
 ].filter(Boolean);
 
-// 演習問題（別ファイル data/ex/chN.js。無い章は何もしない）を各章の末尾の単元として追加
+// 「模試」分野（章別問題）: data/ex/chN.js が定義する NAIKAN_EX.chN を、単元 id "chN"・
+// 単元名「第N章 章名」として登録する（履歴キーは "moshi/chN/M"）。
+// データ側の id / name は使わない。ファイルが無い章は単元を作らない
+function buildMoshi(chapters, EX) {
+  const units = [];
+  chapters.forEach(s => {
+    const m = /^ch(\d+)$/.exec(s.subject);
+    const ex = EX && EX[s.subject];
+    if (!m || !ex || !Array.isArray(ex.questions)) return;
+    const title = String(s.name || "").replace(/^第\d+章\s*/, "");
+    units.push({ id: s.subject, name: `第${m[1]}章 ${title}`.trim(), questions: ex.questions });
+  });
+  return units.length ? { subject: "moshi", name: "模試（章別問題）", short: "模試", units } : null;
+}
 {
   const EX = (window.NAIKAN_EX && typeof window.NAIKAN_EX === "object") ? window.NAIKAN_EX : {};
-  SUBJECTS.forEach(s => {
-    const ex = EX[s.subject];
-    if (!ex || !Array.isArray(ex.questions)) return;
-    if (s.units.some(u => u.id === (ex.id || "practice"))) return;   // 二重追加防止
-    s.units.push({ id: ex.id || "practice", name: ex.name || "演習問題", questions: ex.questions });
-  });
+  const moshi = buildMoshi(SUBJECTS.filter(s => /^ch\d+$/.test(s.subject)), EX);
+  if (moshi) SUBJECTS.push(moshi);
 }
 
 // 全問題のフラットなリスト。id = "subject/unitId/連番"
@@ -69,6 +80,20 @@ SUBJECTS.forEach(s => {
     name: "計算問題", key: `${s.subject}/calc`, label: `【${s.name}】計算問題`,
     subject: s.subject, subjectName: s.name,
     questions: calcItems,
+  });
+});
+
+// 模試の「全章通し」: 第1章→第8章の問題を連結した仮想単元（問題・履歴は各章の単元と共有）
+SUBJECTS.forEach(s => {
+  if (s.subject !== "moshi") return;
+  const all = [];
+  s.units.forEach(u => { if (!u.virtual) all.push(...u.questions); });
+  if (all.length === 0) return;
+  s.units.push({
+    id: "all", virtual: true,
+    name: `全章通し（${all.length}問）`, key: `${s.subject}/all`, label: `【${s.name}】全章通し`,
+    subject: s.subject, subjectName: s.name,
+    questions: all,
   });
 });
 
@@ -277,7 +302,9 @@ function renderUnitList() {
   // 正式な章名と「ランダム10問」ボタン
   $("#subjName").textContent = s.name;
   const rb = $("#btnRand10");
-  rb.textContent = s.subject === "level" ? `${s.units.length}回分からランダム10問` : "この章からランダム10問";
+  rb.textContent = s.subject === "level" ? `${s.units.length}回分からランダム10問`
+    : s.subject === "moshi" ? "全章からランダム10問"
+    : "この章からランダム10問";
   rb.disabled = !BANK.some(q => q.subject === s.subject);
   s.units.forEach(u => {
     const acc = unitAcc(u);
@@ -387,7 +414,7 @@ function renderShuffleTree() {
 
     const unitChks = [];
     s.units.forEach(u => {
-      if (u.virtual) return;   // 計算問題（横断）は出題範囲フィルタで選ぶためツリーには出さない
+      if (u.virtual) return;   // 仮想単元（模試の全章通しなど）は他単元と重複するためツリーには出さない
       const row = document.createElement("label");
       row.className = "sel-row" + (u.questions.length === 0 ? " empty" : "");
       const chk = document.createElement("input");
@@ -869,17 +896,43 @@ $("#btnBackHome").addEventListener("click", goHome);
 /* ============================================================
    成績（分野ごとの得点率＋単元内訳）
    ============================================================ */
-function renderStats() {
-  const body = $("#statsBody");
+/* 成績の描画は「subjects と hist を受け取る」形にして、自アプリ・もう一方のアプリの両方で使う。
+   subjects: [{ subject, name, short, units: [{ name, virtual, ids: [問題ID...] }] }]
+   hist:     { 問題ID: {c, w, last, mark} } */
+function accOfIds(ids, hist) {
+  let seen = 0, ok = 0, att = 0, okAtt = 0;
+  ids.forEach(id => {
+    const h = hist[id];
+    if (!h) return;
+    att += (h.c || 0) + (h.w || 0);
+    okAtt += (h.c || 0);
+    if (h.last !== null && h.last !== undefined) { seen++; if (h.last === "ok") ok++; }
+  });
+  return {
+    seen, ok, att, okAtt, total: ids.length,
+    pct: seen ? Math.round((ok / seen) * 100) : null,
+    cumPct: att ? Math.round((okAtt / att) * 100) : null,
+  };
+}
+
+// 自アプリの分野一覧を成績描画用の形にする（問題IDは BANK の ID をそのまま使う）
+function ownStatsSubjects() {
+  return SUBJECTS.map(s => ({
+    subject: s.subject, name: s.name, short: s.short,
+    units: s.units.map(u => ({ name: u.name, virtual: !!u.virtual, ids: u.questions.map(item => item._ref.id) })),
+  }));
+}
+
+function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
   body.innerHTML = "";
 
-  // 全体（全分野合計）の累計
+  // 全体（全分野合計）の累計。仮想単元は他単元と重複するため数えない
   {
     let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
-    SUBJECTS.forEach(s => s.units.forEach(u => {
+    subjects.forEach(s => s.units.forEach(u => {
       if (u.virtual) return;
-      total += u.questions.length;
-      const a = unitAcc(u);
+      total += u.ids.length;
+      const a = accOfIds(u.ids, hist);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     }));
     const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
@@ -903,12 +956,12 @@ function renderStats() {
     body.append(box);
   }
 
-  SUBJECTS.forEach(s => {
+  subjects.forEach(s => {
     let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
     s.units.forEach(u => {
-      if (u.virtual) return;   // 計算問題（横断）は他単元と重複するため分野合計から除外
-      total += u.questions.length;
-      const a = unitAcc(u);
+      if (u.virtual) return;   // 仮想単元は他単元と重複するため分野合計から除外
+      total += u.ids.length;
+      const a = accOfIds(u.ids, hist);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     });
     const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
@@ -936,8 +989,9 @@ function renderStats() {
     box.append(row);
 
     s.units.forEach(u => {
-      if (u.questions.length === 0) return;
-      const a = unitAcc(u);
+      if (u.ids.length === 0) return;
+      if (u.virtual && !virtualRows) return;
+      const a = accOfIds(u.ids, hist);
       const sub = document.createElement("div");
       sub.className = "stat-unit";
       sub.innerHTML = `<span class="su-name"></span><span class="su-nums"></span><span class="su-pct"></span>`;
@@ -949,7 +1003,101 @@ function renderStats() {
 
     body.append(box);
   });
+}
+
+function renderStats() {
+  renderStatsBlock($("#statsBody"), ownStatsSubjects(), store.hist, { virtualRows: false });
   renderWeekly();
+  renderOtherStats();
+}
+
+/* ---------- もう一方の過去問道場（同一オリジン）の成績 ----------
+   成績画面を初めて開いたときだけ、相手アプリの問題データ JS を <script> で読み込む。
+   履歴は「相手アプリの localStorage ストア」と「自ストアのうち相手の分野IDで始まるキー
+   （同期サーバー経由で入ってくる分）」をマージして使う */
+const OTHER_APP = {
+  storePrefix: "kinzai",
+  base: "../kinzai/",
+  ver: "?v=20260925a",
+  files: ["data/zaimu.js", "data/houmu.js", "data/zeimu.js", "data/gaitame.js"],
+  optionalFiles: [],
+  // 金財アプリと同じ規則で単元一覧を組み立てる（仮想単元「計算問題」は作らない）
+  build() {
+    return [window.KINZAI_ZAIMU, window.KINZAI_HOUMU, window.KINZAI_ZEIMU, window.KINZAI_GAITAME]
+      .filter(s => s && Array.isArray(s.units))
+      .map(s => ({
+        subject: s.subject, name: s.name, short: s.short || s.name,
+        units: s.units.map(u => ({
+          name: u.name, virtual: false,
+          ids: (u.questions || []).map((_, i) => `${s.subject}/${u.id}/${i + 1}`),
+        })),
+      }));
+  },
+};
+
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    const el = document.createElement("script");
+    el.src = src;
+    el.onload = () => resolve();
+    el.onerror = () => { el.remove(); reject(new Error(`load failed: ${src}`)); };
+    document.head.append(el);
+  });
+}
+
+let otherLoading = null;   // 読み込み中／読み込み済みの Promise（失敗したら次回開いたときに再試行）
+function loadOtherApp() {
+  if (!otherLoading) {
+    otherLoading = Promise.all([
+      ...OTHER_APP.files.map(f => loadScriptOnce(OTHER_APP.base + f + OTHER_APP.ver)),
+      ...OTHER_APP.optionalFiles.map(f => loadScriptOnce(OTHER_APP.base + f + OTHER_APP.ver).catch(() => {})),
+    ]).then(() => {
+      const subjects = OTHER_APP.build();
+      if (!subjects.length) throw new Error("no data");
+      return subjects;
+    });
+    otherLoading.catch(() => { otherLoading = null; });
+  }
+  return otherLoading;
+}
+
+// ログイン中は相手アプリの同じIDのストア、未ログインは相手アプリのゲストストアを読む
+function otherAppHist(subjects) {
+  const key = account ? `${OTHER_APP.storePrefix}-dojo-user-${account.id}` : `${OTHER_APP.storePrefix}-dojo-v1`;
+  const theirs = loadStoreRaw(key).hist;
+  const ids = new Set(subjects.map(s => s.subject));
+  const mine = {};
+  Object.keys(store.hist).forEach(k => { if (ids.has(k.split("/")[0])) mine[k] = store.hist[k]; });
+  return mergeHist(theirs, mine);
+}
+
+let otherRenderSeq = 0;
+function renderOtherStats() {
+  const body = $("#otherBody");
+  if (!body) return;
+  const seq = ++otherRenderSeq;
+  const note = (text) => {
+    body.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "hint";
+    p.style.marginTop = "0";
+    p.textContent = text;
+    body.append(p);
+  };
+  note("読み込み中…");
+  loadOtherApp().then(subjects => {
+    if (seq !== otherRenderSeq) return;
+    const hist = otherAppHist(subjects);
+    const answered = subjects.some(s => s.units.some(u => u.ids.some(id => {
+      const h = hist[id];
+      return h && ((h.c || 0) + (h.w || 0)) > 0;
+    })));
+    if (!answered) { note("まだ解答がありません"); return; }
+    renderStatsBlock(body, subjects, hist);
+  }).catch(() => {
+    if (seq !== otherRenderSeq) return;
+    note("読み込めませんでした");
+  });
 }
 
 /* ---------- 週別の成績（月曜はじまり） ---------- */
@@ -1034,8 +1182,16 @@ $("#navStats").addEventListener("click", () => {
 });
 $("#btnStatsHome").addEventListener("click", goHome);
 $("#btnResetHist").addEventListener("click", () => {
-  if (confirm("解答履歴（正誤・チェック）をすべて削除します。よろしいですか？")) {
-    store.hist = {};
+  if (confirm("このアプリ（内管責）の解答履歴（正誤・チェック）をすべて削除します。よろしいですか？")) {
+    // 同期アカウントを共用する別アプリの記録（他の分野IDのキー）は消さずに残す
+    const own = new Set(SUBJECTS.map(s => s.subject));
+    const kept = {};
+    Object.keys(store.hist).forEach(k => {
+      const p = k.split("/");
+      const subj = p[0] === "@d" ? p[2] : p[0];
+      if (!own.has(subj)) kept[k] = store.hist[k];
+    });
+    store.hist = kept;
     saveStore();
     renderStats();
   }

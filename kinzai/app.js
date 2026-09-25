@@ -834,17 +834,43 @@ $("#btnBackHome").addEventListener("click", goHome);
 /* ============================================================
    成績（分野ごとの得点率＋単元内訳）
    ============================================================ */
-function renderStats() {
-  const body = $("#statsBody");
+/* 成績の描画は「subjects と hist を受け取る」形にして、自アプリ・もう一方のアプリの両方で使う。
+   subjects: [{ subject, name, short, units: [{ name, virtual, ids: [問題ID...] }] }]
+   hist:     { 問題ID: {c, w, last, mark} } */
+function accOfIds(ids, hist) {
+  let seen = 0, ok = 0, att = 0, okAtt = 0;
+  ids.forEach(id => {
+    const h = hist[id];
+    if (!h) return;
+    att += (h.c || 0) + (h.w || 0);
+    okAtt += (h.c || 0);
+    if (h.last !== null && h.last !== undefined) { seen++; if (h.last === "ok") ok++; }
+  });
+  return {
+    seen, ok, att, okAtt, total: ids.length,
+    pct: seen ? Math.round((ok / seen) * 100) : null,
+    cumPct: att ? Math.round((okAtt / att) * 100) : null,
+  };
+}
+
+// 自アプリの分野一覧を成績描画用の形にする（問題IDは BANK の ID をそのまま使う）
+function ownStatsSubjects() {
+  return SUBJECTS.map(s => ({
+    subject: s.subject, name: s.name, short: s.short,
+    units: s.units.map(u => ({ name: u.name, virtual: !!u.virtual, ids: u.questions.map(item => item._ref.id) })),
+  }));
+}
+
+function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
   body.innerHTML = "";
 
-  // 全体（全分野合計）の累計
+  // 全体（全分野合計）の累計。仮想単元は他単元と重複するため数えない
   {
     let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
-    SUBJECTS.forEach(s => s.units.forEach(u => {
+    subjects.forEach(s => s.units.forEach(u => {
       if (u.virtual) return;
-      total += u.questions.length;
-      const a = unitAcc(u);
+      total += u.ids.length;
+      const a = accOfIds(u.ids, hist);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     }));
     const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
@@ -868,12 +894,12 @@ function renderStats() {
     body.append(box);
   }
 
-  SUBJECTS.forEach(s => {
+  subjects.forEach(s => {
     let seen = 0, ok = 0, total = 0, att = 0, okAtt = 0;
     s.units.forEach(u => {
-      if (u.virtual) return;   // 計算問題（横断）は他単元と重複するため分野合計から除外
-      total += u.questions.length;
-      const a = unitAcc(u);
+      if (u.virtual) return;   // 仮想単元は他単元と重複するため分野合計から除外
+      total += u.ids.length;
+      const a = accOfIds(u.ids, hist);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     });
     const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
@@ -901,8 +927,9 @@ function renderStats() {
     box.append(row);
 
     s.units.forEach(u => {
-      if (u.questions.length === 0) return;
-      const a = unitAcc(u);
+      if (u.ids.length === 0) return;
+      if (u.virtual && !virtualRows) return;
+      const a = accOfIds(u.ids, hist);
       const sub = document.createElement("div");
       sub.className = "stat-unit";
       sub.innerHTML = `<span class="su-name"></span><span class="su-nums"></span><span class="su-pct"></span>`;
@@ -914,7 +941,117 @@ function renderStats() {
 
     body.append(box);
   });
+}
+
+function renderStats() {
+  renderStatsBlock($("#statsBody"), ownStatsSubjects(), store.hist, { virtualRows: true });
   renderWeekly();
+  renderOtherStats();
+}
+
+/* ---------- もう一方の過去問道場（同一オリジン）の成績 ----------
+   成績画面を初めて開いたときだけ、相手アプリの問題データ JS を <script> で読み込む。
+   履歴は「相手アプリの localStorage ストア」と「自ストアのうち相手の分野IDで始まるキー
+   （同期サーバー経由で入ってくる分）」をマージして使う */
+const OTHER_APP = {
+  storePrefix: "naikan",
+  base: "../naikan/",
+  ver: "?v=20260925b",
+  files: ["ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7", "ch8", "level"].map(n => `data/${n}.js`),
+  optionalFiles: ["ch1", "ch2", "ch3", "ch4", "ch5", "ch6", "ch7", "ch8"].map(n => `data/ex/${n}.js`),
+  // 内管責アプリと同じ規則で単元一覧を組み立てる:
+  // 第1章〜第8章（理解度チェック）・演習（level）・模試（NAIKAN_EX.chN を単元 id "chN" として登録）。
+  // 仮想単元（模試の全章通し）は作らない
+  build() {
+    const toSubject = (subject, name, short, units) => ({
+      subject, name, short: short || name,
+      units: units.map(u => ({
+        name: u.name, virtual: false,
+        ids: (u.questions || []).map((_, i) => `${subject}/${u.id}/${i + 1}`),
+      })),
+    });
+    const chapters = [1, 2, 3, 4, 5, 6, 7, 8].map(n => window[`NAIKAN_CH${n}`])
+      .filter(s => s && Array.isArray(s.units));
+    const out = chapters.map(s => toSubject(s.subject, s.name, s.short, s.units));
+    const lv = window.NAIKAN_LEVEL;
+    if (lv && Array.isArray(lv.units)) out.push(toSubject(lv.subject, lv.name, lv.short, lv.units));
+    const EX = (window.NAIKAN_EX && typeof window.NAIKAN_EX === "object") ? window.NAIKAN_EX : {};
+    const moshiUnits = [];
+    chapters.forEach(s => {
+      const m = /^ch(\d+)$/.exec(s.subject);
+      const ex = EX[s.subject];
+      if (!m || !ex || !Array.isArray(ex.questions)) return;
+      const title = String(s.name || "").replace(/^第\d+章\s*/, "");
+      moshiUnits.push({ id: s.subject, name: `第${m[1]}章 ${title}`.trim(), questions: ex.questions });
+    });
+    if (moshiUnits.length) out.push(toSubject("moshi", "模試（章別問題）", "模試", moshiUnits));
+    return out;
+  },
+};
+
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    const el = document.createElement("script");
+    el.src = src;
+    el.onload = () => resolve();
+    el.onerror = () => { el.remove(); reject(new Error(`load failed: ${src}`)); };
+    document.head.append(el);
+  });
+}
+
+let otherLoading = null;   // 読み込み中／読み込み済みの Promise（失敗したら次回開いたときに再試行）
+function loadOtherApp() {
+  if (!otherLoading) {
+    otherLoading = Promise.all([
+      ...OTHER_APP.files.map(f => loadScriptOnce(OTHER_APP.base + f + OTHER_APP.ver)),
+      ...OTHER_APP.optionalFiles.map(f => loadScriptOnce(OTHER_APP.base + f + OTHER_APP.ver).catch(() => {})),
+    ]).then(() => {
+      const subjects = OTHER_APP.build();
+      if (!subjects.length) throw new Error("no data");
+      return subjects;
+    });
+    otherLoading.catch(() => { otherLoading = null; });
+  }
+  return otherLoading;
+}
+
+// ログイン中は相手アプリの同じIDのストア、未ログインは相手アプリのゲストストアを読む
+function otherAppHist(subjects) {
+  const key = account ? `${OTHER_APP.storePrefix}-dojo-user-${account.id}` : `${OTHER_APP.storePrefix}-dojo-v1`;
+  const theirs = loadStoreRaw(key).hist;
+  const ids = new Set(subjects.map(s => s.subject));
+  const mine = {};
+  Object.keys(store.hist).forEach(k => { if (ids.has(k.split("/")[0])) mine[k] = store.hist[k]; });
+  return mergeHist(theirs, mine);
+}
+
+let otherRenderSeq = 0;
+function renderOtherStats() {
+  const body = $("#otherBody");
+  if (!body) return;
+  const seq = ++otherRenderSeq;
+  const note = (text) => {
+    body.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "hint";
+    p.style.marginTop = "0";
+    p.textContent = text;
+    body.append(p);
+  };
+  note("読み込み中…");
+  loadOtherApp().then(subjects => {
+    if (seq !== otherRenderSeq) return;
+    const hist = otherAppHist(subjects);
+    const answered = subjects.some(s => s.units.some(u => u.ids.some(id => {
+      const h = hist[id];
+      return h && ((h.c || 0) + (h.w || 0)) > 0;
+    })));
+    if (!answered) { note("まだ解答がありません"); return; }
+    renderStatsBlock(body, subjects, hist);
+  }).catch(() => {
+    if (seq !== otherRenderSeq) return;
+    note("読み込めませんでした");
+  });
 }
 
 /* ---------- 週別の成績（月曜はじまり） ---------- */
@@ -928,6 +1065,8 @@ function renderWeekly() {
   for (const [k, v] of Object.entries(store.hist)) {
     if (!k.startsWith("@d/")) continue;
     const [, dateStr, subj] = k.split("/");
+    // 同期アカウントを別アプリ（同じGASを使う内管責 過去問道場）と共用しているため、他アプリの分野の記録は集計しない
+    if (!SUBJECTS.some(s => s.subject === subj)) continue;
     const d = new Date(dateStr + "T00:00:00");
     if (isNaN(d)) continue;
     const monday = new Date(d);
@@ -997,8 +1136,16 @@ $("#navStats").addEventListener("click", () => {
 });
 $("#btnStatsHome").addEventListener("click", goHome);
 $("#btnResetHist").addEventListener("click", () => {
-  if (confirm("解答履歴（正誤・チェック）をすべて削除します。よろしいですか？")) {
-    store.hist = {};
+  if (confirm("このアプリ（金財）の解答履歴（正誤・チェック）をすべて削除します。よろしいですか？")) {
+    // 同期アカウントを共用する別アプリの記録（他の分野IDのキー）は消さずに残す
+    const own = new Set(SUBJECTS.map(s => s.subject));
+    const kept = {};
+    Object.keys(store.hist).forEach(k => {
+      const p = k.split("/");
+      const subj = p[0] === "@d" ? p[2] : p[0];
+      if (!own.has(subj)) kept[k] = store.hist[k];
+    });
+    store.hist = kept;
     saveStore();
     renderStats();
   }
