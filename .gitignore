@@ -6,3 +6,10 @@ runner/.env
 runner/**/secret*
 node_modules/
 runner/.browser-profile/
+
+# 資格試験アプリの元資料（答案HTML・学習テキストPDF・抽出テキスト）は公開リポジトリに入れない
+*.pdf
+参考資料/
+重要ポイント_*
+理解度チェック_*
+テスト結果（*
