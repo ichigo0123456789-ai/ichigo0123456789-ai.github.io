@@ -228,8 +228,8 @@ function show(name) {
 }
 
 function unitAcc(u) {
-  // seen/ok/pct     … 直近の解答ベース（習得度。問題一覧の色分けに使用）
-  // att/okAtt/cumPct … 累計解答ベース（過去問道場方式。解き直しても不正解の記録は残る）
+  // seen/ok/pct     … 直近の解答ベース（表示する正答率。間違えた問題を解き直して正解すれば上がる）
+  // att/okAtt/cumPct … 累計解答ベース（参考表示。解き直しても不正解の記録は残る）
   let seen = 0, ok = 0, att = 0, okAtt = 0;
   u.questions.forEach(item => {
     const h = store.hist[item._ref.id];
@@ -301,10 +301,10 @@ function renderUnitList() {
     meta.className = "unit-meta";
     if (acc.total === 0) {
       meta.textContent = "問題未登録";
-    } else if (acc.att === 0) {
+    } else if (acc.seen === 0) {
       meta.textContent = `${acc.total}問・未着手`;
     } else {
-      meta.textContent = `${acc.total}問・正答率${acc.cumPct}%（累計${acc.att}回）`;
+      meta.textContent = `${acc.total}問・正答率${acc.pct}%（${acc.ok}/${acc.seen}問）`;
     }
 
     const arrow = document.createElement("span");
@@ -326,9 +326,9 @@ function openQlist(u) {
   qlistUnit = u;
   $("#qlistTitle").textContent = u.label;
   const acc = unitAcc(u);
-  $("#qlistMeta").textContent = acc.att === 0
+  $("#qlistMeta").textContent = acc.seen === 0
     ? `全${acc.total}問・未着手`
-    : `全${acc.total}問・正答率${acc.cumPct}%（累計${acc.att}回）・習得度${acc.pct === null ? "—" : acc.pct + "%"}（解答済み${acc.seen}問の直近）`;
+    : `全${acc.total}問・正答率${acc.pct}%（解答済み${acc.seen}問の直近・正解${acc.ok}）・累計${acc.att}回解答（累計正答率${acc.cumPct === null ? "—" : acc.cumPct + "%"}）`;
 
   const grid = $("#qGrid");
   grid.innerHTML = "";
@@ -941,7 +941,8 @@ function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
       const a = accOfIds(u.ids, hist);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     }));
-    const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
+    const cumPct = att ? Math.round((okAtt / att) * 100) : null;
+    const pct = seen ? Math.round((ok / seen) * 100) : 0;
     const box = document.createElement("div");
     box.className = "stat-subject stat-total";
     box.innerHTML = `
@@ -954,11 +955,11 @@ function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
         <div class="stat-bar"><div></div></div>
         <div class="stat-sub2"></div>
       </div>`;
-    box.querySelector(".stat-nums").textContent = `累計 ${att}回解答・正解 ${okAtt}`;
-    box.querySelector(".stat-pct").textContent = att ? `${cumPct}%` : "—";
-    box.querySelector(".stat-bar > div").style.width = `${att ? cumPct : 0}%`;
+    box.querySelector(".stat-nums").textContent = `解答済み ${seen}問・正解 ${ok}`;
+    box.querySelector(".stat-pct").textContent = seen ? `${pct}%` : "—";
+    box.querySelector(".stat-bar > div").style.width = `${seen ? pct : 0}%`;
     box.querySelector(".stat-sub2").textContent =
-      `網羅度 ${seen}/${total}問（${total ? Math.round((seen / total) * 100) : 0}%）・習得度 ${seen ? Math.round((ok / seen) * 100) + "%" : "—"}`;
+      `網羅度 ${seen}/${total}問（${total ? Math.round((seen / total) * 100) : 0}%）・累計 ${att}回解答（累計正答率 ${cumPct === null ? "—" : cumPct + "%"}）`;
     body.append(box);
   }
 
@@ -970,8 +971,8 @@ function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
       const a = accOfIds(u.ids, hist);
       seen += a.seen; ok += a.ok; att += a.att; okAtt += a.okAtt;
     });
-    const cumPct = att ? Math.round((okAtt / att) * 100) : 0;
-    const masteryPct = seen ? Math.round((ok / seen) * 100) : null;
+    const cumPct = att ? Math.round((okAtt / att) * 100) : null;
+    const pct = seen ? Math.round((ok / seen) * 100) : 0;
 
     const box = document.createElement("div");
     box.className = "stat-subject";
@@ -987,11 +988,11 @@ function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
       <div class="stat-bar"><div></div></div>
       <div class="stat-sub2"></div>`;
     row.querySelector(".stat-name").textContent = s.name;
-    row.querySelector(".stat-nums").textContent = `累計 ${att}回解答・正解 ${okAtt}`;
-    row.querySelector(".stat-pct").textContent = att ? `${cumPct}%` : "—";
-    row.querySelector(".stat-bar > div").style.width = `${att ? cumPct : 0}%`;
+    row.querySelector(".stat-nums").textContent = `解答済み ${seen}問・正解 ${ok}`;
+    row.querySelector(".stat-pct").textContent = seen ? `${pct}%` : "—";
+    row.querySelector(".stat-bar > div").style.width = `${seen ? pct : 0}%`;
     row.querySelector(".stat-sub2").textContent =
-      `網羅度 ${seen}/${total}問（${total ? Math.round((seen / total) * 100) : 0}%）・習得度 ${masteryPct === null ? "—" : masteryPct + "%"}（解答済み問題の直近正誤）`;
+      `網羅度 ${seen}/${total}問（${total ? Math.round((seen / total) * 100) : 0}%）・累計 ${att}回解答（累計正答率 ${cumPct === null ? "—" : cumPct + "%"}）`;
     box.append(row);
 
     s.units.forEach(u => {
@@ -1002,8 +1003,8 @@ function renderStatsBlock(body, subjects, hist, { virtualRows = false } = {}) {
       sub.className = "stat-unit";
       sub.innerHTML = `<span class="su-name"></span><span class="su-nums"></span><span class="su-pct"></span>`;
       sub.querySelector(".su-name").textContent = u.name;
-      sub.querySelector(".su-nums").textContent = `累計${a.att}回・${a.seen}/${a.total}問`;
-      sub.querySelector(".su-pct").textContent = a.cumPct === null ? "—" : `${a.cumPct}%`;
+      sub.querySelector(".su-nums").textContent = `${a.seen}/${a.total}問・累計${a.att}回`;
+      sub.querySelector(".su-pct").textContent = a.pct === null ? "—" : `${a.pct}%`;
       box.append(sub);
     });
 
