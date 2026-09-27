@@ -117,7 +117,7 @@
    "category": "日本CPI・日銀短観",
    "title": "東京都区部消費者物価指数(2026年9月分中旬速報値)発表(日程未確定)",
    "related_prediction_ids": [],
-   "note": "出典：総務省統計局CPI公表予定ページ(stat.go.jp/data/cpi/sokuhou/tsuki/index-t.html)を経済部2026-09-20/21時点でWebFetch確認したが、同ページ表示が2026年8月分公表予定のまま更新されておらず9月分の公表日を確認できなかった。全国CPI8月分は2026-09-19発表済み(確認済み・別途upcoming管理外)。捏造回避のためdate:null・status:要調査で維持し、次回runでe-stat.go.jp release-calendar等を再確認する。 ／経済部2026-09-22時点WebSearchで再確認：総務省統計局CPI公表予定ページ(stat.go.jp/data/cpi/sokuhou/tsuki/index-t.html)・e-stat公表予定一覧とも本セッション時点で2026年9月分(中旬速報値)の個別発表日が確認できず、date:null・status:要調査を継続。次回run(9/23〜25頃)で再確認。"
+   "note": "出典：総務省統計局CPI公表予定ページ(stat.go.jp/data/cpi/sokuhou/tsuki/index-t.html)を経済部2026-09-20/21時点でWebFetch確認したが、同ページ表示が2026年8月分公表予定のまま更新されておらず9月分の公表日を確認できなかった。全国CPI8月分は2026-09-19発表済み(確認済み・別途upcoming管理外)。捏造回避のためdate:null・status:要調査で維持し、次回runでe-stat.go.jp release-calendar等を再確認する。 ／経済部2026-09-22時点WebSearchで再確認：総務省統計局CPI公表予定ページ(stat.go.jp/data/cpi/sokuhou/tsuki/index-t.html)・e-stat公表予定一覧とも本セッション時点で2026年9月分(中旬速報値)の個別発表日が確認できず、date:null・status:要調査を継続。次回run(9/23〜25頃)で再確認。 ／経済部2026-09-28時点WebFetchで再確認：総務省統計局CPI公表予定ページ(stat.go.jp/data/cpi/sokuhou/tsuki/index-t.html)は依然として2026年8月分(中旬速報値、2026-08-28発表)が最新表示のままで、2026年9月分の個別発表日は確認できず。date:null・status:要調査を継続し、次回run(9/29〜30頃)で再確認する。"
   },
   {
    "id": "EV-20261007-DIETQA",
@@ -147,6 +147,15 @@
     "P-E179"
    ],
    "note": "出典:FRB公式カレンダー(federalreserve.gov)。臨時国会代表質問(EV-20261007-DIETQA)と同日。"
+  },
+  {
+   "id": "EV-20261012-IMFWB",
+   "date": "2026-10-12",
+   "status": "予定",
+   "category": "政治・地政学日程",
+   "title": "IMF(国際通貨基金)・世界銀行 年次総会(10月12日〜18日、タイ・バンコク)",
+   "related_prediction_ids": [],
+   "note": "出典：財務省「財務省関連 主要国際会議日程（令和8年9月〜11月）」(mof.go.jp/policy/international_policy/convention/schedule/index.html、令和8年9月10日時点情報、経済部2026-09-28時点WebFetchで確認)、IMF・世界銀行公式発表(2023年4月付、2026年年次総会をタイ・バンコクで開催と決定)。同資料には10月15日開催予定のG20財務大臣・中央銀行総裁会議(バンコク)、日程未定のG7財務大臣・中央銀行総裁会議も併記されているが、いずれも本カレンダーの2週間ウォッチ期間(〜2026-10-12)を超えるため今回はupcoming未登録。9/16-18のFOMC・日銀利上げ後の世界的な金融政策・為替市場の議論の場として、開幕日(10/12)を軸に監視。会議の詳細日程・議題は令和8年9月10日時点の情報であり予定変更の可能性がある旨、財務省資料に明記。一次ソース(imf.org)個別ページでの最終確認は本セッションでは未了。"
   }
  ],
  "archived": [
