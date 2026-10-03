@@ -96,6 +96,15 @@
    "note": "出典：WebSearch(Wells Fargo公式newsroom『2026 Earnings Release Date Information』、akrostec.com等、経済部2026-10-03取得)。JPモルガンは別項目(EV-20261013-JPMEARN)。各社IRでの個別最終確認は未了。"
   },
   {
+   "id": "EV-20261013-JNJ",
+   "date": "2026-10-13",
+   "status": "予定（確定）",
+   "category": "主要企業決算",
+   "title": "ジョンソン・エンド・ジョンソン 2026年第3四半期決算発表(米国6:45ET、投資家向け電話会議8:30ET)",
+   "related_prediction_ids": [],
+   "note": "出典：同社の投資家向け電話会議開催案内(Johnson & Johnson to Host Investor Conference Call on Third Quarter Results 2026、q4cdn.com掲載PDF)、経済部2026-10-04 JST WebSearchで確認。市場予想EPSは約3.02〜3.04ドルとの情報があるが出典が二次情報のため参考値。"
+  },
+  {
    "id": "EV-20261014-USCPI",
    "date": "2026-10-14",
    "status": "予定（確定）",
@@ -186,6 +195,33 @@
     "P-E176"
    ],
    "note": "既存予測P-E176が10月8日公表と記載しているが、本セッションのWebSearchでは2026年分の公表日を一次確認できず(検索結果は2025年10/8のもののみ)。date:nullで要調査とし、内閣府(www5.cao.go.jp/keizai3/watcher)で次回run再確認。"
+  },
+  {
+   "id": "EV-NULL-BOJSAKURA",
+   "date": null,
+   "status": "要調査",
+   "category": "日本CPI・日銀短観",
+   "title": "日銀 地域経済報告(さくらレポート)・支店長会議(2026年10月)公表日",
+   "related_prediction_ids": [],
+   "note": "経済部2026-10-04 JST：日銀公式の地域経済報告ページ(boj.or.jp/research/brp/rer/)には2026年分として1/8・4/6・7/9のみ掲載で、10月分の日付は未掲載のため確認できず。date:nullで要調査、次回runで再確認。"
+  },
+  {
+   "id": "EV-NULL-MACHORDERS",
+   "date": null,
+   "status": "要調査",
+   "category": "日本CPI・日銀短観",
+   "title": "機械受注統計(2026年8月分、内閣府)公表日",
+   "related_prediction_ids": [],
+   "note": "経済部2026-10-04 JST：内閣府経済社会総合研究所の2026年6月分が8/19公表であることは確認したが、8月分の公表日は検索で確認できず。date:nullで要調査(内閣府ESRI機械受注統計の公表予定で次回run再確認)。"
+  },
+  {
+   "id": "EV-NULL-JPBOP",
+   "date": null,
+   "status": "要調査",
+   "category": "日本CPI・日銀短観",
+   "title": "国際収支統計 速報(2026年8月分、財務省・日銀)公表日",
+   "related_prediction_ids": [],
+   "note": "経済部2026-10-04 JST：7月分速報が9/8公表であることは財務省ページで確認したが、8月分の公表日は検索で確認できず。date:nullで要調査(財務省の公表予定で次回run再確認)。"
   }
  ],
  "archived": [
