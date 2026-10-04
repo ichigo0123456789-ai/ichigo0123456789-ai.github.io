@@ -222,6 +222,24 @@
    "title": "国際収支統計 速報(2026年8月分、財務省・日銀)公表日",
    "related_prediction_ids": [],
    "note": "経済部2026-10-04 JST：7月分速報が9/8公表であることは財務省ページで確認したが、8月分の公表日は検索で確認できず。date:nullで要調査(財務省の公表予定で次回run再確認)。"
+  },
+  {
+   "id": "EV-20261014-ASML",
+   "date": "2026-10-14",
+   "status": "予定",
+   "category": "主要企業決算",
+   "title": "ASML(オランダ・半導体製造装置大手) 2026年第3四半期決算発表",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch検索結果(akrostec.com決算カレンダー、marketscreener.com ASMLカレンダー、経済部2026-10-05取得)。同社IR一次ソースでの最終確認は未了のため『予定』。半導体設備投資の先行指標。"
+  },
+  {
+   "id": "EV-20261015-TSMC",
+   "date": "2026-10-15",
+   "status": "予定",
+   "category": "主要企業決算",
+   "title": "台湾積体電路製造(TSMC) 2026年第3四半期決算発表(見込み)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch検索結果(akrostec.com決算カレンダー、経済部2026-10-05取得)。TSMCは公式財務カレンダーに未掲載で、日付は第三者カレンダーに基づく暫定。確定次第更新。AI・半導体需要の温度感を測る材料。"
   }
  ],
  "archived": [
