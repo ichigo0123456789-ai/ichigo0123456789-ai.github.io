@@ -1168,5 +1168,49 @@
    "changePct": -1.17,
    "src": "Yahoo!ファイナンス ・ as of 2026-10-02 東証大引け ※持株会向け参考情報・売買推奨ではありません"
   }
+ },
+ {
+  "briefDate": "2026-10-06",
+  "tradingDate": {
+   "jp": "2026-10-05",
+   "us": "2026-10-05"
+  },
+  "note": "10/5(月)基準。日経平均+2.40%、ナスダック100+0.87%、S&P500+0.66%、金+0.13%、三菱UFJ+2.00%。(出典：Yahoo!ファイナンス、as of 2026-10-05)",
+  "nikkei": {
+   "value": 69946.86,
+   "change": 1637.4,
+   "changePct": 2.4,
+   "src": "Yahoo!ファイナンス ・ as of 2026-10-05 東証大引け"
+  },
+  "nasdaq100": {
+   "value": 31076.44,
+   "change": 268.51,
+   "changePct": 0.87,
+   "src": "Yahoo!ファイナンス ・ as of 2026-10-05 NY引け"
+  },
+  "sp500": {
+   "value": 7773.95,
+   "change": 51.23,
+   "changePct": 0.66,
+   "src": "Yahoo!ファイナンス ・ as of 2026-10-05 NY引け"
+  },
+  "usdjpy": {
+   "value": 157.97,
+   "change": 0.04,
+   "changePct": 0.03,
+   "src": "Yahoo!ファイナンス ・ as of 2026-10-05 NY引け(確度中)"
+  },
+  "gold": {
+   "value": 4167.8,
+   "change": 5.5,
+   "changePct": 0.13,
+   "src": "Yahoo!ファイナンス ・ as of 2026-10-05 COMEX先物(確度中)"
+  },
+  "mufg": {
+   "value": 3615.0,
+   "change": 71.0,
+   "changePct": 2.0,
+   "src": "Yahoo!ファイナンス ・ as of 2026-10-05 東証大引け"
+  }
  }
 ]
