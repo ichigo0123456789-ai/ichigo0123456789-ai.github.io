@@ -36,6 +36,17 @@
    "note": "出典:FRB公式カレンダー(federalreserve.gov)。臨時国会代表質問(EV-20261007-DIETQA)と同日。 ／重複登録を統合(経済部2026-09-30)。 ／経済部2026-10-01追記：連邦準備制度理事会公式(federalreserve.gov)の検索結果で10/7 14:00ET公表予定と確認。"
   },
   {
+   "id": "EV-20261008-WATCHERS",
+   "date": "2026-10-08",
+   "status": "予定（確定）",
+   "category": "日本経済指標",
+   "title": "景気ウォッチャー調査(2026年9月調査、内閣府) 公表(14:00)",
+   "related_prediction_ids": [
+    "P-E176"
+   ],
+   "note": "出典：内閣府 景気ウォッチャー調査 公表予定ページ(www5.cao.go.jp/keizai3/watcher/watcher-yotei.html)で令和8年9月調査の公表日=令和8年10月8日14:00と確認(経済部2026-10-07 JST WebFetch)。"
+  },
+  {
    "id": "EV-20261009-DELTA",
    "date": "2026-10-09",
    "status": "予定",
@@ -99,6 +110,15 @@
    "note": "出典：WebSearch(capital.com決算プレビュー、akrostec.com等、経済部2026-10-03取得)。各社IRでの個別最終確認は未了。"
   },
   {
+   "id": "EV-20261014-ASML",
+   "date": "2026-10-14",
+   "status": "予定",
+   "category": "主要企業決算",
+   "title": "ASML(オランダ・半導体製造装置大手) 2026年第3四半期決算発表",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch検索結果(akrostec.com決算カレンダー、marketscreener.com ASMLカレンダー、経済部2026-10-05取得)。同社IR一次ソースでの最終確認は未了のため『予定』。半導体設備投資の先行指標。"
+  },
+  {
    "id": "EV-20261015-USPPI",
    "date": "2026-10-15",
    "status": "予定（確定）",
@@ -115,6 +135,15 @@
    "title": "米小売売上高(2026年9月分速報、米商務省センサス局、米国時間8:30ET＝日本時間21:30)",
    "related_prediction_ids": [],
    "note": "出典：BLS/センサス局の公表予定(bls.gov/schedule/2026/10_sched_list.htm 経由の検索結果、経済部2026-10-02 WebSearchで確認)。9/15のPPI(EV-20261015-USPPI)と同日。 ／経済部2026-10-03追記：同日10/15 8:30ETにセンサス局が発表との報道あり(WebSearch)。センサス局一次ソースは未確認のため『予定』のまま。"
+  },
+  {
+   "id": "EV-20261015-TSMC",
+   "date": "2026-10-15",
+   "status": "予定",
+   "category": "主要企業決算",
+   "title": "台湾積体電路製造(TSMC) 2026年第3四半期決算発表(見込み)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch検索結果(akrostec.com決算カレンダー、経済部2026-10-05取得)。TSMCは公式財務カレンダーに未掲載で、日付は第三者カレンダーに基づく暫定。確定次第更新。AI・半導体需要の温度感を測る材料。"
   },
   {
    "id": "EV-20261016-USIP",
@@ -162,17 +191,6 @@
    "note": "出典：総務省統計局の公表日を確定できず(経済部2026-10-02 WebSearch/WebFetchで未確認)。捏造回避のためdate:null・status:要調査。次回runでe-Statリリースカレンダーを確認する。"
   },
   {
-   "id": "EV-NULL-WATCHERS",
-   "date": null,
-   "status": "要調査",
-   "category": "日本CPI・日銀短観",
-   "title": "景気ウォッチャー調査(2026年9月調査、内閣府)公表日",
-   "related_prediction_ids": [
-    "P-E176"
-   ],
-   "note": "既存予測P-E176が10月8日公表と記載しているが、本セッションのWebSearchでは2026年分の公表日を一次確認できず(検索結果は2025年10/8のもののみ)。date:nullで要調査とし、内閣府(www5.cao.go.jp/keizai3/watcher)で次回run再確認。"
-  },
-  {
    "id": "EV-NULL-BOJSAKURA",
    "date": null,
    "status": "要調査",
@@ -198,24 +216,6 @@
    "title": "国際収支統計 速報(2026年8月分、財務省・日銀)公表日",
    "related_prediction_ids": [],
    "note": "経済部2026-10-04 JST：7月分速報が9/8公表であることは財務省ページで確認したが、8月分の公表日は検索で確認できず。date:nullで要調査(財務省の公表予定で次回run再確認)。"
-  },
-  {
-   "id": "EV-20261014-ASML",
-   "date": "2026-10-14",
-   "status": "予定",
-   "category": "主要企業決算",
-   "title": "ASML(オランダ・半導体製造装置大手) 2026年第3四半期決算発表",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch検索結果(akrostec.com決算カレンダー、marketscreener.com ASMLカレンダー、経済部2026-10-05取得)。同社IR一次ソースでの最終確認は未了のため『予定』。半導体設備投資の先行指標。"
-  },
-  {
-   "id": "EV-20261015-TSMC",
-   "date": "2026-10-15",
-   "status": "予定",
-   "category": "主要企業決算",
-   "title": "台湾積体電路製造(TSMC) 2026年第3四半期決算発表(見込み)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch検索結果(akrostec.com決算カレンダー、経済部2026-10-05取得)。TSMCは公式財務カレンダーに未掲載で、日付は第三者カレンダーに基づく暫定。確定次第更新。AI・半導体需要の温度感を測る材料。"
   }
  ],
  "archived": [
