@@ -2223,6 +2223,40 @@
     "P-E179 horizon=2026-10-07、scoring_spec resolution_date=2026-10-08",
     "連邦準備制度理事会FOMC日程ページ:議事要旨は開催3週間後に公表、9月15-16日分は2026-10-07時点で公表未確認"
    ]
+  },
+  {
+   "date": "2026-10-08",
+   "category": "予測設計(claimの確率の対象とfalsifiableの極性が食い違う)",
+   "lesson": "P-E179は『議事要旨に為替協調の明記がある確率は4割』というclaimと、『明記があれば反証・なければ的中』というfalsifiableが逆向きで、pがどちらの事象の確率かが曖昧になりBrierが0.16か0.36かで割れた。pは必ず『的中と採点される事象』の確率として定義し、claim文もその事象の肯定形で書く。加えて、公表文書の言及を問う予測では『過去の事実叙述』と『今後の方針』を区別する規則をscoring_specに事前登録する(本件は7月下旬の介入を振り返る記述で拾われた)。1例のみの観測。",
+   "status": "仮説",
+   "regime_tags": [
+    "scoring_spec_design",
+    "fomc_minutes",
+    "fx_usdjpy",
+    "brier_polarity"
+   ],
+   "evidence": [
+    "P-E179 claim/falsifiable(predictions.json)",
+    "FOMC議事要旨 2026-09-15/16会合(連邦準備制度理事会、最終更新2026-10-07)",
+    "P-E179 verdict=外れ(Brier0.16/代替読み0.36)"
+   ]
+  },
+  {
+   "date": "2026-10-08",
+   "category": "予測設計(期日とscoring_specのresolution_dateの不一致/発表直後の反応が持続しない)",
+   "lesson": "P-E180はhorizon=10/8、scoring_specのresolution_date=10/9と食い違い、採点時に待つべきか迷った。またP-E174では米PCE下振れ直後のドル売りが同日中のGDP上方改定・米金利上昇で相殺され、『円安一服』の判定が観測窓の取り方で変わった。反応予測は『発表後N時間の終値基準』など窓を事前固定し、horizonとresolution_dateを一致させる(10/7の教訓と同系統)。2例の観測だが因果は単純でなく仮説扱い。",
+   "status": "仮説",
+   "regime_tags": [
+    "scoring_spec_design",
+    "horizon_mismatch",
+    "fx_usdjpy",
+    "event_reaction_window"
+   ],
+   "evidence": [
+    "P-E180 horizon=2026-10-08/resolution_date=2026-10-09",
+    "ドル円9/30 安値156.35→終値157.39→10/6 158.10(Yahoo!ファイナンス時系列)",
+    "米8月PCE前年比3.4%(予想3.7%)(FXStreet/みんかぶ 2026-09-30)"
+   ]
   }
  ]
 }
