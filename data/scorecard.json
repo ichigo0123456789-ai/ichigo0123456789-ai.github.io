@@ -772,6 +772,122 @@
         "week_summary": "今週(9/28〜10/4)は45件を新規検証(的中12・部分的中10・外れ11・保留12)。本日期日のP-T05は部分的中、P-T06は的中、P-T07は的中(Brier0.16)。全期間Brier=0.1376でやや悪化、機序的中率12.5%と低く、中央帯pの過信を教訓化。C系は対オルカン超過+11.04%pt(20d+3.369pt・60d+9.819pt)で、判断効果は¥-208(丸め誤差)、超過の源泉は初期配分の傾き効果(+¥288,711)。D系は6日連続success、本run完了で7/7見込み。"
       },
       "read": "A系は今週45件検証(的中12/部分10/外れ11/保留12)、全期間Brier0.1376・機序的中率12.5%・p=0.5帯は過信。B系は制約遵守・教訓引用100%で判断効果¥-208(丸め誤差)。C系は対オルカン超過+11.04%pt(20d+3.369pt/60d+9.819pt)で源泉は初期配分の傾き効果+¥288,711。D系は直近6/6成功、本run完了で7/7見込み。"
+    },
+    {
+      "week_ending": "2026-10-11",
+      "stage": "運用継続期(v2運用開始15週目、日曜週次)",
+      "A_predictive": {
+        "verified_count": 32,
+        "brier_rolling": 0.1362,
+        "calibration_error": 0.0826,
+        "mechanism_hit_rate": 0.429,
+        "surprise_rate": null,
+        "calibration_buckets": [
+          {
+            "bucket": "0.2-0.3",
+            "n": 4,
+            "mean_p": 0.237,
+            "realized": 0.375
+          },
+          {
+            "bucket": "0.3-0.4",
+            "n": 45,
+            "mean_p": 0.34,
+            "realized": 0.389
+          },
+          {
+            "bucket": "0.4-0.5",
+            "n": 58,
+            "mean_p": 0.411,
+            "realized": 0.474
+          },
+          {
+            "bucket": "0.5-0.6",
+            "n": 70,
+            "mean_p": 0.518,
+            "realized": 0.407
+          },
+          {
+            "bucket": "0.6-0.7",
+            "n": 10,
+            "mean_p": 0.607,
+            "realized": 0.6
+          },
+          {
+            "bucket": "0.7-0.8",
+            "n": 5,
+            "mean_p": 0.718,
+            "realized": 1.0
+          },
+          {
+            "bucket": "0.8-0.9",
+            "n": 3,
+            "mean_p": 0.827,
+            "realized": 1.0
+          }
+        ],
+        "note": "期間内(10/5〜10/10のverified_date)32件を新規検証(的中13・部分的中4・外れ8・保留7)。brier_contrib保有24件の週内平均Brier=0.1270(前週0.1551から改善)。全期間Brier(brier_contrib保有n=198)=0.1362(前週0.1376からわずかに改善)。較正誤差は全期間verdict換算(的中1/部分0.5/外れ0、保留除くn=195)のバケット加重|p−実現率|=0.0826(前週0.1014とは母集団・計算法が異なるため単純比較不可)。0.5〜0.6帯(n=70)は実現率40.7%/平均p51.8%で過信継続、0.7以上(n=8)は全件的中。方向○14件のうち機序も○は6件=機序的中率42.9%(前週12.5%から改善、母数小)。サプライズ率は日次サンプルが欠けるため算出せず。本日(10/11)はP-T13を保留(起点値未登録)。"
+      },
+      "B_decision_quality": {
+        "counterfactual_delta_jpy": -210,
+        "counterfactual_note": "判断効果(実PF−凍結初期)は2026-10-10評価(NAV as_of 10/9)で¥-210=丸め誤差(オルカン約55口の記帳差)。裁量売買なし(T0101までhold)。",
+        "assumption_survival_rate": null,
+        "repeat_mistake_rate": null,
+        "lesson_citation_rate": 1.0,
+        "constraint_compliance_rate": 1.0,
+        "constraint_note": "期間内は全件hold(runlog記載の様子見T0095〜T0101)。制約遵守・教訓引用ともに100%維持(運用部記録ベース)。repeat_mistake_rateは再発判定基準が未定義のため算出せず(ただしP-T13はP-T05と同型の再発、p=0.5台の過信も継続)。"
+      },
+      "C_returns": {
+        "excess_vs_orukan_pct_cum": 11.4,
+        "excess_vs_orukan_pct_cum_asof": "2026-10-10評価(NAV as_of 2026-10-09、nav_history.json最終行)",
+        "judgment_effect_vs_frozen_jpy": -210,
+        "slope_effect_vs_orukan100_jpy": 305380,
+        "attribution_note": "帰属分解(検証部2026-10-11、nav_history.json位置ベース窓+counterfactual.json)。対オルカン超過+11.40%ptは実質すべて6/29の初期配分(傾き効果)由来で、判断効果(実PF−凍結)は¥-210(丸め誤差)。傾き効果(凍結初期−オルカン100%換算、external_contributions 4件を反映)=+¥305,380(凍結¥5,966,696−オルカン等価¥5,661,316)。20d窓:+2.873pt(8.527→11.400)、うち判断効果Δ≈¥-6、傾き効果Δ+¥48,404。60d窓:+7.914pt(3.486→11.400)、判断効果Δ≈¥-210(counterfactual.jsonの8/6記録値0を基準。同日は実PF−凍結の注記上+¥10,880の残差があるため参考値)、傾き効果Δ+¥229,776。",
+        "rolling_20d": 2.873,
+        "rolling_60d": 7.914,
+        "rolling_note": "20d窓:2026-09-20→10-10(index72→92)、60d窓:2026-08-06→10-10(index32→92)。位置ベース近似(前回と同じ方式)。前回(9/27基準)より窓が後ろへ進んだため値は縮小。"
+      },
+      "D_system_health": {
+        "uptime_pct": 100.0,
+        "uptime_note": "runlog.json直近7日(2026-10-04〜10-10)は全て success/published で7/7=100.0%。10/11分は本run完了後に計上。",
+        "scoring_latency_days": 0.0,
+        "lessons_promoted": 0,
+        "lessons_retired": 0,
+        "schema_violations": 1,
+        "schema_violation_note": "predictions.jsonにID P-T30が2件(別内容)存在。重複ID1件を違反として計上。"
+      },
+      "lessons_extracted_this_week": [
+        {
+          "date": "2026-10-11",
+          "category": "予測設計(旧スキーマthesisの起点値・比較対象の未固定)",
+          "summary": "P-T13は比較ファンドと起点格差が未登録のまま満期となり保留。thesis作成時に比較ファンド・起点値・出典・統計量を固定する。",
+          "regime_tags": [
+            "scoring_spec_design",
+            "thesis",
+            "data_availability"
+          ],
+          "evidence_ref": "data/lessons.json 2026-10-11①(追記候補)、P-T13"
+        },
+        {
+          "date": "2026-10-11",
+          "category": "較正(p=0.5〜0.6帯の過信が継続)",
+          "summary": "p=0.5台(n=70)は実現率40.7%/平均p51.8%。高確率帯(0.7以上)は全件的中。0.5台は基準率確認後に0.45前後へ。",
+          "regime_tags": [
+            "calibration",
+            "overconfidence",
+            "repeat_mistake"
+          ],
+          "evidence_ref": "data/lessons.json 2026-10-11②(追記候補)、P-E190"
+        }
+      ],
+      "cross_examination_retro": {
+        "week_range": "2026-10-05〜2026-10-11",
+        "today_2026-10-11_points": [
+          "今週の見落とし:(1)P-E190(p=0.62、雇用の底堅さ前提)は10/2の雇用急減速とNFP下方改定で外れ、中央帯の過信を再現した。(2)P-E198はhorizon=当日大引けで朝runでは採点不能(L154)、P-E208/P-E191/P-E193は閾値近傍で薄氷判定(L155)と、予測設計上の境界問題が3系統同時に出た。(3)P-T13は3か月間チェックポイントでも格差実数が一度も取れず、満期で保留。旧スキーマthesisの検証不能性を放置した。(4)実PFの超過は初期配分の傾き効果のみ(判断効果¥-210)で、60d/20dの超過縮小(窓の移動による見かけの低下)を能力低下と取り違えない点検が必要。(5)predictions.jsonのID重複(P-T30)を検出。"
+        ],
+        "week_summary": "今週(10/5〜10/10)は32件を新規検証(的中13・部分的中4・外れ8・保留7)。本日期日のP-T13は起点値未登録で保留。全期間Brier=0.1362でわずかに改善、週内Brier=0.1270、機序的中率42.9%。0.5台の過信は継続。C系は対オルカン超過+11.40%pt(20d+2.873pt・60d+7.914pt)で判断効果¥-210(丸め誤差)、源泉は傾き効果+¥305,380。D系は直近7日7/7=100%。"
+      },
+      "read": "A系は今週32件検証(的中13/部分4/外れ8/保留7)、全期間Brier0.1362・機序的中率42.9%・p=0.5台は過信継続。B系は制約遵守・教訓引用100%で判断効果¥-210(丸め誤差)。C系は対オルカン超過+11.40%pt(20d+2.873pt/60d+7.914pt)で源泉は初期配分の傾き効果+¥305,380。D系は直近7日7/7成功(100%)。"
     }
   ],
   "monthly": [

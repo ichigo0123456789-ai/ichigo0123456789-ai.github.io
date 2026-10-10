@@ -777,6 +777,14 @@
       "published": true,
       "commit": "News digest 2026-10-10",
       "note": "日次のみ(土曜)。市況はYahoo!ファイナンス(10/9基準、米株・金は一部引け前値)。検証部(5件採点: 的中3・部分1・外れ1)→経済/政治/テック/国際→投資部(event2本)→運用部(様子見T0101)→反対尋問(指摘を組版時に反映)。AP・ロイター・NPR・NHK WORLDは取得不可で掲載せず。進行3.5は市場休場のため省略。"
+    },
+    {
+      "date": "2026-10-11",
+      "trigger": "scheduled",
+      "status": "success",
+      "published": true,
+      "commit": "News digest 2026-10-11",
+      "note": "日次＋週次(日曜)。市況はYahoo Finance(10/9引け基準)。検証部(P-T13のみ対象・保留)→経済/政治/テック/国際→投資部(event2本)→運用部(様子見)→反対尋問(指摘を反映)→校閲(差し戻し指摘を修正)。NPR・AP・ロイター・NHK WORLDは取得不可で掲載せず。進行3.5は週末のため省略。"
     }
   ],
   "weekly_uptime": [
