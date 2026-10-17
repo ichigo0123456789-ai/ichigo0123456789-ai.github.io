@@ -54,7 +54,9 @@ const render = () => {
     rm.textContent = '✕';
     rm.addEventListener('click', async () => {
       await send({ type: 'removeSite', host: site });
-      refresh();
+      // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
     });
     li.append(rm);
     sl.append(li);
@@ -113,15 +115,21 @@ const showError = (msg) => {
 // ---- 操作 ---------------------------------------------------------------
 $('enabled').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { enabled: e.target.checked } });
-  refresh();
+  // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 $('blockOverlay').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { blockOverlay: e.target.checked } });
-  refresh();
+  // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 $('antiAdblock').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { antiAdblock: e.target.checked } });
-  refresh();
+  // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 
 // 今見てるサイトのON/OFF（ONにしたらリロードして即効かせる）
@@ -135,7 +143,9 @@ $('siteTargeted').addEventListener('change', async (e) => {
       if (hostMatches(info.host, site)) await send({ type: 'removeSite', host: site });
     }
   }
-  refresh();
+  // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 
 // 入力欄から追加
@@ -146,17 +156,25 @@ $('addForm').addEventListener('submit', async (e) => {
   if (!res.ok) { showError(res.error); return; }
   showError('');
   $('siteInput').value = '';
-  refresh();
+  // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 
 $('clear').addEventListener('click', async () => {
   await send({ type: 'clearLog', tabId: info.tabId });
-  refresh();
+  // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 
 // 開いてる間にブロックが増えたら履歴を更新
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'session' || area === 'sync') refresh();
+  if (area === 'session' || area === 'sync') // バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
+refresh();
 });
 
+// バージョン表示（最新版が入ってるか確認用）
+try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();

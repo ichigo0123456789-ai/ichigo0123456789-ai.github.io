@@ -87,6 +87,7 @@ body {
 .empty.hidden, .log.hidden { display: none; }
 
 .foot { padding: 4px 14px 10px; color: var(--sub); font-size: 11px; text-align: center; min-height: 24px; }
+.ver { display: block; margin-top: 2px; font-size: 10px; color: #b0b5c3; }
 body.off .card { opacity: .55; }
 
 /* ---- 登録サイト ---- */

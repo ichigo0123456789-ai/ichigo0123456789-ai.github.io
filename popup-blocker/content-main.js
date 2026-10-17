@@ -51,10 +51,24 @@
   //    ※ 登録サイトでは本物の AdSense が初期化をスキップして広告が出なくなることがある
   // =====================================================================
   let adsArray = [];
+  const nativePush = Array.prototype.push;
+  const fnSrc = (f) => { try { return Function.prototype.toString.call(f); } catch (_) { return ''; } };
+  // 広告ブロッカーのダミー（push が空っぽ／this.length をいじるだけ）かどうか
+  const looksLikeStubPush = (f) => {
+    if (typeof f !== 'function') return true;
+    const src = fnSrc(f);
+    if (src.includes('[native code]')) return false;
+    const body = src.replace(/\s+/g, '');
+    return /\{(;|return;?)?\}$/.test(body) || body.includes('this.length');
+  };
   const applyAdsSpoof = (arr) => {
     try {
       if (arr && typeof arr === 'object' && state.antiAdblock && isActive()) {
         if (arr.loaded !== true) { arr.loaded = true; arr.__pgSpoofed = true; }
+        // ダミー push に差し替えられてたら本物（native）に戻す
+        if (looksLikeStubPush(arr.push)) {
+          try { Object.defineProperty(arr, 'push', { value: nativePush, writable: true, configurable: true }); } catch (_) {}
+        }
       } else if (arr && arr.__pgSpoofed) {
         delete arr.loaded; delete arr.__pgSpoofed;
       }
@@ -62,14 +76,39 @@
   };
   try {
     const existing = window.adsbygoogle;
-    if (existing && typeof existing === 'object') adsArray = existing;
+    if (Array.isArray(existing)) adsArray = existing;
     Object.defineProperty(window, 'adsbygoogle', {
       configurable: true, enumerable: true,
       get() { applyAdsSpoof(adsArray); return adsArray; },
-      set(v) { adsArray = v; applyAdsSpoof(adsArray); },
+      set(v) {
+        // 広告ブロッカーのダミー（{loaded:true, push(){}} みたいな非配列）は受け取らない。
+        // サイト側の window.adsbygoogle = [] みたいな普通の配列はそのまま採用する
+        if (state.antiAdblock && isActive() && (!Array.isArray(v) || looksLikeStubPush(v.push))) {
+          report('adblock-nag', '', 'adsbygoogle のダミー差し替えを拒否');
+          return;
+        }
+        adsArray = v;
+        applyAdsSpoof(adsArray);
+      },
     });
     applyAdsSpoof(adsArray);
   } catch (_) { /* 定義できなかったら諦める */ }
+
+  // 広告ブロッカーのダミーが作る偽の広告 iframe（id="aswift_N" で中身が data:/javascript:/空）を
+  // アンチアドブロックに見つかる前に消す。MutationObserver は同じタスク内のマイクロタスクで
+  // 走るので、サイトの検出タイマーより先に片付く⚡
+  const isFakeAdFrame = (n) => {
+    if (!(n instanceof HTMLIFrameElement) || !/^aswift_/.test(n.id || '')) return false;
+    const src = n.getAttribute('src') || '';
+    return !/^https?:/i.test(src);
+  };
+  const removeFakeAdFrames = (root) => {
+    if (!state.antiAdblock || !isActive()) return;
+    try {
+      if (isFakeAdFrame(root)) { root.remove(); return; }
+      if (root.querySelectorAll) for (const f of root.querySelectorAll('iframe[id^="aswift_"]')) if (isFakeAdFrame(f)) f.remove();
+    } catch (_) {}
+  };
 
   // =====================================================================
   // ① window.open をすり替える（ポップアップ／ポップアンダーの本丸）
@@ -275,7 +314,7 @@
         if (kind) killOverlay(el, kind);
       } catch (_) {}
     }
-    if (state.antiAdblock) restorePointerEvents();
+    if (state.antiAdblock) { restorePointerEvents(); removeFakeAdFrames(document.body); }
   };
   const scheduleScan = () => {
     if (scanTimer) return;
@@ -286,9 +325,12 @@
     if (!document.documentElement) return;
     // 要素の追加だけじゃなく、display/class の切り替えで出てくるやつも拾う
     new MutationObserver((muts) => {
+      let dirty = false;
       for (const m of muts) {
-        if (m.type === 'attributes' || m.addedNodes.length) { scheduleScan(); return; }
+        if (m.type === 'attributes') dirty = true;
+        for (const n of m.addedNodes) { dirty = true; if (n.nodeType === 1) removeFakeAdFrames(n); }
       }
+      if (dirty) scheduleScan();
     }).observe(document.documentElement, {
       childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden'],
     });
