@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ポップアップガード</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <div class="title">
+      <img src="icons/icon32.png" alt="" width="22" height="22">
+      <span>ポップアップガード</span>
+    </div>
+    <!-- メインのオン・オフ -->
+    <label class="switch big" title="全サイトでのオン・オフ（Alt+Shift+P でも切替OK）">
+      <input type="checkbox" id="enabled">
+      <span class="track"><span class="knob"></span></span>
+      <span class="switch-label" id="enabledLabel">ON</span>
+    </label>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <div class="row-text">
+        <div class="row-title">このサイトでは許可する</div>
+        <div class="row-sub" id="hostLabel">—</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="siteAllowed">
+        <span class="track"><span class="knob"></span></span>
+      </label>
+    </div>
+    <div class="row">
+      <div class="row-text">
+        <div class="row-title">全画面オーバーレイ広告も消す</div>
+        <div class="row-sub">画面全体を覆う広告・透明クリック罠を非表示にする</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="blockOverlay">
+        <span class="track"><span class="knob"></span></span>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="list-head">
+      <span>このタブでブロックしたもの <b id="count">0</b></span>
+      <button class="link-btn" id="clear">クリア</button>
+    </div>
+    <ul class="log" id="log"></ul>
+    <p class="empty" id="empty">まだ何もブロックしてないよ</p>
+  </section>
+
+  <footer class="foot">
+    <span id="status"></span>
+  </footer>
+  <script src="popup.js"></script>
+</body>
+</html>

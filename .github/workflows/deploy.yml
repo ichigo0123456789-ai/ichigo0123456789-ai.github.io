@@ -35,6 +35,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # 拡張機能(popup-blocker)をZIPにして、ページから直接ダウンロードできるようにする
+      - name: Zip popup-blocker extension
+        run: |
+          cd popup-blocker
+          zip -r popup-blocker.zip . -x 'popup-blocker.zip' -x 'index.html' -x 'README.md'
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

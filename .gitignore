@@ -13,3 +13,5 @@ runner/.browser-profile/
 重要ポイント_*
 理解度チェック_*
 テスト結果（*
+# デプロイ時に生成するZIPはコミットしない
+popup-blocker/popup-blocker.zip

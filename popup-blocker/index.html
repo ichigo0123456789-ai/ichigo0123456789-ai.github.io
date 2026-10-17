@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ポップアップガード – Brave 用ポップアップブロック拡張機能</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="icons/icon32.png">
+<style>
+  :root{--bg:#f5f6fa;--card:#fff;--line:#e4e7ee;--ink:#1f2330;--sub:#5b6478;--accent:#e0245e;--accent-soft:#fff0f5;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",system-ui,-apple-system,"Segoe UI",Roboto,"Hiragino Sans",Meiryo,sans-serif;line-height:1.8;font-size:15px;padding:0 16px 60px}
+  .wrap{max-width:760px;margin:0 auto}
+  header{display:flex;align-items:center;gap:14px;padding:28px 0 14px}
+  header img{width:56px;height:56px}
+  h1{margin:0;font-size:24px;line-height:1.3}
+  h1 small{display:block;font-size:13px;color:var(--sub);font-weight:400}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  h2{font-size:17px;margin:0 0 10px;padding-left:10px;border-left:4px solid var(--accent)}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;margin:6px 8px 6px 0}
+  .btn.sub{background:#fff;color:var(--accent);border:2px solid var(--accent)}
+  code{background:var(--accent-soft);padding:1px 6px;border-radius:6px;font-size:13px}
+  ol li,ul li{margin:4px 0}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:#fafbfe;width:30%}
+  .note{color:var(--sub);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icons/icon128.png" alt="">
+    <h1>ポップアップガード<small>Brave / Chrome 用・勝手に開くポップアップ広告をブロックする拡張機能</small></h1>
+  </header>
+
+  <div class="card">
+    <h2>ダウンロード</h2>
+    <a class="btn" href="popup-blocker.zip" download>popup-blocker.zip をダウンロード</a>
+    <a class="btn sub" href="https://github.com/ichigo0123456789-ai/ichigo0123456789-ai.github.io/tree/main/popup-blocker">ソースを見る（GitHub）</a>
+    <p class="note">ZIP は GitHub Pages のデプロイ時に自動生成されます。リンク切れのときはリポジトリの「Code → Download ZIP」から落として <code>popup-blocker</code> フォルダを使ってください。</p>
+  </div>
+
+  <div class="card">
+    <h2>インストール手順（Brave）</h2>
+    <ol>
+      <li>ZIP を解凍して <code>popup-blocker</code> フォルダを好きな場所に置く（消すと拡張機能も消えるので注意）</li>
+      <li>Brave のアドレスバーに <code>brave://extensions/</code> と入れて開く</li>
+      <li>右上の「デベロッパーモード」をオン</li>
+      <li>「パッケージ化されていない拡張機能を読み込む」→ <code>popup-blocker</code> フォルダを選ぶ</li>
+      <li>ツールバーのパズルアイコンから「ポップアップガード」をピン留め</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>使い方</h2>
+    <table>
+      <tr><th>アイコンをクリック</th><td>小窓が開く。一番上の大きいスイッチで全サイトのオン・オフ</td></tr>
+      <tr><th>このサイトでは許可する</th><td>今見ているサイトだけブロックしない（正規サイトでポップアップが必要なとき用）</td></tr>
+      <tr><th>全画面オーバーレイ広告も消す</th><td>画面全体を覆う広告・透明クリック罠を非表示。誤爆するサイトではオフに</td></tr>
+      <tr><th>このタブでブロックしたもの</th><td>止めた URL の一覧。必要なら「開く」で自分の意思で開ける</td></tr>
+      <tr><th><code>Alt+Shift+P</code></th><td>どこからでもオン・オフ切り替え</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>できないこと</h2>
+    <ul>
+      <li>ページ自体が別 URL へ飛ぶリダイレクト（<code>location.href = ...</code>）は止められない。Brave Shields を「アグレッシブ」にすると広告系の飛び先をかなり止められる</li>
+      <li><code>brave://</code> などブラウザ内部ページでは動かない</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
