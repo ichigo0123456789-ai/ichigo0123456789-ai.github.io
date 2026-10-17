@@ -833,6 +833,14 @@
       "published": true,
       "commit": "News digest 2026-10-17",
       "note": "日次のみ(土曜)。市況は日経・8306が10/16東証大引け、米株・ドル円・金は10/17午前4時台の取引中遅延値(未確定と明記)。検証部(5件採点: 的中2・外れ3、保留5)→経済/政治/テック/国際→投資部(event3本 P-E229〜231)→運用部(様子見T0108)→反対尋問・校閲(条件付き合格、軽微指摘を反映)。国際欄はAP通信・ロイター・NPR・ABC(豪)・NHK WORLD取得不可。2段目の再取材(進行3.5)は米国の引け前のため実施せず。"
+    },
+    {
+      "date": "2026-10-18",
+      "trigger": "scheduled",
+      "status": "success",
+      "published": true,
+      "commit": "News digest 2026-10-18",
+      "note": "日次＋週次(日曜)。日曜のため市場休場、市況は日経・8306が10/16東証大引け、米株は10/16NY引け確定値、ドル円・金は10/16週末最終値。検証部(5件採点: 的中3・外れ2、保留持越し)＋週次通信簿→経済/政治/テック/国際→投資部(event3本 P-E232〜234)→運用部(様子見T0109)→反対尋問・校閲(条件付き合格、軽微指摘を反映)。国際欄はAP通信・ロイター・NPR・ABC(豪)・NHK WORLD取得不可・見送り。2段目の再取材(進行3.5)は週末で市況の更新がないため実施せず。"
     }
   ],
   "weekly_uptime": [
@@ -851,6 +859,14 @@
       "manual_rescues": 0,
       "uptime_pct": 100.0,
       "note": "2026-09-21〜09-27の7日間、runlog.json上いずれもstatus:successで7/7=100%。"
+    },
+    {
+      "week_ending": "2026-10-18",
+      "runs_scheduled": 7,
+      "runs_succeeded_scheduled": 7,
+      "manual_rescues": 0,
+      "uptime_pct": 100.0,
+      "note": "2026-10-11〜10-17の7日間、runlog.json上いずれもstatus:success/published:trueで7/7=100%。10/18分は本run完了後に計上。"
     }
   ]
 }
