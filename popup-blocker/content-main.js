@@ -19,6 +19,7 @@
     enabled: true,        // ガード自体がオンか
     siteTargeted: true,   // このサイトが登録サイトか
     blockOverlay: true,   // 全画面オーバーレイも消すか
+    antiAdblock: true,    // 「広告ブロッカーを検出しました」系の警告を潰すか
   };
   const isActive = () => state.enabled && state.siteTargeted;
 
@@ -39,6 +40,36 @@
   window.addEventListener('mousedown', (e) => {
     if (e.isTrusted) lastTrustedClick = Date.now();
   }, true);
+
+  // =====================================================================
+  // ⓪ 「広告ブロッカー検出」を回避する
+  //    アンチアドブロック系スクリプトの多くは window.adsbygoogle.loaded === true を
+  //    「AdSense がちゃんと動いてる」証拠として見て検出をやめる。
+  //    なので先回りして loaded=true の配列を置いとく（push は本物の Array.prototype.push
+  //    = native code なので「ダミーだ」とバレにくい）。
+  //    サイト側が window.adsbygoogle = [] で上書きしても setter で loaded を付け直す💪
+  //    ※ 登録サイトでは本物の AdSense が初期化をスキップして広告が出なくなることがある
+  // =====================================================================
+  let adsArray = [];
+  const applyAdsSpoof = (arr) => {
+    try {
+      if (arr && typeof arr === 'object' && state.antiAdblock && isActive()) {
+        if (arr.loaded !== true) { arr.loaded = true; arr.__pgSpoofed = true; }
+      } else if (arr && arr.__pgSpoofed) {
+        delete arr.loaded; delete arr.__pgSpoofed;
+      }
+    } catch (_) {}
+  };
+  try {
+    const existing = window.adsbygoogle;
+    if (existing && typeof existing === 'object') adsArray = existing;
+    Object.defineProperty(window, 'adsbygoogle', {
+      configurable: true, enumerable: true,
+      get() { applyAdsSpoof(adsArray); return adsArray; },
+      set(v) { adsArray = v; applyAdsSpoof(adsArray); },
+    });
+    applyAdsSpoof(adsArray);
+  } catch (_) { /* 定義できなかったら諦める */ }
 
   // =====================================================================
   // ① window.open をすり替える（ポップアップ／ポップアンダーの本丸）
@@ -147,6 +178,19 @@
     } catch (_) { return false; }
   };
 
+  // 「広告ブロッカーを検出しました」「AdBlockを無効にしてください」系の文言
+  const NAG_RE = /広告ブロッ[クカ]|広告を?ブロック|ad[\s-]?block|adblocker|ublock|brave.{0,12}shields|shields.{0,12}(有効|オフ|off|無効)|disable your ad|allow ads|ad[\s-]?guard|広告(を|の)(表示|有効)|広告収益によって/i;
+
+  const looksLikeAdblockNag = (el, cs, cover, vw, vh) => {
+    if (!state.antiAdblock) return false;
+    if (cover < vw * vh * 0.6) return false;             // 警告系は背景ごと画面を覆ってくる
+    if (el.querySelector('input, textarea, select')) return false;
+    const text = (el.innerText || el.textContent || '').slice(0, 2000);
+    if (!NAG_RE.test(text)) return false;
+    // 本文全体がたまたま一致しないように、文字数が多すぎる要素（記事本文とか）は除外
+    return text.replace(/\s+/g, '').length < 800;
+  };
+
   const looksLikeAdOverlay = (el) => {
     if (!(el instanceof Element)) return false;
     if (el === document.body || el === document.documentElement) return false;
@@ -156,9 +200,14 @@
     if (!vw || !vh) return false;
     const r = el.getBoundingClientRect();
     const cover = (Math.min(r.right, vw) - Math.max(r.left, 0)) * (Math.min(r.bottom, vh) - Math.max(r.top, 0));
-    if (cover < vw * vh * 0.8) return false;          // 画面の8割以上覆ってるやつだけ
     const z = parseInt(cs.zIndex, 10);
     if (!(z >= 100)) return false;                      // z-index がそこそこ高いやつだけ
+
+    // 「広告ブロッカー検出」の警告モーダル → 消す
+    if (looksLikeAdblockNag(el, cs, cover, vw, vh)) return 'nag';
+
+    if (!state.blockOverlay) return false;
+    if (cover < vw * vh * 0.8) return false;          // 画面の8割以上覆ってるやつだけ
 
     // 入力欄があるやつ（ログイン・検索・同意フォーム）はたぶん本物なので触らない
     if (el.querySelector('input, textarea, select, button[type="submit"]')) return false;
@@ -184,7 +233,23 @@
     return false;
   };
 
-  const killOverlay = (el) => {
+  // 警告モーダルを出すサイトは本文側に pointer-events:none を掛けてクリックを殺してくるので、
+  // 画面の半分以上を占める要素でそうなってるやつは元に戻す
+  const restorePointerEvents = () => {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    for (const el of document.querySelectorAll('[style*="pointer-events"]')) {
+      try {
+        if (el.style.pointerEvents !== 'none') continue;
+        const r = el.getBoundingClientRect();
+        if (r.width * r.height < vw * vh * 0.5) continue;
+        el.style.setProperty('pointer-events', 'auto', 'important');
+        el.style.setProperty('user-select', 'auto', 'important');
+        if (el.getAttribute('aria-hidden') === 'true') el.removeAttribute('aria-hidden');
+      } catch (_) {}
+    }
+  };
+
+  const killOverlay = (el, kind) => {
     if (overlayLog.has(el)) return;
     overlayLog.add(el);
     el.style.setProperty('display', 'none', 'important');
@@ -192,19 +257,25 @@
     for (const n of [document.documentElement, document.body]) {
       if (n && getComputedStyle(n).overflow === 'hidden') n.style.setProperty('overflow', 'auto', 'important');
     }
+    if (kind === 'nag') restorePointerEvents();
     const link = el.tagName === 'A' ? el.href : (el.querySelector('iframe[src], a[href]') || {}).src
       || (el.querySelector('a[href]') || {}).href || '';
-    report('overlay', link, `<${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''}>`);
+    const desc = `<${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''}>`;
+    report(kind === 'nag' ? 'adblock-nag' : 'overlay', link, desc);
   };
 
   let scanTimer = null;
   const scanOverlays = () => {
     scanTimer = null;
-    if (!isActive() || !state.blockOverlay || !document.body) return;
+    if (!isActive() || !(state.blockOverlay || state.antiAdblock) || !document.body) return;
     // fixed な要素は数が少ないので、全要素なめても一瞬で終わる
     for (const el of document.body.querySelectorAll('body > *, body > * > *, body > * > * > *')) {
-      try { if (looksLikeAdOverlay(el)) killOverlay(el); } catch (_) {}
+      try {
+        const kind = looksLikeAdOverlay(el);
+        if (kind) killOverlay(el, kind);
+      } catch (_) {}
     }
+    if (state.antiAdblock) restorePointerEvents();
   };
   const scheduleScan = () => {
     if (scanTimer) return;
@@ -213,15 +284,17 @@
 
   const startObserver = () => {
     if (!document.documentElement) return;
+    // 要素の追加だけじゃなく、display/class の切り替えで出てくるやつも拾う
     new MutationObserver((muts) => {
       for (const m of muts) {
-        if (m.addedNodes.length) { scheduleScan(); return; }
+        if (m.type === 'attributes' || m.addedNodes.length) { scheduleScan(); return; }
       }
-    }).observe(document.documentElement, { childList: true, subtree: true });
+    }).observe(document.documentElement, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden'],
+    });
     scheduleScan();
-    // 遅延ロードで後から出てくる広告用に、しばらく定期チェック
-    let n = 0;
-    const iv = setInterval(() => { scheduleScan(); if (++n > 20) clearInterval(iv); }, 1500);
+    // 遅延ロードや「数秒後に検出→警告」パターン用に、ずっと軽く定期チェック（2秒ごと）
+    setInterval(scheduleScan, 2000);
   };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startObserver, { once: true });
@@ -238,6 +311,8 @@
       if (typeof s.enabled === 'boolean') state.enabled = s.enabled;
       if (typeof s.siteTargeted === 'boolean') state.siteTargeted = s.siteTargeted;
       if (typeof s.blockOverlay === 'boolean') state.blockOverlay = s.blockOverlay;
+      if (typeof s.antiAdblock === 'boolean') state.antiAdblock = s.antiAdblock;
+      applyAdsSpoof(adsArray);
       scheduleScan();
     } catch (_) {}
   });

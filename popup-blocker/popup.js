@@ -11,6 +11,7 @@ const KIND_LABEL = {
   'window.open': { text: 'ポップアップ', cls: '' },
   'fake-click':  { text: '偽クリック',   cls: 'fake' },
   'overlay':     { text: 'オーバーレイ', cls: 'overlay' },
+  'adblock-nag': { text: '検出警告',     cls: 'nag' },
 };
 
 const hostMatches = (host, site) => host === site || host.endsWith('.' + site);
@@ -21,6 +22,7 @@ const render = () => {
   $('enabledLabel').textContent = cfg.enabled ? 'ON' : 'OFF';
   document.body.classList.toggle('off', !cfg.enabled);
   $('blockOverlay').checked = cfg.blockOverlay;
+  $('antiAdblock').checked = cfg.antiAdblock !== false;
 
   // 今見てるサイト（chrome:// とかホスト無いページは無効化）
   $('siteTargeted').checked = info.siteTargeted;
@@ -115,6 +117,10 @@ $('enabled').addEventListener('change', async (e) => {
 });
 $('blockOverlay').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { blockOverlay: e.target.checked } });
+  refresh();
+});
+$('antiAdblock').addEventListener('change', async (e) => {
+  await send({ type: 'setConfig', patch: { antiAdblock: e.target.checked } });
   refresh();
 });
 

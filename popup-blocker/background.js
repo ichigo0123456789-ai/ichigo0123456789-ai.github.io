@@ -8,7 +8,7 @@
 // ・ショートカットキー（Alt+Shift+P）でオン・オフ切り替え
 // ・オフのときはアイコンをグレーにして分かりやすく
 // =====================================================================
-const DEFAULTS = { enabled: true, blockOverlay: true, sites: [] };
+const DEFAULTS = { enabled: true, blockOverlay: true, antiAdblock: true, sites: [] };
 const MAX_LOG_PER_TAB = 50;   // 1タブで覚えとくブロック履歴の上限
 const SCRIPT_IDS = ['pg-main', 'pg-bridge'];
 
@@ -103,7 +103,7 @@ const applyIcon = async (enabled) => {
 // ---- 初期化 ------------------------------------------------------------
 chrome.runtime.onInstalled.addListener(async () => {
   const cfg = await getConfig();
-  await chrome.storage.sync.set({ enabled: cfg.enabled, blockOverlay: cfg.blockOverlay, sites: cfg.sites });
+  await chrome.storage.sync.set({ enabled: cfg.enabled, blockOverlay: cfg.blockOverlay, antiAdblock: cfg.antiAdblock, sites: cfg.sites });
   chrome.action.setBadgeBackgroundColor({ color: '#e0245e' });
   chrome.action.setBadgeTextColor?.({ color: '#ffffff' });
   applyIcon(cfg.enabled);
