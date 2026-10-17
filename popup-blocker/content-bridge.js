@@ -2,20 +2,21 @@
 // content-bridge.js ―― 拡張機能側（ISOLATED world）の橋渡し係だよ🌉
 //
 // ・chrome.storage から設定を読んで、MAIN world の content-main.js に
-//   CustomEvent で渡す
+//   CustomEvent で渡す（登録サイトにしか注入されないよ）
 // ・content-main.js が「ブロックしたよ」って言ってきたら
 //   background.js に転送してバッジのカウントを増やしてもらう
 // =====================================================================
 (() => {
   'use strict';
 
-  const DEFAULTS = { enabled: true, blockOverlay: true, allowlist: [] };
-  const host = location.hostname || '';
+  const DEFAULTS = { enabled: true, blockOverlay: true, sites: [] };
+  const host = (location.hostname || '').toLowerCase();
 
-  // 許可リスト判定（サブドメインも含めてマッチ。example.com を許可したら a.example.com もOK）
-  const isAllowedHost = (allowlist) => {
+  // 登録サイト判定（サブドメインも含めてマッチ。example.com を登録したら a.example.com も対象）
+  // このスクリプト自体が登録サイトにしか注入されないけど、二重チェックしとく
+  const isTargetHost = (sites) => {
     if (!host) return false;
-    return (allowlist || []).some((h) => host === h || host.endsWith('.' + h));
+    return (sites || []).some((h) => host === h || host.endsWith('.' + h));
   };
 
   const sendState = async () => {
@@ -25,7 +26,7 @@
     } catch (_) { /* storage 読めなかったらデフォで */ }
     const payload = {
       enabled: !!cfg.enabled,
-      siteAllowed: isAllowedHost(cfg.allowlist),
+      siteTargeted: isTargetHost(cfg.sites),
       blockOverlay: !!cfg.blockOverlay,
     };
     document.dispatchEvent(new CustomEvent('popupguard:state', { detail: JSON.stringify(payload) }));

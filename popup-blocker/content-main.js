@@ -14,12 +14,13 @@
   window.__popupGuardInstalled = true;
 
   // ---- いまの状態（bridge から届くまでのデフォ）---------------------
+  // このスクリプトは登録サイトにしか注入されないので、デフォは「ガードする」
   const state = {
     enabled: true,        // ガード自体がオンか
-    siteAllowed: false,   // このサイトは許可リストに入ってるか
+    siteTargeted: true,   // このサイトが登録サイトか
     blockOverlay: true,   // 全画面オーバーレイも消すか
   };
-  const isActive = () => state.enabled && !state.siteAllowed;
+  const isActive = () => state.enabled && state.siteTargeted;
 
   // ---- ブロックしたよ〜って bridge に報告する -------------------------
   const report = (kind, url, note) => {
@@ -235,7 +236,7 @@
     try {
       const s = JSON.parse(e.detail || '{}');
       if (typeof s.enabled === 'boolean') state.enabled = s.enabled;
-      if (typeof s.siteAllowed === 'boolean') state.siteAllowed = s.siteAllowed;
+      if (typeof s.siteTargeted === 'boolean') state.siteTargeted = s.siteTargeted;
       if (typeof s.blockOverlay === 'boolean') state.blockOverlay = s.blockOverlay;
       scheduleScan();
     } catch (_) {}

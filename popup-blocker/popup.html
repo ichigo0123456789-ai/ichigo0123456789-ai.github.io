@@ -12,24 +12,42 @@
       <span>ポップアップガード</span>
     </div>
     <!-- メインのオン・オフ -->
-    <label class="switch big" title="全サイトでのオン・オフ（Alt+Shift+P でも切替OK）">
+    <label class="switch big" title="全体のオン・オフ（Alt+Shift+P でも切替OK）">
       <input type="checkbox" id="enabled">
       <span class="track"><span class="knob"></span></span>
       <span class="switch-label" id="enabledLabel">ON</span>
     </label>
   </header>
 
+  <!-- 今見てるサイト -->
   <section class="card">
     <div class="row">
       <div class="row-text">
-        <div class="row-title">このサイトでは許可する</div>
+        <div class="row-title">このサイトでブロックする</div>
         <div class="row-sub" id="hostLabel">—</div>
       </div>
       <label class="switch">
-        <input type="checkbox" id="siteAllowed">
+        <input type="checkbox" id="siteTargeted">
         <span class="track"><span class="knob"></span></span>
       </label>
     </div>
+  </section>
+
+  <!-- 登録サイト一覧 -->
+  <section class="card">
+    <div class="list-head">
+      <span>ブロックするサイト <b id="siteCount">0</b></span>
+    </div>
+    <form class="add-form" id="addForm">
+      <input type="text" id="siteInput" placeholder="example.com（URL貼ってもOK）" autocomplete="off" spellcheck="false">
+      <button type="submit" class="add-btn">追加</button>
+    </form>
+    <p class="error hidden" id="addError"></p>
+    <ul class="sites" id="sites"></ul>
+    <p class="empty" id="sitesEmpty">まだ登録なし。上のスイッチか入力欄から追加してね</p>
+  </section>
+
+  <section class="card">
     <div class="row">
       <div class="row-text">
         <div class="row-title">全画面オーバーレイ広告も消す</div>

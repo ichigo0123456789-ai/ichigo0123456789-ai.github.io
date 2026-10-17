@@ -1,16 +1,65 @@
 // =====================================================================
 // background.js ―― サービスワーカー（裏方）だよ🛠️
 //
+// ・登録したサイト（sites）にだけ content script を動的に注入する
+//   → 登録してないサイトではこの拡張機能は一切動かない
 // ・ブロックした件数をタブごとに数えてバッジに出す
 // ・ポップアップUI（popup.js）からの問い合わせに答える
 // ・ショートカットキー（Alt+Shift+P）でオン・オフ切り替え
 // ・オフのときはアイコンをグレーにして分かりやすく
 // =====================================================================
-const DEFAULTS = { enabled: true, blockOverlay: true, allowlist: [] };
+const DEFAULTS = { enabled: true, blockOverlay: true, sites: [] };
 const MAX_LOG_PER_TAB = 50;   // 1タブで覚えとくブロック履歴の上限
+const SCRIPT_IDS = ['pg-main', 'pg-bridge'];
 
 // ---- 設定の読み書き ---------------------------------------------------
-const getConfig = async () => Object.assign({}, DEFAULTS, await chrome.storage.sync.get(DEFAULTS));
+const getConfig = async () => {
+  const cfg = Object.assign({}, DEFAULTS, await chrome.storage.sync.get(DEFAULTS));
+  if (!Array.isArray(cfg.sites)) cfg.sites = [];
+  return cfg;
+};
+
+// ---- ホスト名のお掃除（URL貼られても example.com に直す）-------------------
+const normalizeHost = (input) => {
+  let s = String(input || '').trim().toLowerCase();
+  if (!s) return '';
+  try {
+    if (!/^[a-z]+:\/\//.test(s)) s = 'http://' + s;
+    s = new URL(s).hostname;
+  } catch (_) { return ''; }
+  s = s.replace(/^www\./, '').replace(/\.$/, '');
+  // 使える文字だけ（match pattern に突っ込むので変なのは弾く）
+  if (!/^[a-z0-9.-]+$/.test(s) || s.startsWith('-') || s.startsWith('.')) return '';
+  return s;
+};
+const hostMatches = (host, sites) => !!host && sites.some((h) => host === h || host.endsWith('.' + h));
+
+// ---- 登録サイト → content script の動的登録 ---------------------------------
+// example.com を登録したら *://example.com/* と *://*.example.com/* の両方に注入
+const hostToPatterns = (h) => {
+  const list = [`*://${h}/*`];
+  const isIp = /^\d+\.\d+\.\d+\.\d+$/.test(h);
+  if (!isIp && h !== 'localhost') list.push(`*://*.${h}/*`);
+  return list;
+};
+
+let syncChain = Promise.resolve();
+const syncScripts = () => {
+  // 連続で設定が変わっても登録処理が重ならないように直列化
+  syncChain = syncChain.then(async () => {
+    const cfg = await getConfig();
+    const matches = cfg.enabled ? cfg.sites.flatMap(hostToPatterns) : [];
+    const existing = await chrome.scripting.getRegisteredContentScripts({ ids: SCRIPT_IDS });
+    if (existing.length) await chrome.scripting.unregisterContentScripts({ ids: existing.map((s) => s.id) });
+    if (!matches.length) return;   // 登録サイト無し or OFF → 何も注入しない
+    const common = { matches, runAt: 'document_start', allFrames: true, matchOriginAsFallback: true, persistAcrossSessions: true };
+    await chrome.scripting.registerContentScripts([
+      Object.assign({ id: 'pg-main', js: ['content-main.js'], world: 'MAIN' }, common),
+      Object.assign({ id: 'pg-bridge', js: ['content-bridge.js'], world: 'ISOLATED' }, common),
+    ]);
+  }).catch((e) => console.warn('[PopupGuard] script sync failed', e));
+  return syncChain;
+};
 
 // ---- タブごとのブロック履歴（storage.session に置けば SW が寝ても消えない）
 const logKey = (tabId) => `log:${tabId}`;
@@ -54,20 +103,24 @@ const applyIcon = async (enabled) => {
 // ---- 初期化 ------------------------------------------------------------
 chrome.runtime.onInstalled.addListener(async () => {
   const cfg = await getConfig();
-  await chrome.storage.sync.set(cfg);   // デフォ値を書き込んどく
+  await chrome.storage.sync.set({ enabled: cfg.enabled, blockOverlay: cfg.blockOverlay, sites: cfg.sites });
   chrome.action.setBadgeBackgroundColor({ color: '#e0245e' });
   chrome.action.setBadgeTextColor?.({ color: '#ffffff' });
   applyIcon(cfg.enabled);
+  syncScripts();
 });
 chrome.runtime.onStartup.addListener(async () => {
   const cfg = await getConfig();
   chrome.action.setBadgeBackgroundColor({ color: '#e0245e' });
   applyIcon(cfg.enabled);
+  syncScripts();
 });
 
-// 設定が変わったらアイコン更新
+// 設定が変わったらアイコン更新 & 注入先を同期
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'sync' && changes.enabled) applyIcon(!!changes.enabled.newValue);
+  if (area !== 'sync') return;
+  if (changes.enabled) applyIcon(!!changes.enabled.newValue);
+  if (changes.enabled || changes.sites) syncScripts();
 });
 
 // ---- content script / popup からのメッセージ -----------------------------
@@ -112,14 +165,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         const cfg = await getConfig();
         let host = '';
-        try { host = new URL(tab?.url || '').hostname; } catch (_) {}
+        try {
+          const u = new URL(tab?.url || '');
+          if (/^https?:$/.test(u.protocol)) host = u.hostname.toLowerCase();
+        } catch (_) {}
         const log = tab ? await getLog(tab.id) : [];
         return sendResponse({
           tabId: tab?.id ?? null,
           host,
           url: tab?.url || '',
           config: cfg,
-          siteAllowed: !!host && cfg.allowlist.some((h) => host === h || host.endsWith('.' + h)),
+          siteTargeted: hostMatches(host, cfg.sites),
           log,
         });
       }
@@ -129,18 +185,37 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const cfg = await getConfig();
         const next = Object.assign({}, cfg, msg.patch || {});
         await chrome.storage.sync.set(next);
+        await syncScripts();
         return sendResponse({ ok: true, config: next });
       }
 
-      // popup.js: このサイトの許可/解除
-      case 'toggleSite': {
+      // popup.js: サイトを登録（URL貼られてもOK）
+      case 'addSite': {
+        const host = normalizeHost(msg.host);
+        if (!host) return sendResponse({ ok: false, error: 'サイト名がちょっと変かも。example.com みたいに入れてね' });
         const cfg = await getConfig();
-        const host = (msg.host || '').toLowerCase();
-        if (!host) return sendResponse({ ok: false });
-        const list = new Set(cfg.allowlist);
-        if (list.has(host)) list.delete(host); else list.add(host);
-        await chrome.storage.sync.set({ allowlist: [...list] });
-        return sendResponse({ ok: true, siteAllowed: list.has(host) });
+        if (!cfg.sites.includes(host)) {
+          await chrome.storage.sync.set({ sites: [...cfg.sites, host] });
+          await syncScripts();
+        }
+        // 今見てるタブがそのサイトなら、すぐ効くようにリロード
+        if (msg.reloadTabId != null) {
+          try {
+            const tab = await chrome.tabs.get(msg.reloadTabId);
+            const h = new URL(tab.url || '').hostname.toLowerCase();
+            if (hostMatches(h, [host])) await chrome.tabs.reload(msg.reloadTabId);
+          } catch (_) {}
+        }
+        return sendResponse({ ok: true, host });
+      }
+
+      // popup.js: サイトの登録解除
+      case 'removeSite': {
+        const cfg = await getConfig();
+        const host = String(msg.host || '').toLowerCase();
+        await chrome.storage.sync.set({ sites: cfg.sites.filter((h) => h !== host) });
+        await syncScripts();
+        return sendResponse({ ok: true });
       }
 
       // popup.js: ブロックされたURLを自分の意思で開く
@@ -175,3 +250,6 @@ chrome.commands?.onCommand.addListener(async (command) => {
   const cfg = await getConfig();
   await chrome.storage.sync.set({ enabled: !cfg.enabled });
 });
+
+// SW が起きるたびに一応同期しとく（登録が消えてた場合の保険）
+syncScripts();

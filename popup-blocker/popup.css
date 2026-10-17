@@ -87,3 +87,31 @@ body {
 
 .foot { padding: 4px 14px 10px; color: var(--sub); font-size: 11px; text-align: center; min-height: 24px; }
 body.off .card { opacity: .55; }
+
+/* ---- 登録サイト ---- */
+.add-form { display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.add-form input {
+  flex: 1; min-width: 0; font: inherit; font-size: 12.5px; padding: 6px 8px;
+  border: 1px solid var(--line); border-radius: 8px; outline: none;
+}
+.add-form input:focus { border-color: var(--accent); }
+.add-btn {
+  flex-shrink: 0; font: inherit; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px;
+  border: 0; background: var(--accent); color: #fff; cursor: pointer;
+}
+.add-btn:hover { filter: brightness(1.08); }
+.error { margin: 0; padding: 4px 12px 8px; color: var(--accent); font-size: 11.5px; }
+.error.hidden { display: none; }
+.sites { list-style: none; margin: 0; padding: 0; max-height: 150px; overflow: auto; }
+.sites li {
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--line); font-size: 12.5px;
+}
+.sites li:last-child { border-bottom: 0; }
+.sites li.current { background: var(--accent-soft); }
+.sites .host { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sites .tag { font-size: 10px; color: var(--accent); font-weight: 700; }
+.remove-btn {
+  flex-shrink: 0; background: none; border: 0; color: var(--sub); cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px;
+}
+.remove-btn:hover { color: var(--accent); }
+.sites.hidden { display: none; }

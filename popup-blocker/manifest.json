@@ -3,11 +3,12 @@
   "name": "ポップアップガード",
   "short_name": "PopupGuard",
   "version": "1.0.0",
-  "description": "勝手に開くポップアップ・ポップアンダー・全画面オーバーレイ広告をブロック。ワンクリックでオン・オフ切り替え、サイトごとの許可もOK。",
+  "description": "登録したサイトだけで、勝手に開くポップアップ・ポップアンダー・全画面オーバーレイ広告をブロック。ワンクリックでオン・オフ切り替え。",
   "minimum_chrome_version": "111",
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -38,30 +39,5 @@
       },
       "description": "ポップアップガードのオン・オフを切り替え"
     }
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content-main.js"
-      ],
-      "run_at": "document_start",
-      "all_frames": true,
-      "match_about_blank": true,
-      "world": "MAIN"
-    },
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content-bridge.js"
-      ],
-      "run_at": "document_start",
-      "all_frames": true,
-      "match_about_blank": true
-    }
-  ]
+  }
 }
