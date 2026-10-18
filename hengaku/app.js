@@ -2,6 +2,8 @@
    変額・外貨建 過去問道場
    - 問題データは data/*.js が定義する SEIHO_HENGAKU_MOSHI / SEIHO_HENGAKU_EX /
      SEIHO_GAIKA_MOSHI / SEIHO_GAIKA_EX（各ファイルが分野1つ: subject → units → questions）を読む。
+   - 「専門 過去問」分野は data/senmon/<id>.js が定義する SEIHO_SENMON_FORMS[id]（1フォーム＝1単元）を
+     SENMON_FORM_ORDER の順に並べて組み立てる（ファイルが無いフォームは単元を作らない）。
      ファイルが無い（404）分野はタブを作らない
    - 各分野の末尾に、全単元を連結した仮想単元「全部通し」を置く（履歴は元単元と共有）
    - 問題形式: t:"ox"（〇×） / t:"mc"（多肢選択 2〜10択, c:選択肢配列, a:正解index）
@@ -14,9 +16,21 @@
 const CIRCLED = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
 
 /* ---------- 問題データの取り込み ---------- */
+// 専門課程 過去問: 実施時期・フォームごとのファイルを単元として束ねる
+const SENMON_FORM_ORDER = ["2025A", "2025B", "2025C", "2025D", "2026A", "2026B"];
+function buildSenmon(FORMS) {
+  if (!FORMS || typeof FORMS !== "object") return null;
+  const units = SENMON_FORM_ORDER
+    .map(id => FORMS[id])
+    .filter(f => f && Array.isArray(f.questions) && f.questions.length)
+    .map(f => ({ id: f.id, name: f.name, questions: f.questions }));
+  return units.length ? { subject: "senmon_kako", name: "専門課程 過去問", short: "専門 過去問", units } : null;
+}
+
 const SUBJECTS = [
   window.SEIHO_HENGAKU_MOSHI, window.SEIHO_HENGAKU_EX,
   window.SEIHO_GAIKA_MOSHI, window.SEIHO_GAIKA_EX,
+  buildSenmon(window.SEIHO_SENMON_FORMS),
 ].filter(s => s && Array.isArray(s.units));
 SUBJECTS.forEach(s => {
   s.units = s.units.filter(u => u && u.id);
