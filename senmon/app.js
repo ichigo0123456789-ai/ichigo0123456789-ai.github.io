@@ -4,6 +4,8 @@
      SEIHO_GAIKA_MOSHI / SEIHO_GAIKA_EX（各ファイルが分野1つ: subject → units → questions）を読む。
    - 「専門 過去問」分野は data/senmon/<id>.js が定義する SEIHO_SENMON_FORMS[id]（1フォーム＝1単元）を
      SENMON_FORM_ORDER の順に並べて組み立てる（ファイルが無いフォームは単元を作らない）。
+   - 「変額 過去問」「外貨建 過去問」分野は data/kako/<key>.js が定義する SEIHO_KAKO_FORMS[key]
+     （key は hengaku_2025A のように 試験_年度フォーム）を KAKO_FORM_ORDER の順に束ねる。
      ファイルが無い（404）分野はタブを作らない
    - 各分野の末尾に、全単元を連結した仮想単元「全部通し」を置く（履歴は元単元と共有）
    - 問題形式: t:"ox"（〇×） / t:"mc"（多肢選択 2〜10択, c:選択肢配列, a:正解index）
@@ -27,9 +29,24 @@ function buildSenmon(FORMS) {
   return units.length ? { subject: "senmon_kako", name: "専門課程 過去問", short: "専門 過去問", units } : null;
 }
 
+// 変額保険・外貨建保険の実物過去問: data/kako/<exam>_<id>.js を分野ごとに束ねる
+const KAKO_FORM_ORDER = ["2025A","2025B","2025C","2025D","2026A","2026B"];
+function buildKako(FORMS, exam, subject, name, short) {
+  if (!FORMS || typeof FORMS !== "object") return null;
+  const units = KAKO_FORM_ORDER
+    .map(id => FORMS[`${exam}_${id}`])
+    .filter(f => f && Array.isArray(f.questions) && f.questions.length)
+    .map(f => ({ id: f.id, name: f.name, questions: f.questions }));
+  return units.length ? { subject, name, short, units } : null;
+}
+
 const SUBJECTS = [
-  window.SEIHO_HENGAKU_MOSHI, window.SEIHO_HENGAKU_EX,
-  window.SEIHO_GAIKA_MOSHI, window.SEIHO_GAIKA_EX,
+  window.SEIHO_HENGAKU_MOSHI,
+  buildKako(window.SEIHO_KAKO_FORMS, "hengaku", "hengaku_kako", "変額保険 過去問", "変額 過去問"),
+  window.SEIHO_HENGAKU_EX,
+  window.SEIHO_GAIKA_MOSHI,
+  buildKako(window.SEIHO_KAKO_FORMS, "gaika", "gaika_kako", "外貨建保険 過去問", "外貨建 過去問"),
+  window.SEIHO_GAIKA_EX,
   buildSenmon(window.SEIHO_SENMON_FORMS),
 ].filter(s => s && Array.isArray(s.units));
 SUBJECTS.forEach(s => {

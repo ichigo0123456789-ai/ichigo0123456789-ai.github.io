@@ -1,7 +1,7 @@
 # 変額・外貨建 過去問道場
 
 生命保険の **変額保険販売資格試験** と **外貨建保険販売資格試験** の対策用一問一答アプリ。
-模擬テスト（各2回）・章別問題・生命保険専門課程試験の過去問を、単元別の順番演習・範囲指定シャッフル・分野ごとのランダム10問で演習できる。
+模擬テスト（各2回）・実物の過去問・章別問題と、生命保険専門課程試験の過去問を、単元別の順番演習・範囲指定シャッフル・分野ごとのランダム10問で演習できる。
 「金財試験 過去問道場」（`kinzai/`）・「内管責 過去問道場」（`naikan/`）の姉妹アプリ（`naikan/` をベースに作成）。
 
 - 公開URL: `https://ichigo0123456789-ai.github.io/senmon/`
@@ -12,10 +12,12 @@
 | 順 | subject | タブ表示 | 分野名 | グローバル名 | ファイル | 単元 |
 |---|---|---|---|---|---|---|
 | 1 | `hengaku_moshi` | 変額 模試 | 変額保険 模擬テスト | `SEIHO_HENGAKU_MOSHI` | `data/hengaku-moshi.js` | `round1`「第1回」, `round2`「第2回」 |
-| 2 | `hengaku_ex` | 変額 章別 | 変額保険 章別問題 | `SEIHO_HENGAKU_EX` | `data/hengaku-ex.js` | `ch1`〜`ch4`「第N章 章名」 |
-| 3 | `gaika_moshi` | 外貨建 模試 | 外貨建保険 模擬テスト | `SEIHO_GAIKA_MOSHI` | `data/gaika-moshi.js` | `round1`, `round2` |
-| 4 | `gaika_ex` | 外貨建 章別 | 外貨建保険 章別問題 | `SEIHO_GAIKA_EX` | `data/gaika-ex.js` | `ch1`〜`ch6` |
-| 5 | `senmon_kako` | 専門 過去問 | 専門課程 過去問 | `SEIHO_SENMON_FORMS[id]`（app.js の `buildSenmon` が束ねる） | `data/senmon/<id>.js` | `2025A`〜`2025D`「2025年9月〜2026年3月実施 フォームA〜D」、`2026A`・`2026B`「2026年4月〜8月実施 フォームA・B」（各49問） |
+| 2 | `hengaku_kako` | 変額 過去問 | 変額保険 過去問 | `SEIHO_KAKO_FORMS["hengaku_<id>"]`（`buildKako`） | `data/kako/hengaku_<id>.js` | `2025A`〜`2025D`、`2026A`・`2026B`（各40問・3択） |
+| 3 | `hengaku_ex` | 変額 章別 | 変額保険 章別問題 | `SEIHO_HENGAKU_EX` | `data/hengaku-ex.js` | `ch1`〜`ch4`「第N章 章名」 |
+| 4 | `gaika_moshi` | 外貨建 模試 | 外貨建保険 模擬テスト | `SEIHO_GAIKA_MOSHI` | `data/gaika-moshi.js` | `round1`, `round2` |
+| 5 | `gaika_kako` | 外貨建 過去問 | 外貨建保険 過去問 | `SEIHO_KAKO_FORMS["gaika_<id>"]`（`buildKako`） | `data/kako/gaika_<id>.js` | 同上 |
+| 6 | `gaika_ex` | 外貨建 章別 | 外貨建保険 章別問題 | `SEIHO_GAIKA_EX` | `data/gaika-ex.js` | `ch1`〜`ch6` |
+| 7 | `senmon_kako` | 専門 過去問 | 専門課程 過去問 | `SEIHO_SENMON_FORMS[id]`（app.js の `buildSenmon` が束ねる） | `data/senmon/<id>.js` | `2025A`〜`2025D`「2025年9月〜2026年3月実施 フォームA〜D」、`2026A`・`2026B`「2026年4月〜8月実施 フォームA・B」（各49問） |
 
 - 各分野の末尾に仮想単元「全部通し（N問）」（id `all`）を置く。全単元を連結したもので、
   問題・履歴は元の単元と共有する（シャッフルの範囲ツリーと成績の集計には出さない）
@@ -36,6 +38,7 @@ senmon/
     ├── gaika-moshi.js   … 外貨建保険 模擬テスト
     ├── gaika-ex.js      … 外貨建保険 章別問題
     ├── senmon/          … 生命保険専門課程試験 過去問。1フォーム1ファイル（2025A.js … 2026B.js）
+    ├── kako/            … 変額保険・外貨建保険の実物過去問。1フォーム1ファイル（hengaku_2025A.js, gaika_2025A.js …）
     └── img/             … 問題の図（PNG）
 ```
 
@@ -97,7 +100,12 @@ window.SEIHO_HENGAKU_MOSHI = {
   （このアプリ用の `gas/` はない）。`config.js` の `SEIHO_SYNC_URL` を空にすると
   ログインUIは表示されず端末内保存のみで動作する
 
-## 専門課程 過去問の追加手順
+## 過去問の追加手順
+
+変額・外貨建の実物過去問は `data/kako/<exam>_<id>.js`（`window.SEIHO_KAKO_FORMS["<exam>_<id>"] = { id, name, questions }`、exam は `hengaku`/`gaika`）を作り、
+`app.js` の `KAKO_FORM_ORDER` に id が無ければ追加、`index.html` に `<script>` を追加する。
+
+### 専門課程 過去問の追加手順
 
 1. `data/senmon/<id>.js` を作る（id は `2026C` のように 年度＋フォーム）。中身は
    `window.SEIHO_SENMON_FORMS = window.SEIHO_SENMON_FORMS || {}; window.SEIHO_SENMON_FORMS["<id>"] = { id, name, questions: [...] };`
