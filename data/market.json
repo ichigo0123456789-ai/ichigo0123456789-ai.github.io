@@ -1388,5 +1388,49 @@
       "changePct": -1.2,
       "src": "Yahoo Finance / Yahoo!ファイナンス(日本) as of 2026-10-09 東証大引け"
     }
+  },
+  {
+    "briefDate": "2026-10-19",
+    "tradingDate": {
+      "jp": "2026-10-16",
+      "us": "2026-10-16"
+    },
+    "note": "10/19(月)早朝のため直近確定値(日本10/16大引け・米国10/16引け)を採用。日経平均は+1.39%と反発、米株はナスダック100が-2.50%・S&P500が-1.09%と下落、ドル円は158円台で円安水準、金は小幅安、三菱UFJは+1.82%。",
+    "nikkei": {
+      "value": 65324.29,
+      "change": 898.34,
+      "changePct": 1.39,
+      "src": "Yahoo!ファイナンス as of 2026-10-16 東証大引け"
+    },
+    "nasdaq100": {
+      "value": 29187.55,
+      "change": -748.05,
+      "changePct": -2.5,
+      "src": "Yahoo!ファイナンス as of 2026-10-16 NY引け確定値"
+    },
+    "sp500": {
+      "value": 7659.44,
+      "change": -84.62,
+      "changePct": -1.09,
+      "src": "Yahoo!ファイナンス as of 2026-10-16 NY引け確定値"
+    },
+    "usdjpy": {
+      "value": 158.04,
+      "change": 0.04,
+      "changePct": 0.03,
+      "src": "TradingEconomics as of 2026-10-16 NY週末最終値"
+    },
+    "gold": {
+      "value": 4166.39,
+      "change": -4.67,
+      "changePct": -0.11,
+      "src": "TradingEconomics as of 2026-10-16 週末最終値"
+    },
+    "mufg8306": {
+      "value": 3475.0,
+      "change": 62.0,
+      "changePct": 1.82,
+      "src": "Yahoo!ファイナンス as of 2026-10-16 東証大引け"
+    }
   }
 ]
