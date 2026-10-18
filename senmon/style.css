@@ -73,6 +73,10 @@ kbd{
 
 /* ================= 分野タブ・単元リスト ================= */
 .tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:12px}
+.tabgroups{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.tabrow{display:grid;grid-template-columns:3.6em repeat(3,minmax(0,1fr));gap:6px;align-items:stretch}
+.tabrow-label{display:flex;align-items:center;font-size:12px;font-weight:800;color:var(--sub);padding-left:2px}
+.tabrow .tab{min-width:0;padding-left:6px;padding-right:6px}
 .tab{
   border:1.5px solid var(--line);background:#fff;border-radius:10px;
   padding:9px 6px;font-size:14.5px;font-weight:800;color:var(--sub);transition:.12s;white-space:nowrap;

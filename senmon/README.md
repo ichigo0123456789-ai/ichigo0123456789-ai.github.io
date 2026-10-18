@@ -1,4 +1,4 @@
-# 変額・外貨建 過去問道場
+# 専門・変額・外貨建 過去問道場
 
 生命保険の **変額保険販売資格試験** と **外貨建保険販売資格試験** の対策用一問一答アプリ。
 模擬テスト（各2回）・実物の過去問・章別問題と、生命保険専門課程試験の過去問を、単元別の順番演習・範囲指定シャッフル・分野ごとのランダム10問で演習できる。
@@ -7,11 +7,15 @@
 - 公開URL: `https://ichigo0123456789-ai.github.io/senmon/`
 - 依存なしの静的サイト（HTML/CSS/JS のみ）。ビルド不要。
 
+## ホームのタブ
+
+「順番に解く」のタブは3段（過去問：専門／変額／外貨建、模試：専門／変額／外貨建、章別：変額／外貨建）。`app.js` の `SUBJECTS` で各分野に `group` と `tab` を付けている。専門課程の模擬テスト（令和8年度）は分野 `senmon_moshi`（`data/moshi-r8/senmon_r*.js`）。
+
 ## 分野（タブ）構成
 
 | 順 | subject | タブ表示 | 分野名 | グローバル名 | ファイル | 単元 |
 |---|---|---|---|---|---|---|
-| 1 | `hengaku_moshi` | 変額 模試 | 変額保険 模擬テスト | `SEIHO_HENGAKU_MOSHI` | `data/hengaku-moshi.js` | `round1`「第1回」, `round2`「第2回」 |
+| 1 | `hengaku_moshi` | 変額 模試 | 変額保険 模擬テスト | `SEIHO_HENGAKU_MOSHI` ＋ `SEIHO_MOSHI_R8` | `data/hengaku-moshi.js`, `data/moshi-r8/hengaku_r*.js` | `round1`・`round2`「令和7年度 第1回・第2回」, `r8round1`・`r8round2`「令和8年度 第1回・第2回」 |
 | 2 | `hengaku_kako` | 変額 過去問 | 変額保険 過去問 | `SEIHO_KAKO_FORMS["hengaku_<id>"]`（`buildKako`） | `data/kako/hengaku_<id>.js` | `2025A`〜`2025D`、`2026A`・`2026B`（各40問・3択） |
 | 3 | `hengaku_ex` | 変額 章別 | 変額保険 章別問題 | `SEIHO_HENGAKU_EX` | `data/hengaku-ex.js` | `ch1`〜`ch4`「第N章 章名」 |
 | 4 | `gaika_moshi` | 外貨建 模試 | 外貨建保険 模擬テスト | `SEIHO_GAIKA_MOSHI` | `data/gaika-moshi.js` | `round1`, `round2` |
@@ -38,6 +42,7 @@ senmon/
     ├── gaika-moshi.js   … 外貨建保険 模擬テスト
     ├── gaika-ex.js      … 外貨建保険 章別問題
     ├── senmon/          … 生命保険専門課程試験 過去問。1フォーム1ファイル（2025A.js … 2026B.js）
+    ├── moshi-r8/        … 令和8年度の模擬テスト（hengaku_r1.js … senmon_r2.js）。変額 模試・外貨建 模試・専門 過去問の末尾に単元として追加される
     ├── kako/            … 変額保険・外貨建保険の実物過去問。1フォーム1ファイル（hengaku_2025A.js, gaika_2025A.js …）
     └── img/             … 問題の図（PNG）
 ```

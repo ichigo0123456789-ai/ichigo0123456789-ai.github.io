@@ -1,5 +1,5 @@
 /* ============================================================
-   変額・外貨建 過去問道場
+   専門・変額・外貨建 過去問道場
    - 問題データは data/*.js が定義する SEIHO_HENGAKU_MOSHI / SEIHO_HENGAKU_EX /
      SEIHO_GAIKA_MOSHI / SEIHO_GAIKA_EX（各ファイルが分野1つ: subject → units → questions）を読む。
    - 「専門 過去問」分野は data/senmon/<id>.js が定義する SEIHO_SENMON_FORMS[id]（1フォーム＝1単元）を
@@ -40,15 +40,43 @@ function buildKako(FORMS, exam, subject, name, short) {
   return units.length ? { subject, name, short, units } : null;
 }
 
+// 専門課程の模擬テスト（令和8年度）: data/moshi-r8/senmon_r*.js を1分野に束ねる
+function buildSenmonMoshi(R8) {
+  if (!R8 || typeof R8 !== "object") return null;
+  const units = ["senmon_r1", "senmon_r2"].map(k => R8[k])
+    .filter(f => f && Array.isArray(f.questions) && f.questions.length)
+    .map(f => ({ id: f.id, name: f.name, questions: f.questions }));
+  return units.length ? { subject: "senmon_moshi", name: "専門課程 模擬テスト", short: "専門 模試", units } : null;
+}
+
+// 分野の並び。group はホームのタブの段（過去問／模試／章別）、tab はタブの表示名
 const SUBJECTS = [
-  window.SEIHO_HENGAKU_MOSHI,
-  buildKako(window.SEIHO_KAKO_FORMS, "hengaku", "hengaku_kako", "変額保険 過去問", "変額 過去問"),
-  window.SEIHO_HENGAKU_EX,
-  window.SEIHO_GAIKA_MOSHI,
-  buildKako(window.SEIHO_KAKO_FORMS, "gaika", "gaika_kako", "外貨建保険 過去問", "外貨建 過去問"),
-  window.SEIHO_GAIKA_EX,
-  buildSenmon(window.SEIHO_SENMON_FORMS),
-].filter(s => s && Array.isArray(s.units));
+  Object.assign(buildSenmon(window.SEIHO_SENMON_FORMS) || {}, { group: "過去問", tab: "専門" }),
+  Object.assign(buildKako(window.SEIHO_KAKO_FORMS, "hengaku", "hengaku_kako", "変額保険 過去問", "変額 過去問") || {}, { group: "過去問", tab: "変額" }),
+  Object.assign(buildKako(window.SEIHO_KAKO_FORMS, "gaika", "gaika_kako", "外貨建保険 過去問", "外貨建 過去問") || {}, { group: "過去問", tab: "外貨建" }),
+  Object.assign(buildSenmonMoshi(window.SEIHO_MOSHI_R8) || {}, { group: "模試", tab: "専門" }),
+  Object.assign(window.SEIHO_HENGAKU_MOSHI || {}, { group: "模試", tab: "変額" }),
+  Object.assign(window.SEIHO_GAIKA_MOSHI || {}, { group: "模試", tab: "外貨建" }),
+  Object.assign(window.SEIHO_HENGAKU_EX || {}, { group: "章別", tab: "変額" }),
+  Object.assign(window.SEIHO_GAIKA_EX || {}, { group: "章別", tab: "外貨建" }),
+].filter(s => s && s.subject && Array.isArray(s.units));
+const SUBJECT_GROUPS = ["過去問", "模試", "章別"];
+// 令和8年度の模擬テスト: data/moshi-r8/<key>.js が定義する SEIHO_MOSHI_R8[key] を、
+// 変額 模試・外貨建 模試・専門 過去問 の各分野の末尾に単元として追加する（ファイルが無ければ何もしない）。
+// 既存の令和7年度版の単元名（第1回・第2回）には年度を付ける
+{
+  const R8 = (window.SEIHO_MOSHI_R8 && typeof window.SEIHO_MOSHI_R8 === "object") ? window.SEIHO_MOSHI_R8 : {};
+  const plan = { hengaku_moshi: ["hengaku_r1", "hengaku_r2"], gaika_moshi: ["gaika_r1", "gaika_r2"] };
+  SUBJECTS.forEach(s => {
+    if (s.subject === "hengaku_moshi" || s.subject === "gaika_moshi") {
+      s.units.forEach(u => { if ((u.id === "round1" || u.id === "round2") && !/年度/.test(u.name)) u.name = "令和7年度 " + u.name; });
+    }
+    (plan[s.subject] || []).forEach(key => {
+      const f = R8[key];
+      if (f && Array.isArray(f.questions) && f.questions.length) s.units.push({ id: f.id, name: f.name, questions: f.questions });
+    });
+  });
+}
 SUBJECTS.forEach(s => {
   s.units = s.units.filter(u => u && u.id);
   s.units.forEach(u => { if (!Array.isArray(u.questions)) u.questions = []; });
@@ -298,13 +326,25 @@ let activeSubj = SUBJECTS[0] ? SUBJECTS[0].subject : null;
 function renderSubjTabs() {
   const root = $("#subjTabs");
   root.innerHTML = "";
-  SUBJECTS.forEach(s => {
-    const b = document.createElement("button");
-    b.className = "tab" + (s.subject === activeSubj ? " on" : "");
-    b.textContent = s.short || s.name;
-    b.title = s.name;
-    b.addEventListener("click", () => { activeSubj = s.subject; renderSubjTabs(); renderUnitList(); });
-    root.append(b);
+  root.className = "tabgroups";
+  SUBJECT_GROUPS.forEach(g => {
+    const subs = SUBJECTS.filter(s => (s.group || "") === g);
+    if (!subs.length) return;
+    const row = document.createElement("div");
+    row.className = "tabrow";
+    const lab = document.createElement("span");
+    lab.className = "tabrow-label";
+    lab.textContent = g;
+    row.append(lab);
+    subs.forEach(s => {
+      const b = document.createElement("button");
+      b.className = "tab" + (s.subject === activeSubj ? " on" : "");
+      b.textContent = s.tab || s.short || s.name;
+      b.title = s.name;
+      b.addEventListener("click", () => { activeSubj = s.subject; renderSubjTabs(); renderUnitList(); });
+      row.append(b);
+    });
+    root.append(row);
   });
 }
 
