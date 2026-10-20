@@ -1476,5 +1476,49 @@
       "changePct": 0.09,
       "src": "Yahoo!ファイナンス as of 2026-10-19 東証大引け"
     }
+  },
+  {
+    "briefDate": "2026-10-21",
+    "tradingDate": {
+      "jp": "2026-10-20",
+      "us": "2026-10-19"
+    },
+    "note": "10/21(水)早朝のため直近確定値(日本10/20大引け・米国10/19引け)を採用。米国10/20は取引時間中で未確定のため不採用。日経平均-1.30%と続落、三菱UFJは-3.65%(理由は特定できず)。米国株は10/19に反発。",
+    "nikkei": {
+      "value": 64075.42,
+      "change": -841.28,
+      "changePct": -1.3,
+      "src": "Yahoo!ファイナンス as of 2026-10-20 東証大引け"
+    },
+    "nasdaq100": {
+      "value": 29529.35,
+      "change": 341.8,
+      "changePct": 1.17,
+      "src": "Yahoo!ファイナンス as of 2026-10-19 NY引け"
+    },
+    "sp500": {
+      "value": 7690.73,
+      "change": 31.29,
+      "changePct": 0.41,
+      "src": "Yahoo!ファイナンス as of 2026-10-19 NY引け"
+    },
+    "usdjpy": {
+      "value": 157.81,
+      "change": -0.34,
+      "changePct": -0.21,
+      "src": "Yahoo!ファイナンス as of 2026-10-19 NY引け"
+    },
+    "gold": {
+      "value": 4160.1,
+      "change": -21.0,
+      "changePct": -0.5,
+      "src": "Yahoo!ファイナンス(COMEX先物) as of 2026-10-19 NY引け"
+    },
+    "mufg8306": {
+      "value": 3351,
+      "change": -127,
+      "changePct": -3.65,
+      "src": "Yahoo!ファイナンス as of 2026-10-20 東証大引け"
+    }
   }
 ]
