@@ -12,6 +12,7 @@ const KIND_LABEL = {
   'fake-click':  { text: '偽クリック',   cls: 'fake' },
   'overlay':     { text: 'オーバーレイ', cls: 'overlay' },
   'adblock-nag': { text: '検出警告',     cls: 'nag' },
+  'keep-visible': { text: '裏タブ', cls: 'vis' },
 };
 
 const hostMatches = (host, site) => host === site || host.endsWith('.' + site);
@@ -23,6 +24,7 @@ const render = () => {
   document.body.classList.toggle('off', !cfg.enabled);
   $('blockOverlay').checked = cfg.blockOverlay;
   $('antiAdblock').checked = cfg.antiAdblock !== false;
+  $('keepVisible').checked = cfg.keepVisible !== false;
 
   // 今見てるサイト（chrome:// とかホスト無いページは無効化）
   $('siteTargeted').checked = info.siteTargeted;
@@ -130,6 +132,10 @@ $('antiAdblock').addEventListener('change', async (e) => {
   // バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
+});
+$('keepVisible').addEventListener('change', async (e) => {
+  await send({ type: 'setConfig', patch: { keepVisible: e.target.checked } });
+  refresh();
 });
 
 // 今見てるサイトのON/OFF（ONにしたらリロードして即効かせる）

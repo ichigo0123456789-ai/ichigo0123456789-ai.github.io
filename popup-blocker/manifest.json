@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ポップアップガード",
   "short_name": "PopupGuard",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "登録したサイトだけで、勝手に開くポップアップ・ポップアンダー・全画面オーバーレイ広告をブロック。ワンクリックでオン・オフ切り替え。",
   "minimum_chrome_version": "111",
   "permissions": [

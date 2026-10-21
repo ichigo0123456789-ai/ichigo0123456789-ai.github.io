@@ -20,6 +20,7 @@
     siteTargeted: true,   // このサイトが登録サイトか
     blockOverlay: true,   // 全画面オーバーレイも消すか
     antiAdblock: true,    // 「広告ブロッカーを検出しました」系の警告を潰すか
+    keepVisible: true,    // 別タブに移っても画面をぼかさせない（タブ非表示をサイトに気づかせない）
   };
   const isActive = () => state.enabled && state.siteTargeted;
 
@@ -108,6 +109,66 @@
       if (isFakeAdFrame(root)) { root.remove(); return; }
       if (root.querySelectorAll) for (const f of root.querySelectorAll('iframe[id^="aswift_"]')) if (isFakeAdFrame(f)) f.remove();
     } catch (_) {}
+  };
+
+  // =====================================================================
+  // ⓪' 別タブに移っても画面を隠させない
+  //    「タブが非表示になった／ウィンドウのフォーカスが外れた」を検知して本文を
+  //    blur(20px) したりオーバーレイを被せるサイト対策。
+  //    ・document.hidden → 常に false、visibilityState → 常に 'visible'、hasFocus() → 常に true
+  //    ・window/document に飛んでくる blur / visibilitychange を、サイトのリスナーより先に
+  //      capture で捕まえて stopImmediatePropagation（うちは document_start で最初に登録してるので勝てる）
+  //    保険として、本当にタブが裏にいる間だけ、でかい要素の inline blur を剥がす🧹
+  // =====================================================================
+  const realHasFocus = Document.prototype.hasFocus;
+  const realVisDesc = Object.getOwnPropertyDescriptor(Document.prototype, 'visibilityState');
+  const realHiddenDesc = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden');
+  const reallyHidden = () => {
+    try { return (realHiddenDesc && realHiddenDesc.get.call(document)) || !realHasFocus.call(document); } catch (_) { return false; }
+  };
+  const keepVisibleOn = () => isActive() && state.keepVisible;
+  let visSpoofed = false;
+  const applyVisibilitySpoof = () => {
+    const want = keepVisibleOn();
+    if (want === visSpoofed) return;
+    visSpoofed = want;
+    try {
+      if (want) {
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
+        Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
+        Object.defineProperty(document, 'hasFocus', { configurable: true, writable: true, value: () => true });
+      } else {
+        delete document.hidden; delete document.visibilityState; delete document.hasFocus;
+      }
+    } catch (_) {}
+  };
+  applyVisibilitySpoof();
+  const swallow = (e) => {
+    if (!keepVisibleOn()) return;
+    // window 自身の blur / document の visibilitychange だけ止める（input の blur とかは通す）
+    if (e.target !== window && e.target !== document) return;
+    e.stopImmediatePropagation();
+    report('keep-visible', '', `${e.type} をサイトに渡さなかった`);
+  };
+  for (const type of ['blur', 'visibilitychange', 'webkitvisibilitychange', 'pagehide']) {
+    window.addEventListener(type, swallow, true);
+    document.addEventListener(type, swallow, true);
+  }
+  // 保険：本当に裏にいる間に、画面の半分以上を占める要素へ inline で blur が掛かってたら剥がす
+  const unblurIfHidden = () => {
+    if (!keepVisibleOn() || !reallyHidden() || !document.body) return;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    for (const el of document.querySelectorAll('[style*="blur("]')) {
+      try {
+        if (!/blur\(/.test(el.style.filter + ' ' + el.style.backdropFilter)) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width * r.height < vw * vh * 0.5) continue;
+        el.style.setProperty('filter', 'none', 'important');
+        el.style.setProperty('backdrop-filter', 'none', 'important');
+        el.style.setProperty('pointer-events', 'auto', 'important');
+        report('keep-visible', '', 'inline blur を解除');
+      } catch (_) {}
+    }
   };
 
   // =====================================================================
@@ -306,7 +367,7 @@
   let scanTimer = null;
   const scanOverlays = () => {
     scanTimer = null;
-    if (!isActive() || !(state.blockOverlay || state.antiAdblock) || !document.body) return;
+    if (!isActive() || !(state.blockOverlay || state.antiAdblock || state.keepVisible) || !document.body) return;
     // fixed な要素は数が少ないので、全要素なめても一瞬で終わる
     for (const el of document.body.querySelectorAll('body > *, body > * > *, body > * > * > *')) {
       try {
@@ -315,6 +376,7 @@
       } catch (_) {}
     }
     if (state.antiAdblock) { restorePointerEvents(); removeFakeAdFrames(document.body); }
+    unblurIfHidden();
   };
   const scheduleScan = () => {
     if (scanTimer) return;
@@ -354,7 +416,9 @@
       if (typeof s.siteTargeted === 'boolean') state.siteTargeted = s.siteTargeted;
       if (typeof s.blockOverlay === 'boolean') state.blockOverlay = s.blockOverlay;
       if (typeof s.antiAdblock === 'boolean') state.antiAdblock = s.antiAdblock;
+      if (typeof s.keepVisible === 'boolean') state.keepVisible = s.keepVisible;
       applyAdsSpoof(adsArray);
+      applyVisibilitySpoof();
       scheduleScan();
     } catch (_) {}
   });

@@ -74,6 +74,7 @@ body {
 .kind.overlay { background: #eef6ff; color: #1d4ed8; }
 .kind.fake { background: #fff7e6; color: #b45309; }
 .kind.nag { background: #f3e8ff; color: #7e22ce; }
+.kind.vis { background: #ecfdf3; color: #15803d; }
 .url {
   flex: 1; min-width: 0; font-size: 11.5px; color: var(--sub);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

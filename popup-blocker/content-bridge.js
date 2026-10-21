@@ -9,7 +9,7 @@
 (() => {
   'use strict';
 
-  const DEFAULTS = { enabled: true, blockOverlay: true, antiAdblock: true, sites: [] };
+  const DEFAULTS = { enabled: true, blockOverlay: true, antiAdblock: true, keepVisible: true, sites: [] };
   const host = (location.hostname || '').toLowerCase();
 
   // 登録サイト判定（サブドメインも含めてマッチ。example.com を登録したら a.example.com も対象）
@@ -29,6 +29,7 @@
       siteTargeted: isTargetHost(cfg.sites),
       blockOverlay: !!cfg.blockOverlay,
       antiAdblock: !!cfg.antiAdblock,
+      keepVisible: !!cfg.keepVisible,
     };
     document.dispatchEvent(new CustomEvent('popupguard:state', { detail: JSON.stringify(payload) }));
   };
