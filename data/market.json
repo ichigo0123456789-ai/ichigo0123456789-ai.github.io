@@ -1564,5 +1564,49 @@
    "changePct": -1.69,
    "src": "Yahoo!ファイナンス as of 2026-10-22 東証大引け"
   }
+ },
+ {
+  "briefDate": "2026-10-24",
+  "tradingDate": {
+   "jp": "2026-10-23",
+   "us": "2026-10-23"
+  },
+  "note": "10/24(土)は東京・NY休場のため直近確定値(日本10/23大引け・米国10/23引け)。日経・三菱UFJ・金・S&Pは下落、ナスダック100は横ばい、10/22の急落は小幅な動きに落ち着いた。動因は特定できず。",
+  "nikkei": {
+   "value": 62693.16,
+   "change": -214.68,
+   "changePct": -0.34,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 東証大引け"
+  },
+  "nasdaq100": {
+   "value": 28969.79,
+   "change": 11.1,
+   "changePct": 0.04,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け"
+  },
+  "sp500": {
+   "value": 7628.47,
+   "change": -34.96,
+   "changePct": -0.46,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け"
+  },
+  "usdjpy": {
+   "value": 156.87,
+   "change": 0.01,
+   "changePct": 0.01,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け"
+  },
+  "gold": {
+   "value": 4010.6,
+   "change": -49.8,
+   "changePct": -1.23,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け(COMEX先物、前日終値4,060.4基準)"
+  },
+  "mufg8306": {
+   "value": 3295,
+   "change": -78,
+   "changePct": -2.31,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 東証大引け"
+  }
  }
 ]

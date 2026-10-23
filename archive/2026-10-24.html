@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News &amp; Analytics｜2026年10月24日</title>
+<script>document.documentElement.className+=' js';</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ============ News & Analytics — 電脳グリーンHUDテーマ ============
+     旧テーマのCSS変数名を維持したまま値を緑系に再定義している。
+     ルーチンが差し込む断片の inline style（var(--gold-soft)等）は
+     そのまま新配色で描画される。変数名を変更しないこと。 */
+  :root{
+    --bg-0:#04080a;--bg-1:#060d09;--surface:#0c1712;--surface-2:#12241a;
+    --ink:#e2f2e8;--sub:#9cbcaa;--faint:#6d8878;
+    --line:rgba(110,235,175,.13);
+    --gold:#35e0a0;--gold-ink:#8df2c4;--gold-soft:rgba(53,224,160,.10);--gold-line:rgba(53,224,160,.34);
+    --cool:#4bb8ff;--cool-soft:rgba(75,184,255,.12);--teal:#3fc4c8;
+    --up:#4ade80;--down:#ff5d68;
+    --chart-bg:#0c1410;--chart-2:#10241a;--chart-line:#1d3a2b;--chart-ink:#e2f2e8;
+    --shadow:0 1px 1px rgba(0,0,0,.3),0 6px 16px -6px rgba(0,0,0,.5),0 34px 64px -32px rgba(0,0,0,.8);
+    --shadow-sm:0 2px 12px -6px rgba(0,0,0,.6);
+    --glow-line:0 0 0 1px rgba(53,224,160,.4),0 0 22px rgba(53,224,160,.16);
+    --mono:'JetBrains Mono','Consolas',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip;font-size:17px}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;color:var(--ink);font-family:'Noto Sans JP',sans-serif;line-height:1.85;font-size:16.5px;-webkit-font-smoothing:antialiased;position:relative;overflow-x:clip;width:100%;max-width:100%;
+    background:radial-gradient(120% 70% at 50% -8%,#0b1d13 0%,var(--bg-1) 52%,var(--bg-0) 100%) fixed var(--bg-0)}
+  img,iframe,table,.frame,.chart,.tradingview-widget-container,.tradingview-widget-container__widget{max-width:100%}
+
+  /* ---- ambient ---- */
+  #na-rain{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5}
+  .na-grid-bg,.na-scan{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .na-grid-bg{background-image:linear-gradient(rgba(110,235,175,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(110,235,175,.05) 1px,transparent 1px);background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(130% 90% at 50% 0%,#000 35%,transparent 85%);mask-image:radial-gradient(130% 90% at 50% 0%,#000 35%,transparent 85%)}
+  .na-scan{top:0;height:40vh;z-index:1;background:linear-gradient(rgba(53,224,160,.045),transparent 60%);transform:translateY(-110%);animation:naSweep 9.5s linear infinite}
+  @keyframes naSweep{to{transform:translateY(380%)}}
+  @media(prefers-reduced-motion:reduce){.na-scan{display:none}}
+
+  /* ---- top bar (status strip) ---- */
+  .bar{position:sticky;top:0;z-index:60;background:rgba(5,10,7,.88);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+  .bar .in{max-width:1040px;margin:0 auto;padding:.5rem 1.1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;color:var(--faint);text-transform:uppercase}
+  .bar .bm{color:var(--gold);font-weight:700;letter-spacing:.22em;display:flex;align-items:center;gap:.55rem}
+  .bar .bm::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:naBlink 2.4s steps(1) infinite}
+  @keyframes naBlink{0%,60%{opacity:1}61%,100%{opacity:.25}}
+  @media(prefers-reduced-motion:reduce){.bar .bm::before{animation:none}}
+  .bar .bd{color:var(--sub);display:flex;align-items:center;gap:.5rem;letter-spacing:.12em}
+  .bar .bd .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);display:inline-block}
+  .bar .bsep{flex:1;height:1px;min-width:14px;background:linear-gradient(90deg,var(--gold-line),transparent)}
+  .bar .bclock{color:var(--gold-ink)}
+  .bar .bsec{color:var(--cool)}
+  @media(max-width:620px){.bar .bsec{display:none}}
+
+  /* ---- ticker（実見出し連動・JS生成） ---- */
+  .na-ticker{position:relative;z-index:2;overflow:hidden;border-bottom:1px solid var(--line);background:rgba(6,13,9,.6)}
+  .na-ticker .rail{display:inline-block;white-space:nowrap;padding:.32rem 0;font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;color:var(--faint);will-change:transform}
+  .na-ticker .rail b{color:var(--gold-ink);font-weight:600}
+  .na-ticker .rail .tsep{color:var(--gold);margin:0 .8rem}
+  @keyframes naSlide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.na-ticker .rail{animation:none !important}}
+
+  /* ---- 目次（デスクトップ=左レール固定／モバイル=上部チップ） ---- */
+  .na-toc{z-index:55}
+  .na-toc ol{list-style:none;margin:0;padding:0}
+  .na-toc a{font-family:var(--mono);text-decoration:none;color:var(--sub);display:flex;align-items:baseline;gap:.55rem;transition:color .2s}
+  .na-toc a .no{font-size:.62rem;color:var(--gold);opacity:.75}
+  .na-toc a:hover{color:var(--ink)}
+  .na-toc a.active{color:var(--gold)}
+  .na-toc a:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+  @media(min-width:1470px){
+    .na-toc{position:fixed;left:calc((100vw - 1040px)/2 - 205px);top:130px;width:180px}
+    .na-toc .tt{font-family:var(--mono);font-size:.6rem;letter-spacing:.26em;color:var(--faint);text-transform:uppercase;margin:0 0 .8rem;padding-left:19px}
+    .na-toc .tt::before{content:"// ";color:var(--gold)}
+    .na-toc ol{position:relative}
+    .na-toc ol::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--gold-line),transparent)}
+    .na-toc a{position:relative;font-size:.8rem;padding:.42rem .4rem .42rem 19px;letter-spacing:.04em}
+    .na-toc a::before{content:"";position:absolute;left:2px;top:50%;width:6px;height:6px;transform:translateY(-50%) rotate(45deg);border:1px solid var(--faint);transition:.2s}
+    .na-toc a:hover::before{border-color:var(--gold)}
+    .na-toc a.active::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 9px var(--gold)}
+  }
+  @media(max-width:1469px){
+    .na-toc{position:sticky;top:34px;background:rgba(5,10,7,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:.45rem 1.1rem}
+    .na-toc .tt{display:none}
+    .na-toc ol{display:flex;gap:.45rem;overflow-x:auto;scrollbar-width:none;max-width:1040px;margin:0 auto}
+    .na-toc ol::-webkit-scrollbar{display:none}
+    .na-toc a{font-size:.74rem;font-weight:500;color:var(--ink);padding:.3rem .75rem;border:1px solid rgba(110,235,175,.3);background:rgba(18,36,26,.92);white-space:nowrap;letter-spacing:.05em}
+    .na-toc a.active{color:var(--gold);border-color:var(--gold);box-shadow:var(--glow-line);background:rgba(53,224,160,.12)}
+  }
+
+  /* ---- layout / hero ---- */
+  .wrap{position:relative;z-index:2;max-width:1040px;margin:0 auto;padding:0 1.1rem 4.5rem}
+  .hero{position:relative;padding:2.2rem 0 1.6rem;border-bottom:1px solid var(--gold-line)}
+  .hero::after{content:"";position:absolute;left:0;bottom:-1px;width:110px;height:2px;background:var(--gold);box-shadow:0 0 14px var(--gold)}
+  .hero .glow{position:absolute;inset:auto 0 0 0;height:1px}
+  .hero .eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.32em;color:var(--gold);text-transform:uppercase;margin-bottom:.7rem}
+  .hero .wordmark{margin:0;font-weight:900;font-size:clamp(2rem,5.6vw,3.3rem);letter-spacing:.04em;line-height:1.08;text-shadow:0 0 30px rgba(53,224,160,.3)}
+  .hero .wordmark .amp{color:var(--gold)}
+  .hero .date-badge{position:absolute;right:0;top:2.1rem;font-family:var(--mono);font-weight:700;font-size:clamp(1.15rem,2.6vw,1.7rem);letter-spacing:.08em;color:var(--gold-ink);text-shadow:0 0 18px rgba(53,224,160,.35);font-variant-numeric:tabular-nums}
+  .hero .issue{font-family:var(--mono);font-size:.74rem;color:var(--sub);letter-spacing:.05em;margin-top:.7rem}
+  .hero .issue .sep{color:var(--gold-line);margin:0 .55rem}
+  .hero .horizon{border:0;height:0;margin:0}
+  .hero .na-emblem{position:absolute;right:0;bottom:.9rem;width:74px;height:74px;opacity:.95}
+  @media(max-width:640px){.hero .na-emblem{width:52px;height:52px;bottom:.6rem}.hero .date-badge{position:static;display:block;margin-top:.5rem}}
+  .na-emblem .spin{transform-origin:50px 50px;animation:naRot 26s linear infinite}
+  .na-emblem .spin-r{transform-origin:50px 50px;animation:naRot 36s linear infinite reverse}
+  @keyframes naRot{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){.na-emblem .spin,.na-emblem .spin-r{animation:none}}
+
+  /* ---- panel / kicker ---- */
+  .panel{position:relative;background:rgba(12,23,18,.62);border:1px solid var(--line);backdrop-filter:blur(3px);border-radius:4px;padding:1.35rem 1.35rem 1.5rem;margin-top:1.7rem;box-shadow:var(--shadow-sm)}
+  .panel::before,.panel::after{content:"";position:absolute;width:14px;height:14px;pointer-events:none;border-color:var(--gold-line);border-style:solid;z-index:1}
+  .panel::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+  .panel::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+  .kicker{display:flex;align-items:center;gap:.8rem;margin-bottom:1.15rem;flex-wrap:wrap}
+  .kicker .no{font-family:var(--mono);font-weight:700;font-size:.74rem;color:var(--gold);letter-spacing:.08em;padding:.1rem .5rem;border:1px solid var(--gold-line)}
+  .kicker .ja{font-weight:700;font-size:1.16rem;letter-spacing:.04em;white-space:nowrap}
+  .kicker .tag{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.24em;color:var(--cool);text-transform:uppercase}
+  .kicker .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--gold-line),transparent);min-width:30px}
+  .legend{font-size:.9rem;color:var(--faint);margin:.1rem 0 1rem;line-height:1.75}
+  .note{font-size:.8rem;color:var(--faint)}
+  .lead{font-size:.92rem;color:var(--sub)}
+  .lead b{color:var(--ink)}
+
+  /* ---- 01: KPIタイル（JS生成）＋テーブル ---- */
+  .na-kpis{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));margin-bottom:1rem}
+  .na-kpi{position:relative;background:var(--surface);border:1px solid var(--line);padding:.8rem .95rem .75rem;transition:border-color .25s,box-shadow .25s,transform .25s}
+  .na-kpi::before,.na-kpi::after{content:"";position:absolute;width:11px;height:11px;pointer-events:none;border-color:rgba(53,224,160,.45);border-style:solid;transition:.25s}
+  .na-kpi::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+  .na-kpi::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+  .na-kpi:hover{box-shadow:var(--glow-line);transform:translateY(-2px)}
+  .na-kpi:hover::before,.na-kpi:hover::after{width:18px;height:18px;border-color:var(--gold)}
+  .na-kpi .nm{font-size:.72rem;color:var(--sub);letter-spacing:.06em;line-height:1.45;min-height:2.1em}
+  .na-kpi .vl{font-family:var(--mono);font-weight:700;font-size:1.42rem;letter-spacing:.01em;line-height:1.15;margin-top:.3rem;font-variant-numeric:tabular-nums}
+  .na-kpi .dl{display:inline-flex;align-items:center;gap:.3rem;margin-top:.45rem;font-family:var(--mono);font-size:.7rem;padding:.06rem .55rem;border:1px solid;border-radius:3px;font-variant-numeric:tabular-nums}
+  .na-kpi .dl.up{color:var(--up);border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.07)}
+  .na-kpi .dl.down{color:var(--down);border-color:rgba(255,93,104,.4);background:rgba(255,93,104,.07)}
+  .na-kpi .dl.flat{color:var(--faint);border-color:var(--line)}
+  .na-kpi .as{margin-top:.45rem;font-family:var(--mono);font-size:.58rem;color:var(--faint);letter-spacing:.04em;line-height:1.5}
+  .na-kpi canvas.na-spark{display:block;width:100%;height:34px;margin-top:.5rem}
+  details.na-mkt-detail{margin:.4rem 0 1rem}
+  details.na-mkt-detail>summary{cursor:pointer;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--faint);padding:.35rem .2rem;user-select:none}
+  details.na-mkt-detail>summary:hover{color:var(--gold-ink)}
+  details.na-mkt-detail[open]>summary{color:var(--gold-ink)}
+
+  /* ---- tables ---- */
+  .tbl-shell{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .tbl-scroll{overflow-x:auto}
+  table.mkt{width:100%;border-collapse:collapse;font-size:.88rem;min-width:0}
+  table.mkt th{font-family:var(--mono);font-size:.62rem;font-weight:600;color:var(--faint);text-align:left;padding:.8rem .8rem;border-bottom:1px solid var(--gold-line);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+  table.mkt td{padding:.75rem .8rem;border-bottom:1px solid var(--line);vertical-align:top;font-variant-numeric:tabular-nums}
+  table.mkt tbody tr:last-child td{border-bottom:none}
+  table.mkt tbody tr{transition:background .2s}
+  table.mkt tbody tr:hover{background:rgba(53,224,160,.045)}
+  table.mkt td:first-child{font-weight:600}
+  .src-note{display:block;font-size:.66rem;color:var(--faint);font-weight:400;margin-top:.15rem;line-height:1.5}
+  .tcap{font-size:.7rem;color:var(--faint);line-height:1.7;padding:.7rem .8rem;border-top:1px solid var(--line)}
+  .up{color:var(--up)}.down{color:var(--down)}
+
+  /* ---- charts / heatmap（高さは旧テーマと同一） ---- */
+  .chart{margin-top:1.2rem}
+  .chart .ttl,.heatmap-wrap .ttl{display:flex;align-items:center;font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;color:var(--sub);text-transform:uppercase;padding:.55rem .8rem;border:1px solid var(--line);border-bottom:none;background:var(--surface);border-radius:4px 4px 0 0}
+  .chart .ttl::before,.heatmap-wrap .ttl::before{content:"◆";color:var(--gold);font-size:.55rem;margin-right:.55rem}
+  .frame{border-radius:0 0 4px 4px;overflow:hidden;background:var(--chart-bg);border:1px solid var(--line);border-top:none}
+  .frame-hero{height:620px}
+  .frame-mini{height:340px}
+  .charts2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+  @media(max-width:760px){.charts2{grid-template-columns:1fr}.frame-hero{height:360px}.frame-mini{height:300px}}
+  .heatmap-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:1.2rem;grid-column:1/-1}
+  @media(max-width:980px){.heatmap-grid{grid-template-columns:1fr}}
+  .heatmap-wrap{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--chart-bg)}
+  .heatmap-wrap .ttl{border:none;border-bottom:1px solid var(--line);border-radius:0}
+  #jp-hm-box{height:600px}
+  .hm-tv-box{height:600px}
+  @media(max-width:680px){#jp-hm-box,.hm-tv-box{height:460px}}
+  #jp-hm-tip{position:fixed;background:var(--surface-2);border:1px solid var(--gold-line);border-radius:4px;padding:.5rem .75rem;color:var(--chart-ink);font-size:.78rem;line-height:1.6;pointer-events:none;z-index:999;display:none;min-width:130px;white-space:nowrap;box-shadow:var(--shadow-sm)}
+  .tt-up{color:var(--up)}.tt-dn{color:var(--down)}
+
+  /* ---- 02: 値動き分析 ---- */
+  .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media(max-width:760px){.analysis-grid{grid-template-columns:1fr}}
+  .analysis-card{position:relative;background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold);padding:1.05rem 1.15rem}
+  .analysis-ttl{font-weight:700;font-size:.98rem;letter-spacing:.02em;margin-bottom:.6rem}
+  .analysis-ttl::before{content:"// ";color:var(--gold);font-family:var(--mono);font-size:.8rem}
+  .analysis-body{font-size:.97rem;color:var(--sub);line-height:1.85;margin:0 0 .9rem}
+  .analysis-body strong{color:var(--ink)}
+  .analysis-futures{display:block;background:var(--gold-soft);border:1px solid var(--gold-line);padding:.6rem .8rem;margin-bottom:.7rem}
+  .futures-label{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .futures-val{display:block;font-family:var(--mono);font-weight:700;font-size:.95rem;color:var(--gold-ink);margin-top:.2rem;font-variant-numeric:tabular-nums}
+  .futures-src{display:block;font-size:.66rem;color:var(--faint);margin-top:.2rem}
+  .analysis-outlook{border-top:1px dashed var(--gold-line);padding-top:.6rem}
+  .outlook-label{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--cool);text-transform:uppercase;margin-bottom:.25rem}
+  .outlook-txt{font-size:.82rem;color:var(--sub);margin:0;line-height:1.8}
+  .analysis-note{font-size:.72rem;color:var(--faint);margin:.9rem 0 0}
+
+  /* ---- 03: ニュース ---- */
+  .news{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+  @media(max-width:860px){.news{grid-template-columns:1fr}}
+  /* ---- スマホ読みやすさ：文字を全体に拡大／本文幅を広げる ---- */
+  @media(max-width:640px){
+    html{font-size:18px}
+    body{font-size:17px}
+    a.hl h4{font-size:1.05rem}
+    a.hl .meta{font-size:.78rem}
+    .legend{font-size:.98rem}
+    .ul-thesis p,.flow li,.analysis-body{font-size:1.03rem}
+    .na-modal .sum{font-size:1.08rem}
+    .col .ch{font-size:.72rem}
+    .wrap{padding-left:.55rem;padding-right:.55rem}
+    .panel{padding-left:.8rem;padding-right:.8rem}
+    .bar .in{padding-left:.7rem;padding-right:.7rem}
+    table.mkt{font-size:.8rem}
+    table.mkt th,table.mkt td{padding:.5rem .35rem}
+    table.mkt th{font-size:.56rem;letter-spacing:.06em}
+    .src-note{font-size:.62rem;line-height:1.45;margin-top:.2rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  }
+  @media(max-width:400px){
+    .wrap{padding-left:.4rem;padding-right:.4rem}
+    .panel{padding-left:.65rem;padding-right:.65rem}
+  }
+  .col .ch{display:inline-block;font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.16em;padding:.2rem .65rem;border-radius:3px;margin-bottom:.7rem;text-transform:uppercase}
+  a.hl{position:relative;display:block;color:inherit;text-decoration:none;background:var(--surface);border:1px solid var(--line);padding:.75rem .9rem;margin-bottom:.6rem;transition:border-color .25s,box-shadow .25s,transform .25s}
+  a.hl::before,a.hl::after{content:"";position:absolute;width:10px;height:10px;pointer-events:none;border-color:rgba(53,224,160,.4);border-style:solid;transition:.25s}
+  a.hl::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+  a.hl::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+  a.hl:hover{box-shadow:var(--glow-line);transform:translateY(-2px)}
+  a.hl:hover::before,a.hl:hover::after{width:16px;height:16px;border-color:var(--gold)}
+  a.hl:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+  a.hl h4{margin:0;font-size:1rem;font-weight:700;line-height:1.6;letter-spacing:.01em}
+  a.hl .meta{font-family:var(--mono);font-size:.72rem;color:var(--faint);margin-top:.4rem;letter-spacing:.05em}
+  a.hl{cursor:pointer}
+  /* ---- 記事プレビュー・モーダル（タップで日本語要約＋本文リンク／恒久ブロック） ---- */
+  .na-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1.1rem}
+  .na-modal[hidden]{display:none}
+  .na-modal .ov{position:absolute;inset:0;background:rgba(3,7,5,.72);backdrop-filter:blur(4px)}
+  .na-modal .box{position:relative;z-index:1;max-width:560px;width:100%;max-height:82vh;overflow:auto;background:var(--surface);border:1px solid var(--gold-line);box-shadow:0 18px 60px rgba(0,0,0,.55),var(--glow-line);padding:1.4rem 1.4rem 1.5rem;animation:naModalIn .22s ease}
+  @keyframes naModalIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .na-modal .box::before{content:"";position:absolute;top:-1px;left:-1px;width:16px;height:16px;border:2px solid var(--gold);border-width:2px 0 0 2px;pointer-events:none}
+  .na-modal .box::after{content:"";position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border:2px solid var(--gold);border-width:0 2px 2px 0;pointer-events:none}
+  .na-modal .x{position:absolute;top:.4rem;right:.55rem;background:none;border:0;color:var(--faint);font-size:1.6rem;line-height:1;cursor:pointer;padding:.2rem .45rem}
+  .na-modal .x:hover{color:var(--gold)}
+  .na-modal .src{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--gold-ink);text-transform:uppercase;margin:0 1.6rem .55rem 0}
+  .na-modal h3{margin:0 0 .75rem;font-size:1.2rem;line-height:1.6;color:var(--ink)}
+  .na-modal .sum{margin:0 0 1.15rem;font-size:1.02rem;line-height:1.95;color:var(--sub);white-space:pre-wrap}
+  .na-modal .go{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--gold-ink);text-decoration:none;border:1px solid var(--gold-line);padding:.55rem .95rem;transition:.2s}
+  .na-modal .go:hover{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+  body.na-modal-open{overflow:hidden}
+
+  /* ---- 04: 今日の結論 ---- */
+  .thesis{font-size:clamp(1rem,2.3vw,1.22rem);font-weight:700;line-height:1.85;letter-spacing:.02em;margin:.2rem 0 1rem;padding-left:1rem;border-left:2px solid var(--gold)}
+  .thesis .hi{color:var(--gold);text-shadow:0 0 16px rgba(53,224,160,.4)}
+  .ul-thesis{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+  .ul-thesis li{position:relative;display:flex;gap:.7rem;background:var(--surface);border:1px solid var(--line);padding:.8rem .95rem}
+  .ul-thesis .bead{flex:none;width:7px;height:7px;transform:rotate(45deg);border:1px solid var(--gold);margin-top:.55rem}
+  .ul-thesis p{margin:0;font-size:.97rem;color:var(--sub);line-height:1.85}
+  .ul-thesis b{color:var(--ink)}
+
+  /* ---- 05: 先読み ---- */
+  .scen{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.9rem}
+  @media(max-width:820px){.scen{grid-template-columns:1fr}}
+  .card{position:relative;background:var(--surface);border:1px solid var(--line);padding:1.05rem 1.15rem}
+  .card::before,.card::after{content:"";position:absolute;width:12px;height:12px;pointer-events:none;border-color:rgba(53,224,160,.45);border-style:solid}
+  .card::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+  .card::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+  .card h3{margin:0 0 .5rem;font-size:.96rem;font-weight:700;line-height:1.6;letter-spacing:.02em}
+  .card h3::before{content:"▸ ";color:var(--gold)}
+  .card .sub{font-size:.74rem;color:var(--faint);margin:0 0 .8rem;line-height:1.7}
+  .flow{list-style:none;margin:0;padding:0;position:relative}
+  .flow::before{content:"";position:absolute;left:7px;top:14px;bottom:14px;width:1px;background:linear-gradient(var(--gold-line),var(--line))}
+  .flow li{position:relative;padding:.5rem 0 .5rem 1.7rem;font-size:.95rem;color:var(--sub);line-height:1.8}
+  .flow li::before{content:"";position:absolute;left:4px;top:1.05em;width:7px;height:7px;transform:rotate(45deg);border:1px solid var(--faint);background:var(--bg-0);z-index:1}
+  .flow .stg{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;margin-bottom:.1rem}
+  .flow .txt{display:block}
+  .flow li.final{color:var(--ink)}
+  .flow li.final::before{border-color:var(--gold);background:var(--gold);box-shadow:0 0 9px var(--gold)}
+  .flow li.final .stg{color:var(--gold)}
+
+  /* ---- 06: 仮想運用 ---- */
+  #unyou .pfchart{background:var(--surface);border:1px solid var(--line);padding:.9rem 1rem}
+  .na-alloc{background:var(--surface);border:1px solid var(--line);padding:.9rem 1rem;margin:0 0 1.2rem}
+  .na-alloc .at{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin-bottom:.7rem}
+  .na-alloc .at::before{content:"◆ ";color:var(--gold);font-size:.55rem}
+  .na-alloc .abar{display:flex;height:22px;border-radius:3px;overflow:hidden;gap:2px}
+  .na-alloc .aseg{height:100%}
+  .na-alloc .alg{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;margin-top:.65rem;font-family:var(--mono);font-size:.7rem;color:var(--sub);font-variant-numeric:tabular-nums}
+  .na-alloc .alg .chip{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:.4rem;vertical-align:-1px}
+  .na-alloc .alg b{color:var(--ink);font-weight:600}
+
+  /* ---- footer ---- */
+  .foot{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--gold-line);font-size:.74rem;color:var(--faint);line-height:1.85}
+  .foot .dsum{display:block;background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold);border-radius:4px;padding:.85rem 1.1rem;margin-bottom:.9rem;box-shadow:var(--shadow-sm);text-align:left}
+  .foot .dsum b{color:var(--gold-ink)}
+
+  /* ---- reveal ---- */
+  .js .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<canvas id="na-rain" aria-hidden="true"></canvas>
+<div class="na-grid-bg" aria-hidden="true"></div>
+<div class="na-scan" aria-hidden="true"></div>
+
+<div class="bar"><div class="in">
+  <div class="bm">NEWS &amp; ANALYTICS</div>
+  <div class="bd"><span class="dot"></span>2026.10.24 土</div>
+  <span class="bsep"></span>
+  <span class="bclock" id="na-clock">JST --:--:--</span>
+  <span class="bsec">SECTOR // NEW PORT CITY</span>
+</div></div>
+
+<!-- 実ニュース見出し連動ティッカー（JSがセクション03の見出しを収集して生成） -->
+<div class="na-ticker" aria-hidden="true"><span class="rail" id="na-ticker-rail"></span></div>
+
+<!-- 目次（JSがスクロール位置に応じて現在地を発光させる） -->
+<nav class="na-toc" aria-label="目次">
+  <div class="tt">INDEX</div>
+  <ol id="na-toc-list">
+    <li><a href="#" data-sec="0"><span class="no">01</span>マーケット</a></li>
+    <li><a href="#" data-sec="1"><span class="no">02</span>値動き分析</a></li>
+    <li><a href="#" data-sec="2"><span class="no">03</span>ニュース</a></li>
+    <li><a href="#" data-sec="3"><span class="no">04</span>今日の結論</a></li>
+    <li><a href="#" data-sec="4"><span class="no">05</span>先読み</a></li>
+    <li><a href="#" data-sec="5"><span class="no">06</span>仮想運用</a></li>
+  </ol>
+</nav>
+
+<div class="wrap">
+  <header class="hero"><div class="glow"></div><div class="eyebrow">Daily Intelligence / 電脳ニュース</div><h1 class="wordmark">News <span class="amp">&amp;</span> Analytics</h1>
+    <div class="date-badge">2026-10-24</div><div class="issue">2026年10月24日（土）<span class="sep">|</span>中長期・投資信託／ETF視点<span class="sep">|</span>媒体横断</div><hr class="horizon">
+    <svg class="na-emblem" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(53,224,160,.3)" stroke-width="1"/>
+      <g class="spin"><circle cx="50" cy="50" r="41" fill="none" stroke="#35e0a0" stroke-width="1.4" stroke-dasharray="2 6" opacity=".9"/></g>
+      <circle cx="50" cy="50" r="33" fill="none" stroke="#4bb8ff" stroke-width="1" opacity=".5"/>
+      <g class="spin-r"><circle cx="50" cy="50" r="33" fill="none" stroke="#8df2c4" stroke-width="2" stroke-dasharray="30 74" stroke-linecap="round"/></g>
+      <line x1="50" y1="16" x2="50" y2="84" stroke="rgba(53,224,160,.3)" stroke-width="1"/>
+      <line x1="16" y1="50" x2="84" y2="50" stroke="rgba(53,224,160,.3)" stroke-width="1"/>
+      <rect x="46" y="46" width="8" height="8" transform="rotate(45 50 50)" fill="none" stroke="#35e0a0" stroke-width="1.4"/>
+      <circle cx="50" cy="50" r="2" fill="#35e0a0"/>
+    </svg>
+  </header>
+
+<section class="panel reveal">
+    <div class="kicker"><span class="no">01</span><span class="ja">マーケット</span><span class="tag">Markets</span><span class="ln"></span></div>
+<p class="legend">本日2026年10月24日（土、東京・ニューヨークとも休場）。日本の指数・三菱UFJは10/23東証大引け、米国の指数・ドル円・金は10/23ニューヨーク引けの確定値（各行に出典と基準日を併記）。前日比は上昇＝<span class="up">緑 ▲</span>・下落＝<span class="down">赤 ▼</span>。前日の急落の後、日米の株は小幅な動きにとどまり、金は続けて下落しました。</p>
+    <div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>指数・通貨</th><th>現在値</th><th>前日比</th><th>前日比%</th></tr></thead><tbody><tr>
+  <td>日経平均<span class="src-note">Yahoo!ファイナンス ・ as of 2026-10-23 東証大引け</span></td>
+  <td>62,693.16円</td>
+  <td class="down">▼ 214.68円</td>
+  <td class="down">-0.34%</td>
+</tr>
+<tr>
+  <td>ナスダック100<span class="src-note">Yahoo!ファイナンス ・ as of 2026-10-23 NY引け</span></td>
+  <td>28,969.79</td>
+  <td class="up">▲ 11.10</td>
+  <td class="up">+0.04%</td>
+</tr>
+<tr>
+  <td>Ｓ＆Ｐ500<span class="src-note">Yahoo!ファイナンス ・ as of 2026-10-23 NY引け</span></td>
+  <td>7,628.47</td>
+  <td class="down">▼ 34.96</td>
+  <td class="down">-0.46%</td>
+</tr>
+<tr>
+  <td>ドル円（米ドル／円）<span class="src-note">Yahoo!ファイナンス ・ as of 2026-10-23 NY引け</span></td>
+  <td>156.87円</td>
+  <td class="up">▲ 0.01円（円安方向）</td>
+  <td class="up">+0.01%</td>
+</tr>
+<tr>
+  <td>金（ゴールド、先物）<span class="src-note">Yahoo!ファイナンス ・ as of 2026-10-23 NY引け（前日比は前日終値4,060.40ドル基準）</span></td>
+  <td>4,010.60ドル/オンス</td>
+  <td class="down">▼ 49.80ドル</td>
+  <td class="down">-1.23%</td>
+</tr>
+<tr>
+  <td>三菱ＵＦＪフィナンシャル・グループ（8306）<span class="src-note">Yahoo!ファイナンス ・ as of 2026-10-23 東証大引け ※売買推奨ではありません</span></td>
+  <td>3,295円</td>
+  <td class="down">▼ 78円</td>
+  <td class="down">-2.31%</td>
+</tr></tbody></table></div></div>
+<div class="chart"><div class="ttl">日経平均（日足・ローソク足）</div><div class="frame frame-hero"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:JP225USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#0c1410","gridColor":"rgba(100,220,170,0.10)","hide_top_toolbar":true,"hide_legend":true,"hide_volume":true,"allow_symbol_change":false,"save_image":false,"range":"12M","autosize":true}</script></div></div></div>
+    <div class="charts2">
+      <div class="chart"><div class="ttl">ナスダック100（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"OANDA:NAS100USD","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#0c1410","gridColor":"rgba(100,220,170,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+      <div class="chart"><div class="ttl">ドル円（日足）</div><div class="frame frame-mini"><div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"ja","backgroundColor":"#0c1410","gridColor":"rgba(100,220,170,0.10)","hide_top_toolbar":true,"hide_legend":true,"allow_symbol_change":false,"save_image":false,"autosize":true}</script></div></div></div>
+
+    <div class="heatmap-grid reveal">
+      <div class="heatmap-wrap">
+        <div class="ttl">日本市場（日経225）ヒートマップ<span id="jp-hm-upd" style="margin-left:auto;font-weight:400;color:var(--faint);font-size:.68rem"></span></div>
+        <div id="jp-hm-box" style="position:relative">
+          <div id="jp-hm-load" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.88rem">データ読み込み中…</div>
+          <svg id="jp-hm-svg" style="width:100%;height:100%;display:block"></svg>
+        </div>
+      </div>
+      <div class="heatmap-wrap">
+        <div class="ttl">米国市場（Ｓ＆Ｐ500）セクター別ヒートマップ</div>
+        <div class="tradingview-widget-container hm-tv-box">
+          <div class="tradingview-widget-container__widget" style="height:100%"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>{"dataSource":"SPX500","grouping":"sector","blockSize":"market_cap_basic","blockColor":"change","locale":"ja","colorTheme":"dark","hasTopBar":true,"isDataSetEnabled":false,"isZoomEnabled":true,"hasSymbolTooltip":true,"isMonoSize":false,"width":"100%","height":580}</script>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+    <section class="panel reveal">
+    <div class="kicker"><span class="no">02</span><span class="ja">日経平均・ドル円 値動き分析</span><span class="tag">Market Analysis</span><span class="ln"></span></div>
+        <p class="legend">直近の値動き要因と今後への見通し。情報提供であり投資助言ではありません。</p>
+    <div class="analysis-grid"><div class="analysis-card"><div class="analysis-ttl">本日の値動きのポイント</div><p class="analysis-note">土曜のため市場は休みで、直近の営業日である10/23（金）の確定値です。日経平均は62,693.16円（-0.34%）と小幅に下げ、三菱UFJは-2.31%でした。米国はナスダック100が+0.04%と横ばい、Ｓ＆Ｐ500が-0.46%で、前日の大きな下げ（ナスダック100 -2.90%）からは落ち着いた動きでした。金（先物）は-1.23%の4,010.60ドルと続けて下落し、ドル円は156.87円とほぼ横ばいです。出典はいずれもYahoo!ファイナンス。下落の理由は取得できた情報では特定できていません。考え方は④をご覧ください。※情報提供であり投資助言ではありません。</p></div></div>
+
+</section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">03</span><span class="ja">ニュース（媒体横断）</span><span class="tag">Headlines</span><span class="ln"></span></div>
+        <p class="legend">特定媒体に偏らず横断。見出し＋出典＋時刻のみ。公開24時間以内を優先（不足時は最大48時間まで許容）。相対時刻は10/24 4:35頃（JST）時点。見出しをタップすると要約と本文リンクを表示。</p>
+<div class="news">
+<div class="col"><div class="ch" style="background:var(--cool-soft);color:var(--down)">金利・為替・相場</div>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599846" target="_blank" rel="noopener" data-summary="滋賀銀行と、池田泉州銀行を傘下に置く池田泉州ホールディングスが、経営統合する方向で調整していることが23日分かった。"><h4>滋賀銀と池田泉州HD 経営統合へ</h4><div class="meta">Yahoo!ニュース ・ 9時間前</div></a>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599845" target="_blank" rel="noopener" data-summary="日本銀行は、物価上昇率が目標の2%に事実上到達したとの見解を30日に初めて示す公算が大きい。今後の金融政策の重点が、2%への「押し上げ」から「定着」へ転換する節目になるとされる。"><h4>物価上昇2%到達判断の公算大 日銀</h4><div class="meta">Yahoo!ニュース ・ 9時間前</div></a>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599819" target="_blank" rel="noopener" data-summary="佐川急便は、「お荷物問い合わせサービス」が不正アクセスを受けた問題で、流出した可能性のある個人情報が最大で約5323万件にのぼると発表した。"><h4>佐川急便で情報流出 最大5323万件</h4><div class="meta">Yahoo!ニュース ・ 12時間前</div></a>
+<a class="hl" href="https://www.bbc.co.uk/news/articles/cvglwgwpgrlpo" target="_blank" rel="noopener" data-summary="美容大手ロレアルの最高経営責任者は、GLP-1系の減量薬の広がりについて「同社にとって非常に重要な現象だ」と述べた。"><h4>ロレアル、減量薬が美容・スキンケア販売に影響と説明</h4><div class="meta">BBC ・ 21時間前</div></a>
+</div>
+
+<div class="col"><div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">政策・国際</div>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599832" target="_blank" rel="noopener" data-summary="高市首相は23日、ガソリンなどの補助について、財政負担への懸念から段階的な見直しや出口戦略を考えるべきとの指摘があったと述べ、今後の支援のあり方を検討するよう経済産業大臣に指示した。"><h4>燃料油補助の見直し検討 首相指示</h4><div class="meta">Yahoo!ニュース ・ 10時間前</div></a>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599859" target="_blank" rel="noopener" data-summary="2013〜15年の生活保護費の大幅引き下げは違法として利用者らが減額決定の取り消しを求めた4件の訴訟で、最高裁第三小法廷は23日、引き下げを違法と判断し、利用者側の勝訴が確定した。"><h4>生活保護訴訟 利用者側の勝訴確定</h4><div class="meta">Yahoo!ニュース ・ 6時間前</div></a>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599879" target="_blank" rel="noopener" data-summary="米ホワイトハウスは23日、ロシアとウクライナがウクライナ南部の都市で一時的に停戦することで合意したと発表した。"><h4>露ウ南部で一時停戦合意と米発表</h4><div class="meta">Yahoo!ニュース ・ 4時間前</div></a>
+<a class="hl" href="https://www.bbc.co.uk/news/articles/c6ev38dj1g8zo" target="_blank" rel="noopener" data-summary="パリ近郊での一連の襲撃で1人が死亡、5人が負傷し、銃を持っていたとみられる容疑者は拘束された。マクロン大統領はこれを人種差別的なテロ攻撃だと述べた。"><h4>パリ近郊で銃撃、マクロン氏「人種差別的なテロ攻撃」</h4><div class="meta">BBC ・ 12分前</div></a>
+</div>
+
+<div class="col"><div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">テック・人工知能・半導体</div>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599841" target="_blank" rel="noopener" data-summary="GMOインターネットが運営するFX関連サービスが不正アクセスを受けた問題で、身に覚えのない取引で現金を失ったと訴える顧客が相次いでいる。取引口座のパスワードなどが不正に利用されたとみられる。"><h4>意図しないFX取引 損害600万円超</h4><div class="meta">Yahoo!ニュース ・ 10時間前</div></a>
+<a class="hl" href="https://news.yahoo.co.jp/pickup/6599797" target="_blank" rel="noopener" data-summary="米アップルは23日、iPhone初の折り畳み式モデル「Duo」を発売した。直販価格は36万4800円からと高額化が進んでいる。"><h4>折り畳み式iPhone 高額転売横行</h4><div class="meta">Yahoo!ニュース ・ 16時間前</div></a>
+<a class="hl" href="https://www.bbc.co.uk/news/articles/c3qjnwye0ep5o" target="_blank" rel="noopener" data-summary="AIが長年見過ごされてきたプログラムの欠陥を見つけ出し、世界規模の異例のサイバーセキュリティ対応を引き起こした。"><h4>PHPとは何か、世界的なサイバー防御の緊急対応を招いた理由</h4><div class="meta">BBC ・ 7時間前</div></a>
+<a class="hl" href="https://www.bbc.co.uk/news/articles/ckvgyml6pdm9o" target="_blank" rel="noopener" data-summary="インドでは、労働者が仕事中の自分を撮影して報酬を得ており、その映像がAIの学習に使われている。"><h4>インドの労働者、AI学習のため自らの仕事を撮影</h4><div class="meta">BBC ・ 11時間前</div></a>
+</div></div>
+  
+  
+  <h3 id="kaigai" style="font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;color:var(--gold-ink);text-transform:uppercase;margin:1.8rem 0 .35rem;padding-top:1.3rem;border-top:1px solid var(--line)">&#127760; 海外ニュース（主要媒体）</h3>
+  <p class="legend">Al Jazeera・BBC・DW・CBC・France 24・ガーディアンの主要ニュースを日本語で掲載（公開24時間以内を中心）。AP通信・ロイター・NPR・NHK WORLDは本日取得できず、ABC（豪）は取得できたものの掲載に適した記事がなかったため不掲載。見出しをタップすると要約と本文リンクを表示。</p>
+  <div class="news">
+<div class="col"><div class="ch" style="background:var(--cool-soft);color:var(--down)">国際報道</div>
+<a class="hl" href="https://www.aljazeera.com/video/newsfeed/2026/10/23/israel-locks-down-occupied-west-bank-after-hebron-shooting" target="_blank" rel="noopener" data-summary="ヘブロン近郊の銃撃でイスラエル兵2人が死亡したことを受け、イスラエルは占領下の西岸地区全域に封鎖措置を導入しました。"><h4>ヘブロン銃撃を受け、イスラエルが占領下ヨルダン川西岸を封鎖</h4><div class="meta">Al Jazeera ・ 約1時間前</div></a>
+<a class="hl" href="https://www.aljazeera.com/news/2026/10/23/former-fbi-officials-charged-in-connection-with-hunter-biden-laptop-probe" target="_blank" rel="noopener" data-summary="元FBI当局者が、ハンター・バイデン氏のノートPC捜査に関連して起訴されました。被告側の弁護士は、中間選挙を前に司法省が騒動を蒸し返そうとしていると主張しています。"><h4>元FBI当局者らを起訴、ハンター・バイデン氏のノートPC捜査をめぐり</h4><div class="meta">Al Jazeera ・ 約1時間前</div></a>
+<a class="hl" href="https://www.aljazeera.com/news/2026/10/23/trump-administration-sues-to-block-possible-democratic-win-in-alaska" target="_blank" rel="noopener" data-summary="トランプ大統領はこの訴訟を自らの成果と位置づけました。米政府が中間選挙の選挙区に干渉しかねないとの懸念が高まっています。"><h4>トランプ政権、アラスカで民主党が勝つ可能性を阻もうと提訴</h4><div class="meta">Al Jazeera ・ 約2時間前</div></a>
+<a class="hl" href="https://www.aljazeera.com/news/2026/10/23/many-feared-trapped-after-multistorey-building-collapses-in-kenya" target="_blank" rel="noopener" data-summary="ナイロビのイースリー地区で建物が倒壊しました。当局によると、このビルには使用許可証がなかった一方、1階は使われていました。"><h4>ケニア・ナイロビで複数階建てのビルが倒壊、多数が閉じ込められた恐れ</h4><div class="meta">Al Jazeera ・ 約2時間前</div></a>
+</div>
+<div class="col"><div class="ch" style="background:var(--gold-soft);color:var(--gold-ink)">公共放送系</div>
+<a class="hl" href="https://www.bbc.co.uk/news/articles/c6ev38dj1g8zo" target="_blank" rel="noopener" data-summary="連続した襲撃で1人が死亡、5人が負傷しました。容疑者とみられる銃撃犯は拘束されたと伝えられています。"><h4>パリ近郊で銃撃、マクロン氏「人種差別的なテロ攻撃」</h4><div class="meta">BBC ・ 約13分前</div></a>
+<a class="hl" href="https://www.dw.com/en/russia-ukraine-agree-to-us-brokered-1-city-ceasefire/a-79746723" target="_blank" rel="noopener" data-summary="ロシア占領下の前線都市オレシキは人道危機に直面しています。局地的な停戦と並行して、ゼレンスキー大統領は来月、より広範な協議の場に交渉団が臨むと述べました。"><h4>ロシアとウクライナ、米国仲介でオレシキ1都市の停戦に合意</h4><div class="meta">DW ・ 約1時間前</div></a>
+<a class="hl" href="https://www.cbc.ca/news/politics/carney-zelenskyy-trump-starlink-9.7393553" target="_blank" rel="noopener" data-summary="カナダのカーニー首相は金曜、マスク氏の軍用衛星ネットワークへのウクライナのアクセスを制限した決定を批判し、人命が失われていると述べました。"><h4>カーニー首相、ウクライナのスターシールド利用制限で「直接の犠牲が出ている」</h4><div class="meta">CBC ・ 約17分前</div></a>
+<a class="hl" href="https://www.france24.com/en/middle-east/20261023-how-israeli-settlers-wearing-keffiyehs-are-attacking-west-bank-olive-groves" target="_blank" rel="noopener" data-summary="西岸では10月15日にオリーブの収穫が正式に始まり、入植者や兵士によるパレスチナ人への暴力が増えています。入植者らはSNSで映えを意識した見せ方も発信していると伝えています。"><h4>イスラエル入植者がケフィーヤ姿で西岸のオリーブ畑を襲撃、その実態</h4><div class="meta">France 24 ・ 約2時間前</div></a>
+</div>
+<div class="col"><div class="ch" style="background:rgba(255,107,129,.15);color:var(--up)">読者支援型ほか</div>
+<a class="hl" href="https://www.theguardian.com/world/2026/oct/23/ebola-swiss-patient-nigeria-dr-congo-concerns-virus-spread" target="_blank" rel="noopener" data-summary="スイスは、患者が同国外交官の妻でウガンダ滞在中に感染したとみられると発表しました。アフリカ各国の保健当局は、10年以上ぶりとなるナイジェリアの患者の感染経路の特定を急いでいます。"><h4>ナイジェリアのエボラ感染源は謎、ウイルス拡大への懸念強まる</h4><div class="meta">ガーディアン ・ 約5時間前</div></a>
+<a class="hl" href="https://www.theguardian.com/world/2026/oct/23/magnitude-7-earthquake-hits-china-tibet" target="_blank" rel="noopener" data-summary="地域北部で発生した地震を受け、捜索救助活動が続いています。少なくとも7回の余震が観測されました。"><h4>チベットでM7の地震、少なくとも16人死亡・数百戸が倒壊</h4><div class="meta">ガーディアン ・ 約12時間前</div></a>
+</div>
+</div>
+</section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">04</span><span class="ja">今日の結論</span><span class="tag">Today's call</span><span class="ln"></span></div>
+<p class="thesis">今日の一つの見方：前日の急落の後、日米の株は<span class="hi">小幅な動きに落ち着きました</span>が、物価の上昇が加速し、来週は日米の金融政策会合が続きます。確かめながら見方を更新する局面です。</p>
+<ul class="ul-thesis">
+  <li><span class="bead"></span><p><b>全国の物価上昇率が2.1%に加速しました。</b>総務省が10/23に発表した9月の全国消費者物価（生鮮食品を除く総合）は前年同月比+2.1%で、8月の+1.7%から上がりました。食品とエネルギーを除く指数も+2.4%です。物価の上昇が広がっていることを示し、日本銀行が来週10/29〜30の会合でどう判断するかが焦点です（物価上昇率2%到達の判断が有力との報道あり、Yahoo!ニュース10/23夜）。物価が高止まりすると金利が下がりにくく、株や投信の値動きは大きくなりやすい点に注意が必要です。</p></li>
+  <li><span class="bead"></span><p><b>株は小幅な動き、金は続けて下げました。理由は確認できていません。</b>日経平均は-0.34%の62,693.16円、米国はナスダック100（米国のIT大手中心の株価指数）が+0.04%、Ｓ＆Ｐ500（米国の大手500社の株価指数）が-0.46%でした。金（先物）は-1.23%の4,010.60ドルで、前日に続く下落です（Yahoo!ファイナンス・10/23終値）。米国の10年国債利回りは4.99%で、10/21の5.15%よりは下がりましたが、5%近い高い水準です（Yahoo!ファイナンス）。10/22の同時安の動因は今も特定できておらず、「落ち着いた」と決めつけず、来週の発表で確かめます。</p></li>
+  <li><span class="bead"></span><p><b>保有する投信の値段に、前日の下げが入りました。</b>10/23付の基準価額（投資信託の値段）は、オルカン（全世界株式）37,162円（-2.30%）、FANG+（米国のIT大手に集中投資する投信）96,061円（-4.18%）、ゴールド22,741円（-3.06%）で、集中型ほど下げが大きくなりました（みんかぶ投信・Yahoo!ファイナンス）。来週は米国の金融政策会合（10/27〜28）、日本銀行の会合（10/29〜30）、米国のGDPと物価指標（10/29）、マイクロソフトやアマゾンの決算が重なります。金利が上がる場合と、日銀が動いて円高に振れる場合の両方に目配りが必要です。</p></li>
+</ul>
+<p class="note" style="margin-top:.6rem;font-size:.85rem;color:var(--faint)">情報提供であり、投資助言ではありません。個別株の売買推奨は行いません。数値は日本が10/23東証大引け、米国・為替・金が10/23ニューヨーク引けの確定値です。</p>
+
+
+  </section>
+
+  <section class="panel reveal">
+    <div class="kicker"><span class="no">05</span><span class="ja">先読み（需給シナリオ）</span><span class="tag">Forward view</span><span class="ln"></span></div>
+        <p class="lead">世界情勢の変化が<b>需給の崩れ</b>を生み、最終的に<b>数ヶ月後に効く投信／ＥＴＦ</b>へ波及する連鎖を"仮説"として立てる枠。<span class="note">※仮説であり投資助言ではありません。</span></p>
+<div class="scen">
+<div class="card">
+  <h3>仮説シナリオ①：物価の高止まりと高い金利が、集中型と分散型の投信に及ぶ道すじ</h3>
+  <p class="sub">世界情勢の変化→需給の崩れ→製品価格・セクター→数ヶ月後に効く投信/ETF（上場投資信託）という仮説の一例です。仮説であり投資助言ではありません。</p>
+  <ul class="flow">
+    <li><span class="stg">情勢</span><span class="txt">【確認できた事実】全国の消費者物価（生鮮食品を除く）は9月に前年比+2.1%へ加速しました（総務省・10/23）。米国の10年国債利回りは10/23時点で4.99%と高い水準です（Yahoo!ファイナンス）。</span></li>
+    <li><span class="stg">需給</span><span class="txt">【仮説】物価が下がらないと中央銀行は金利を下げにくく、将来の利益に期待して買われる成長株は評価が割り引かれやすくなります。10/22に株・金・円がそろって動いた動因は特定できておらず、持ち高を減らす動きが重なった可能性もあります。</span></li>
+    <li><span class="stg">製品</span><span class="txt">ナスダック100は10/22に-2.90%と下げた後、10/23は+0.04%と横ばいでした。一方、FANG+の基準価額は10/23付で-4.18%、オルカンは-2.30%と、IT大手に集中した投信ほど揺れが大きくなっています（みんかぶ投信・Yahoo!ファイナンス）。</span></li>
+    <li><span class="stg">市場</span><span class="txt">【確認できた事実】金の投信も10/23付で-3.06%と下がり、株の下げを和らげる役にはなりませんでした。ただし2日分の動きだけで「金は守り役にならない」と決められるわけではありません。</span></li>
+    <li class="final"><span class="stg">最終</span><span class="txt">数ヶ月後には、金利の高止まりが続くか和らぐかで、集中型と分散型の成績差が開くかもしれない、という仮説です。来週の発表で金利が落ち着けばこの見方は弱まります。仮説であり投資助言ではありません。</span></li>
+  </ul>
+</div>
+<div class="card">
+  <h3>仮説シナリオ②：日銀の判断と円の動きが、為替ヘッジのない外国株型と国内株式型に及ぶ道すじ</h3>
+  <p class="sub">世界情勢の変化→需給の崩れ→製品価格・セクター→数ヶ月後に効く投信/ETF（上場投資信託）という仮説の一例です。仮説であり投資助言ではありません。</p>
+  <ul class="flow">
+    <li><span class="stg">情勢</span><span class="txt">【確認できた事実】物価上昇率が2.1%に加速し、日本銀行が物価上昇率2%の到達を判断する公算が大きいと報じられています（Yahoo!ニュース10/23夜の見出し）。日銀の会合は10/29〜30、米国の金融政策会合は10/27〜28です。</span></li>
+    <li><span class="stg">需給</span><span class="txt">【仮説】日銀が追加の利上げに前向きな姿勢を示せば、日米の金利差が縮むとの見方から円が買われやすくなります。逆に慎重な姿勢なら、円は売られやすくなります。</span></li>
+    <li><span class="stg">製品</span><span class="txt">ドル円は10/23に156.87円で、10/21の158.13円から円高方向に動いた水準です（Yahoo!ファイナンス・10/21と10/23の終値）。円高になると、輸出企業の多い国内株式型や、為替ヘッジのない外国株型の投信は、円換算で目減りしやすくなります。</span></li>
+    <li><span class="stg">市場</span><span class="txt">円高が進めば為替ヘッジのない外国株型に逆風、ヘッジ付きは影響を受けにくい一方、円安に戻れば円換算で支えになります。三菱UFJなど銀行株は、金利上昇では追い風でも、10/23は-2.31%と下げており、方向はそろっていません。</span></li>
+    <li class="final"><span class="stg">最終</span><span class="txt">数ヶ月後には、日銀と米国の金利の動き方で、ヘッジなしの外国株型とヘッジ付き・国内株式型の差が分かれるかもしれない、という仮説です。会合の結果が予想の範囲に収まれば、この見方は弱まります。仮説であり投資助言ではありません。</span></li>
+  </ul>
+</div>
+</div>
+
+  </section>
+
+  <section class="panel reveal" id="unyou">
+    <div class="kicker"><span class="no">06</span><span class="ja">仮想運用シミュレーション</span><span class="tag">Virtual Portfolio</span><span class="ln"></span></div>
+    <p style="font-size:.82rem;color:var(--gold-ink);margin:0 0 1rem;padding:.5rem .8rem;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:8px">※学習目的の仮想シミュレーションです。実際の売買は一切行っていません。投資助言ではありません。個別株の売買推奨はしません（三菱ＵＦＪ〈8306〉は本仮想ポートフォリオの保有・売買対象外、参考情報として言及）。</p>
+
+    <!-- ▼資産推移チャート（クライアント側でdata/*.jsonを読み描画・自己更新） -->
+    <figure id="pfchart" class="pfchart" style="margin:.2rem 0 1.2rem">
+      <figcaption style="font-size:.9rem;font-weight:600;color:var(--gold-ink);margin-bottom:.5rem">資産推移（仮想PF評価額）</figcaption>
+      <div class="pfchart-canvas" style="width:100%;overflow-x:auto"></div>
+      <div class="pfchart-cap" style="font-size:.74rem;color:var(--faint);margin-top:.5rem"></div>
+    </figure>
+    <script>
+    (function(){
+      var fig=document.getElementById('pfchart'); if(!fig) return;
+      var canvas=fig.querySelector('.pfchart-canvas'), cap=fig.querySelector('.pfchart-cap');
+      var yen=function(n){return '¥'+Math.round(n).toLocaleString('ja-JP');};
+      var mmdd=function(d){var p=d.split('-');return (+p[1])+'/'+(+p[2]);};
+      Promise.all([
+        fetch('data/nav_history.json').then(function(r){return r.json();}).catch(function(){return null;}),
+        fetch('data/counterfactual.json').then(function(r){return r.json();}).catch(function(){return null;})
+      ]).then(function(res){
+        var nav=res[0], cf=res[1];
+        if(!nav||!nav.history||!nav.history.length){ fig.style.display='none'; return; }
+        var byDate={}; nav.history.forEach(function(h){ byDate[h.date]=h; }); // 同日重複は後勝ちで統合
+        var dates=Object.keys(byDate).sort();
+        var real=dates.map(function(d){return byDate[d].total_value_jpy;});
+        // 凍結初期PF（無裁量ベース）
+        var fz={};
+        if(cf&&cf.frozen_initial&&cf.frozen_initial.daily){ cf.frozen_initial.daily.forEach(function(x){fz[x.date]=x.total_value_jpy;}); }
+        var frozen=dates.map(function(d){return fz[d]!=null?fz[d]:null;});
+        // オルカン等価（同じ資金を初日から全額オルカンに入れた場合）
+        var bc=dates.map(function(d){return byDate[d].benchmark_cum_pct!=null?byDate[d].benchmark_cum_pct:0;});
+        var ext=(cf&&cf.external_contributions)?cf.external_contributions:[];
+        var base=real[0];
+        var orukan=dates.map(function(d,i){
+          var v=base*(1+bc[i]/100);
+          ext.forEach(function(c){ if(c.date<=d){ var bcc=byDate[c.date]?(byDate[c.date].benchmark_cum_pct||0):0; v+=c.amount_jpy*(1+(bc[i]-bcc)/100); } });
+          return v;
+        });
+        // scales
+        var W=760,H=340,pl=66,pr=16,pt=28,pb=40, pw=W-pl-pr, ph=H-pt-pb;
+        var vals=real.concat(frozen.filter(function(v){return v!=null;})).concat(orukan);
+        var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+        var pad=(mx-mn)*0.12||mx*0.02; mn-=pad; mx+=pad;
+        var X=function(i){return pl + (dates.length===1?pw/2:pw*i/(dates.length-1));};
+        var Y=function(v){return pt + ph*(1-(v-mn)/(mx-mn));};
+        var poly=function(arr){var pts=[];arr.forEach(function(v,i){if(v!=null)pts.push(X(i).toFixed(1)+','+Y(v).toFixed(1));});return pts.join(' ');};
+        var ticks=4, tg='';
+        for(var t=0;t<=ticks;t++){ var v=mn+(mx-mn)*t/ticks, y=Y(v);
+          tg+='<line x1="'+pl+'" y1="'+y.toFixed(1)+'" x2="'+(W-pr)+'" y2="'+y.toFixed(1)+'" stroke="rgba(140,240,190,.09)" stroke-width="1"/>';
+          tg+='<text x="'+(pl-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#7fa08c">'+('¥'+Math.round(v/10000)+'万')+'</text>';
+        }
+        var xl='';
+        dates.forEach(function(d,i){ xl+='<text x="'+X(i).toFixed(1)+'" y="'+(H-14)+'" text-anchor="middle" font-size="11" fill="#7fa08c">'+mmdd(d)+'</text>'; });
+        var dots=''; real.forEach(function(v,i){ dots+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" fill="#2aa968"/>'; });
+        var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:440px;display:block" role="img" aria-label="仮想ポートフォリオの資産推移">'
+          +tg+xl
+          +'<polyline points="'+poly(frozen)+'" fill="none" stroke="#7b88a0" stroke-width="1.5" stroke-dasharray="5 4"/>'
+          +'<polyline points="'+poly(orukan)+'" fill="none" stroke="#1f8ed8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+          +'<polyline points="'+poly(real)+'" fill="none" stroke="#2aa968" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'
+          +dots
+          +'<g font-size="11"><rect x="'+pl+'" y="2" width="12" height="3" fill="#2aa968"/><text x="'+(pl+17)+'" y="7" fill="#7ce8b5">実PF評価額</text>'
+          +'<rect x="'+(pl+108)+'" y="2" width="12" height="3" fill="#1f8ed8"/><text x="'+(pl+125)+'" y="7" fill="#7fc5f0">オルカン等価</text>'
+          +'<rect x="'+(pl+218)+'" y="2" width="12" height="3" fill="#7b88a0"/><text x="'+(pl+235)+'" y="7" fill="#93a89b">凍結初期PF（無裁量）</text></g>'
+          +'</svg>';
+        canvas.innerHTML=svg;
+        var last=byDate[dates[dates.length-1]];
+        var ex=(last.excess_pct!=null)?((last.excess_pct>=0?'+':'')+last.excess_pct.toFixed(2)+'%pt'):'—';
+        var diff=Math.round(real[real.length-1]-orukan[orukan.length-1]);
+        cap.innerHTML='最新評価額 <b style="color:var(--gold-ink)">'+yen(last.total_value_jpy)+'</b>（'+last.date+'）／対オルカン超過 '+ex+'（¥換算 '+(diff>=0?'+':'')+yen(diff).replace('¥','¥')+'）。'
+          +'<b>オルカン等価</b>＝同じ資金を初日から全額オルカンに入れた場合。実PFがこれを上回れば戦略が機能している証拠。<b>凍結初期PF</b>＝6/29配分のまま無裁量で保有し続けた場合で、実PFとの差＝日々の運用判断の付加価値。※つみたて新規拠出を含むため累積リターン％は資金流入で嵩上げされる点に留意。';
+      });
+    })();
+    </script>
+    <!-- ▲資産推移チャート -->
+<!-- (ii) サマリー表 -->
+<div class="tbl-shell"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>項目</th><th>金額</th><th>備考</th></tr></thead><tbody>
+<tr><td>運用資産合計</td><td>¥5,702,561（前回比 -185,676円）</td><td>10/23付の基準価額（投資信託の値段）が出て、前日の日米株安が入りました。オルカン・FANG+・ゴールドがそろって下がった分です。保有数量の変更・入金・出金はなく、現金は¥0</td></tr>
+<tr><td>評価損益（含み益）</td><td>+ ¥650,698</td><td>取得原価¥5,051,863に対する含み益（実現済みの利益は別）。前回は+¥836,374</td></tr>
+<tr><td>戦略リターン（累計）</td><td>+ 7.43%</td><td>運用開始時（2026-06-29）の評価額¥5,307,968との比較（前回は +10.93%）。毎月のつみたて入金も含む見かけの数字です</td></tr>
+<tr><td>対ベンチマーク超過（対オルカン）</td><td>+ 8.94%pt</td><td>ベンチ＝全世界株式のインデックス投信（オルカン、累計 -1.50%）。前回は+10.12%pt。FANG+がオルカンより大きく下げた分だけ差が縮みました。あらかじめ決めた「見直しの下限」の+8.0%ptまで約0.9%pt（約5万円分）です。この数字は毎月の入金で見かけ上かさ上げされています</td></tr>
+</tbody></table></div><div class="tcap">基準価額：オルカン37,162円（-2.30%）・FANG+96,061円（-4.18%）・ゴールド22,741円（-3.06%）（いずれも2026-10-23付の確定値、みんかぶ投信、前回値と算術整合）。学習目的の仮想シミュレーションです。実際の売買は行っていません。投資助言ではありません。</div></div>
+
+<!-- (iii) 保有一覧 -->
+<div class="tbl-shell" style="margin-top:1rem"><div class="tbl-scroll"><table class="mkt"><thead><tr><th>口座</th><th>ファンド</th><th>評価額</th><th>評価損益</th><th>3ヶ月反対売買制限・次回アクション可能日</th></tr></thead><tbody>
+<tr><td>ＮＩＳＡつみたて</td><td>eMAXIS Slim 全世界株式（オール・カントリー）</td><td>¥488,662（前回比 -11,492円）</td><td>- ¥11,338</td><td>—（原則売却しない・1銘柄・10月分は執行済み、次回11月分）</td></tr>
+<tr><td>ＮＩＳＡ成長</td><td>eMAXIS Slim 全世界株式（オール・カントリー）</td><td>¥2,363,931（前回比 -55,596円）</td><td>- ¥36,069</td><td>制限は2026-09-29に解除済み（売却可）。年間上限¥2,400,000に達しており新規購入不可</td></tr>
+<tr><td>特定①</td><td>iFreeNEXT（アイフリーネクスト）FANG+インデックス</td><td>¥2,362,947（前回比 -103,190円）</td><td>+ ¥711,084</td><td>制限は2026-09-29に解除済み（売却可）。ただし売ると利益に約20%の税がかかる</td></tr>
+<tr><td>特定②</td><td>ＳＢＩ・iシェアーズ・ゴールドファンド（為替ヘッジなし）</td><td>¥487,021（前回比 -15,398円）</td><td>- ¥12,979</td><td>制限は2026-09-29に解除済み（売却可）</td></tr>
+</tbody></table></div></div>
+
+<!-- (iv) 本日の運用判断 -->
+<div class="card" style="margin-top:1rem">
+  <h3>本日の運用判断（2026-10-24・土）</h3>
+  <p class="sub">種別：様子見（何もしない）。学習目的の仮想シミュレーションです。実際の売買は行っていません。投資助言ではありません。個別株の売買推奨はしません。</p>
+  <ul class="flow">
+    <li><span class="stg">何を</span><span class="txt">売買せず、保有の4口座（オルカン2つ・FANG+・ゴールド）をそのまま持ち続けます。ただし、あらかじめ決めた「動く条件」の1つが成立したため、見直しをしたうえでの様子見です。</span></li>
+    <li><span class="stg">なぜ</span><span class="txt">FANG+の基準価額が96,061円となり、警戒ラインの97,459円を下回りました。そこで、特定口座のFANG+を50万円分売り、オルカンに振り替える案を検討しました。しかし、売却の注文は下げが反映された後の値段で約定するため、すでに起きた下落は避けられず、利益に約3.1万円の税金が確定します。ほかの条件は成立していません（オルカンとの差は+8.94%ptで下限の+8.0%ptより上、FANG+の比率は41.4%で上限の46%未満、ナスダック100の2日連続の大幅安もなし）。来週は日米の金融政策会合や大手IT企業の決算が重なり、材料が出る前に動く根拠も弱いと判断しました。ただし、様子見が「何もしない」という選択である点は自覚しており、条件が重なれば動きます。</span></li>
+    <li class="final"><span class="stg">ひとことリスク</span><span class="txt">オルカンとの差が下限の+8.0%ptまで約0.9%ptしかなく、FANG+のさらなる下落が続けば、この下限に届きかねません。FANG+がもう5%下がると評価額は約11.8万円減ります。次の営業日に確定する基準価額で差が+8.0%ptを割っていれば、その時点で見直しを具体化します。</span></li>
+  </ul>
+  <p style="font-size:.75rem;color:var(--faint);margin-top:.8rem">基準価額の出典：オルカン37,162円・FANG+96,061円・ゴールド22,741円（いずれも2026-10-23付の確定値、みんかぶ投信、前回値と算術整合）。ナスダック100は10/22=28,958.69（-2.90%）、10/23=28,969.79（+0.04%）（Yahoo!ファイナンス）。</p>
+</div>
+
+<p style="font-size:.75rem;color:var(--faint);margin-top:1rem">※学習目的の仮想シミュレーション。実際の売買は行っていません。投資助言ではありません。数値はすべて仮想の教育用モデルです。本日示す市況・データは情報提供を目的とするものであり、投資勧誘を目的とするものではありません。</p>
+  </section>
+
+  <footer class="foot">
+    <div class="dsum"><b>本日のデータ取得サマリー（2026年10月24日 JST 土）</b>：土曜のため東京・ニューヨークとも休場で、市況は直近の確定値です（日経平均・三菱UFJは10/23東証大引け、米国2指数・ドル円・金は10/23ニューヨーク引け、いずれもYahoo!ファイナンスの日足終値）。日経平均62,693.16円（-0.34%）、ナスダック100 28,969.79（+0.04%）、Ｓ＆Ｐ500 7,628.47（-0.46%）、ドル円156.87円（+0.01%）、金4,010.60ドル（-1.23%）、三菱UFJ 3,295円（-2.31%）。基準価額（オルカン・FANG+・ゴールド）は10/23付をみんかぶ投信から取得し、前日値と算術整合を確認しました。全国消費者物価（9月分）は総務省の公表資料で確認しました。ニュースはYahoo!ニュースRSSとBBC RSSから実取得、海外欄はAl Jazeera・BBC・DW・CBC・France 24・ガーディアンを掲載（AP通信・ロイター・NPR・NHK WORLDは取得不可）。共同通信・毎日新聞・時事通信は、Yahoo!ニュースのRSSに配信元の記載がなく判別できないため、各カテゴリ1本までの確認ができていません。答え合わせは期限到来5件のうち4件が的中・1件が外れ（物価、Ｓ＆Ｐ500の水準、メタの決算後の値動きが的中、テスラは値動きが閾値に届かず外れ）。仮想運用は様子見です。</div>
+
+    <p style="margin:0">本まとめは情報提供であり投資助言ではありません。最終判断はご自身で。記事本文は転載せず、見出し・リンクのみ掲載しています。</p>
+  </footer>
+</div>
+<div id="jp-hm-tip"></div>
+<script>
+/* ==== 日経225ヒートマップ（全225銘柄・恒久ブロック：ルーチンは書き換えない） ====
+   構成銘柄表（コード/業種/構成率）＝nikkei225jp.com公開フィードのスナップショットを静的内蔵。
+   騰落率＝一次: nikkei225jp.comフィード（script読込・寄与度つき）／
+           二次: Yahoo spark バッチ（20銘柄×12・プロキシ輪番）。全滅時も銘柄名つきで構造表示。
+   表示＝業種グループ化ツリーマップ（面積=指数構成率・色=前日比%）＋凡例。クリックでYahooファイナンスへ。
+   ?hmfb=1 でフォールバック経路を強制（動作確認用）。 */
+(function(){
+  var SEC={10:'水産・農林',20:'鉱業',30:'建設',40:'食料品',50:'繊維',60:'パルプ・紙',70:'化学',80:'医薬品',90:'石油・石炭',100:'ゴム',110:'ガラス・土石',120:'鉄鋼',130:'非鉄金属',140:'金属製品',150:'機械',160:'電気機器',170:'輸送用機器',180:'精密機器',190:'その他製品',200:'電気・ガス',210:'陸運',220:'海運',230:'空運',240:'倉庫・運輸',250:'情報・通信',260:'卸売',270:'小売',280:'銀行',290:'証券',300:'保険',310:'その他金融',320:'不動産',330:'サービス'};
+  var STATIC225=[["1332",10,0.06,"ニッスイ"],["1605",20,0.06,"ＩＮＰＥＸ"],["1721",30,0.27,"コムシスホールディングス"],["1801",30,0.15,"大成建設"],["1802",30,0.17,"大林組"],["1803",30,0.13,"清水建設"],["1808",30,0.03,"長谷工コーポレーション"],["1812",30,0.15,"鹿島建設"],["1925",30,0.22,"大和ハウス工業"],["1928",30,0.17,"積水ハウス"],["1963",30,0.12,"日揮"],["2002",40,0.1,"日清製粉グループ本社"],["2269",40,0.08,"明治ホールディングス"],["2282",40,0.16,"日本ハム"],["2413",330,0.23,"エムスリー"],["2432",330,0.04,"ディー・エヌ・エー"],["2501",40,0.1,"サッポロホールディングス"],["2502",40,0.24,"アサヒグループＨＤ"],["2503",40,0.14,"キリンホールディングス"],["2768",260,0.03,"双日"],["2801",40,0.41,"キッコーマン"],["2802",40,0.57,"味の素"],["285A",160,2.49,"キオクシアホールディングス"],["2871",40,0.11,"ニチレイ"],["2914",40,0.31,"ＪＴ"],["3086",270,0.08,"Ｊ．フロント リテイリング"],["3092",270,0.17,"ＺＯＺＯ"],["3099",270,0.18,"三越伊勢丹ホールディングス"],["3289",320,0.07,"東急不動産ＨＤ"],["3382",270,0.3,"７＆ｉＨＤ"],["3401",50,0.02,"帝人"],["3402",50,0.06,"東レ"],["3405",50,0.08,"クラレ"],["3407",70,0.09,"旭化成"],["3436",140,0.02,"ＳＵＭＣＯ"],["3659",250,0.23,"ネクソン"],["3697",250,0.03,"ＳＨＩＦＴ"],["3861",60,0.04,"王子ホールディングス"],["4004",70,0.08,"レゾナック・ホールディングス"],["4005",70,0.03,"住友化学"],["4021",70,0.41,"日産化学工業"],["4042",70,0.07,"東ソー"],["4043",70,0.05,"トクヤマ"],["4061",70,0.04,"デンカ"],["4062",160,1.95,"イビデン"],["4063",70,1.76,"信越化学工業"],["4151",80,0.13,"協和キリン"],["4183",70,0.04,"三井化学"],["4188",70,0.03,"三菱ケミカルＨＤ"],["4208",70,0.02,"ＵＢＥ"],["4307",250,0.25,"野村総合研究所"],["4324",330,0.16,"電通"],["4385",250,0.22,"メルカリ"],["4452",70,0.32,"花王"],["4502",80,0.27,"武田薬品工業"],["4503",80,0.53,"アステラス製薬"],["4506",80,0.07,"住友ファーマ"],["4507",80,0.43,"塩野義製薬"],["4519",80,1.12,"中外製薬"],["4523",80,0.21,"エーザイ"],["4543",180,0.91,"テルモ"],["4568",80,0.4,"第一三共"],["4578",80,0.57,"大塚ホールディングス"],["4661",330,0.13,"オリエンタルランド"],["4689",250,0.01,"LINEヤフー"],["4704",250,0.31,"トレンドマイクロ"],["4751",330,0.06,"サイバーエージェント"],["4755",330,0.04,"楽天"],["4901",70,0.54,"富士フイルムＨＤ"],["4902",160,0.03,"コニカミノルタＨＤ"],["4911",70,0.14,"資生堂"],["5019",90,0.12,"出光興産"],["5020",90,0.06,"ENEOSホールディングス"],["5101",100,0.19,"横浜ゴム"],["5108",100,0.36,"ブリヂストン"],["5201",110,0.06,"ＡＧＣ"],["5214",110,0.09,"日本電気硝子"],["5233",110,0.02,"太平洋セメント"],["5301",110,0.08,"東海カーボン"],["5332",110,0.21,"ＴＯＴＯ"],["5333",110,0.35,"日本碍子"],["5401",120,0.01,"日本製鉄"],["5406",120,0.01,"神戸製鋼所"],["5411",120,0.01,"ＪＦＥホールディングス"],["543A",170,0.02,"ＡＲＣＨＩＯＮ "],["5631",150,0.08,"日本製鋼所"],["5706",130,0.18,"三井金属鉱業"],["5711",130,0.02,"三菱マテリアル"],["5713",130,0.18,"住友金属鉱山"],["5714",130,0.08,"ＤＯＷＡホールディングス"],["5801",130,0.18,"古河電気工業"],["5802",130,0.48,"住友電気工業"],["5803",130,1.49,"フジクラ"],["5831",280,0.16,"しずおかﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["6098",330,1.81,"リクルートホールディングス"],["6103",150,0.1,"オークマ"],["6113",150,0.15,"アマダ"],["6146",150,0.71,"ディスコ"],["6178",330,0.12,"日本郵政"],["6273",150,0.36,"ＳＭＣ"],["6301",150,0.33,"小松製作所"],["6302",150,0.05,"住友重機械工業"],["6305",150,0.27,"日立建機"],["6326",150,0.14,"クボタ"],["6361",150,0.29,"荏原製作所"],["6367",150,1.28,"ダイキン工業"],["6471",150,0.06,"日本精工"],["6472",150,0.02,"ＮＴＮ"],["6473",150,0.1,"ジェイテクト"],["6479",160,0.21,"ミネベアミツミ"],["6501",160,0.24,"日立製作所"],["6503",160,0.29,"三菱電機"],["6504",160,0.13,"富士電機"],["6506",160,0.34,"安川電機"],["6526",160,0.13,"ソシオネクスト"],["6532",330,0.34,"ベイカレント"],["6645",160,0.29,"オムロン"],["6701",160,0.11,"ＮＥＣ"],["6702",160,0.17,"富士通"],["6723",160,0.23,"ルネサスエレクトロニクス"],["6724",160,0.28,"セイコーエプソン"],["6752",160,0.22,"パナソニック"],["6753",160,0.03,"シャープ"],["6758",160,0.86,"ソニー"],["6762",160,2.47,"ＴＤＫ"],["6770",160,0.1,"アルプスアルパイン"],["6841",160,0.28,"横河電機"],["6857",160,10.22,"アドバンテスト"],["6861",160,0.38,"キーエンス"],["6902",170,0.39,"デンソー"],["6920",160,0.87,"レーザーテック"],["6954",160,1.74,"ファナック"],["6963",160,0.26,"ローム"],["6971",160,1.47,"京セラ"],["6976",160,0.8,"太陽誘電"],["6981",160,1.09,"村田製作所"],["6988",70,0.79,"日東電工"],["7004",150,0.01,"カナデビア"],["7011",150,0.2,"三菱重工業"],["7012",170,0.07,"川崎重工業"],["7013",150,0.1,"ＩＨＩ"],["7186",280,0.09,"コンコルディアﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["7201",170,0.02,"日産自動車"],["7202",170,0.06,"いすゞ自動車"],["7203",170,0.72,"トヨタ自動車"],["7211",170,0.02,"三菱自動車工業"],["7261",170,0.01,"マツダ"],["7267",170,0.46,"本田技研工業"],["7269",170,0.42,"スズキ"],["7270",170,0.13,"ＳＵＢＡＲＵ"],["7272",170,0.19,"ヤマハ発動機"],["7453",270,0.37,"良品計画"],["7532",270,0.04,"パン・パシフィックＩＨ"],["7731",180,0.11,"ニコン"],["7733",180,0.35,"オリンパス"],["7735",160,0.67,"SCREENホールディングス"],["7741",180,0.63,"ＨＯＹＡ"],["7751",160,0.32,"キヤノン"],["7752",160,0.07,"リコー"],["7832",190,0.6,"バンダイナムコHD"],["7911",190,0.13,"ＴＯＰＰＡＮホールディングス"],["7912",190,0.15,"大日本印刷"],["7951",190,0.18,"ヤマハ"],["7974",190,0.35,"任天堂"],["8001",260,0.47,"伊藤忠商事"],["8002",260,0.25,"丸紅"],["8015",260,0.92,"豊田通商"],["8031",260,0.46,"三井物産"],["8035",160,10.24,"東京エレクトロン"],["8053",260,0.32,"住友商事"],["8058",260,0.66,"三菱商事"],["8233",270,0.11,"高島屋"],["8252",270,0.15,"丸井グループ"],["8253",310,0.23,"クレディセゾン"],["8267",270,0.22,"イオン"],["8304",280,0.01,"あおぞら銀行"],["8306",280,0.17,"三菱ＵＦＪﾌｨﾅﾝｼｬﾙ･ｸﾞﾙｰﾌﾟ"],["8308",280,0.01,"りそなホールディングス"],["8309",280,0.06,"三井住友ﾄﾗｽﾄ･ＨＤ"],["8316",280,0.1,"三井住友ﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["8331",280,0.14,"千葉銀行"],["8354",280,0.07,"ふくおかﾌｨﾅﾝｼｬﾙｸﾞﾙｰﾌﾟ"],["8411",280,0.04,"みずほフィナンシャルｸﾞﾙｰﾌﾟ"],["8591",280,0.32,"オリックス"],["8601",290,0.09,"大和証券グループ本社"],["8604",290,0.08,"野村ホールディングス"],["8630",300,0.2,"ＳＯＭＰＯホールディングス"],["8697",290,0.21,"日本取引所グループ"],["8725",300,0.2,"ＭＳ＆ＡＤインシュアランスＧＨＤ"],["8750",300,0.04,"第一生命ホールディングス"],["8766",300,0.57,"東京海上ホールディングス"],["8795",300,0.05,"Ｔ&Ｄホールディングス"],["8801",320,0.23,"三井不動産"],["8802",320,0.21,"三菱地所"],["8804",320,0.08,"東京建物"],["8830",320,0.38,"住友不動産"],["9001",210,0.03,"東武鉄道"],["9005",210,0.04,"東急"],["9007",210,0.04,"小田急電鉄"],["9008",210,0.04,"京王電鉄"],["9009",210,0.09,"京成電鉄"],["9020",210,0.05,"東日本旅客鉄道"],["9021",210,0.03,"西日本旅客鉄道"],["9022",210,0.09,"東海旅客鉄道"],["9064",210,0.1,"ヤマトホールディングス"],["9101",220,0.08,"日本郵船"],["9104",220,0.08,"商船三井"],["9107",220,0.11,"川崎汽船"],["9147",210,0.08,"NIPPON EXPRESS HD"],["9201",230,0.15,"日本航空"],["9202",230,0.02,"ANAホールディングス"],["9432",250,0.07,"日本電信電話"],["9433",250,1.64,"ＫＤＤＩ"],["9434",250,0.1,"ソフトバンク"],["9501",200,0.02,"東京電力"],["9502",200,0.02,"中部電力"],["9503",200,0.01,"関西電力"],["9531",200,0.06,"東京ガス"],["9532",200,0.05,"大阪ガス"],["9602",250,0.03,"東宝"],["9735",330,0.65,"セコム"],["9766",250,0.92,"コナミ"],["9843",270,0.3,"ニトリ"],["9983",270,10.36,"ファーストリテイリング"],["9984",250,6.8,"ソフトバンクグループ"]];
+  function cc(p){var c=Math.max(-5,Math.min(5,p||0));if(c<-3)return'#991b1b';if(c<-1.5)return'#ef4444';if(c<-0.3)return'#fca5a5';if(c<0.3)return'#475569';if(c<1.5)return'#86efac';if(c<3)return'#22c55e';return'#15803d';}
+  var LIGHT={'#fca5a5':1,'#86efac':1};
+  var stocks=STATIC225.map(function(r){return{code:r[0],s:SEC[r[1]]||'その他',n:r[3],w:r[2]>0?r[2]:0.02,chg:null,price:null,kiyo:null};});
+  var updTime=null, srcLabel='', forceFB=location.search.indexOf('hmfb=1')>=0;
+
+  /* --- 一次：nikkei225jp.com フィード --- */
+  function applyN2(){
+    if(typeof N2==='undefined'||!N2||!N2.length) return 0;
+    var n=0;
+    for(var i=0;i<N2.length;i++){
+      var f=String(N2[i]).split('__'); if(f.length<9) continue;
+      var chg=parseFloat(f[6]),pr=parseFloat(f[3]),ky=parseFloat(f[8]),w=parseFloat(f[5]);
+      for(var k=0;k<stocks.length;k++){
+        if(stocks[k].code===f[0]){
+          if(isFinite(chg)) stocks[k].chg=chg;
+          if(isFinite(pr)) stocks[k].price=pr;
+          if(isFinite(ky)) stocks[k].kiyo=ky;
+          if(isFinite(w)&&w>0) stocks[k].w=w;
+          n++; break;
+        }
+      }
+    }
+    return n;
+  }
+  function loadN2(cb){
+    if(forceFB){cb(0);return;}
+    var done=false,fin=function(v){if(!done){done=true;cb(v);}};
+    var s=document.createElement('script');
+    s.src='https://nikkei225jp.com/_data/_nfsDATA/min/country_jp_nk225N.js?'+Date.now();
+    s.onload=function(){fin(applyN2());};
+    s.onerror=function(){fin(0);};
+    document.head.appendChild(s);
+    var s2=document.createElement('script');
+    s2.src='https://nikkei225jp.com/_data/_nfsDATA/min/country_jp_kiyo10N.js?'+Date.now();
+    s2.onload=function(){try{if(typeof LastTime2!=='undefined')updTime=LastTime2;}catch(e){}};
+    s2.onerror=function(){};
+    document.head.appendChild(s2);
+    setTimeout(function(){fin(0);},6000);
+  }
+
+  /* --- 二次：Yahoo spark バッチ（20×12・プロキシ輪番・並行2） --- */
+  var PROX=[
+    function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
+    function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);},
+    function(u){return 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u);}
+  ];
+  function normSpark(j){
+    if(!j||typeof j!=='object') return null;
+    if(j.contents){ try{ return normSpark(JSON.parse(j.contents)); }catch(e){ return null; } }
+    var list=[];
+    if(j.spark&&j.spark.result){
+      j.spark.result.forEach(function(it){
+        var r=(it.response&&it.response[0])||{};
+        var q=(r.indicators&&r.indicators.quote&&r.indicators.quote[0])||{};
+        var m=r.meta||{};
+        list.push({symbol:it.symbol,close:q.close||[],rmp:m.regularMarketPrice,cpc:m.chartPreviousClose,pc:m.previousClose});
+      });
+    }else{
+      Object.keys(j).forEach(function(k){
+        var v=j[k];
+        if(v&&v.symbol&&v.close) list.push({symbol:v.symbol,close:v.close,rmp:null,cpc:v.chartPreviousClose,pc:v.previousClose});
+      });
+    }
+    return list.length?list:null;
+  }
+  async function fetchSpark(syms,seed){
+    var u='https://query1.finance.yahoo.com/v8/finance/spark?interval=1d&range=5d&symbols='+syms.join(',');
+    for(var p=0;p<PROX.length;p++){
+      var px=PROX[p];
+      try{
+        var r=await fetch(px(u),{signal:AbortSignal.timeout(10000)});
+        if(!r.ok) continue;
+        var list=normSpark(await r.json());
+        if(list) return list;
+      }catch(e){}
+    }
+    return null;
+  }
+  function applySpark(list){
+    if(!list) return 0; var n=0;
+    list.forEach(function(it){
+      try{
+        var code=String(it.symbol).replace('.T','');
+        var cl=(it.close||[]).filter(function(v){return v!=null;});
+        var price=it.rmp!=null?it.rmp:(cl.length?cl[cl.length-1]:null);
+        var prev=cl.length>1?cl[cl.length-2]:(it.cpc!=null?it.cpc:it.pc);
+        if(price==null) return;
+        for(var k=0;k<stocks.length;k++){
+          if(stocks[k].code===code){ stocks[k].price=price; stocks[k].chg=(prev&&prev!==0)?((price-prev)/prev)*100:0; n++; break; }
+        }
+      }catch(e){}
+    });
+    return n;
+  }
+  async function loadSpark225(progress){
+    var B=20,chunks=[];
+    for(var i=0;i<stocks.length;i+=B) chunks.push(stocks.slice(i,i+B).map(function(s){return s.code+'.T';}));
+    var idx=0,done=0;
+    async function worker(w){
+      while(idx<chunks.length){
+        var my=idx++;
+        applySpark(await fetchSpark(chunks[my],my));
+        done++; if(progress) progress(done,chunks.length);
+      }
+    }
+    await Promise.all([worker(0),worker(1),worker(2)]);
+    var miss=stocks.filter(function(s){return s.chg==null;}).map(function(s){return s.code+'.T';});
+    if(miss.length&&miss.length<stocks.length){
+      for(var m=0;m<miss.length;m+=B){ applySpark(await fetchSpark(miss.slice(m,m+B),m)); }
+    }
+  }
+
+  /* --- 描画：業種グループ化ツリーマップ --- */
+  function draw(d3){
+    var box=document.getElementById('jp-hm-box');if(!box||!stocks)return;
+    var W=box.clientWidth,H=box.clientHeight;
+    var LEG=26;
+    var svg=d3.select('#jp-hm-svg').attr('viewBox','0 0 '+W+' '+H).attr('preserveAspectRatio','xMidYMid meet');
+    svg.selectAll('*').remove();
+    var bySec={};stocks.forEach(function(s){(bySec[s.s]=bySec[s.s]||[]).push(s);});
+    var data={children:Object.keys(bySec).map(function(k){return {name:k,children:bySec[k]};})};
+    var root=d3.hierarchy(data).sum(function(d){return d.w||0.02;}).sort(function(a,b){return b.value-a.value;});
+    d3.treemap().size([W,H-LEG]).paddingOuter(2).paddingTop(13).paddingInner(1).round(true)(root);
+    svg.selectAll('text.sec').data(root.children||[]).join('text')
+      .attr('x',function(d){return d.x0+3;}).attr('y',function(d){return d.y0+10;})
+      .attr('font-size','8px').attr('font-weight','700').attr('fill','#8fae9c').attr('pointer-events','none')
+      .text(function(d){var w=d.x1-d.x0;return w>36?(w>70?d.data.name:d.data.name.slice(0,4)):'';});
+    var cell=svg.selectAll('g.leaf').data(root.leaves()).join('g')
+      .attr('transform',function(d){return 'translate('+d.x0+','+d.y0+')';});
+    cell.append('rect')
+      .attr('width',function(d){return Math.max(0,d.x1-d.x0);})
+      .attr('height',function(d){return Math.max(0,d.y1-d.y0);})
+      .attr('fill',function(d){return d.data.chg!=null?cc(d.data.chg):'#374151';})
+      .attr('rx',1.5).style('cursor','pointer')
+      .on('click',function(ev,d){window.open('https://finance.yahoo.co.jp/quote/'+d.data.code+'.T','_blank');});
+    cell.each(function(d){
+      var cw=d.x1-d.x0,ch=d.y1-d.y0,cx=cw/2,cy=ch/2,g=d3.select(this);
+      var fill=d.data.chg!=null?cc(d.data.chg):'#374151';
+      var main=LIGHT[fill]?'#13231a':'#fff';
+      var sub=LIGHT[fill]?'rgba(19,35,26,.8)':'rgba(255,255,255,.82)';
+      var chgStr=(d.data.chg==null)?'—':(((d.data.chg>=0)?'+':'')+d.data.chg.toFixed(2)+'%');
+      if(cw>55&&ch>38){
+        var fs=cw>95?12:10;
+        g.append('text').attr('x',cx).attr('y',ch>58?cy-8:cy-4).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size',fs+'px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>8?d.data.n.slice(0,8):d.data.n);
+        if(ch>48)g.append('text').attr('x',cx).attr('y',ch>58?cy+9:cy+8).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',sub).attr('font-size',(fs-1)+'px').attr('pointer-events','none').text(chgStr);
+      }else if(cw>32&&ch>18){
+        g.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('dominant-baseline','middle').attr('fill',main).attr('font-size','8px').attr('font-weight','700').attr('pointer-events','none').text(d.data.n.length>4?d.data.n.slice(0,4):d.data.n);
+      }
+    });
+    var LCOL=['#991b1b','#ef4444','#fca5a5','#475569','#86efac','#22c55e','#15803d'];
+    var LLBL=['-3%','-1.5%','-0.3%','+0.3%','+1.5%','+3%'];
+    var sw=Math.min(46,(W-40)/7),gap=3,lx=(W-(sw*7+gap*6))/2,ly=H-16;
+    LCOL.forEach(function(c,i){
+      svg.append('rect').attr('x',lx+i*(sw+gap)).attr('y',ly).attr('width',sw).attr('height',7).attr('rx',1.5).attr('fill',c);
+      if(i<6){svg.append('text').attr('x',lx+(i+1)*(sw+gap)-gap/2).attr('y',ly+16).attr('text-anchor','middle').attr('font-size','8px').attr('fill','#6d8878').text(LLBL[i]);}
+    });
+    var tip=document.getElementById('jp-hm-tip');
+    cell.on('mousemove',function(ev,d){
+      var sg=(d.data.chg||0)>=0?'+':'',cls=(d.data.chg||0)>=0?'tt-up':'tt-dn';
+      var rows='<b>'+d.data.n+'</b>（'+d.data.code+'）<br>'
+        +(d.data.chg!=null?'<span class="'+cls+'">'+sg+d.data.chg.toFixed(2)+'%</span>':'<span style="color:var(--faint)">データ取得不可</span>')
+        +(d.data.price?' &nbsp;¥'+d.data.price.toLocaleString():'')
+        +(d.data.kiyo!=null?'<br><span style="color:var(--faint);font-size:.7rem">寄与度 '+(d.data.kiyo>=0?'+':'')+d.data.kiyo.toFixed(2)+'</span>':'')
+        +'<br><span style="color:var(--faint);font-size:.7rem">'+d.data.s+(d.data.w?'・構成率'+d.data.w.toFixed(2)+'%':'')+'</span>';
+      tip.style.display='block';tip.style.left=(ev.clientX+14)+'px';tip.style.top=(ev.clientY-58)+'px';
+      tip.innerHTML=rows;
+    }).on('mouseleave',function(){tip.style.display='none';});
+  }
+
+  function init(){
+    var d3=window.d3;
+    var ld=document.getElementById('jp-hm-load');
+    var finish=function(){
+      if(ld)ld.style.display='none';
+      draw(d3);
+      var now=new Date(),upd=document.getElementById('jp-hm-upd');
+      var miss=stocks.filter(function(s){return s.chg==null;}).length;
+      if(upd)upd.textContent='更新 '+(updTime||(now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')))+' ・ '+srcLabel+(miss?('・未取得'+miss):'');
+      var box=document.getElementById('jp-hm-box');
+      if(box&&window.ResizeObserver){var t;new ResizeObserver(function(){clearTimeout(t);t=setTimeout(function(){if(stocks)draw(d3);},180);}).observe(box);}
+    };
+    loadN2(function(n){
+      if(n>50){ srcLabel='データ: nikkei225jp.com（全225銘柄）'; finish(); }
+      else{
+        loadSpark225(function(dn,total){ if(ld)ld.textContent='データ取得中… '+dn+'/'+total; })
+          .then(function(){ srcLabel='騰落率: Yahoo Finance／構成: 日経225（225銘柄）'; finish(); })
+          .catch(function(){ srcLabel='騰落率取得不可（構成のみ表示）'; finish(); });
+      }
+    });
+  }
+  var ds=document.createElement('script');ds.src='https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js';ds.onload=init;document.head.appendChild(ds);
+})();
+</script>
+<script>
+/* ==== News & Analytics 強化レイヤー（テンプレ恒久ブロック：ルーチンは書き換えない） ==== */
+(function(){
+  'use strict';
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 時計（JST表示） */
+  try{
+    var ck=document.getElementById('na-clock');
+    if(ck){
+      var pad=function(n){return String(n).padStart(2,'0');};
+      var tick=function(){
+        var now=new Date();
+        var jst=new Date(now.getTime()+(now.getTimezoneOffset()+540)*60000);
+        ck.textContent='JST '+pad(jst.getHours())+':'+pad(jst.getMinutes())+':'+pad(jst.getSeconds());
+      };
+      tick(); setInterval(tick,1000);
+    }
+  }catch(e){}
+
+  /* ティッカー：セクション03の実ニュース見出しに連動 */
+  try{
+    var rail=document.getElementById('na-ticker-rail');
+    if(rail){
+      var hs=[].map.call(document.querySelectorAll('.news .hl h4'),function(h){return h.textContent.trim();});
+      if(hs.length){
+        var one=hs.map(function(h){return '<span class="tsep">▸</span><b>'+h.replace(/</g,'&lt;')+'</b>';}).join('');
+        rail.innerHTML=one+one;
+        if(!reduced){
+          var dur=Math.max(36,hs.join('').length*0.5);
+          rail.style.animation='naSlide '+dur+'s linear infinite';
+        }
+      }else{ rail.parentNode.style.display='none'; }
+    }
+  }catch(e){}
+
+  /* 目次：クリックでジャンプ＋スクロール現在地の発光 */
+  try{
+    var secs=[].slice.call(document.querySelectorAll('.wrap > section.panel'));
+    var links=[].slice.call(document.querySelectorAll('#na-toc-list a'));
+    links.forEach(function(a){
+      a.addEventListener('click',function(ev){
+        ev.preventDefault();
+        var s=secs[+a.getAttribute('data-sec')];
+        if(s) s.scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});
+      });
+    });
+    if('IntersectionObserver' in window){
+      var spy=new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if(e.isIntersecting){
+            var i=secs.indexOf(e.target);
+            if(i>-1&&links[i]){
+              links.forEach(function(a){a.classList.remove('active');});
+              links[i].classList.add('active');
+              if(links[i].scrollIntoView) links[i].scrollIntoView({block:'nearest',inline:'center'});
+            }
+          }
+        });
+      },{rootMargin:'-38% 0px -55% 0px',threshold:0});
+      secs.slice(0,6).forEach(function(s){spy.observe(s);});
+    }
+  }catch(e){}
+
+  /* 01マーケット：table.mkt をパースしてKPIタイルを生成（テーブルは詳細として折りたたみ） */
+  try{
+    var sec1=document.querySelector('.wrap > section.panel');
+    var shell=sec1?sec1.querySelector('.tbl-shell'):null;
+    var rows=shell?[].slice.call(shell.querySelectorAll('table.mkt tbody tr')):[];
+    if(sec1&&shell&&rows.length){
+      var grid=document.createElement('div'); grid.className='na-kpis';
+      var built=0; var tiles=[];
+      rows.forEach(function(tr){
+        var td=tr.querySelectorAll('td'); if(td.length<4) return;
+        var nameCell=td[0].cloneNode(true);
+        var sn=nameCell.querySelector('.src-note'); var srcTxt=sn?sn.textContent.trim():'';
+        if(sn) sn.parentNode.removeChild(sn);
+        var name=nameCell.textContent.trim();
+        var val=td[1].textContent.trim();
+        var d2=td[2], d3=td[3];
+        var cls=d2.classList.contains('up')?'up':(d2.classList.contains('down')?'down':'flat');
+        var deltaTxt=(d2.textContent.trim()+'（'+d3.textContent.trim()+'）').replace(/\s+/g,' ');
+        var tile=document.createElement('div'); tile.className='na-kpi';
+        var m=srcTxt.match(/as of [0-9]{4}-[0-9]{2}-[0-9]{2}/);
+        tile.innerHTML='<div class="nm"></div><div class="vl"></div>'
+          +'<span class="dl '+cls+'"></span>'
+          +'<div class="as"></div>';
+        tile.querySelector('.nm').textContent=name;
+        tile.querySelector('.vl').textContent=val;
+        tile.querySelector('.dl').textContent=deltaTxt;
+        tile.querySelector('.as').textContent=srcTxt?('《'+(m?m[0]:srcTxt.split('/')[0].trim())+'》'):'';
+        if(srcTxt) tile.title=srcTxt;
+        grid.appendChild(tile); built++; tiles.push({name:name,cls:cls,el:tile});
+      });
+      if(built){
+        shell.parentNode.insertBefore(grid,shell);
+        var det=document.createElement('details'); det.className='na-mkt-detail';
+        det.innerHTML='<summary>▸ 詳細テーブル（出典・基準日・注記）を表示</summary>';
+        shell.parentNode.insertBefore(det,shell);
+        det.appendChild(shell);
+      }
+    }
+  }catch(e){}
+
+  /* 01マーケット：KPIタイルに直近1ヶ月スパークライン（Yahoo spark実データ・取得失敗時は非表示） */
+  try{
+    if(typeof tiles!=='undefined'&&tiles&&tiles.length&&window.fetch){
+      var symOf=function(n){
+        if(/日経/.test(n))return '^N225';
+        if(/ナスダック/.test(n))return '^NDX';
+        if(/[SＳ][&＆]/.test(n))return '^GSPC';
+        if(/ドル円/.test(n))return 'JPY=X';
+        if(/金|ゴールド/.test(n))return 'GC=F';
+        if(/三菱|8306/.test(n))return '8306.T';
+        return null;
+      };
+      var sPROX=[
+        function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
+        function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);},
+        function(u){return 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u);}
+      ];
+      var sNorm=function(j){
+        if(!j||typeof j!=='object') return null;
+        if(j.contents){ try{ return sNorm(JSON.parse(j.contents)); }catch(e){ return null; } }
+        var list=[];
+        if(j.spark&&j.spark.result){
+          j.spark.result.forEach(function(it){
+            var r=(it.response&&it.response[0])||{};
+            var q=(r.indicators&&r.indicators.quote&&r.indicators.quote[0])||{};
+            list.push({symbol:it.symbol,close:q.close||[]});
+          });
+        }else{
+          Object.keys(j).forEach(function(k){var v=j[k];if(v&&v.symbol&&v.close)list.push({symbol:v.symbol,close:v.close});});
+        }
+        return list.length?list:null;
+      };
+      var sFetch=async function(syms){
+        var u='https://query1.finance.yahoo.com/v8/finance/spark?interval=1d&range=1mo&symbols='+syms.join(',');
+        for(var p=0;p<sPROX.length;p++){
+          try{
+            var r=await fetch(sPROX[p](u),{signal:AbortSignal.timeout(10000)});
+            if(!r.ok) continue;
+            var list=sNorm(await r.json());
+            if(list) return list;
+          }catch(e){}
+        }
+        return null;
+      };
+      var sparkJobs=[];
+      var drawSpark=function(t,cl){
+        var c=t.el.querySelector('canvas.na-spark');
+        if(!c){c=document.createElement('canvas');c.className='na-spark';c.setAttribute('role','img');c.setAttribute('aria-label','直近1ヶ月の推移');c.title='直近1ヶ月の推移（Yahoo Finance・日次終値）';t.el.appendChild(c);}
+        var dpr=Math.min(devicePixelRatio||1,2),w=c.clientWidth||200,h=34;
+        c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);
+        var x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
+        var mn=Math.min.apply(null,cl),mx=Math.max.apply(null,cl),sp=(mx-mn)||1,pad=4;
+        var X=function(i){return pad+(w-pad*2)*i/(cl.length-1);},Y=function(v){return h-pad-(h-pad*2)*(v-mn)/sp;};
+        x.clearRect(0,0,w,h);
+        x.beginPath();cl.forEach(function(v,i){i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v));});
+        x.strokeStyle='rgba(42,169,104,.9)';x.lineWidth=2;x.lineJoin='round';x.stroke();
+        var col=t.cls==='up'?'#4ade80':(t.cls==='down'?'#ff5d68':'#6d8878');
+        var li=cl.length-1;
+        x.beginPath();x.arc(X(li),Y(cl[li]),4.2,0,Math.PI*2);x.fillStyle='#0c1712';x.fill();
+        x.beginPath();x.arc(X(li),Y(cl[li]),2.8,0,Math.PI*2);x.fillStyle=col;x.fill();
+      };
+      var want=[];tiles.forEach(function(t){t.sym=symOf(t.name);if(t.sym&&want.indexOf(t.sym)<0)want.push(t.sym);});
+      if(want.length){
+        sFetch(want).then(function(list){
+          if(!list)return;
+          var map={};list.forEach(function(it){var cl=(it.close||[]).filter(function(v){return v!=null;});if(cl.length>2)map[it.symbol]=cl;});
+          tiles.forEach(function(t){var cl=t.sym&&map[t.sym];if(cl){sparkJobs.push({t:t,cl:cl});drawSpark(t,cl);}});
+        }).catch(function(){});
+        var srt;addEventListener('resize',function(){clearTimeout(srt);srt=setTimeout(function(){sparkJobs.forEach(function(j){drawSpark(j.t,j.cl);});},180);});
+      }
+    }
+  }catch(e){}
+
+  /* 背景：文字回廊レイン（両サイドの文字壁を雨が流れ、目次ジャンプで谷間をワープ。reduced-motion時・非対応時は静かに無効） */
+  try{
+    var rc=document.getElementById('na-rain');
+    if(rc&&!reduced&&rc.getContext){
+      var rctx=rc.getContext('2d');
+      /* 多言語＋文字化けミックス（日本語は半角ｶﾅで3割弱に抑制） */
+      var GL='ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾙﾚﾛﾝ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZΔΘΛΞΠΣΦΨΩλπЖДБГЯФЩИЛЪЭЮЗЦ§†‡◊≡≠∴∵∂∇×÷Øøµ▓▒░█▚▞╬╪┼¥$€£₿#@%&*+-<>=/|'+String.fromCharCode(65533,65533,65533);
+      var rgl=function(){return GL[(Math.random()*GL.length)|0];};
+      var GAPW=3.4,WALLH=8,CYY=0.42,PZ=15;
+      var rW,rH,rcx,rcy,rfoc,rDPR,rlw=0,streams=[];
+      var rmk=function(){
+        var mob=innerWidth<640,NZ=mob?16:26,LN=mob?16:20;
+        streams=[];
+        for(var s=-1;s<=1;s+=2)for(var i=0;i<NZ;i++){
+          var g=[];for(var k=0;k<LN;k++)g.push(rgl());
+          streams.push({side:s,z:-0.6-Math.random()*PZ,gx:GAPW+Math.random()*1.6,hy:(Math.random()*2-1)*WALLH,sp:1.1+Math.random()*1.6,gl:g});
+        }
+      };
+      var rsz=function(){
+        rDPR=Math.min(1.75,window.devicePixelRatio||1);
+        rW=rc.width=Math.floor(innerWidth*rDPR);rH=rc.height=Math.floor(innerHeight*rDPR);
+        rc.style.width=innerWidth+'px';rc.style.height=innerHeight+'px';
+        rcx=rW/2;rcy=rH/2;rfoc=rH*0.82;
+        if(innerWidth!==rlw){rlw=innerWidth;rmk();}
+      };
+      rsz();addEventListener('resize',rsz);
+      var rburst=0;
+      document.addEventListener('click',function(ev){
+        var t=ev.target;
+        var a=(t&&t.closest)?t.closest('.na-toc a[href^="#"]'):null;
+        if(a)rburst=performance.now();
+      });
+      var rlast=0,rdrew=0;
+      var rframe=function(ts){
+        requestAnimationFrame(rframe);
+        if(document.hidden){rlast=ts;return;}
+        if(!rburst&&ts-rdrew<42)return;
+        rdrew=ts;
+        var dt=Math.min(0.08,(ts-rlast)/1000)||0.016;rlast=ts;
+        var bell=0;
+        if(rburst){var bt=(ts-rburst)/900;if(bt>=1){rburst=0;}else{bell=Math.sin(Math.PI*bt);}}
+        var vel=bell*40;
+        rctx.globalCompositeOperation='destination-out';
+        rctx.fillStyle='rgba(0,0,0,'+(bell>0?0.30:0.34)+')';
+        rctx.fillRect(0,0,rW,rH);
+        rctx.globalCompositeOperation='source-over';
+        rctx.textAlign='center';
+        for(var i=0;i<streams.length;i++){
+          var st=streams[i];
+          st.hy-=st.sp*dt;
+          if(st.hy<-WALLH-1.5)st.hy=WALLH+Math.random()*WALLH;
+          st.z+=vel*dt;
+          if(st.z>-0.4)st.z-=PZ;
+          if(Math.random()<0.03)st.gl[(Math.random()*st.gl.length)|0]=rgl();
+          var depth=Math.max(0.4,-st.z);
+          var fog=(PZ-depth)/PZ;if(fog<=0)continue;if(fog>1)fog=1;
+          var sx=rcx+st.side*st.gx/depth*rfoc;
+          if(sx<-60||sx>rW+60)continue;
+          var fs=CYY/depth*rfoc;if(fs<5*rDPR)fs=5*rDPR;if(fs>22*rDPR)fs=22*rDPR;
+          rctx.font=fs+'px monospace';
+          for(var g2=0;g2<st.gl.length;g2++){
+            var sy=rcy-(st.hy+g2*CYY)/depth*rfoc;
+            if(sy<-30||sy>rH+30)continue;
+            var bri=g2===0?1:1-g2*0.06;if(bri<0.1)bri=0.1;
+            var al=Math.min(1,fog*bri*0.6+bell*0.3);
+            rctx.fillStyle=g2===0?'rgba(141,242,196,'+al.toFixed(3)+')':'rgba(53,224,160,'+(al*0.85).toFixed(3)+')';
+            rctx.fillText(st.gl[g2],sx,sy);
+          }
+        }
+      };
+      requestAnimationFrame(rframe);
+    }
+  }catch(e){}
+
+  /* 06仮想運用：data/portfolio.json から資産配分バーを生成（取得失敗時は非表示のまま） */
+  try{
+    var fig=document.getElementById('pfchart');
+    if(fig&&window.fetch){
+      fetch('data/portfolio.json').then(function(r){return r.json();}).then(function(pf){
+        if(!pf||!pf.accounts) return;
+        var groups={}; var order=[];
+        var add=function(label,v){ if(!v||v<=0) return; if(!(label in groups)){groups[label]=0;order.push(label);} groups[label]+=v; };
+        var nameOf=function(n){
+          if(/オール・カントリー|全世界/.test(n)) return 'オルカン';
+          if(/FANG/i.test(n)) return 'FANG+';
+          if(/ゴールド|gold/i.test(n)) return 'ゴールド';
+          return 'その他';
+        };
+        var ac=pf.accounts;
+        if(ac.nisa_tsumitate&&ac.nisa_tsumitate.market_value_jpy) add(nameOf(ac.nisa_tsumitate.fund||''),ac.nisa_tsumitate.market_value_jpy);
+        ['nisa_growth','tokutei'].forEach(function(k){
+          var a=ac[k]; if(!a||!a.holdings) return;
+          a.holdings.forEach(function(h){ add(nameOf(h.fund_name||''),h.market_value_jpy); });
+        });
+        if(pf.cash_jpy>0) add('現金',pf.cash_jpy);
+        var total=0; order.forEach(function(k){total+=groups[k];});
+        if(total<=0) return;
+        var COLORS={'オルカン':'#1f8ed8','FANG+':'#d96f0e','ゴールド':'#a8892d','その他':'#6d8878','現金':'#44584e'};
+        var yen=function(n){return '¥'+Math.round(n).toLocaleString('ja-JP');};
+        var segs='',lgs='',aria=[];
+        order.forEach(function(k){
+          var pct=groups[k]/total*100;
+          segs+='<div class="aseg" style="width:'+pct.toFixed(1)+'%;background:'+COLORS[k]+'"></div>';
+          lgs+='<span><span class="chip" style="background:'+COLORS[k]+'"></span>'+k+' <b>'+pct.toFixed(1)+'%</b>（'+yen(groups[k])+'）</span>';
+          aria.push(k+' '+pct.toFixed(1)+'%');
+        });
+        var el=document.createElement('div'); el.className='na-alloc';
+        el.innerHTML='<div class="at">資産配分（評価額ベース・data/portfolio.json より自動描画）</div>'
+          +'<div class="abar" role="img" aria-label="資産配分：'+aria.join('、')+'">'+segs+'</div>'
+          +'<div class="alg">'+lgs+'</div>';
+        fig.insertAdjacentElement('afterend',el);
+      }).catch(function(){});
+    }
+  }catch(e){}
+})();
+</script>
+<script>if(!matchMedia('(prefers-reduced-motion: reduce)').matches){const els=[...document.querySelectorAll('.reveal')];const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){const i=els.indexOf(e.target);e.target.style.transitionDelay=(Math.min(i,4)*0.08)+'s';e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});els.forEach(el=>io.observe(el));}else{document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));}</script>
+<!-- 記事プレビュー・モーダル（恒久ブロック：書き換え・削除禁止。ニュースの a.hl をタップすると開く） -->
+<div class="na-modal" id="na-modal" hidden aria-hidden="true">
+  <div class="ov" data-close></div>
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="na-modal-ttl">
+    <button class="x" type="button" data-close aria-label="閉じる">&times;</button>
+    <div class="src" id="na-modal-src"></div>
+    <h3 id="na-modal-ttl"></h3>
+    <p class="sum" id="na-modal-sum"></p>
+    <a class="go" id="na-modal-go" href="#" target="_blank" rel="noopener">本文を読む（外部サイト）→</a>
+  </div>
+</div>
+<script>
+/* 恒久ブロック：ニュース記事のタップでプレビュー（日本語要約＋本文リンク）を表示する。
+   .news 内の a.hl をクリック/タップすると data-summary をモーダル表示し、href へのリンクを添える。
+   ルーチンは各 a.hl に data-summary="日本語要約" を付けるだけでよい（このブロックは変更不要）。 */
+(function(){
+  var m=document.getElementById('na-modal'); if(!m) return;
+  var elS=document.getElementById('na-modal-src'), elT=document.getElementById('na-modal-ttl'),
+      elSum=document.getElementById('na-modal-sum'), elGo=document.getElementById('na-modal-go'), last=null;
+  function open(a){
+    var h4=a.querySelector('h4'), meta=a.querySelector('.meta');
+    elT.textContent = h4 ? h4.textContent.trim() : '';
+    elS.textContent = meta ? meta.textContent.trim() : '';
+    var sum=(a.getAttribute('data-summary')||'').trim();
+    elSum.textContent = sum || 'この記事の要約は次回更新分から表示されます。下の「本文を読む」から記事をお読みください。';
+    elGo.setAttribute('href', a.getAttribute('href')||'#');
+    last=a; m.hidden=false; m.setAttribute('aria-hidden','false');
+    document.body.classList.add('na-modal-open');
+    var xb=m.querySelector('.x'); if(xb){ try{ xb.focus(); }catch(e){} }
+  }
+  function close(){
+    m.hidden=true; m.setAttribute('aria-hidden','true');
+    document.body.classList.remove('na-modal-open');
+    if(last){ try{ last.focus(); }catch(e){} }
+  }
+  document.addEventListener('click', function(e){
+    var t=e.target;
+    var a=t.closest ? t.closest('.news a.hl') : null;
+    if(a){ e.preventDefault(); open(a); return; }
+    if(t.closest && t.closest('#na-modal [data-close]')){ close(); }
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !m.hidden) close(); });
+})();
+</script>
+</body></html>
