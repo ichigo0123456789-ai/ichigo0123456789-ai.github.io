@@ -2729,6 +2729,59 @@
     "P-U48 的中((ii-a)成立)"
    ],
    "status": "仮説"
+  },
+  {
+   "id": "L160",
+   "date": "2026-10-25",
+   "category": "thesisの採点設計(比較系列の事前登録)",
+   "lesson": "3ヶ月thesis2本(P-T21/P-T22)を期限どおり締めたが、(1)P-T21は中間定点(8/31)が当時記録されず事後にbench_navsから再構成、(2)P-T22は『直近6ヶ月平均との比較』を採点基準に置いたのに比較対象の国内株式ファンドNAV系列が9/19からしか無く、強制部分的中条項に落ちた。thesisは作成時に(a)採点で使う全系列をbench_navs等へ同時に登録、(b)中間定点を実施日にcheckpoint_resultsへ必ず記録する。系列が作れない基準は書かない。",
+   "regime_tags": [
+    "scoring_spec",
+    "thesis",
+    "data_availability",
+    "mixed"
+   ],
+   "evidence": [
+    "predictions.json P-T21(checkpoint_results 7/30のみ)",
+    "P-T22(日経ファンドNAV 9/19以降17営業日)",
+    "bench_navs.json"
+   ],
+   "status": "仮説"
+  },
+  {
+   "id": "L161",
+   "date": "2026-10-25",
+   "category": "決算反応が割れた材料の相対優劣予測",
+   "lesson": "P-T21(p=0.5)は『ハイパースケーラーの設備投資増=グロース株の重石が定着』を前提にしたが、7/30時点で既にMSFT+15.5%とMETA▼7〜8%と反応が割れていた。個社の反応が割れた時点で『テーマ全体の重石』の証拠は弱く、3ヶ月後のFANG+はオルカン比+3.5%優位で終わった。同型(個社反応が割れたテーマでファンド全体の相対劣後を予測)は、最初の定点で反応が割れた場合にpを下げて再登録する(条件付き。AI設備投資局面に限定した仮説)。",
+   "regime_tags": [
+    "ai_theme",
+    "earnings_reaction",
+    "relative_performance",
+    "mixed"
+   ],
+   "evidence": [
+    "P-T21 checkpoint_results 7/30",
+    "bench_navs.json FANG+/オルカン比 7/31 -2.0%→10/23 +3.5%"
+   ],
+   "status": "仮説"
+  },
+  {
+   "id": "L162",
+   "date": "2026-10-25",
+   "category": "閾値近傍の終値予測の出典突合",
+   "lesson": "S&P500の10/23終値を、運用記録は7,628.47(前日比-34.96)としたが、検証部が日曜に取得したYahoo!ファイナンス日足は7,623.68(前日比-39.75)で4.8ポイントずれた。P-E245の閾値7,600までの余裕は0.31%と小さく、記録値と確定値のずれで結論が変わりうる。閾値まで1%未満の終値予測は、作成時と採点時に確定値(取得時刻付き)で記録し、主出典の日足と数値を突合する。",
+   "regime_tags": [
+    "scoring_spec",
+    "source_consistency",
+    "event_prediction",
+    "mixed"
+   ],
+   "evidence": [
+    "data/market.json 2026-10-24 sp500 7,628.47",
+    "Yahoo!ファイナンス ^GSPC 日足 2026-10-23=7,623.68(取得2026-10-25 04:40JST頃)",
+    "predictions.json P-E245"
+   ],
+   "status": "仮説"
   }
  ]
 }

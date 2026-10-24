@@ -1608,5 +1608,49 @@
    "changePct": -2.31,
    "src": "Yahoo!ファイナンス as of 2026-10-23 東証大引け"
   }
+ },
+ {
+  "briefDate": "2026-10-25",
+  "tradingDate": {
+   "jp": "2026-10-23",
+   "us": "2026-10-23"
+  },
+  "note": "10/25(日)は東京・NY休場のため直近確定値(日本10/23大引け・米国10/23引け)。前日夕方の暫定値を確定値で更新。",
+  "nikkei": {
+   "value": 62693.16,
+   "change": -214.68,
+   "changePct": -0.34,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 東証大引け"
+  },
+  "nasdaq100": {
+   "value": 28957.53,
+   "change": -1.16,
+   "changePct": -0.0,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け"
+  },
+  "sp500": {
+   "value": 7623.68,
+   "change": -39.75,
+   "changePct": -0.52,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け"
+  },
+  "usdjpy": {
+   "value": 156.81,
+   "change": 0.32,
+   "changePct": 0.2,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け"
+  },
+  "gold": {
+   "value": 4007.9,
+   "change": -52.5,
+   "changePct": -1.29,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 NY引け(COMEX先物)"
+  },
+  "mufg8306": {
+   "value": 3295,
+   "change": -78,
+   "changePct": -2.31,
+   "src": "Yahoo!ファイナンス as of 2026-10-23 東証大引け"
+  }
  }
 ]
