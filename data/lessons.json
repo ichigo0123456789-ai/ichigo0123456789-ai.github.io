@@ -2800,6 +2800,40 @@
     "predictions.json open予測のconsidered_scenarios検索でブラジル言及0件(2026-10-26確認)"
    ],
    "status": "仮説"
+  },
+  {
+   "id": "L164",
+   "date": "2026-10-27",
+   "category": "thesis採点・比較系列の事前確保",
+   "lesson": "3か月thesisのP-T24とP-T26は、比較対象(半導体・情報技術分散型ETF、半導体装置関連投信、TOPIX連動投信)の基準価額系列をdata/bench_navs.jsonに一度も記録していなかったため、期日に実現ボラティリティ差・相対リターンを計算できず、事前登録の強制クローズ条項で『部分』にせざるを得なかった(情報量の乏しい採点)。thesisを起票する時は、scoring_specで使う全比較ファンドをその場でbench_navs.jsonのtier2へ登録し、checkpoint日ごとに値を追記する。登録できない比較対象を使う予測は起こさない。",
+   "regime_tags": [
+    "scoring_spec",
+    "thesis",
+    "data_gap",
+    "mixed"
+   ],
+   "evidence": [
+    "predictions.json P-T24/P-T26 result(2026-10-27、部分・Brier算入なし)",
+    "bench_navs.json tier1/tier2に該当系列なし(2026-10-27確認)"
+   ],
+   "status": "仮説"
+  },
+  {
+   "id": "L165",
+   "date": "2026-10-27",
+   "category": "NAV公表時刻の確認(carry-forward判断)",
+   "lesson": "運用記録は10/26付基準価額を『月曜早朝のため未公表』としてcarry-forwardしていたが、検証部が10/27 04:30JST頃に取得したところ、みんかぶ投信では3ファンドとも10/26付が公表済みだった(オルカン37,189円+27、FANG+96,257円+196、ゴールド22,524円-217。いずれも10/23付値と算術整合)。早朝の起動でも前営業日付の基準価額は夜間に公表済みのことが多い。carry-forwardにする前に、必ず公式・準公式ページで最新as ofを直接確認する。ただし単一ソース取得のため確度は中で、翌営業日にYahoo!ファイナンス等で突合する。",
+   "regime_tags": [
+    "nav_data",
+    "carry_forward",
+    "source_consistency",
+    "mixed"
+   ],
+   "evidence": [
+    "みんかぶ投信 0331418A/04311181/8931A236 as of 2026-10-26(取得2026-10-27 04:30JST頃)",
+    "portfolio.json as of 2026-10-26 は10/23付値をcarry-forward"
+   ],
+   "status": "仮説"
   }
  ]
 }
