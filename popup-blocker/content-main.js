@@ -21,6 +21,7 @@
     blockOverlay: true,   // 全画面オーバーレイも消すか
     antiAdblock: true,    // 「広告ブロッカーを検出しました」系の警告を潰すか
     keepVisible: true,    // 別タブに移っても画面をぼかさせない（タブ非表示をサイトに気づかせない）
+    wasdKeys: true,       // W/A/S/D を矢印キーとしてサイトに渡す
   };
   const isActive = () => state.enabled && state.siteTargeted;
 
@@ -177,6 +178,54 @@
   };
 
   // =====================================================================
+  // ⓪'' WASD → 矢印キー変換 🎮
+  //    漫画ビューワとかは「→で次のページ」「↓でスクロール」を keydown で見てるので、
+  //    W/A/S/D が押されたら本物のキー入力を止めて、矢印キーの keydown/keyup を
+  //    同じ要素に投げ直す。入力欄にフォーカスがあるときや Ctrl/Alt/Meta 付きは触らない。
+  //    サイトが preventDefault しなかった（＝矢印キー未対応）場合は、
+  //    本物の矢印キーと同じようにうちでスクロールしてあげる。
+  // =====================================================================
+  const WASD = { w: ['ArrowUp', 38], a: ['ArrowLeft', 37], s: ['ArrowDown', 40], d: ['ArrowRight', 39] };
+  const isEditable = (el) => {
+    if (!el || el === document.body || el === document.documentElement) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+    return !!el.isContentEditable;
+  };
+  let wasdRelaying = false;
+  const relayWasd = (e) => {
+    if (!isActive() || !state.wasdKeys || wasdRelaying) return;
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    const map = WASD[(e.key || '').toLowerCase()];
+    if (!map || !e.isTrusted) return;
+    if (isEditable(document.activeElement)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const [key, code] = map;
+    const ev = new KeyboardEvent(e.type, { key, code: key, bubbles: true, cancelable: true, composed: true, repeat: e.repeat, shiftKey: e.shiftKey, view: window });
+    // 古いサイトは keyCode/which を見るので、読み取り専用プロパティを上書きして渡す
+    for (const prop of ['keyCode', 'which']) { try { Object.defineProperty(ev, prop, { get: () => code }); } catch (_) {} }
+    try { Object.defineProperty(ev, 'isTrusted', { get: () => true }); } catch (_) {}
+    wasdRelaying = true;
+    let handled = false;
+    try {
+      const target = e.target && e.target.dispatchEvent ? e.target : document.body;
+      handled = !target.dispatchEvent(ev);   // preventDefault されたら false が返る
+    } finally { wasdRelaying = false; }
+    // サイトが処理しなかった keydown は、矢印キー本来の動き（スクロール）を再現
+    if (e.type === 'keydown' && !handled) {
+      const step = 40;
+      if (key === 'ArrowDown') window.scrollBy({ top: step });
+      else if (key === 'ArrowUp') window.scrollBy({ top: -step });
+      else if (key === 'ArrowRight') window.scrollBy({ left: step });
+      else if (key === 'ArrowLeft') window.scrollBy({ left: -step });
+    }
+    if (e.type === 'keydown') report('wasd', '', `${e.key.toUpperCase()} → ${key}`);
+  };
+  window.addEventListener('keydown', relayWasd, true);
+  window.addEventListener('keyup', relayWasd, true);
+
+  // =====================================================================
   // ① window.open をすり替える（ポップアップ／ポップアンダーの本丸）
   // =====================================================================
   const realOpen = window.open;
@@ -276,6 +325,22 @@
   // =====================================================================
   const overlayLog = new WeakSet();
 
+  // 消した要素には data-pg-hidden を付けて、スタイルシート側の !important で非表示にする。
+  // inline の display:none だけだと、サイトが毎フレーム style.display='flex' を書き戻すタイプに負けるので、
+  // 「属性 + スタイルシート」で勝つ。スタイルシートが消されたら付け直す🛡️
+  const PG_STYLE_ID = 'popupguard-style';
+  const ensureStyle = () => {
+    try {
+      let st = document.getElementById(PG_STYLE_ID);
+      if (st && st.isConnected) return;
+      st = document.createElement('style');
+      st.id = PG_STYLE_ID;
+      st.textContent = '[data-pg-hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}' +
+        '[data-pg-unlock]{pointer-events:auto!important;user-select:auto!important;filter:none!important}';
+      (document.head || document.documentElement).appendChild(st);
+    } catch (e) { noteError('ensureStyle', e); }
+  };
+
   const isCrossOrigin = (url) => {
     try {
       const u = new URL(url, location.href);
@@ -347,6 +412,8 @@
         if (el.style.pointerEvents !== 'none') continue;
         const r = el.getBoundingClientRect();
         if (r.width * r.height < vw * vh * 0.5) continue;
+        ensureStyle();
+        el.setAttribute('data-pg-unlock', '');
         el.style.setProperty('pointer-events', 'auto', 'important');
         el.style.setProperty('user-select', 'auto', 'important');
         if (el.getAttribute('aria-hidden') === 'true') el.removeAttribute('aria-hidden');
@@ -355,14 +422,23 @@
   };
 
   const killOverlay = (el, kind) => {
-    if (overlayLog.has(el)) return;
+    if (overlayLog.has(el)) {
+      // 一回消したのに復活してたら、属性を付け直して再度消す
+      if (!el.hasAttribute('data-pg-hidden') || getComputedStyle(el).display !== 'none') {
+        ensureStyle(); el.setAttribute('data-pg-hidden', ''); el.style.setProperty('display', 'none', 'important');
+      }
+      return;
+    }
     overlayLog.add(el);
     killedCount += 1;
+    ensureStyle();
+    el.setAttribute('data-pg-hidden', '');
     el.style.setProperty('display', 'none', 'important');
     // スクロールロックも一緒に解除してあげる（body に overflow:hidden 入れてくるやつ対策）
     for (const n of [document.documentElement, document.body]) {
       if (n && getComputedStyle(n).overflow === 'hidden') n.style.setProperty('overflow', 'auto', 'important');
     }
+    if (kind === 'again') return;
     if (kind === 'nag') restorePointerEvents();
     const link = el.tagName === 'A' ? el.href : (el.querySelector('iframe[src], a[href]') || {}).src
       || (el.querySelector('a[href]') || {}).href || '';
@@ -379,6 +455,7 @@
       try {
         const kind = looksLikeAdOverlay(el);
         if (kind) killOverlay(el, kind);
+        else if (overlayLog.has(el)) killOverlay(el, 'again');   // 復活してたら消し直す
       } catch (e) { noteError('scan', e); }
     }
     if (state.antiAdblock) { restorePointerEvents(); removeFakeAdFrames(document.body); }
@@ -395,7 +472,15 @@
     new MutationObserver((muts) => {
       let dirty = false;
       for (const m of muts) {
-        if (m.type === 'attributes') dirty = true;
+        if (m.type === 'attributes') {
+          dirty = true;
+          // 一度消した要素の style をサイトが書き戻してきたら、その場（同じフレーム内）で消し直す
+          const t = m.target;
+          if (m.attributeName === 'style' && t.nodeType === 1 && t.hasAttribute('data-pg-hidden') && t.style.display !== 'none') {
+            t.style.setProperty('display', 'none', 'important');
+          }
+        }
+        for (const n of m.removedNodes) { if (n.nodeType === 1 && n.id === PG_STYLE_ID) ensureStyle(); }   // スタイルを消されたら即復活
         for (const n of m.addedNodes) { dirty = true; if (n.nodeType === 1) removeFakeAdFrames(n); }
       }
       if (dirty) scheduleScan();
@@ -440,6 +525,8 @@
         let verdict = null; try { verdict = looksLikeAdOverlay(el); } catch (e) { verdict = 'error: ' + e.message; }
         d.bigFixed.push({ el: describeEl(el), display: cs.display, zIndex: cs.zIndex, cover: Math.round(cover * 100) + '%', verdict, text: (el.innerText || '').replace(/\s+/g, ' ').slice(0, 60) });
       }
+      d.styleInjected = !!document.getElementById(PG_STYLE_ID);
+      d.hiddenByUs = document.querySelectorAll('[data-pg-hidden]').length;
       d.adguard = Array.from(document.querySelectorAll('.adguard-overlay')).map((el) => describeEl(el) + ' display=' + getComputedStyle(el).display + ' parent=' + (el.parentElement ? el.parentElement.tagName : '?'));
     } catch (e) { d.bigFixed = 'error: ' + e.message; }
     return d;
@@ -461,6 +548,7 @@
       if (typeof s.blockOverlay === 'boolean') state.blockOverlay = s.blockOverlay;
       if (typeof s.antiAdblock === 'boolean') state.antiAdblock = s.antiAdblock;
       if (typeof s.keepVisible === 'boolean') state.keepVisible = s.keepVisible;
+      if (typeof s.wasdKeys === 'boolean') state.wasdKeys = s.wasdKeys;
       applyAdsSpoof(adsArray);
       applyVisibilitySpoof();
       scheduleScan();

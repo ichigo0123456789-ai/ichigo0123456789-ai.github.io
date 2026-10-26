@@ -19,6 +19,12 @@
     </label>
   </header>
 
+  <!-- 新バージョンのお知らせ（GitHub の manifest と比較） -->
+  <div class="update hidden" id="updateBanner">
+    <span id="updateText"></span>
+    <a id="updateLink" href="https://drive.google.com/drive/folders/1IyVBnlV8PA2ehgmf1Gz1wP57NK5lGnoa" target="_blank" rel="noopener">Driveを開く</a>
+  </div>
+
   <!-- 今見てるサイト -->
   <section class="card">
     <div class="row">
@@ -75,6 +81,16 @@
       </div>
       <label class="switch">
         <input type="checkbox" id="keepVisible">
+        <span class="track"><span class="knob"></span></span>
+      </label>
+    </div>
+    <div class="row">
+      <div class="row-text">
+        <div class="row-title">W/A/S/D で矢印キー操作</div>
+        <div class="row-sub">←→でページ送りするビューワを WASD でも動かせる（入力欄では無効）</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="wasdKeys">
         <span class="track"><span class="knob"></span></span>
       </label>
     </div>

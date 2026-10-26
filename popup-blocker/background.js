@@ -8,7 +8,7 @@
 // ・ショートカットキー（Alt+Shift+P）でオン・オフ切り替え
 // ・オフのときはアイコンをグレーにして分かりやすく
 // =====================================================================
-const DEFAULTS = { enabled: true, blockOverlay: true, antiAdblock: true, keepVisible: true, sites: [] };
+const DEFAULTS = { enabled: true, blockOverlay: true, antiAdblock: true, keepVisible: true, wasdKeys: true, sites: [] };
 const MAX_LOG_PER_TAB = 50;   // 1タブで覚えとくブロック履歴の上限
 const SCRIPT_IDS = ['pg-main', 'pg-bridge'];
 
@@ -51,13 +51,15 @@ const syncScripts = () => {
     const matches = cfg.enabled ? cfg.sites.flatMap(hostToPatterns) : [];
     const existing = await chrome.scripting.getRegisteredContentScripts({ ids: SCRIPT_IDS });
     if (existing.length) await chrome.scripting.unregisterContentScripts({ ids: existing.map((s) => s.id) });
-    if (!matches.length) return;   // 登録サイト無し or OFF → 何も注入しない
+    if (!matches.length) { console.log('[PopupGuard] sync: no sites, nothing injected'); return; }
     const common = { matches, runAt: 'document_start', allFrames: true, matchOriginAsFallback: true, persistAcrossSessions: true };
     await chrome.scripting.registerContentScripts([
       Object.assign({ id: 'pg-main', js: ['content-main.js'], world: 'MAIN' }, common),
       Object.assign({ id: 'pg-bridge', js: ['content-bridge.js'], world: 'ISOLATED' }, common),
     ]);
-  }).catch((e) => console.warn('[PopupGuard] script sync failed', e));
+    const now = (await chrome.scripting.getRegisteredContentScripts({ ids: SCRIPT_IDS })).map((r) => r.id);
+    console.log('[PopupGuard] sync: registered', now.join(','), 'for', matches.join(' '));
+  }).catch((e) => console.warn('[PopupGuard] script sync failed', e && e.message));
   return syncChain;
 };
 
@@ -102,8 +104,9 @@ const applyIcon = async (enabled) => {
 
 // ---- 初期化 ------------------------------------------------------------
 chrome.runtime.onInstalled.addListener(async () => {
+  // 設定は読むときに DEFAULTS とマージするので、ここで書き込みはしない
+  // （インストール直後に書き戻すと、同時に変更された設定を上書きして登録サイトが消えることがある）
   const cfg = await getConfig();
-  await chrome.storage.sync.set({ enabled: cfg.enabled, blockOverlay: cfg.blockOverlay, antiAdblock: cfg.antiAdblock, keepVisible: cfg.keepVisible, sites: cfg.sites });
   chrome.action.setBadgeBackgroundColor({ color: '#e0245e' });
   chrome.action.setBadgeTextColor?.({ color: '#ffffff' });
   applyIcon(cfg.enabled);
@@ -119,6 +122,7 @@ chrome.runtime.onStartup.addListener(async () => {
 // 設定が変わったらアイコン更新 & 注入先を同期
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== 'sync') return;
+  console.log('[PopupGuard] storage changed:', Object.keys(changes).join(','));
   if (changes.enabled) applyIcon(!!changes.enabled.newValue);
   if (changes.enabled || changes.sites) syncScripts();
 });
