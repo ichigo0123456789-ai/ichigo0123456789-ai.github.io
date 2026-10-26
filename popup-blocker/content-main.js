@@ -24,6 +24,11 @@
   };
   const isActive = () => state.enabled && state.siteTargeted;
 
+  // 診断用：うちの処理で起きたエラーと、消した要素の数を覚えとく
+  const pgErrors = [];
+  const noteError = (where, e) => { try { pgErrors.push(where + ': ' + (e && e.message || e)); } catch (_) {} };
+  let killedCount = 0;
+
   // ---- ブロックしたよ〜って bridge に報告する -------------------------
   const report = (kind, url, note) => {
     try {
@@ -93,7 +98,7 @@
       },
     });
     applyAdsSpoof(adsArray);
-  } catch (_) { /* 定義できなかったら諦める */ }
+  } catch (e) { noteError('adsbygoogle defineProperty', e); report('adblock-nag', '', 'adsbygoogle の偽装に失敗: ' + (e && e.message)); }
 
   // 広告ブロッカーのダミーが作る偽の広告 iframe（id="aswift_N" で中身が data:/javascript:/空）を
   // アンチアドブロックに見つかる前に消す。MutationObserver は同じタスク内のマイクロタスクで
@@ -140,7 +145,7 @@
       } else {
         delete document.hidden; delete document.visibilityState; delete document.hasFocus;
       }
-    } catch (_) {}
+    } catch (e) { noteError('visibility spoof', e); }
   };
   applyVisibilitySpoof();
   const swallow = (e) => {
@@ -352,6 +357,7 @@
   const killOverlay = (el, kind) => {
     if (overlayLog.has(el)) return;
     overlayLog.add(el);
+    killedCount += 1;
     el.style.setProperty('display', 'none', 'important');
     // スクロールロックも一緒に解除してあげる（body に overflow:hidden 入れてくるやつ対策）
     for (const n of [document.documentElement, document.body]) {
@@ -373,7 +379,7 @@
       try {
         const kind = looksLikeAdOverlay(el);
         if (kind) killOverlay(el, kind);
-      } catch (_) {}
+      } catch (e) { noteError('scan', e); }
     }
     if (state.antiAdblock) { restorePointerEvents(); removeFakeAdFrames(document.body); }
     unblurIfHidden();
@@ -405,6 +411,44 @@
   } else {
     startObserver();
   }
+
+  // =====================================================================
+  // 診断：小窓の「診断情報を表示」から呼ばれる。ページ内の状態をまとめて返す🩺
+  // =====================================================================
+  const describeEl = (el) => `<${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : ''}>`;
+  const collectDiag = () => {
+    const d = { installed: true, active: isActive(), state: Object.assign({}, state), brave: !!(navigator.brave), errors: pgErrors.slice(-10), killed: killedCount };
+    try {
+      const desc = Object.getOwnPropertyDescriptor(window, 'adsbygoogle');
+      const a = window.adsbygoogle;
+      d.adsbygoogle = {
+        descriptor: desc ? (desc.get ? 'getter' : typeof desc.value) + (desc.configurable ? ' (configurable)' : ' (NOT configurable)') : 'none',
+        isArray: Array.isArray(a), loaded: a && a.loaded, spoofed: !!(a && a.__pgSpoofed),
+        push: a && a.push ? String(a.push).replace(/\s+/g, ' ').slice(0, 60) : String(a && a.push),
+      };
+    } catch (e) { d.adsbygoogle = 'error: ' + e.message; }
+    try { d.visibility = { hidden: document.hidden, visibilityState: document.visibilityState, hasFocus: document.hasFocus() }; } catch (e) { d.visibility = 'error: ' + e.message; }
+    try {
+      const vw = window.innerWidth, vh = window.innerHeight;
+      d.bigFixed = [];
+      for (const el of document.body.querySelectorAll('body > *, body > * > *, body > * > * > *')) {
+        const cs = getComputedStyle(el);
+        if (cs.position !== 'fixed') continue;
+        const r = el.getBoundingClientRect();
+        const cover = (Math.min(r.right, vw) - Math.max(r.left, 0)) * (Math.min(r.bottom, vh) - Math.max(r.top, 0)) / (vw * vh);
+        if (cover < 0.5) continue;
+        let verdict = null; try { verdict = looksLikeAdOverlay(el); } catch (e) { verdict = 'error: ' + e.message; }
+        d.bigFixed.push({ el: describeEl(el), display: cs.display, zIndex: cs.zIndex, cover: Math.round(cover * 100) + '%', verdict, text: (el.innerText || '').replace(/\s+/g, ' ').slice(0, 60) });
+      }
+      d.adguard = Array.from(document.querySelectorAll('.adguard-overlay')).map((el) => describeEl(el) + ' display=' + getComputedStyle(el).display + ' parent=' + (el.parentElement ? el.parentElement.tagName : '?'));
+    } catch (e) { d.bigFixed = 'error: ' + e.message; }
+    return d;
+  };
+  document.addEventListener('popupguard:diag-request', () => {
+    let payload;
+    try { payload = JSON.stringify(collectDiag()); } catch (e) { payload = JSON.stringify({ installed: true, error: String(e) }); }
+    document.dispatchEvent(new CustomEvent('popupguard:diag', { detail: payload }));
+  });
 
   // =====================================================================
   // bridge（content-bridge.js）との連携

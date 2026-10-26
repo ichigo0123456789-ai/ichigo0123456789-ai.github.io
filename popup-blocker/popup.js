@@ -56,7 +56,22 @@ const render = () => {
     rm.textContent = '✕';
     rm.addEventListener('click', async () => {
       await send({ type: 'removeSite', host: site });
-      // バージョン表示（最新版が入ってるか確認用）
+      // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
     });
@@ -117,19 +132,64 @@ const showError = (msg) => {
 // ---- 操作 ---------------------------------------------------------------
 $('enabled').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { enabled: e.target.checked } });
-  // バージョン表示（最新版が入ってるか確認用）
+  // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
 });
 $('blockOverlay').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { blockOverlay: e.target.checked } });
-  // バージョン表示（最新版が入ってるか確認用）
+  // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
 });
 $('antiAdblock').addEventListener('change', async (e) => {
   await send({ type: 'setConfig', patch: { antiAdblock: e.target.checked } });
-  // バージョン表示（最新版が入ってるか確認用）
+  // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
 });
@@ -149,7 +209,22 @@ $('siteTargeted').addEventListener('change', async (e) => {
       if (hostMatches(info.host, site)) await send({ type: 'removeSite', host: site });
     }
   }
-  // バージョン表示（最新版が入ってるか確認用）
+  // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
 });
@@ -162,23 +237,83 @@ $('addForm').addEventListener('submit', async (e) => {
   if (!res.ok) { showError(res.error); return; }
   showError('');
   $('siteInput').value = '';
-  // バージョン表示（最新版が入ってるか確認用）
+  // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
 });
 
 $('clear').addEventListener('click', async () => {
   await send({ type: 'clearLog', tabId: info.tabId });
-  // バージョン表示（最新版が入ってるか確認用）
+  // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
 });
 
 // 開いてる間にブロックが増えたら履歴を更新
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'session' || area === 'sync') // バージョン表示（最新版が入ってるか確認用）
+  if (area === 'session' || area === 'sync') // 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
+});
+
+// バージョン表示（最新版が入ってるか確認用）
 try { $('version').textContent = 'v' + chrome.runtime.getManifest().version; } catch (_) {}
 refresh();
+});
+
+// 診断情報：background → bridge → MAIN world と聞きに行って、JSON で出す
+$('diagBtn').addEventListener('click', async () => {
+  const box = $('diagBox');
+  box.classList.remove('hidden');
+  $('diagText').value = '集めてる…';
+  let res;
+  try { res = await send({ type: 'diag' }); } catch (e) { res = { error: String(e) }; }
+  $('diagText').value = JSON.stringify(res, null, 1);
+});
+$('diagCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('diagText').value); $('diagCopy').textContent = 'コピーした✨'; }
+  catch (_) { $('diagText').select(); document.execCommand('copy'); $('diagCopy').textContent = 'コピーした✨'; }
+  setTimeout(() => { $('diagCopy').textContent = 'コピー'; }, 1500);
 });
 
 // バージョン表示（最新版が入ってるか確認用）

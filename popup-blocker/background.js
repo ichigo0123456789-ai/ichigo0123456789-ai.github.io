@@ -225,6 +225,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return sendResponse({ ok: true });
       }
 
+      // popup.js: 診断情報ちょうだい（トップフレームの bridge に聞く）
+      case 'diag': {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const cfg = await getConfig();
+        let registered = [];
+        try { registered = (await chrome.scripting.getRegisteredContentScripts({ ids: SCRIPT_IDS })).map((r) => r.id + ' ' + r.matches.join(' ')); } catch (e) { registered = ['error: ' + e.message]; }
+        const base = { version: chrome.runtime.getManifest().version, tabUrl: tab?.url, config: cfg, registered, userAgent: navigator.userAgent };
+        if (!tab) return sendResponse(Object.assign(base, { page: null, note: 'アクティブタブなし' }));
+        try {
+          const page = await chrome.tabs.sendMessage(tab.id, { type: 'diag' }, { frameId: 0 });
+          return sendResponse(Object.assign(base, { page }));
+        } catch (e) {
+          return sendResponse(Object.assign(base, { page: null, note: 'content-bridge.js に届かない（このページに注入されてない）: ' + (e && e.message) }));
+        }
+      }
+
       // popup.js: 履歴消して
       case 'clearLog': {
         if (msg.tabId != null) {

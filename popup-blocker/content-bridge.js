@@ -61,6 +61,24 @@
     } catch (_) { /* SW が寝てて失敗しても気にしない */ }
   });
 
+  // 小窓からの診断リクエスト：MAIN 側に聞いて、返事をそのまま返す
+  try {
+    chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+      if (!msg || msg.type !== 'diag' || window !== window.top) return;
+      let done = false;
+      const finish = (data) => { if (done) return; done = true; sendResponse(data); };
+      const onDiag = (e) => {
+        document.removeEventListener('popupguard:diag', onDiag);
+        let main = null; try { main = JSON.parse(e.detail || 'null'); } catch (_) {}
+        finish({ bridge: true, version: chrome.runtime.getManifest().version, host, url: location.href, main });
+      };
+      document.addEventListener('popupguard:diag', onDiag);
+      document.dispatchEvent(new CustomEvent('popupguard:diag-request'));
+      setTimeout(() => { document.removeEventListener('popupguard:diag', onDiag); finish({ bridge: true, version: chrome.runtime.getManifest().version, host, url: location.href, main: null, note: 'MAIN world から返事なし（content-main.js が動いてない）' }); }, 800);
+      return true;
+    });
+  } catch (_) {}
+
   // トップフレームでページが始まったら、そのタブのカウントをリセット
   if (window === window.top) {
     try { chrome.runtime.sendMessage({ type: 'pageStart', url: location.href }); } catch (_) {}

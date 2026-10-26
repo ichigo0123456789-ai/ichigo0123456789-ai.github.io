@@ -89,6 +89,20 @@
     <p class="empty" id="empty">まだ何もブロックしてないよ</p>
   </section>
 
+  <section class="card">
+    <div class="list-head">
+      <span>うまく動かないとき</span>
+      <button class="link-btn" id="diagBtn">診断情報を表示</button>
+    </div>
+    <div id="diagBox" class="diag hidden">
+      <textarea id="diagText" readonly spellcheck="false"></textarea>
+      <div class="diag-actions">
+        <button class="open-btn" id="diagCopy">コピー</button>
+        <span class="row-sub">これを貼り付けて送ってね</span>
+      </div>
+    </div>
+  </section>
+
   <footer class="foot">
     <span id="status"></span>
     <span class="ver" id="version"></span>
