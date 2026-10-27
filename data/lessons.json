@@ -2834,6 +2834,26 @@
     "portfolio.json as of 2026-10-26 は10/23付値をcarry-forward"
    ],
    "status": "仮説"
+  },
+  {
+   "id": "L166",
+   "date": "2026-10-28",
+   "category": "サプライズ監査・日程が見えていたAI大型IPOイベントの未収載",
+   "lesson": "10/26にアンソロピックがIPOの目論見書(S-1)をSECへ公開提出し、10/27の日経平均は+1,078.72円(+1.73%)の63,268.37円、アドバンテストは+9.0%と、AI・半導体株の反発を主導した。この目論見書は9月末に内容が報じられ、公開提出は『早ければ金曜』と事前報道もあり、上場はNasdaq・11月見込みと日程は見えていたのに、calendar.jsonに登録が無く、open予測のconsidered_scenariosにもAI大手の上場・目論見書を材料とする軸が無かった(P-E252等には『米国市場の反発を受けた10/27の大幅反発』の一般形のみ)。今後、AI大手の上場関連（公開提出・価格決定・初値）や大型の資金調達のように日程が報じられた二値イベントは、判明した時点でcalendar.jsonへ登録し、AI・半導体関連の予測（日経平均・米IT決算・VIX・金利）のconsidered_scenariosに『AI上場関連の材料で反発/資金吸収で下落』の分岐を1行足す。直接関連する予測が無い場合は新規予測を起こさない(乱造防止)。",
+   "regime_tags": [
+    "surprise_audit",
+    "ai_capital_markets",
+    "calendar_gap",
+    "event_prediction",
+    "mixed"
+   ],
+   "evidence": [
+    "日経平均大引け63,268.37円(+1,078.72円)・アドバンテスト+9.0%・目論見書公開が買い材料(マネックス証券media 2026-10-27、Yahoo!ファイナンス ^N225 as of 2026-10-27)",
+    "Anthropic, PBC Form S-1 SEC EDGAR提出日2026-10-26、Nasdaq上場予定(ティッカーANT)、上場は11月見込み(Yahoo Finance live・Bloomberg 2026-10-26報道、財務数値は二次報道のため未採用)",
+    "calendar.jsonにアンソロピック/IPO関連の登録なし・open予測のconsidered_scenariosにIPO/目論見書言及なし(P-T48のAI開発一時停止論を除く、2026-10-28確認)",
+    "predictions.json P-E252/P-E243 considered_scenarios"
+   ],
+   "status": "仮説"
   }
  ]
 }
