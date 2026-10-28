@@ -1740,5 +1740,49 @@
    "changePct": 2.0,
    "src": "Yahoo!ファイナンス as of 2026-10-27 東証大引け"
   }
+ },
+ {
+  "briefDate": "2026-10-29",
+  "tradingDate": {
+   "jp": "2026-10-28",
+   "us": "2026-10-28"
+  },
+  "note": "10/29(木)05:05 JST。東京は10/28大引け確定値、米国株は10/28 NYクローズの引け確定値、金は10/27終値(10/28分未確定)、ドル円のみ速報。",
+  "nikkei": {
+   "value": 63954.19,
+   "change": 685.82,
+   "changePct": 1.08,
+   "src": "Yahoo!ファイナンス as of 2026-10-28 東証大引け"
+  },
+  "nasdaq100": {
+   "value": 29813.16,
+   "change": 161.72,
+   "changePct": 0.55,
+   "src": "Yahoo! Finance(米) as of 2026-10-28 NYクローズ(引け確定値)"
+  },
+  "sp500": {
+   "value": 7744.19,
+   "change": 21.59,
+   "changePct": 0.28,
+   "src": "Yahoo!ファイナンス as of 2026-10-28 NYクローズ(引け確定値)"
+  },
+  "usdjpy": {
+   "value": 157.87,
+   "change": 0.34,
+   "changePct": 0.22,
+   "src": "Yahoo!ファイナンス as of 2026-10-29 05:03 JST速報(前日比は10/27引け比)"
+  },
+  "gold": {
+   "value": 4074.6,
+   "change": 36.2,
+   "changePct": 0.9,
+   "src": "Yahoo! Finance(米) COMEX先物 as of 2026-10-27 NY終値(10/28分は取引中で未確定)"
+  },
+  "mufg8306": {
+   "value": 3377,
+   "change": 7,
+   "changePct": 0.21,
+   "src": "Yahoo!ファイナンス as of 2026-10-28 東証大引け"
+  }
  }
 ]
