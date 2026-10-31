@@ -945,6 +945,14 @@
    "published": true,
    "commit": "pending",
    "note": "日次(土曜)。10/30東証大引けと10/30付基準価額を取得。米株・金は取引中速報(引け前)で掲載。日銀会合(10/30)は据え置き・2%到達表明。期限到来の予測11件を採点(的中5・部分2・外れ4)、新規イベント予測3件(P-E260-262)、運用部P-U50、教訓L170-171追加。反対尋問を反映。仮想運用は様子見(T0122)。AP/ロイター/NPRは取得不可。2段目の再取得は未実施(早朝1回取得)。"
+  },
+  {
+   "date": "2026-11-01",
+   "trigger": "scheduled",
+   "status": "success",
+   "published": true,
+   "commit": "pending",
+   "note": "日次(日曜=週次・毎月1日=月次)。11/1は休場のため10/30確定値(日経63,290.11円-2.12%、NY引け確定)で掲載。期限到来の予測なし。新規イベント予測4件(P-E263〜266)、教訓2件追加、11月つみたて計上(T0123)・様子見(T0124)。反対尋問を反映。AP/ロイター/NPR/NHK WORLDは取得不可。"
   }
  ],
  "weekly_uptime": [
@@ -971,6 +979,14 @@
    "manual_rescues": 0,
    "uptime_pct": 100.0,
    "note": "2026-10-11〜10-17の7日間、runlog.json上いずれもstatus:success/published:trueで7/7=100%。10/18分は本run完了後に計上。"
+  },
+  {
+   "week_ending": "2026-11-01",
+   "runs_scheduled": 7,
+   "runs_succeeded_scheduled": 7,
+   "manual_rescues": 0,
+   "uptime_pct": 100.0,
+   "note": "検証部の週次集計(7/7)。"
   }
  ]
 }
