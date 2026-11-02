@@ -17,35 +17,6 @@
  ],
  "upcoming": [
   {
-   "id": "EV-20261102-AAPL",
-   "date": "2026-11-02",
-   "status": "予定（確定）",
-   "category": "主要企業決算",
-   "title": "アップル 2026年度第4四半期決算発表(米国時間11/2引け後、電話会議14:00PT＝17:00ET)",
-   "related_prediction_ids": [
-    "P-E251"
-   ],
-   "note": " 出典：WebSearch(経済部2026-10-20取得)。各報道が10/7付の同社告知として伝達。"
-  },
-  {
-   "id": "EV-20261102-ISMMFG",
-   "date": "2026-11-02",
-   "status": "予定",
-   "category": "米経済指標",
-   "title": "米ISM製造業景況指数(2026年10月分、10:00ET＝日本時間0:00 11/3)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(ISM公式カレンダー掲載とされる検索結果、financecalendar.comも11/2 10:00ETと記載、経済部2026-10-22 JST取得)。ISM公式ページ本体は認証壁で直接閲覧不可。"
-  },
-  {
-   "id": "EV-20261102-BOJREPORT",
-   "date": "2026-11-02",
-   "status": "予定（第三者情報）",
-   "category": "日銀会合",
-   "title": "日銀 展望レポート全文の公表",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(日銀の公表予定を整理した第三者ページ、経済部2026-10-31 JST)。日銀公式の日程表(boj.or.jp/mopo/mpmsche_minu/m_ref/mref260731a.pdf)に基づくとされるが本文未開封。"
-  },
-  {
    "id": "EV-20261103-USMIDTERM",
    "date": "2026-11-03",
    "status": "予定（確定）",
@@ -240,6 +211,24 @@
    "title": "アンソロピック 改訂目論見書(価格帯・株数)公表とロードショー開始",
    "related_prediction_ids": [],
    "note": "出典：WebSearch(XTB 10/26付ほか報道、経済部2026-11-02 JST)。11/9週開始の可能性との報道のみで日付未確認。"
+  },
+  {
+   "id": "EV-20261105-001",
+   "date": "2026-11-05",
+   "category": "金融政策",
+   "title": "英中銀（BOE）金融政策委員会の政策金利発表（現行3.75%、利上げの可能性も取り沙汰）",
+   "note": "WebSearch（financecalendar.com、cambridgecurrencies.com等の二次情報） ／経済部2026-11-03 JST取得(二次情報、公式未確認)。",
+   "status": "予定",
+   "related_prediction_ids": []
+  },
+  {
+   "id": "EV-20261118-001",
+   "date": "2026-11-18",
+   "category": "金融政策",
+   "title": "FOMC議事要旨（10/27-28会合分、米東部時間14:00）",
+   "note": "WebSearch（federalreserve.gov 2026年11月カレンダー）。11月のFOMC会合は無し、次回は12/8-9または12/9決定 ／経済部2026-11-03 JST取得(二次情報、公式未確認)。",
+   "status": "予定",
+   "related_prediction_ids": []
   }
  ],
  "archived": [
@@ -2279,6 +2268,41 @@
    "note": "出典：WebSearch(各社カレンダーに31日と記載)。国家統計局の公式日程は未確認。 ／経済部2026-10-30 JST取得。／経済部2026-10-31 JST(4:35)：JST4:35時点で中国国家統計局の10月PMI発表(北京9:30＝日本時間10:30)前のため未確認、upcomingに残置。 ／経済部2026-11-01 JST：WebSearchで10月分の公表値を確認できず(9月は50.1、Trading Economics)。結果未確認のままarchivedへ移動。",
    "archived_date": "2026-11-01",
    "actual": "—(中国国家統計局の2026年10月製造業PMIは10/31 9:30CST発表予定だったが、本セッションの検索では公表値を確認できず。参考:9月は50.1、8月は49.8)"
+  },
+  {
+   "id": "EV-20261102-AAPL",
+   "date": "2026-11-02",
+   "status": "予定（確定）",
+   "category": "主要企業決算",
+   "title": "アップル 2026年度第4四半期決算発表(米国時間11/2引け後、電話会議14:00PT＝17:00ET)",
+   "related_prediction_ids": [
+    "P-E251"
+   ],
+   "note": " 出典：WebSearch(経済部2026-10-20取得)。各報道が10/7付の同社告知として伝達。",
+   "archived_date": "2026-11-03",
+   "actual": "—(本runでは結果を確認していない)"
+  },
+  {
+   "id": "EV-20261102-ISMMFG",
+   "date": "2026-11-02",
+   "status": "予定",
+   "category": "米経済指標",
+   "title": "米ISM製造業景況指数(2026年10月分、10:00ET＝日本時間0:00 11/3)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(ISM公式カレンダー掲載とされる検索結果、financecalendar.comも11/2 10:00ETと記載、経済部2026-10-22 JST取得)。ISM公式ページ本体は認証壁で直接閲覧不可。",
+   "archived_date": "2026-11-03",
+   "actual": "—(本runでは結果を確認していない)"
+  },
+  {
+   "id": "EV-20261102-BOJREPORT",
+   "date": "2026-11-02",
+   "status": "予定（第三者情報）",
+   "category": "日銀会合",
+   "title": "日銀 展望レポート全文の公表",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(日銀の公表予定を整理した第三者ページ、経済部2026-10-31 JST)。日銀公式の日程表(boj.or.jp/mopo/mpmsche_minu/m_ref/mref260731a.pdf)に基づくとされるが本文未開封。",
+   "archived_date": "2026-11-03",
+   "actual": "—(本runでは結果を確認していない)"
   }
  ]
 }

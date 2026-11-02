@@ -1872,5 +1872,49 @@
    "changePct": -0.49,
    "src": "Yahoo!ファイナンス as of 2026-10-30 東証大引け"
   }
+ },
+ {
+  "briefDate": "2026-11-03",
+  "tradingDate": {
+   "jp": "2026-11-02",
+   "us": "2026-11-02(日中値・未確定)"
+  },
+  "note": "11/3(火)早朝(4:36頃JST)。東証11/2は大引け確定、11/3は文化の日で休場。NY市場は11/2引け前のため、ナスダック100・S&P500・金・米10年債は日中値(未確定)。",
+  "nikkei": {
+   "value": 63081.86,
+   "change": -208.25,
+   "changePct": -0.33,
+   "src": "Yahoo!ファイナンス as of 2026-11-02 東証大引け"
+  },
+  "nasdaq100": {
+   "value": 28147.47,
+   "change": -237.38,
+   "changePct": -0.84,
+   "src": "Yahoo! Finance(米) as of 2026-11-02 NY日中(未確定)"
+  },
+  "sp500": {
+   "value": 7566.7,
+   "change": -13.37,
+   "changePct": -0.18,
+   "src": "Yahoo! Finance(米) as of 2026-11-02 NY日中(未確定)"
+  },
+  "usdjpy": {
+   "value": 157.85,
+   "change": 0.05,
+   "changePct": 0.03,
+   "src": "Yahoo! Finance(米) as of 2026-11-02 19:36UTC 参考値"
+  },
+  "gold": {
+   "value": 3957.2,
+   "change": 58.3,
+   "changePct": 1.5,
+   "src": "Yahoo! Finance(米) COMEX先物 as of 2026-11-02 日中(未確定)"
+  },
+  "mufg8306": {
+   "value": 3383,
+   "change": -64,
+   "changePct": -1.86,
+   "src": "Yahoo!ファイナンス as of 2026-11-02 東証大引け"
+  }
  }
 ]
