@@ -17,118 +17,6 @@
  ],
  "upcoming": [
   {
-   "id": "EV-20261103-USMIDTERM",
-   "date": "2026-11-03",
-   "status": "予定（確定）",
-   "category": "政治・地政学日程",
-   "title": "米中間選挙(連邦議会選挙)投開票",
-   "related_prediction_ids": [
-    "P-E249"
-   ],
-   "note": "出典：WebSearch(ameriprise・CMC Markets・IG等、経済部2026-10-22 JST取得)が2026年11月3日と記載。市場の想定は下院民主・上院共和の分割との見方(Evelyn Partners)。"
-  },
-  {
-   "id": "EV-20261103-JPHOLIDAY",
-   "date": "2026-11-03",
-   "status": "予定（確定）",
-   "category": "日本市場休場",
-   "title": "文化の日で東京証券取引所は休場(米中間選挙の開票は日本時間11/4に伝わり始める)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(株探 2026-10-30付「来週の株式相場に向けて」ほか、経済部2026-10-31 JST)。"
-  },
-  {
-   "id": "EV-20261104-ISMSVC",
-   "date": "2026-11-04",
-   "status": "予定",
-   "category": "米経済指標",
-   "title": "米ISM非製造業(サービス業)景況指数(2026年10月分)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(ISM公式の公表日程表に11/4との記載、経済部2026-10-22 JST取得)。一部カレンダーは日付未確定扱い。時刻は未確認。"
-  },
-  {
-   "id": "EV-20261104-ADP",
-   "date": "2026-11-04",
-   "status": "予定（第三者カレンダー）",
-   "category": "米経済指標",
-   "title": "米ADP雇用統計(10月分)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(株探・各社カレンダー、経済部2026-10-31 JST)。時刻・公式日程は未確認。"
-  },
-  {
-   "id": "EV-20261105-BOE",
-   "date": "2026-11-05",
-   "status": "予定（第三者カレンダー、BoE公式未確認）",
-   "category": "海外経済指標",
-   "title": "イングランド銀行（英国の中央銀行）金融政策委員会 政策金利発表（現地正午、金融政策報告書を同時公表）",
-   "related_prediction_ids": [
-    "P-E259"
-   ],
-   "note": "出典：WebSearch(複数の第三者カレンダーが2026-11-05で一致、経済部2026-10-27 JST)。BBC 10/26付は9月物価3.5%で利上げが近いと報道。BoE公式の日程ページは未確認。"
-  },
-  {
-   "id": "EV-20261105-TOYOTA",
-   "date": "2026-11-05",
-   "status": "予定（会社IRカレンダー）",
-   "category": "主要企業決算",
-   "title": "トヨタ自動車 2027年3月期 第2四半期(中間)決算発表",
-   "related_prediction_ids": [],
-   "note": "出典：トヨタ公式IRカレンダーおよび複数株価サイト(WebSearch)。 ／経済部2026-10-30 JST取得。"
-  },
-  {
-   "id": "EV-20261106-USJOBS",
-   "date": "2026-11-06",
-   "status": "予定（確定）",
-   "category": "米雇用統計",
-   "title": "米雇用統計(2026年10月分)発表(BLS、8:30ET)",
-   "related_prediction_ids": [],
-   "note": "出典：BLS Employment Situation Summary(bls.gov/news.release/empsit.nr0.htm)に『次回10月分は2026年11月6日』と明記(経済部2026-10-03取得)。2週間の範囲外だが次の大型イベントとして記録。"
-  },
-  {
-   "id": "EV-20261106-JPWAGE",
-   "date": "2026-11-06",
-   "status": "予定（第三者カレンダー）",
-   "category": "日本経済指標",
-   "title": "毎月勤労統計(9月分)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(株探 2026-10-30付、経済部2026-10-31 JST)。厚労省公式は未確認。"
-  },
-  {
-   "id": "EV-20261110-USCPI",
-   "date": "2026-11-10",
-   "status": "予定（第三者カレンダー、BLS公式未確認）",
-   "category": "米CPI・PCE",
-   "title": "米CPI(2026年10月分)発表(8:30ET＝日本時間21:30)",
-   "related_prediction_ids": [],
-   "note": "出典：SimianX(2026-10-15更新)をWebSearchで確認(経済部2026-10-28 JST)。BLS公式カレンダーは未確認。 ／経済部2026-10-29 JST：WebSearchで複数の第三者カレンダー(thriveinmarkets・fedratecalc等)が2026-11-10 8:30ETで一致。BLS公式ページ本体は未開封で、status据え置き。"
-  },
-  {
-   "id": "EV-20261110-BOJOPINIONS",
-   "date": "2026-11-10",
-   "status": "予定（第三者情報）",
-   "category": "日銀会合",
-   "title": "日銀 10/29〜30日会合の「主な意見」公表(8:50)",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(日銀の公表予定を整理した第三者ページ、経済部2026-10-31 JST)。議事要旨は12/23予定。"
-  },
-  {
-   "id": "EV-20261110-SBG",
-   "date": "2026-11-10",
-   "status": "予定（会社公式発表）",
-   "category": "主要企業決算",
-   "title": "ソフトバンクグループ 2027年3月期第2四半期決算(決算短信15:30、説明会16:30)",
-   "related_prediction_ids": [],
-   "note": "出典：ソフトバンクグループ公式(group.softbank/news/info/20261002、WebSearch経由、経済部2026-10-31 JST)。"
-  },
-  {
-   "id": "EV-20261110-CSCO",
-   "date": "2026-11-10",
-   "status": "予定（第三者カレンダー、会社IR未確認）",
-   "category": "主要企業決算",
-   "title": "シスコシステムズ 2027年度第1四半期決算発表(米国時間11/10引け後の見込み)",
-   "related_prediction_ids": [],
-   "note": "出典：financecalendar.com等(日付はpublisher側で未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。"
-  },
-  {
    "id": "EV-20261111-DIS",
    "date": "2026-11-11",
    "status": "予定（第三者カレンダー、会社IR未確認）",
@@ -136,6 +24,15 @@
    "title": "ウォルト・ディズニー 2026年度第4四半期・通期決算発表(米国時間11/11 16:05ET予定)",
    "related_prediction_ids": [],
    "note": "出典：第三者カレンダー(未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。"
+  },
+  {
+   "id": "EV-20261112-CSCO",
+   "date": "2026-11-12",
+   "status": "予定（会社公式発表）",
+   "category": "主要企業決算",
+   "title": "シスコシステムズ 2027年度第1四半期決算発表(米国時間11/12引け後、電話会議13:30PT＝日本時間11/13 6:30)",
+   "related_prediction_ids": [],
+   "note": "出典：financecalendar.com等(日付はpublisher側で未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-11 JST：Cisco公式IR『Cisco Schedules Conference Call for Q1 Fiscal Year 2027 Financial Results』で11/12(木)と確認し日付を訂正。会社見通しは売上高180〜182億ドル。"
   },
   {
    "id": "EV-20261113-EUGDP45",
@@ -158,11 +55,59 @@
   {
    "id": "EV-NULL-JPGDP-Q3",
    "date": "2026-11-16",
-   "status": "予定（内閣府公表予定）",
+   "status": "予定（確定）",
    "category": "日本経済指標",
-   "title": "日本の7〜9月期GDP速報値(内閣府)の発表日",
+   "title": "日本の7〜9月期GDP1次速報(内閣府、11/16 8:50)",
    "related_prediction_ids": [],
-   "note": "経済部2026-10-29 JST：2週間の範囲に入る可能性を確認するため登録したが、今回の検索では2026年の発表日を確認できず(例年は11月中旬)。確認でき次第date記入。／経済部2026-10-31 JST(4:35)：再確認したが7〜9月期GDP速報の発表日は未確認。 ／経済部2026-11-01 JST：内閣府ESRIの公表予定で2026年7〜9月期1次速報は11/16(月)8:50、2次速報は12/8(火)8:50(financecalendar.comも同日)。 ／経済部2026-11-02 JST：WebSearchで内閣府の公表予定表に2026年7-9月期1次速報=11/16(月)8:50、2次速報=12/8(火)8:50と記載を確認(esri.cao.go.jp)。"
+   "note": "経済部2026-10-29 JST：2週間の範囲に入る可能性を確認するため登録したが、今回の検索では2026年の発表日を確認できず(例年は11月中旬)。確認でき次第date記入。／経済部2026-10-31 JST(4:35)：再確認したが7〜9月期GDP速報の発表日は未確認。 ／経済部2026-11-01 JST：内閣府ESRIの公表予定で2026年7〜9月期1次速報は11/16(月)8:50、2次速報は12/8(火)8:50(financecalendar.comも同日)。 ／経済部2026-11-02 JST：WebSearchで内閣府の公表予定表に2026年7-9月期1次速報=11/16(月)8:50、2次速報=12/8(火)8:50と記載を確認(esri.cao.go.jp)。 ／経済部2026-11-11 JST：内閣府ESRI公表予定で11/16(月)8:50と確認。事前予測は大和総研が年率+1.5%、三菱UFJリサーチ&コンサルティングが年率+0.1%、ESPフォーキャスト10月調査は年率+0.08%。2次速報は12/8予定。"
+  },
+  {
+   "id": "EV-20261117-USRETAIL",
+   "date": "2026-11-17",
+   "status": "予定（第三者カレンダー）",
+   "category": "米経済指標",
+   "title": "米小売売上高(2026年10月分)発表(8:30ET＝日本時間22:30)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(fedratecalc.com『November 2026 release schedule』・smartcalendars.ai、経済部2026-11-11 JST取得)。米商務省公式は未確認。"
+  },
+  {
+   "id": "EV-20261117-NVDA",
+   "date": "2026-11-17",
+   "status": "予定（会社公式発表）",
+   "category": "主要企業決算",
+   "title": "エヌビディア 2027年度第3四半期決算発表(米国時間11/17引け後、電話会議14:00PT＝日本時間11/18 7:00)",
+   "related_prediction_ids": [],
+   "note": "出典：NVIDIA公式IR『NVIDIA Sets Conference Call for Third-Quarter Financial Results』(2026-10-28付、10/25終了四半期)、経済部2026-11-11 JST WebSearchで確認。CFOコメントは13:20PT頃掲載予定。"
+  },
+  {
+   "id": "EV-20261118-001",
+   "date": "2026-11-18",
+   "category": "金融政策",
+   "title": "FOMC議事要旨（10/27-28会合分、米東部時間14:00）",
+   "note": "WebSearch（federalreserve.gov 2026年11月カレンダー）。11月のFOMC会合は無し、次回は12/8-9または12/9決定 ／経済部2026-11-03 JST取得(二次情報、公式未確認)。 ／経済部2026-11-11 JST：第三者カレンダー(smartcalendars.ai)でも11/18 14:00ETと表示(FRB公式は未確認)。",
+   "status": "予定",
+   "related_prediction_ids": []
+  },
+  {
+   "id": "EV-NULL-ANTHROPIC-IPO",
+   "date": "2026-11-19",
+   "status": "予定（報道）",
+   "category": "AI大型資本市場イベント",
+   "title": "アンソロピック株式上場(Nasdaq上場予定、上場は11月見込み報道)・価格決定・初値",
+   "related_prediction_ids": [
+    "P-E254",
+    "P-E255"
+   ],
+   "note": "検証部2026-10-28(教訓L166)：10/26にS-1を公開提出、日程の一次確認は未了のため date:null。出典:Yahoo Finance live・Bloomberg報道(二次)。 ／経済部2026-11-02 JST：10/26にS-1(目論見書)公開、ティッカーANT・Nasdaq上場。上場日・価格帯は未確定。報道(Bloomberg引用のXTB等)では11/9週にロードショー開始の可能性、感謝祭(11/26)前の上場を目標、米中間選挙(11/3)後にずれ込む可能性も。確定情報ではないため要調査のまま。 ／経済部2026-11-11 JST：BBC(2026-11-10付)が、銘柄コード「ANT」で11/19にナスダック上場予定、価格帯1株70〜78ドル、調達額最大640億ドル、想定時価総額1.1兆〜1.3兆ドルと報道。会社公式の最終確認は未了。"
+  },
+  {
+   "id": "EV-20261120-JPCPI",
+   "date": "2026-11-20",
+   "status": "予定（第三者情報）",
+   "category": "日本経済指標",
+   "title": "全国消費者物価指数(2026年10月分)発表(総務省、8:30)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(e-Stat公表予定一覧に2026-11-20 08:30の項目、経済部2026-11-11 JST取得)。10月分であることの一次確認は未了。"
   },
   {
    "id": "EV-NULL-BUDGETCOMM",
@@ -183,18 +128,6 @@
    "note": "経済部2026-10-28 JST WebSearch：2026年の日程は確認できず(決算集中期間は10/27〜11/16との記述のみ)。 ／経済部2026-10-29 JST：再検索したが2026年度中間決算の発表日は確認できず(参考：トヨタの前年中間決算は2025-11-05)。date:null維持。 ／経済部2026-10-30 JST：トヨタは別項目EV-20261105-TOYOTAで登録。MUFGは公式IRで中間期投資家説明会11/17 10:00、株予報Proは決算11/13としており発表日は未確定(EV-NULL-MUFG-H1)。ソニーは11月中旬頃(日付未確認)。"
   },
   {
-   "id": "EV-NULL-ANTHROPIC-IPO",
-   "date": null,
-   "status": "要調査",
-   "category": "AI大型資本市場イベント",
-   "title": "アンソロピック株式上場(Nasdaq上場予定、上場は11月見込み報道)・価格決定・初値",
-   "related_prediction_ids": [
-    "P-E254",
-    "P-E255"
-   ],
-   "note": "検証部2026-10-28(教訓L166)：10/26にS-1を公開提出、日程の一次確認は未了のため date:null。出典:Yahoo Finance live・Bloomberg報道(二次)。 ／経済部2026-11-02 JST：10/26にS-1(目論見書)公開、ティッカーANT・Nasdaq上場。上場日・価格帯は未確定。報道(Bloomberg引用のXTB等)では11/9週にロードショー開始の可能性、感謝祭(11/26)前の上場を目標、米中間選挙(11/3)後にずれ込む可能性も。確定情報ではないため要調査のまま。"
-  },
-  {
    "id": "EV-NULL-META-ISSUE",
    "date": null,
    "status": "要調査",
@@ -210,28 +143,144 @@
    "category": "主要企業・IPO",
    "title": "アンソロピック 改訂目論見書(価格帯・株数)公表とロードショー開始",
    "related_prediction_ids": [],
-   "note": "出典：WebSearch(XTB 10/26付ほか報道、経済部2026-11-02 JST)。11/9週開始の可能性との報道のみで日付未確認。"
+   "note": "出典：WebSearch(XTB 10/26付ほか報道、経済部2026-11-02 JST)。11/9週開始の可能性との報道のみで日付未確認。 ／経済部2026-11-11 JST：BBC(2026-11-10付)が価格帯1株70〜78ドル・調達最大640億ドルと報道(改訂目論見書の公表日自体は未確認)。"
+  }
+ ],
+ "archived": [
+  {
+   "id": "EV-20261103-USMIDTERM",
+   "date": "2026-11-03",
+   "status": "確定",
+   "category": "政治・地政学日程",
+   "title": "米中間選挙(連邦議会選挙)投開票",
+   "related_prediction_ids": [
+    "P-E249"
+   ],
+   "note": "出典：WebSearch(ameriprise・CMC Markets・IG等、経済部2026-10-22 JST取得)が2026年11月3日と記載。市場の想定は下院民主・上院共和の分割との見方(Evelyn Partners)。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch(CNN・NPR・ABC系ライブ更新・CNBC)。上院の最終議席はAP等の公式集計で要再確認。",
+   "actual": "民主党が下院の過半数(218議席超)を確保したと複数メディアが報道(CNN 11/5付は民主党の下院250議席超を予測)。上院は民主党が多数を奪還したとの報道(ABC系ライブ更新)がある一方、最終確定の議席数は未確認。市場では、AI・データセンター規制強化への警戒から11/5(木)にナスダック総合指数が5%超下落し、ハイテク株の時価総額2兆ドル超が消失(NPR)。"
+  },
+  {
+   "id": "EV-20261103-JPHOLIDAY",
+   "date": "2026-11-03",
+   "status": "確定",
+   "category": "日本市場休場",
+   "title": "文化の日で東京証券取引所は休場(米中間選挙の開票は日本時間11/4に伝わり始める)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(株探 2026-10-30付「来週の株式相場に向けて」ほか、経済部2026-10-31 JST)。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch(みんかぶ 11/6大引け記事)。",
+   "actual": "文化の日で東証は休場。翌11/4から日経平均は続落し、11/6には3,643.13円安の57,434.77円(5日続落、歴代3番目の下げ幅)。米中間選挙での民主党大勝を受けたAI・半導体株売りが背景と報道。"
+  },
+  {
+   "id": "EV-20261104-ISMSVC",
+   "date": "2026-11-04",
+   "status": "確定",
+   "category": "米経済指標",
+   "title": "米ISM非製造業(サービス業)景況指数(2026年10月分)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(ISM公式の公表日程表に11/4との記載、経済部2026-10-22 JST取得)。一部カレンダーは日付未確定扱い。時刻は未確認。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch(investinglive・Logistics Management、2026-11-05付)。",
+   "actual": "米ISM非製造業景況指数(10月)は54.5で前月比-0.4ポイント、市場予想54.8を下回るも拡大圏を維持。"
+  },
+  {
+   "id": "EV-20261104-ADP",
+   "date": "2026-11-04",
+   "status": "結果未確認",
+   "category": "米経済指標",
+   "title": "米ADP雇用統計(10月分)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(株探・各社カレンダー、経済部2026-10-31 JST)。時刻・公式日程は未確認。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch で2026年10月分の結果を確認できず(取得不可)。",
+   "actual": "—"
+  },
+  {
+   "id": "EV-20261105-BOE",
+   "date": "2026-11-05",
+   "status": "確定",
+   "category": "海外経済指標",
+   "title": "イングランド銀行（英国の中央銀行）金融政策委員会 政策金利発表（現地正午、金融政策報告書を同時公表）",
+   "related_prediction_ids": [
+    "P-E259"
+   ],
+   "note": "出典：WebSearch(複数の第三者カレンダーが2026-11-05で一致、経済部2026-10-27 JST)。BBC 10/26付は9月物価3.5%で利上げが近いと報道。BoE公式の日程ページは未確認。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch(bankofengland.co.uk『Bank Rate increased to 4% - November 2026 Monetary Policy Summary and Minutes』ほか)。",
+   "actual": "イングランド銀行は政策金利を3.75%から4.00%へ0.25%引き上げ(賛成8・反対1、反対の1人は0.5%の利上げを主張)。エネルギー価格上昇を理由に挙げ、インフレ率は2027年半ばに約5%へ上昇後、2%目標へ低下すると見通し。次回決定は12/17。"
+  },
+  {
+   "id": "EV-20261105-TOYOTA",
+   "date": "2026-11-05",
+   "status": "確定",
+   "category": "主要企業決算",
+   "title": "トヨタ自動車 2027年3月期 第2四半期(中間)決算発表",
+   "related_prediction_ids": [
+    "P-E266"
+   ],
+   "note": "出典：トヨタ公式IRカレンダーおよび複数株価サイト(WebSearch)。 ／経済部2026-10-30 JST取得。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch(SBBiT・BSR Journal、2026-11-05付)。",
+   "actual": "トヨタの2027年3月期上期(4〜9月)は営業収益26兆9,624億円(前年同期比+9.5%)、営業利益2兆1,911億円(同+9.2%)。通期営業利益予想を3兆4,000億円から3兆9,000億円へ上方修正。想定為替は1ドル159円。"
+  },
+  {
+   "id": "EV-20261106-USJOBS",
+   "date": "2026-11-06",
+   "status": "確定",
+   "category": "米雇用統計",
+   "title": "米雇用統計(2026年10月分)発表(BLS、8:30ET)",
+   "related_prediction_ids": [
+    "P-E268"
+   ],
+   "note": "出典：BLS Employment Situation Summary(bls.gov/news.release/empsit.nr0.htm)に『次回10月分は2026年11月6日』と明記(経済部2026-10-03取得)。2週間の範囲外だが次の大型イベントとして記録。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch(BLS 2026-11-06公表資料・investinglive)。",
+   "actual": "米雇用統計(10月)は非農業部門雇用者数+16.5万人(市場予想+6.5万人を大幅に上回る)、失業率4.1%(前月4.2%)。8・9月分は計+8.4万人上方修正。平均時給は前年比+3.1%。"
+  },
+  {
+   "id": "EV-20261106-JPWAGE",
+   "date": "2026-11-06",
+   "status": "結果未確認",
+   "category": "日本経済指標",
+   "title": "毎月勤労統計(9月分)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(株探 2026-10-30付、経済部2026-10-31 JST)。厚労省公式は未確認。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch では結果未取得(取得不可)。",
+   "actual": "—"
+  },
+  {
+   "id": "EV-20261110-USCPI",
+   "date": "2026-11-10",
+   "status": "確定",
+   "category": "米CPI・PCE",
+   "title": "米CPI(2026年10月分)発表(8:30ET＝日本時間21:30)",
+   "related_prediction_ids": [],
+   "note": "出典：SimianX(2026-10-15更新)をWebSearchで確認(経済部2026-10-28 JST)。BLS公式カレンダーは未確認。 ／経済部2026-10-29 JST：WebSearchで複数の第三者カレンダー(thriveinmarkets・fedratecalc等)が2026-11-10 8:30ETで一致。BLS公式ページ本体は未開封で、status据え置き。 ／経済部2026-11-11 JST(実績反映)：出典：BBC『US inflation higher than expected in October』(2026-11-10 JST取得、RSS経由)。",
+   "actual": "米CPI(10月)は前月比+0.4%(9月は+0.6%、市場予想+0.3%を上回る)。住宅・食品・エネルギーが押し上げ、エネルギーは+0.7%(9月+5.2%)。今月は前年比の数値は公表されず。12月FOMCでの利上げ観測が強まり得るとの見方(BBC)。コア指数は未確認。"
+  },
+  {
+   "id": "EV-20261110-BOJOPINIONS",
+   "date": "2026-11-10",
+   "status": "結果未確認",
+   "category": "日銀会合",
+   "title": "日銀 10/29〜30日会合の「主な意見」公表(8:50)",
+   "related_prediction_ids": [
+    "P-E261"
+   ],
+   "note": "出典：WebSearch(日銀の公表予定を整理した第三者ページ、経済部2026-10-31 JST)。議事要旨は12/23予定。 ／経済部2026-11-11 JST(実績反映)：出典：WebSearch では2026年10月会合分の『主な意見』の内容を確認できず(取得不可)。",
+   "actual": "—"
+  },
+  {
+   "id": "EV-20261110-SBG",
+   "date": "2026-11-10",
+   "status": "確定",
+   "category": "主要企業決算",
+   "title": "ソフトバンクグループ 2027年3月期第2四半期決算(決算短信15:30、説明会16:30)",
+   "related_prediction_ids": [
+    "P-E267"
+   ],
+   "note": "出典：ソフトバンクグループ公式(group.softbank/news/info/20261002、WebSearch経由、経済部2026-10-31 JST)。 ／経済部2026-11-11 JST(実績反映)：出典：時事通信(Yahoo!ニュース経由、2026-11-10配信、経済部2026-11-11 JST取得)。",
+   "actual": "ソフトバンクグループの9月中間連結決算は純損益7,680億円の赤字(前年同期は2兆9,240億円の黒字)、中間期の赤字は3年ぶり。米AIデータセンター事業の発電設備調達計画見直しで5,972億円の損失。投資利益は1兆7,257億円。"
   },
   {
    "id": "EV-20261105-001",
    "date": "2026-11-05",
    "category": "金融政策",
    "title": "英中銀（BOE）金融政策委員会の政策金利発表（現行3.75%、利上げの可能性も取り沙汰）",
-   "note": "WebSearch（financecalendar.com、cambridgecurrencies.com等の二次情報） ／経済部2026-11-03 JST取得(二次情報、公式未確認)。",
-   "status": "予定",
-   "related_prediction_ids": []
+   "note": "WebSearch（financecalendar.com、cambridgecurrencies.com等の二次情報） ／経済部2026-11-03 JST取得(二次情報、公式未確認)。 ／経済部2026-11-11 JST(実績反映)：出典：同上。重複登録のため参照用。",
+   "status": "確定",
+   "related_prediction_ids": [
+    "P-E259"
+   ],
+   "actual": "EV-20261105-BOE と同一イベント(重複)。政策金利は4.00%へ引き上げ(賛成8・反対1)。"
   },
-  {
-   "id": "EV-20261118-001",
-   "date": "2026-11-18",
-   "category": "金融政策",
-   "title": "FOMC議事要旨（10/27-28会合分、米東部時間14:00）",
-   "note": "WebSearch（federalreserve.gov 2026年11月カレンダー）。11月のFOMC会合は無し、次回は12/8-9または12/9決定 ／経済部2026-11-03 JST取得(二次情報、公式未確認)。",
-   "status": "予定",
-   "related_prediction_ids": []
-  }
- ],
- "archived": [
   {
    "id": "EV-20261021-IBM",
    "date": "2026-10-21",

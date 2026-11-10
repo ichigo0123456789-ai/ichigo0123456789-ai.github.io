@@ -1916,5 +1916,49 @@
    "changePct": -1.86,
    "src": "Yahoo!ファイナンス as of 2026-11-02 東証大引け"
   }
+ },
+ {
+  "briefDate": "2026-11-11",
+  "tradingDate": {
+   "jp": "2026-11-10",
+   "us": "2026-11-10(日中値・未確定)"
+  },
+  "note": "11/11(水)早朝。初回4:35頃JST取得、4:51頃JST(19:51UTC)に再取得して米国指標を更新。東証11/10は大引け確定。NY市場は11/10引け前(現地14時51分頃)のため、ナスダック100・S&P500・金・米10年債は日中値(未確定)。米10年債利回り4.992%(11/9引け4.864%から約+13bp上昇、Yahoo! Finance(米) ^TNX as of 2026-11-10 19:36UTC 日中値)。前日比は直近確定終値(日本=11/9、米=11/9)との差。",
+  "nikkei": {
+   "value": 60459.58,
+   "change": 1684.08,
+   "changePct": 2.87,
+   "src": "Yahoo!ファイナンス as of 2026-11-10 東証大引け（Yahoo! Finance(米)チャートAPIと一致）"
+  },
+  "nasdaq100": {
+   "value": 27674.98,
+   "change": -232.65,
+   "changePct": -0.83,
+   "src": "Yahoo! Finance(米) as of 2026-11-10 19:51UTC NY日中(未確定)"
+  },
+  "sp500": {
+   "value": 7516.37,
+   "change": -33.57,
+   "changePct": -0.44,
+   "src": "Yahoo! Finance(米) as of 2026-11-10 19:51UTC NY日中(未確定)"
+  },
+  "usdjpy": {
+   "value": 158.77,
+   "change": 0.48,
+   "changePct": 0.3,
+   "src": "Yahoo! Finance(米) as of 2026-11-10 19:51UTC 参考値"
+  },
+  "gold": {
+   "value": 4035.8,
+   "change": -78.7,
+   "changePct": -1.91,
+   "src": "Yahoo! Finance(米) COMEX先物 as of 2026-11-10 19:41UTC 日中(未確定)"
+  },
+  "mufg8306": {
+   "value": 3435,
+   "change": 69,
+   "changePct": 2.05,
+   "src": "Yahoo!ファイナンス as of 2026-11-10 東証大引け"
+  }
  }
 ]
