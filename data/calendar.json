@@ -17,15 +17,6 @@
  ],
  "upcoming": [
   {
-   "id": "EV-20261111-DIS",
-   "date": "2026-11-11",
-   "status": "予定（第三者カレンダー、会社IR未確認）",
-   "category": "主要企業決算",
-   "title": "ウォルト・ディズニー 2026年度第4四半期・通期決算発表(米国時間11/11 16:05ET予定)",
-   "related_prediction_ids": [],
-   "note": "出典：第三者カレンダー(未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。"
-  },
-  {
    "id": "EV-20261112-CSCO",
    "date": "2026-11-12",
    "status": "予定（会社公式発表）",
@@ -33,6 +24,33 @@
    "title": "シスコシステムズ 2027年度第1四半期決算発表(米国時間11/12引け後、電話会議13:30PT＝日本時間11/13 6:30)",
    "related_prediction_ids": [],
    "note": "出典：financecalendar.com等(日付はpublisher側で未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-11 JST：Cisco公式IR『Cisco Schedules Conference Call for Q1 Fiscal Year 2027 Financial Results』で11/12(木)と確認し日付を訂正。会社見通しは売上高180〜182億ドル。"
+  },
+  {
+   "id": "EV-20261112-JPCGPI",
+   "date": "2026-11-12",
+   "status": "予定（確定）",
+   "category": "日本経済指標",
+   "title": "日銀 企業物価指数(2026年10月分)公表(8:50)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。直近9月分は国内企業物価が前年比+6.8%(共同通信報道)。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-20261112-BOJASADA",
+   "date": "2026-11-12",
+   "status": "予定（確定）",
+   "category": "日銀会合",
+   "title": "日銀 浅田審議委員 挨拶(長崎、10:30)・記者会見(11/13、時刻未定)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。次回(12月)会合に向けた利上げ姿勢の手掛かり。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-20261112-AMAT",
+   "date": "2026-11-12",
+   "status": "予定（会社公式発表）",
+   "category": "主要企業決算",
+   "title": "アプライド・マテリアルズ 2026年度第4四半期決算発表(米国時間11/12引け後、電話会議16:30ET＝日本時間11/13 6:30)",
+   "related_prediction_ids": [],
+   "note": "出典：Applied Materials公式IR『Applied Materials to Report Fourth Quarter and Fiscal 2026 Results』。会社見通しは売上高約102.5億ドル(±5億ドル)、非GAAP1株利益約4.02ドル。 ／経済部2026-11-12 JST取得。"
   },
   {
    "id": "EV-20261113-EUGDP45",
@@ -49,8 +67,19 @@
    "status": "予定（会社公式サイト掲載）",
    "category": "主要企業決算",
    "title": "三菱UFJフィナンシャル・グループ 2026年度中間決算発表(11/13前後との情報)",
+   "related_prediction_ids": [
+    "P-E272"
+   ],
+   "note": "出典：MUFG公式IR(中間期投資家説明会は11/17 10:00ライブ配信)、株予報Pro(決算11/13)。決算短信の発表日は未確定のため date:null。TDnet/公式IRで確認要。 ／経済部2026-10-30 JST取得。 ／経済部2026-11-01 JST：MUFG公式サイトに2027年3月期中間決算発表(日本基準)は11/13(予定)と掲載、株予報Proも同日。 ／経済部2026-11-02 JST：株価情報サイトの次回発表予定欄に2026/11/13と表示。MUFG公式IR日程は未確認。 ／経済部2026-11-12 JST：WebSearch再検索では2026年11/13発表を裏付ける報道は見つからず(前年は11/14発表)。会社公式掲載(11/01確認)に基づき11/13のまま維持。"
+  },
+  {
+   "id": "EV-20261113-USPPI",
+   "date": "2026-11-13",
+   "status": "予定（確定）",
+   "category": "米経済指標",
+   "title": "米生産者物価指数(PPI、2026年10月分)発表(8:30ET＝日本時間22:30)",
    "related_prediction_ids": [],
-   "note": "出典：MUFG公式IR(中間期投資家説明会は11/17 10:00ライブ配信)、株予報Pro(決算11/13)。決算短信の発表日は未確定のため date:null。TDnet/公式IRで確認要。 ／経済部2026-10-30 JST取得。 ／経済部2026-11-01 JST：MUFG公式サイトに2027年3月期中間決算発表(日本基準)は11/13(予定)と掲載、株予報Proも同日。 ／経済部2026-11-02 JST：株価情報サイトの次回発表予定欄に2026/11/13と表示。MUFG公式IR日程は未確認。"
+   "note": "出典：米労働統計局(BLS)公式 2026年11月リリース予定一覧(bls.gov/schedule/2026/11_sched_list.htm)。 ／経済部2026-11-12 JST取得。"
   },
   {
    "id": "EV-NULL-JPGDP-Q3",
@@ -58,17 +87,28 @@
    "status": "予定（確定）",
    "category": "日本経済指標",
    "title": "日本の7〜9月期GDP1次速報(内閣府、11/16 8:50)",
-   "related_prediction_ids": [],
+   "related_prediction_ids": [
+    "P-E270"
+   ],
    "note": "経済部2026-10-29 JST：2週間の範囲に入る可能性を確認するため登録したが、今回の検索では2026年の発表日を確認できず(例年は11月中旬)。確認でき次第date記入。／経済部2026-10-31 JST(4:35)：再確認したが7〜9月期GDP速報の発表日は未確認。 ／経済部2026-11-01 JST：内閣府ESRIの公表予定で2026年7〜9月期1次速報は11/16(月)8:50、2次速報は12/8(火)8:50(financecalendar.comも同日)。 ／経済部2026-11-02 JST：WebSearchで内閣府の公表予定表に2026年7-9月期1次速報=11/16(月)8:50、2次速報=12/8(火)8:50と記載を確認(esri.cao.go.jp)。 ／経済部2026-11-11 JST：内閣府ESRI公表予定で11/16(月)8:50と確認。事前予測は大和総研が年率+1.5%、三菱UFJリサーチ&コンサルティングが年率+0.1%、ESPフォーキャスト10月調査は年率+0.08%。2次速報は12/8予定。"
+  },
+  {
+   "id": "EV-20261116-BOJTAKATA",
+   "date": "2026-11-16",
+   "status": "予定（確定）",
+   "category": "日銀会合",
+   "title": "日銀 高田審議委員 講演(徳島経済同友会、13:00)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。 ／経済部2026-11-12 JST取得。"
   },
   {
    "id": "EV-20261117-USRETAIL",
    "date": "2026-11-17",
-   "status": "予定（第三者カレンダー）",
+   "status": "予定（確定）",
    "category": "米経済指標",
    "title": "米小売売上高(2026年10月分)発表(8:30ET＝日本時間22:30)",
    "related_prediction_ids": [],
-   "note": "出典：WebSearch(fedratecalc.com『November 2026 release schedule』・smartcalendars.ai、経済部2026-11-11 JST取得)。米商務省公式は未確認。"
+   "note": "出典：WebSearch(fedratecalc.com『November 2026 release schedule』・smartcalendars.ai、経済部2026-11-11 JST取得)。米商務省公式は未確認。 ／経済部2026-11-12 JST：米国勢調査局(Census)公式 2026年経済指標カレンダーで11/17 8:30ET(10月分)と確認。"
   },
   {
    "id": "EV-20261117-NVDA",
@@ -76,17 +116,46 @@
    "status": "予定（会社公式発表）",
    "category": "主要企業決算",
    "title": "エヌビディア 2027年度第3四半期決算発表(米国時間11/17引け後、電話会議14:00PT＝日本時間11/18 7:00)",
-   "related_prediction_ids": [],
+   "related_prediction_ids": [
+    "P-E271"
+   ],
    "note": "出典：NVIDIA公式IR『NVIDIA Sets Conference Call for Third-Quarter Financial Results』(2026-10-28付、10/25終了四半期)、経済部2026-11-11 JST WebSearchで確認。CFOコメントは13:20PT頃掲載予定。"
+  },
+  {
+   "id": "EV-20261117-DIS",
+   "date": "2026-11-17",
+   "status": "予定（会社告知を伝える二次情報）",
+   "category": "主要企業決算",
+   "title": "ウォルト・ディズニー 2026年度第4四半期・通期決算発表(米国時間11/17寄り前、ウェブキャスト8:30ET＝日本時間22:30)",
+   "related_prediction_ids": [],
+   "note": "出典：blogmickey.com(2026-10-12付、同社の告知として報道)、earningswhispers.comも11/17。会社IR原文は未確認。旧EV-20261111-DIS(11/11、誤り)を置換。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-20261117-HD",
+   "date": "2026-11-17",
+   "status": "予定（第三者カレンダー）",
+   "category": "主要企業決算",
+   "title": "ホーム・デポ 2026年度第3四半期決算発表(米国時間11/17寄り前)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(therighttrader.com等が会社確認済みと表示)。会社IR原文は未確認。米個人消費・住宅関連の手掛かり。 ／経済部2026-11-12 JST取得。"
   },
   {
    "id": "EV-20261118-001",
    "date": "2026-11-18",
    "category": "金融政策",
    "title": "FOMC議事要旨（10/27-28会合分、米東部時間14:00）",
-   "note": "WebSearch（federalreserve.gov 2026年11月カレンダー）。11月のFOMC会合は無し、次回は12/8-9または12/9決定 ／経済部2026-11-03 JST取得(二次情報、公式未確認)。 ／経済部2026-11-11 JST：第三者カレンダー(smartcalendars.ai)でも11/18 14:00ETと表示(FRB公式は未確認)。",
-   "status": "予定",
+   "note": "WebSearch（federalreserve.gov 2026年11月カレンダー）。11月のFOMC会合は無し、次回は12/8-9または12/9決定 ／経済部2026-11-03 JST取得(二次情報、公式未確認)。 ／経済部2026-11-11 JST：第三者カレンダー(smartcalendars.ai)でも11/18 14:00ETと表示(FRB公式は未確認)。 ／経済部2026-11-12 JST：FRB公式 2026年11月カレンダー(federalreserve.gov/newsevents/2026-november.htm)で11/18 14:00ET(10/27-28会合分)と確認(日本時間11/19 4:00)。",
+   "status": "予定（確定）",
    "related_prediction_ids": []
+  },
+  {
+   "id": "EV-20261118-APEC",
+   "date": "2026-11-18",
+   "status": "予定（確定）",
+   "category": "政治・地政学日程",
+   "title": "APEC首脳会議(中国・深圳、11/18〜19。CEOサミット11/17〜18、閣僚級会合11/14〜15)",
+   "related_prediction_ids": [],
+   "note": "出典：深圳市政府公式サイト(lg.gov.cn「33rd APEC Economic Leaders’ Meeting to occur in Shenzhen (11.18-19, 2026)」)・CGTN。米中・日中首脳の接触や通商合意の有無が焦点。 ／経済部2026-11-12 JST取得。"
   },
   {
    "id": "EV-NULL-ANTHROPIC-IPO",
@@ -101,6 +170,15 @@
    "note": "検証部2026-10-28(教訓L166)：10/26にS-1を公開提出、日程の一次確認は未了のため date:null。出典:Yahoo Finance live・Bloomberg報道(二次)。 ／経済部2026-11-02 JST：10/26にS-1(目論見書)公開、ティッカーANT・Nasdaq上場。上場日・価格帯は未確定。報道(Bloomberg引用のXTB等)では11/9週にロードショー開始の可能性、感謝祭(11/26)前の上場を目標、米中間選挙(11/3)後にずれ込む可能性も。確定情報ではないため要調査のまま。 ／経済部2026-11-11 JST：BBC(2026-11-10付)が、銘柄コード「ANT」で11/19にナスダック上場予定、価格帯1株70〜78ドル、調達額最大640億ドル、想定時価総額1.1兆〜1.3兆ドルと報道。会社公式の最終確認は未了。"
   },
   {
+   "id": "EV-20261119-WMT",
+   "date": "2026-11-19",
+   "status": "予定（第三者カレンダー）",
+   "category": "主要企業決算",
+   "title": "ウォルマート 2027年度第3四半期決算発表(米国時間11/19寄り前、電話会議8:00ET＝日本時間22:00)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(days.to・TipRanksは確定と表示、financecalendar.comは会社未確認と注記)。会社見通しは1株利益0.62〜0.64ドル。 ／経済部2026-11-12 JST取得。"
+  },
+  {
    "id": "EV-20261120-JPCPI",
    "date": "2026-11-20",
    "status": "予定（第三者情報）",
@@ -108,6 +186,33 @@
    "title": "全国消費者物価指数(2026年10月分)発表(総務省、8:30)",
    "related_prediction_ids": [],
    "note": "出典：WebSearch(e-Stat公表予定一覧に2026-11-20 08:30の項目、経済部2026-11-11 JST取得)。10月分であることの一次確認は未了。"
+  },
+  {
+   "id": "EV-20261125-USPCE",
+   "date": "2026-11-25",
+   "status": "予定（確定）",
+   "category": "米経済指標",
+   "title": "米個人所得・支出(PCE物価、2026年10月分)と7〜9月期GDP改定値の同時発表(8:30ET＝日本時間22:30)",
+   "related_prediction_ids": [],
+   "note": "出典：米経済分析局(BEA)公式リリース予定(bea.gov/news/schedule)。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-20261125-BEIGE",
+   "date": "2026-11-25",
+   "status": "予定（確定）",
+   "category": "金融政策",
+   "title": "米地区連銀経済報告(ベージュブック)公表(14:00ET＝日本時間11/26 4:00)",
+   "related_prediction_ids": [],
+   "note": "出典：FRB公式 2026年11月カレンダー。12月FOMC(12/8-9)前の景気判断材料。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-20261126-USHOLIDAY",
+   "date": "2026-11-26",
+   "status": "予定（確定）",
+   "category": "政治・地政学日程",
+   "title": "米感謝祭(米国市場休場、翌11/27は短縮取引が慣例)",
+   "related_prediction_ids": [],
+   "note": "出典：FRB公式 2026年11月カレンダー(連邦祝日と明記)。短縮取引は慣例で本runでは取引所告知未確認。 ／経済部2026-11-12 JST取得。"
   },
   {
    "id": "EV-NULL-BUDGETCOMM",
@@ -144,6 +249,24 @@
    "title": "アンソロピック 改訂目論見書(価格帯・株数)公表とロードショー開始",
    "related_prediction_ids": [],
    "note": "出典：WebSearch(XTB 10/26付ほか報道、経済部2026-11-02 JST)。11/9週開始の可能性との報道のみで日付未確認。 ／経済部2026-11-11 JST：BBC(2026-11-10付)が価格帯1株70〜78ドル・調達最大640億ドルと報道(改訂目論見書の公表日自体は未確認)。"
+  },
+  {
+   "id": "EV-NULL-TGT",
+   "date": null,
+   "status": "要調査",
+   "category": "主要企業決算",
+   "title": "ターゲット 2026年度第3四半期決算発表日",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(therighttrader.comは11/18と予測表示するが会社未確認と注記)。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-NULL-JPTRADE-OCT",
+   "date": null,
+   "status": "要調査",
+   "category": "日本経済指標",
+   "title": "財務省 貿易統計(2026年10月分速報)公表日",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(e-Statの普通貿易統計公表予定に11/12・11/27の項目があるが10月分速報との対応は未確認。前年は11/21)。 ／経済部2026-11-12 JST取得。"
   }
  ],
  "archived": [
@@ -2352,6 +2475,17 @@
    "note": "出典：WebSearch(日銀の公表予定を整理した第三者ページ、経済部2026-10-31 JST)。日銀公式の日程表(boj.or.jp/mopo/mpmsche_minu/m_ref/mref260731a.pdf)に基づくとされるが本文未開封。",
    "archived_date": "2026-11-03",
    "actual": "—(本runでは結果を確認していない)"
+  },
+  {
+   "id": "EV-20261111-DIS",
+   "date": "2026-11-11",
+   "status": "予定（第三者カレンダー、会社IR未確認）",
+   "category": "主要企業決算",
+   "title": "ウォルト・ディズニー 2026年度第4四半期・通期決算発表(米国時間11/11 16:05ET予定)",
+   "related_prediction_ids": [],
+   "note": "出典：第三者カレンダー(未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-12 JST：WebSearch/WebFetch(blogmickey.com 2026-10-12付、会社告知を伝える記事。earningswhispersも11/17)で、決算は11/17(火)寄り前・ウェブキャスト8:30ET予定と判明。11/11開催は第三者カレンダーの推定で誤り。EV-20261117-DISへ移行。",
+   "archived_date": "2026-11-12",
+   "actual": "—(11/11には発表なし。発表日は11/17へ訂正しEV-20261117-DISで追跡)"
   }
  ]
 }
