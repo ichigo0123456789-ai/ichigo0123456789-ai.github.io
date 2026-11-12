@@ -3052,6 +3052,28 @@
    ],
    "status": "仮説",
    "adoption_count": 0
+  },
+  {
+   "id": "L174",
+   "date": "2026-11-13",
+   "category": "サプライズ監査・経営トップの突然の交代(エヌビディア創業CEOの辞任と決算イベント予測)",
+   "lesson": "エヌビディアの創業者ジェンセン・フアンCEOが、中国のスパイと疑われる女性との不倫報道を受けて11/12(米国時間)に辞任し、最高財務責任者のコレット・クレス氏が暫定CEOに就いた(BBC 11/12)。同社株は11/12の日中に約-6%(163.26ドル、前日173.73ドル)と下げたが、ナスダック100は-0.4%程度にとどまった(Yahoo!Finance 11/12 19:39UTC時点・未確定)。既存予測の考慮シナリオには『CEO問題の続報』『FBI捜査の報道』『個別スキャンダルでテーマ株が崩れる』『銘柄が大きく動いても指数は打ち消される』が入っており、値動きの型は内だった。一方、11/17予定の決算を受けた予測(P-E271)の考慮シナリオは『決算発表が予定どおり』を前提にしており、『経営トップ不在のまま決算を迎える(暫定体制で見通しが控えめになる・説明の信頼性が下がる・日程が動く)』という経営体制の不連続は外だった(サプライズ監査=一部外)。今後、主力銘柄の決算イベント予測では、(1)経営トップの交代・不祥事が進行中なら『発表日程の変更→保留』と『見通しの控えめ化』を1分岐として入れる、(2)個別銘柄の急落と指数の動きは分けて判定する(今回は銘柄-6%・指数-0.4%)。新規予測の乱造はしない。",
+   "regime_tags": [
+    "surprise_audit",
+    "earnings_event",
+    "governance_shock",
+    "ai_capital_markets",
+    "金利上昇"
+   ],
+   "evidence": [
+    "BBC『Who is Nvidia's interim CEO Colette Kress - and who could take over permanently?』2026-11-12 https://www.bbc.co.uk/news/articles/cqgm37dv20e8o",
+    "Motley Fool『Stock Market Midday, Nov. 12: Nvidia CEO Resigns, AMD Surges as Wall Street Edges Higher』2026-11-12 https://fool.com/coverage/stock-market-today/2026/11/12/stock-market-midday-nov-12-nvidia-ceo-resigns-amd-surges-as-wall-street-edges-higher",
+    "Yahoo!Finance chart API 取得2026-11-13 04:4x JST:NVDA 11/11=173.73→11/12=163.26ドル(日中・未確定)、^NDX 11/11=28,374.25→11/12=28,261.10(日中・未確定)",
+    "関連open予測:P-E271(エヌビディア決算→ナスダック100、horizon 11/19)、P-E273(考慮シナリオに『CEO問題の続報』あり=内)、P-T40(『AI関連個別スキャンダル』あり=内)",
+    "同日の他の重大事象(いずれも内):米10年債利回り5.1%台(^TNX 5.105、11/12 19:24UTC)=P-E272/P-U51/P-U52に『5%突破・定着』の分岐あり、金先物-2.9%(GC=F 3,883.6ドル)=P-T53の『金利上昇主導・金安・ドル高』型、ドル円159.86円=P-E274に『160円』の分岐あり"
+   ],
+   "status": "仮説",
+   "adoption_count": 0
   }
  ]
 }

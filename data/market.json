@@ -2004,5 +2004,49 @@
    "changePct": 1.95,
    "src": "Yahoo!ファイナンス as of 2026-11-11 東証大引け"
   }
+ },
+ {
+  "briefDate": "2026-11-13",
+  "tradingDate": {
+   "jp": "2026-11-12",
+   "us": "2026-11-12(日中値・未確定)"
+  },
+  "note": "11/13(金)早朝4:35頃JST取得、進行3.5(4:39〜4:50JST)で米国3指標・ドル円・金を再取得し更新(変化±0.1%程度、急変なし)。東証11/12は大引け確定。NY市場は11/12引け前のため日中値(未確定)。米10年債5.105%(前日引け4.998%から+10.7bp、Yahoo! Finance ^TNX 日中値)。WTI原油88.58ドル(+2.37%、日中値)。日経225先物(CME円建て)61,315円。ドル円の前日比は11/11 NY17時時点159.78円基準。",
+  "nikkei": {
+   "value": 60819.36,
+   "change": -429.23,
+   "changePct": -0.7,
+   "src": "Yahoo!ファイナンス as of 2026-11-12 東証大引け（Yahoo! Finance(米)チャートAPI・株探一致）"
+  },
+  "nasdaq100": {
+   "value": 28270.11,
+   "change": -104.14,
+   "changePct": -0.37,
+   "src": "Yahoo! Finance(米) as of 2026-11-13 4:49 JST NY日中(未確定)・進行3.5再取得"
+  },
+  "sp500": {
+   "value": 7598.32,
+   "change": -21.06,
+   "changePct": -0.28,
+   "src": "Yahoo! Finance(米) as of 2026-11-13 4:49 JST NY日中(未確定)・進行3.5再取得"
+  },
+  "usdjpy": {
+   "value": 159.84,
+   "change": 0.06,
+   "changePct": 0.04,
+   "src": "Yahoo! Finance(米) as of 2026-11-13 4:50 JST 参考値・進行3.5再取得"
+  },
+  "gold": {
+   "value": 3886.4,
+   "change": -114.1,
+   "changePct": -2.85,
+   "src": "Yahoo! Finance(米) COMEX先物 as of 2026-11-13 4:39 JST 日中(未確定)・進行3.5再取得"
+  },
+  "mufg8306": {
+   "value": 3498,
+   "change": -4,
+   "changePct": -0.11,
+   "src": "Yahoo!ファイナンス as of 2026-11-12 東証大引け（株探一致）"
+  }
  }
 ]

@@ -4,7 +4,14 @@
  "maintenance": {
   "owner": "経済部（進行1）",
   "rule": "毎runで(1)期日を過ぎたイベントをarchivedへ移し実際の結果(actual)を記録、(2)今後2週間の新規イベントをWebSearchで実取得し追加。日付・内容は実取得したもののみ。未確認は date:null / status:'要調査' とし、確定次第埋める。捏造禁止。",
-  "linkage": "各イベントに関連する予測ID(related_prediction_ids)を紐づけ、検証部が『イベント→初期反応』の答え合わせに使う。"
+  "linkage": "各イベントに関連する予測ID(related_prediction_ids)を紐づけ、検証部が『イベント→初期反応』の答え合わせに使う。",
+  "log": [
+   {
+    "date": "2026-11-13",
+    "by": "経済部（進行1）",
+    "summary": "archived移動4件(EV-20261112-CSCO, EV-20261112-JPCGPI, EV-20261112-BOJASADA, EV-20261112-AMAT)：企業物価10月＝前年比7.1%・浅田委員会見の結果を記録、シスコ/AMAT決算は本run時点で未発表のため未確認。新規追加：田村委員挨拶11/26、植田総裁挨拶11/30。更新：貿易統計10月分を11/18（税関予定表）、ターゲット決算を11/19（第三者カレンダー）に日付補完。"
+   }
+  ]
  },
  "watch_categories": [
   "日銀金融政策決定会合（政策金利・展望レポート・総裁会見）",
@@ -16,42 +23,6 @@
   "政治・地政学日程（選挙・首脳会談・重要法案・G7/G20・中東東アジア情勢）"
  ],
  "upcoming": [
-  {
-   "id": "EV-20261112-CSCO",
-   "date": "2026-11-12",
-   "status": "予定（会社公式発表）",
-   "category": "主要企業決算",
-   "title": "シスコシステムズ 2027年度第1四半期決算発表(米国時間11/12引け後、電話会議13:30PT＝日本時間11/13 6:30)",
-   "related_prediction_ids": [],
-   "note": "出典：financecalendar.com等(日付はpublisher側で未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-11 JST：Cisco公式IR『Cisco Schedules Conference Call for Q1 Fiscal Year 2027 Financial Results』で11/12(木)と確認し日付を訂正。会社見通しは売上高180〜182億ドル。"
-  },
-  {
-   "id": "EV-20261112-JPCGPI",
-   "date": "2026-11-12",
-   "status": "予定（確定）",
-   "category": "日本経済指標",
-   "title": "日銀 企業物価指数(2026年10月分)公表(8:50)",
-   "related_prediction_ids": [],
-   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。直近9月分は国内企業物価が前年比+6.8%(共同通信報道)。 ／経済部2026-11-12 JST取得。"
-  },
-  {
-   "id": "EV-20261112-BOJASADA",
-   "date": "2026-11-12",
-   "status": "予定（確定）",
-   "category": "日銀会合",
-   "title": "日銀 浅田審議委員 挨拶(長崎、10:30)・記者会見(11/13、時刻未定)",
-   "related_prediction_ids": [],
-   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。次回(12月)会合に向けた利上げ姿勢の手掛かり。 ／経済部2026-11-12 JST取得。"
-  },
-  {
-   "id": "EV-20261112-AMAT",
-   "date": "2026-11-12",
-   "status": "予定（会社公式発表）",
-   "category": "主要企業決算",
-   "title": "アプライド・マテリアルズ 2026年度第4四半期決算発表(米国時間11/12引け後、電話会議16:30ET＝日本時間11/13 6:30)",
-   "related_prediction_ids": [],
-   "note": "出典：Applied Materials公式IR『Applied Materials to Report Fourth Quarter and Fiscal 2026 Results』。会社見通しは売上高約102.5億ドル(±5億ドル)、非GAAP1株利益約4.02ドル。 ／経済部2026-11-12 JST取得。"
-  },
   {
    "id": "EV-20261113-EUGDP45",
    "date": "2026-11-13",
@@ -119,7 +90,7 @@
    "related_prediction_ids": [
     "P-E271"
    ],
-   "note": "出典：NVIDIA公式IR『NVIDIA Sets Conference Call for Third-Quarter Financial Results』(2026-10-28付、10/25終了四半期)、経済部2026-11-11 JST WebSearchで確認。CFOコメントは13:20PT頃掲載予定。"
+   "note": "出典：NVIDIA公式IR『NVIDIA Sets Conference Call for Third-Quarter Financial Results』(2026-10-28付、10/25終了四半期)、経済部2026-11-11 JST WebSearchで確認。CFOコメントは13:20PT頃掲載予定。 ／経済部2026-11-13 JST：11/12にジェンスン・フアンCEOが辞任し、コレット・クレスCFOが暫定CEOに就任と発表（TBS NEWS DIG via Yahoo!ニュース）。株価は12日のNY市場で一時約14％安（共同通信）。決算日程の変更は本runで未確認。"
   },
   {
    "id": "EV-20261117-DIS",
@@ -158,6 +129,15 @@
    "note": "出典：深圳市政府公式サイト(lg.gov.cn「33rd APEC Economic Leaders’ Meeting to occur in Shenzhen (11.18-19, 2026)」)・CGTN。米中・日中首脳の接触や通商合意の有無が焦点。 ／経済部2026-11-12 JST取得。"
   },
   {
+   "id": "EV-NULL-JPTRADE-OCT",
+   "date": "2026-11-18",
+   "status": "予定（税関公表予定表、変更可能性あり）",
+   "category": "日本経済指標",
+   "title": "財務省 貿易統計(2026年10月分速報)公表(11/18)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(e-Statの普通貿易統計公表予定に11/12・11/27の項目があるが10月分速報との対応は未確認。前年は11/21)。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-13 JST：WebSearchで名古屋税関の公表予定表(customs.go.jp、2026年版)に「10月分 11月18日(水)」と記載（「今後変更される可能性あり」と注記）。財務省本体の予定表は本runで未開封。"
+  },
+  {
    "id": "EV-NULL-ANTHROPIC-IPO",
    "date": "2026-11-19",
    "status": "予定（報道）",
@@ -177,6 +157,15 @@
    "title": "ウォルマート 2027年度第3四半期決算発表(米国時間11/19寄り前、電話会議8:00ET＝日本時間22:00)",
    "related_prediction_ids": [],
    "note": "出典：WebSearch(days.to・TipRanksは確定と表示、financecalendar.comは会社未確認と注記)。会社見通しは1株利益0.62〜0.64ドル。 ／経済部2026-11-12 JST取得。"
+  },
+  {
+   "id": "EV-NULL-TGT",
+   "date": "2026-11-19",
+   "status": "予定（第三者カレンダー、会社IR未確認）",
+   "category": "主要企業決算",
+   "title": "ターゲット 2026年度第3四半期決算発表(米国時間11/19寄り前の見込み)",
+   "related_prediction_ids": [],
+   "note": "出典：WebSearch(therighttrader.comは11/18と予測表示するが会社未確認と注記)。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-13 JST：WebSearch(earningswhispers等の決算カレンダー)で11/19寄り前(6:30ET推定)と表示。会社公式の日程発表は未確認。"
   },
   {
    "id": "EV-20261120-JPCPI",
@@ -215,6 +204,24 @@
    "note": "出典：FRB公式 2026年11月カレンダー(連邦祝日と明記)。短縮取引は慣例で本runでは取引所告知未確認。 ／経済部2026-11-12 JST取得。"
   },
   {
+   "id": "EV-20261126-BOJTAMURA",
+   "date": "2026-11-26",
+   "status": "予定（確定）",
+   "category": "日銀会合",
+   "title": "日銀 田村審議委員 挨拶(山梨県金融経済懇談会)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀『講演・記者会見・談話』ページの『今後の講演・挨拶等の予定』(boj.or.jp/about/press/、経済部2026-11-13 JSTにcurlで実取得)。時刻は未掲載。"
+  },
+  {
+   "id": "EV-20261130-BOJUEDA",
+   "date": "2026-11-30",
+   "status": "予定（確定）",
+   "category": "日銀会合",
+   "title": "日銀 植田総裁 挨拶(名古屋での経済界代表者との懇談)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀『講演・記者会見・談話』ページの『今後の講演・挨拶等の予定』(経済部2026-11-13 JSTにcurlで実取得)。2週間枠(〜11/27)をわずかに超えるが12月会合前の重要発言機会として先行登録。時刻は未掲載。"
+  },
+  {
    "id": "EV-NULL-BUDGETCOMM",
    "date": null,
    "status": "要調査",
@@ -249,24 +256,6 @@
    "title": "アンソロピック 改訂目論見書(価格帯・株数)公表とロードショー開始",
    "related_prediction_ids": [],
    "note": "出典：WebSearch(XTB 10/26付ほか報道、経済部2026-11-02 JST)。11/9週開始の可能性との報道のみで日付未確認。 ／経済部2026-11-11 JST：BBC(2026-11-10付)が価格帯1株70〜78ドル・調達最大640億ドルと報道(改訂目論見書の公表日自体は未確認)。"
-  },
-  {
-   "id": "EV-NULL-TGT",
-   "date": null,
-   "status": "要調査",
-   "category": "主要企業決算",
-   "title": "ターゲット 2026年度第3四半期決算発表日",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(therighttrader.comは11/18と予測表示するが会社未確認と注記)。 ／経済部2026-11-12 JST取得。"
-  },
-  {
-   "id": "EV-NULL-JPTRADE-OCT",
-   "date": null,
-   "status": "要調査",
-   "category": "日本経済指標",
-   "title": "財務省 貿易統計(2026年10月分速報)公表日",
-   "related_prediction_ids": [],
-   "note": "出典：WebSearch(e-Statの普通貿易統計公表予定に11/12・11/27の項目があるが10月分速報との対応は未確認。前年は11/21)。 ／経済部2026-11-12 JST取得。"
   }
  ],
  "archived": [
@@ -2486,6 +2475,50 @@
    "note": "出典：第三者カレンダー(未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-12 JST：WebSearch/WebFetch(blogmickey.com 2026-10-12付、会社告知を伝える記事。earningswhispersも11/17)で、決算は11/17(火)寄り前・ウェブキャスト8:30ET予定と判明。11/11開催は第三者カレンダーの推定で誤り。EV-20261117-DISへ移行。",
    "archived_date": "2026-11-12",
    "actual": "—(11/11には発表なし。発表日は11/17へ訂正しEV-20261117-DISで追跡)"
+  },
+  {
+   "id": "EV-20261112-CSCO",
+   "date": "2026-11-12",
+   "status": "予定（会社公式発表）",
+   "category": "主要企業決算",
+   "title": "シスコシステムズ 2027年度第1四半期決算発表(米国時間11/12引け後、電話会議13:30PT＝日本時間11/13 6:30)",
+   "related_prediction_ids": [],
+   "note": "出典：financecalendar.com等(日付はpublisher側で未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-11 JST：Cisco公式IR『Cisco Schedules Conference Call for Q1 Fiscal Year 2027 Financial Results』で11/12(木)と確認し日付を訂正。会社見通しは売上高180〜182億ドル。 ／経済部2026-11-13 JST：archivedへ移動。",
+   "archived_date": "2026-11-13",
+   "actual": "—（未確認）：発表は米国時間11/12引け後（日本時間11/13 6:30電話会議）で、本run時点（11/13 04:35 JST）では未発表。次runで結果を確認のこと。"
+  },
+  {
+   "id": "EV-20261112-JPCGPI",
+   "date": "2026-11-12",
+   "status": "予定（確定）",
+   "category": "日本経済指標",
+   "title": "日銀 企業物価指数(2026年10月分)公表(8:50)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。直近9月分は国内企業物価が前年比+6.8%(共同通信報道)。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-13 JST：archivedへ移動。",
+   "archived_date": "2026-11-13",
+   "actual": "国内企業物価指数（2020年平均＝100、速報）は前年同月比7.1％上昇の136.8。9月（6.8％）から伸び率拡大し2カ月ぶり7％台。品目別は非鉄金属＋31.7％、石油・石炭製品＋15.9％、情報通信機器＋15.9％、農林水産物－25.0％。（出典：共同通信 via Yahoo!ニュース 2026-11-12 09:34 JST）"
+  },
+  {
+   "id": "EV-20261112-BOJASADA",
+   "date": "2026-11-12",
+   "status": "予定（確定）",
+   "category": "日銀会合",
+   "title": "日銀 浅田審議委員 挨拶(長崎、10:30)・記者会見(11/13、時刻未定)",
+   "related_prediction_ids": [],
+   "note": "出典：日銀公表予定表(boj.or.jp/announcements/calendar)。次回(12月)会合に向けた利上げ姿勢の手掛かり。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-13 JST：archivedへ移動。",
+   "archived_date": "2026-11-13",
+   "actual": "11/12に長崎で挨拶・記者会見（会見は11/13ではなく12日午後に実施）。「これ以上利上げするには、ペース、スピードについて慎重な判断が必要」としつつ「利上げを一切認めないというスタンスではない」と発言。中立金利は政策金利より「若干高い可能性がかなりある」、現時点で利下げ提案の意図はないとも。市場では想定内のハト派との受け止め。（出典：時事通信 2026-11-12 18:16 JST／ロイター 同15:54 JST、いずれも Yahoo!ニュース経由）"
+  },
+  {
+   "id": "EV-20261112-AMAT",
+   "date": "2026-11-12",
+   "status": "予定（会社公式発表）",
+   "category": "主要企業決算",
+   "title": "アプライド・マテリアルズ 2026年度第4四半期決算発表(米国時間11/12引け後、電話会議16:30ET＝日本時間11/13 6:30)",
+   "related_prediction_ids": [],
+   "note": "出典：Applied Materials公式IR『Applied Materials to Report Fourth Quarter and Fiscal 2026 Results』。会社見通しは売上高約102.5億ドル(±5億ドル)、非GAAP1株利益約4.02ドル。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-13 JST：archivedへ移動。",
+   "archived_date": "2026-11-13",
+   "actual": "—（未確認）：発表は米国時間11/12引け後（日本時間11/13 6:30電話会議）で、本run時点（11/13 04:35 JST）では未発表。次runで結果を確認のこと。"
   }
  ]
 }
