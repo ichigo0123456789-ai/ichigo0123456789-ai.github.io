@@ -10,6 +10,11 @@
     "date": "2026-11-13",
     "by": "経済部（進行1）",
     "summary": "archived移動4件(EV-20261112-CSCO, EV-20261112-JPCGPI, EV-20261112-BOJASADA, EV-20261112-AMAT)：企業物価10月＝前年比7.1%・浅田委員会見の結果を記録、シスコ/AMAT決算は本run時点で未発表のため未確認。新規追加：田村委員挨拶11/26、植田総裁挨拶11/30。更新：貿易統計10月分を11/18（税関予定表）、ターゲット決算を11/19（第三者カレンダー）に日付補完。"
+   },
+   {
+    "date": "2026-11-14",
+    "by": "経済部（進行1）",
+    "summary": "archived移動3件(EV-20261113-EUGDP45, EV-NULL-MUFG-H1, EV-20261113-USPPI)：ユーロ圏GDP前期比+0.4%、MUFG中間純利益約1.63兆円(+26%)・通期予想2.8兆円へ上方修正、米10月PPI前月比+0.3%/前年比+6.5%を記録。前run未確認だったシスコ・AMAT決算のactualを追記。新規追加：東京都区部CPI11月中旬速報(日付未確認のため要調査)。米雇用統計(11月分)は12/4、米CPI(11月分)は12/10予定で2週間の範囲外と確認。"
    }
   ]
  },
@@ -23,35 +28,6 @@
   "政治・地政学日程（選挙・首脳会談・重要法案・G7/G20・中東東アジア情勢）"
  ],
  "upcoming": [
-  {
-   "id": "EV-20261113-EUGDP45",
-   "date": "2026-11-13",
-   "status": "予定（確定）",
-   "category": "海外経済指標",
-   "title": "ユーロ圏GDP(t+45日 改定値)",
-   "related_prediction_ids": [],
-   "note": "出典：Eurostat 2026-10-30プレスリリース(ec.europa.eu/eurostat/web/products-euro-indicators/w/2-30102026-ap)に「13 November 2026」と明記。"
-  },
-  {
-   "id": "EV-NULL-MUFG-H1",
-   "date": "2026-11-13",
-   "status": "予定（会社公式サイト掲載）",
-   "category": "主要企業決算",
-   "title": "三菱UFJフィナンシャル・グループ 2026年度中間決算発表(11/13前後との情報)",
-   "related_prediction_ids": [
-    "P-E272"
-   ],
-   "note": "出典：MUFG公式IR(中間期投資家説明会は11/17 10:00ライブ配信)、株予報Pro(決算11/13)。決算短信の発表日は未確定のため date:null。TDnet/公式IRで確認要。 ／経済部2026-10-30 JST取得。 ／経済部2026-11-01 JST：MUFG公式サイトに2027年3月期中間決算発表(日本基準)は11/13(予定)と掲載、株予報Proも同日。 ／経済部2026-11-02 JST：株価情報サイトの次回発表予定欄に2026/11/13と表示。MUFG公式IR日程は未確認。 ／経済部2026-11-12 JST：WebSearch再検索では2026年11/13発表を裏付ける報道は見つからず(前年は11/14発表)。会社公式掲載(11/01確認)に基づき11/13のまま維持。"
-  },
-  {
-   "id": "EV-20261113-USPPI",
-   "date": "2026-11-13",
-   "status": "予定（確定）",
-   "category": "米経済指標",
-   "title": "米生産者物価指数(PPI、2026年10月分)発表(8:30ET＝日本時間22:30)",
-   "related_prediction_ids": [],
-   "note": "出典：米労働統計局(BLS)公式 2026年11月リリース予定一覧(bls.gov/schedule/2026/11_sched_list.htm)。 ／経済部2026-11-12 JST取得。"
-  },
   {
    "id": "EV-NULL-JPGDP-Q3",
    "date": "2026-11-16",
@@ -256,6 +232,15 @@
    "title": "アンソロピック 改訂目論見書(価格帯・株数)公表とロードショー開始",
    "related_prediction_ids": [],
    "note": "出典：WebSearch(XTB 10/26付ほか報道、経済部2026-11-02 JST)。11/9週開始の可能性との報道のみで日付未確認。 ／経済部2026-11-11 JST：BBC(2026-11-10付)が価格帯1株70〜78ドル・調達最大640億ドルと報道(改訂目論見書の公表日自体は未確認)。"
+  },
+  {
+   "id": "EV-NULL-JPTOKYOCPI-NOV",
+   "date": null,
+   "status": "要調査",
+   "category": "日本経済指標",
+   "title": "東京都区部消費者物価指数(2026年11月中旬速報値)発表(総務省)",
+   "related_prediction_ids": [],
+   "note": "経済部2026-11-14 JST：過去の公表パターン(11月下旬の金曜)から11/27前後の可能性があるが、総務省統計局の公表予定で日付を確認できていないため date:null。"
   }
  ],
  "archived": [
@@ -2485,7 +2470,7 @@
    "related_prediction_ids": [],
    "note": "出典：financecalendar.com等(日付はpublisher側で未確認と注記)。 ／経済部2026-11-01 JST：WebSearch取得。 ／経済部2026-11-11 JST：Cisco公式IR『Cisco Schedules Conference Call for Q1 Fiscal Year 2027 Financial Results』で11/12(木)と確認し日付を訂正。会社見通しは売上高180〜182億ドル。 ／経済部2026-11-13 JST：archivedへ移動。",
    "archived_date": "2026-11-13",
-   "actual": "—（未確認）：発表は米国時間11/12引け後（日本時間11/13 6:30電話会議）で、本run時点（11/13 04:35 JST）では未発表。次runで結果を確認のこと。"
+   "actual": "—（未確認）：発表は米国時間11/12引け後（日本時間11/13 6:30電話会議）で、本run時点（11/13 04:35 JST）では未発表。次runで結果を確認のこと。 ／経済部2026-11-14 JST追記：第1四半期(8〜10月)売上高185億ドル(会社見通し180〜182億ドル)、非GAAP1株利益1.40ドル(予想1.33ドル)。通期売上高見通しを748〜758億ドル、非GAAP1株利益5.47〜5.53ドルに上方修正。時間外の株価反応は報道により横ばい〜小幅高とまちまち、11/13の米プレマーケットは約2%安(粗利率低下を嫌気)。出典：Cisco公式ニュースルーム『Cisco Reports First Quarter Earnings』、Benzinga・Yahoo Finance(WebSearch)。"
   },
   {
    "id": "EV-20261112-JPCGPI",
@@ -2518,7 +2503,42 @@
    "related_prediction_ids": [],
    "note": "出典：Applied Materials公式IR『Applied Materials to Report Fourth Quarter and Fiscal 2026 Results』。会社見通しは売上高約102.5億ドル(±5億ドル)、非GAAP1株利益約4.02ドル。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-13 JST：archivedへ移動。",
    "archived_date": "2026-11-13",
-   "actual": "—（未確認）：発表は米国時間11/12引け後（日本時間11/13 6:30電話会議）で、本run時点（11/13 04:35 JST）では未発表。次runで結果を確認のこと。"
+   "actual": "—（未確認）：発表は米国時間11/12引け後（日本時間11/13 6:30電話会議）で、本run時点（11/13 04:35 JST）では未発表。次runで結果を確認のこと。 ／経済部2026-11-14 JST追記：第4四半期売上高104.1億ドル(前年比+53%、過去最高、会社見通し102.5億ドル±5億)、非GAAP1株利益4.16ドル(同+92%、見通し4.02ドル±0.20)、GAAP1株利益3.40ドル。通期売上高344.5億ドル(+21%)。出典：米SEC提出8-K添付プレスリリース(sec.gov/Archives/edgar/data/0000006951/000162828026073360)(WebSearch)。"
+  },
+  {
+   "id": "EV-20261113-EUGDP45",
+   "date": "2026-11-13",
+   "status": "予定（確定）",
+   "category": "海外経済指標",
+   "title": "ユーロ圏GDP(t+45日 改定値)",
+   "related_prediction_ids": [],
+   "note": "出典：Eurostat 2026-10-30プレスリリース(ec.europa.eu/eurostat/web/products-euro-indicators/w/2-30102026-ap)に「13 November 2026」と明記。 ／経済部2026-11-14 JST：archivedへ移動。",
+   "archived_date": "2026-11-14",
+   "actual": "ユーロ圏7〜9月期GDP（速報・t+45日）：前期比+0.4%（4〜6月期+0.6%）、前年比+1.3%。EU全体は前期比+0.5%・前年比+1.5%。就業者数はユーロ圏で前期比0.0%（横ばい）、前年比+0.4%。出典：Eurostat 2026-11-13公表『GDP up by 0.4% and employment stable in the euro area』(ec.europa.eu/eurostat/web/products-euro-indicators/w/2-13112026-ap)。"
+  },
+  {
+   "id": "EV-NULL-MUFG-H1",
+   "date": "2026-11-13",
+   "status": "予定（会社公式サイト掲載）",
+   "category": "主要企業決算",
+   "title": "三菱UFJフィナンシャル・グループ 2026年度中間決算発表(11/13前後との情報)",
+   "related_prediction_ids": [
+    "P-E272"
+   ],
+   "note": "出典：MUFG公式IR(中間期投資家説明会は11/17 10:00ライブ配信)、株予報Pro(決算11/13)。決算短信の発表日は未確定のため date:null。TDnet/公式IRで確認要。 ／経済部2026-10-30 JST取得。 ／経済部2026-11-01 JST：MUFG公式サイトに2027年3月期中間決算発表(日本基準)は11/13(予定)と掲載、株予報Proも同日。 ／経済部2026-11-02 JST：株価情報サイトの次回発表予定欄に2026/11/13と表示。MUFG公式IR日程は未確認。 ／経済部2026-11-12 JST：WebSearch再検索では2026年11/13発表を裏付ける報道は見つからず(前年は11/14発表)。会社公式掲載(11/01確認)に基づき11/13のまま維持。 ／経済部2026-11-14 JST：archivedへ移動。",
+   "archived_date": "2026-11-14",
+   "actual": "2027年3月期中間決算（4〜9月）：純利益約1兆6300億円で前年同期比+26%、中間期として4期連続の過去最高。通期純利益予想を2.7兆円→2.8兆円に上方修正、最大2000億円の自社株買い、年間配当予想を1株100円に引き上げ。国内金利上昇と円安が資金利益を押し上げ。出典：Grafa『MUFG first-half profit rises 26% to ¥1.63 trillion』、Investing.com『MUFG raises annual profit target, announces 200 billion yen buyback』（いずれもWebSearch/WebFetchで2026-11-14 JST確認。決算短信本体は未閲覧）。"
+  },
+  {
+   "id": "EV-20261113-USPPI",
+   "date": "2026-11-13",
+   "status": "予定（確定）",
+   "category": "米経済指標",
+   "title": "米生産者物価指数(PPI、2026年10月分)発表(8:30ET＝日本時間22:30)",
+   "related_prediction_ids": [],
+   "note": "出典：米労働統計局(BLS)公式 2026年11月リリース予定一覧(bls.gov/schedule/2026/11_sched_list.htm)。 ／経済部2026-11-12 JST取得。 ／経済部2026-11-14 JST：archivedへ移動。",
+   "archived_date": "2026-11-14",
+   "actual": "米10月PPI（最終需要）：前月比+0.3%（市場予想+0.4%をやや下回る）、9月分は+1.3%→+1.4%に上方修正。前年比+6.5%と2022年11月以来の高い伸び（9月6.3%）。財+0.5%、サービス+0.2%。出典：米労働統計局(BLS)『Producer Price Index News Release - 2026 M10 Results』(bls.gov/news.release/archives/ppi_11132026.htm)、RTTNews・ロイター配信記事（WebSearchで確認、BLS本体は自動取得拒否）。"
   }
  ]
 }
