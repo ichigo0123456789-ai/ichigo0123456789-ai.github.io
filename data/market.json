@@ -2136,5 +2136,49 @@
    "changePct": -0.66,
    "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-13 東証大引け（株探一致）"
   }
+ },
+ {
+  "briefDate": "2026-11-16",
+  "tradingDate": {
+   "jp": "2026-11-13",
+   "us": "2026-11-13(NY引け)"
+  },
+  "note": "11/16(月)早朝4:35〜4:40頃JST取得。東証は未開場・米国は週末明け前のため株価指数・8306は11/13(金)確定値(再取得で11/15付と一致、日経・8306は株探、S&P500・ナスダック100はTradingEconomicsとも一致)。ドル円のみ月曜早朝アジア時間の現在値159.57円(4:37JST)に更新し、前日比は週末NY終値159.69円基準(-0.12円/-0.08%、TradingEconomicsは159.707円-0.08%)。金先物はCME再開(8:00JST)前のため週末終値3,886.30ドル(前日終値3,885.30ドル基準+1.00/+0.03%)を据え置き。米10年債5.154%(Yahoo! Finance ^TNX 11/13引け、TradingEconomics5.15%)。日経225先物(CME円建て)週末終値61,090円。急変なし。",
+  "nikkei": {
+   "value": 61142.35,
+   "change": 322.99,
+   "changePct": 0.53,
+   "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-13 東証大引け（株探一致）"
+  },
+  "nasdaq100": {
+   "value": 27943.74,
+   "change": -345.45,
+   "changePct": -1.22,
+   "src": "Yahoo! Finance(米) as of 2026-11-13 NY引け（TradingEconomics一致）"
+  },
+  "sp500": {
+   "value": 7561.67,
+   "change": -30.73,
+   "changePct": -0.4,
+   "src": "Yahoo! Finance(米) as of 2026-11-13 NY引け（TradingEconomics一致）"
+  },
+  "usdjpy": {
+   "value": 159.57,
+   "change": -0.12,
+   "changePct": -0.08,
+   "src": "Yahoo! Finance(米) as of 2026-11-16 4:37 JST アジア時間（週末NY終値159.69円基準、株探週末159.68円・TradingEconomics159.707円）"
+  },
+  "gold": {
+   "value": 3886.3,
+   "change": 1.0,
+   "changePct": 0.03,
+   "src": "Yahoo! Finance(米) COMEX先物 as of 2026-11-13 NY週末終値（11/16取引再開前、前日終値3,885.30ドル基準）"
+  },
+  "mufg8306": {
+   "value": 3475,
+   "change": -23,
+   "changePct": -0.66,
+   "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-13 東証大引け（株探一致）"
+  }
  }
 ]
