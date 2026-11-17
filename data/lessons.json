@@ -3139,6 +3139,27 @@
    ],
    "status": "仮説",
    "adoption_count": 0
+  },
+  {
+   "id": "L178",
+   "date": "2026-11-18",
+   "category": "サプライズ監査・経営トップ問題の『正常化方向』の材料(エヌビディア前CEOの復帰意向表明)",
+   "lesson": "エヌビディアのフアン前最高経営責任者(CEO)は11/17(米国時間)、辞任後初の声明で『求められればCEOに喜んで復帰する』と表明し、議会での証言にも応じる意向を示した(トランプ大統領も復帰を支持と報道)。決算をはさむ既存予測(P-E278・P-E280・P-E283)の考慮シナリオは、教訓L174に沿って『暫定体制で見通しが控えめ』『ガバナンス・規制の開示で下落』など経営問題が悪化する向きだけを置いており、『前CEOの復帰観測という正常化の向き』はどの分岐にもなかった(サプライズ監査=外)。同株は声明後も11/17の取引時間中に約-1.7%と下げており、決算前の段階では市場の評価を変えていない。同じ日の米軍によるイラン・ケシュム島攻撃とイランのバーレーン米軍施設への攻撃は、P-E279・P-E277・P-E281の『中東の緊張激化』分岐の内側だった。今後、経営トップの不祥事・交代をはさむ予測では、悪化だけでなく『復帰・後任決定で不確実性が解消→反発』の分岐を1つ置く。新規予測の乱造はしない。",
+   "regime_tags": [
+    "surprise_audit",
+    "governance",
+    "ai_capital_markets",
+    "earnings_event",
+    "risk-off"
+   ],
+   "evidence": [
+    "CNBC『Former Nvidia CEO Jensen Huang says he’s open to returning in first statement since resignation』2026-11-17、WSJ『Jensen Huang Breaks Silence, Signals Willingness to Return as Nvidia CEO』2026-11-17、NPR『Huang says he’d be “honored” to return to Nvidia as he agrees to testify to Congress』2026-11-17、日本経済新聞『NVIDIAファン氏「CEO喜んで復帰」と声明 支持広がり受け』2026-11-17、BBC(日本語)『フアン前CEOを復帰させる動き、トランプ氏も支持』2026-11-17(Google News RSS経由で見出し確認、取得2026-11-18 04:3x JST)",
+    "Yahoo!Finance chart API NVDA 11/17 regularMarketPrice 153.555ドル(前日終値156.14ドル比-1.66%、19:37UTC=NY取引時間中の途中値)",
+    "関連open予測:P-E278・P-E280・P-E283(経営問題は悪化方向のみ=復帰の向きは外)、P-E277・P-E279・P-E281(中東の緊張激化=内)",
+    "同期間の他の重大事象:米国家安全保障局(NSA)の機密通信網の障害(11/17、CNN・Reuters・Bloomberg。サイバー攻撃の証拠はなくソフトウェア更新が原因と報道)はどの予測の分岐にもないが、判定対象の市場指標への直接の影響は確認できず。CNNの『イランがワシントンで汚い爆弾攻撃を計画』報道(11/17、イランは否定)も同様"
+   ],
+   "status": "仮説",
+   "adoption_count": 0
   }
  ]
 }
