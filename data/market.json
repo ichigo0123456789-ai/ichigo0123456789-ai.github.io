@@ -2325,5 +2325,55 @@
    "changePct": -0.76,
    "src": "Yahoo! Finance(米) ^TNX as of 2026-11-19 4:20 JST NY取引時間中（前日5.103%比-3.9bp）"
   }
+ },
+ {
+  "briefDate": "2026-11-20",
+  "tradingDate": {
+   "jp": "2026-11-19",
+   "us": "2026-11-19(NY取引時間中・引け前)"
+  },
+  "note": "11/20(金)早朝4:35JST頃取得。日経・8306は11/19(木)東証大引けの確定値(株探と一致)。米国は取得時点で11/19の取引時間中(米東部14:35、NY引けはJST6:00)のため、ナスダック100・S&P500・金先物・ドル円・米10年債は途中値。前日比は11/18確定終値比(ナスダック100はナスダック社API 26,763.87/-352.39/-1.30%(米東部14:33)、S&P500はTradingEconomics 7,228/-1.31%と整合)。ドル円は株探159.74円/+0.41円/+0.26%(4:20JST、Yahoo159.741円・TradingEconomics159.757円/+0.25%と整合)。金先物の前日終値は3,741.9ドル(TradingEconomicsスポット3,676.39ドル/-1.32%と方向一致、2025年9月以来の安値)。米10年債5.062%(Yahoo! Finance ^TNX 4:20JST、前日5.066%比-0.4bp)。VIX27.71(前日24.56)。日経は続伸もTOPIXは-1.53ポイントと反落、プライム値上がり約39%(株探)。米国はアンソロピック上場初日もAI関連の買いが続かず、S&P500・ナスダックとも1%超安(TradingEconomics)。FOMC議事要旨後の利上げ観測継続でドル高・金続落。／進行3.5（4:53 JST）で米国4指標を最新の途中値に更新",
+  "nikkei": {
+   "value": 59444.21,
+   "change": 419.93,
+   "changePct": 0.71,
+   "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-19 東証大引け（株探一致）"
+  },
+  "nasdaq100": {
+   "value": 26639.87,
+   "change": -476.39,
+   "changePct": -1.76,
+   "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-20 4:53 JST NY取引時間中・引け前（前日終値27,116.26基準）"
+  },
+  "sp500": {
+   "value": 7202.36,
+   "change": -121.27,
+   "changePct": -1.66,
+   "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-20 4:53 JST NY取引時間中・引け前（前日終値7,323.63基準）"
+  },
+  "usdjpy": {
+   "value": 159.77,
+   "change": 0.27,
+   "changePct": 0.17,
+   "src": "Yahoo! Finance(米)チャートAPI JPY=X as of 2026-11-20 4:53 JST（Yahoo日足の前日終値159.504円基準。1回目の株探基準とは前日終値の定義が異なる）"
+  },
+  "gold": {
+   "value": 3677.2,
+   "change": -64.7,
+   "changePct": -1.73,
+   "src": "Yahoo! Finance(米)チャートAPI COMEX先物 GC=F as of 2026-11-20 4:43 JST NY取引時間中（前日終値3,741.9ドル基準）"
+  },
+  "mufg8306": {
+   "value": 3197,
+   "change": -54,
+   "changePct": -1.66,
+   "src": "Yahoo! Finance(米)チャートAPI as of 2026-11-19 東証大引け（株探一致）"
+  },
+  "us10y": {
+   "value": 5.062,
+   "change": -0.004,
+   "changePct": -0.08,
+   "src": "Yahoo! Finance(米) ^TNX as of 2026-11-20 4:20 JST NY取引時間中（前日5.066%比-0.4bp）"
+  }
  }
 ]
