@@ -3254,6 +3254,29 @@
    ],
    "status": "仮説",
    "adoption_count": 0
+  },
+  {
+   "id": "L183",
+   "date": "2026-11-23",
+   "category": "サプライズ監査・急落後の週末にアジアの当局が相次いで出した『株式市場の安定策』(台湾の空売り制限・韓国の安定基金の準備・中国の信用取引の条件緩和)",
+   "lesson": "11/20の世界的な株安(台湾株は週間で1990年8月以来の下げ、韓国総合株価指数は11/20に5%超安、上海・深圳は約1年4〜5カ月ぶり安値)を受けて、11/21(土)〜11/22(日)にアジアの当局が相次いで市場の安定策を出した。台湾の金融監督管理委員会は前日終値より安い値段での空売りの全面禁止・空売りの最低保証金率の130%→150%への引き上げなど5つの措置を11/23から実施、韓国政府は日曜に緊急の対策として、証券市場安定基金(稼働すれば18年ぶり)の準備と企業の自社株買いの制限緩和を発表、中国の上海・深圳の両取引所は信用取引で株を買う際の保証金率を100%→80%へ下げた(確認した記事に日本の措置への言及はなし)。既存のopen予測で『当局の下支え』を置いていたのは、P-E293の『大統領・財務長官・連銀高官の発言』(米国・発言のみ)と、為替介入(P-E281・P-E290)だけで、『急落後の週末に、アジアの株式当局が売買ルールの変更や公的資金の準備という実際の措置を出す』経路は、連休明け11/24の日経平均を見るP-E291を含めどの予測にもなかった(サプライズ監査=一部外)。11/6にも台湾は空売り規制と安定基金の投入を表明しており、同じ月の2回目で、本来は置けた分岐だった。効果はまだ分からない(11/23のアジア市場の取引前)。同じ週末の他の事象は内側だった:ホルムズ海峡でのタンカー被弾・機雷接触とバーレーンへの攻撃、トランプ大統領の対イラン『48時間』発言(P-E289・P-E293・P-E295の地政学の分岐)、ベッセント財務長官の『連銀は引き締めすぎの恐れ』発言(P-E293『政策当局の下支え発言』・P-E295『株安に配慮した発言』)、ビットコインの週末の2年ぶり安値(P-E293『暗号資産の週末の連鎖』)、文部科学相の進退問題(P-E291『日本独自の悪材料(政局)』)。今後、世界的な急落の直後に週末・連休をはさむ予測では、(a)『各国当局の市場安定策(空売り制限・安定基金・信用取引の条件変更・緊急会合)』の分岐を1つ置き、東京が休場で海外だけが先に開く日は、アジア市場の初動(台湾・韓国・上海)を連休明けの東京の先行材料として観測項目に入れる、(b)下支え策は『発言』と『実際の措置』を分けて書く、(c)措置が出ても米国株の方向が変わらなければ効果は一時的という見方と、措置をきっかけに売りが一巡するという見方の両方を置き、どちらかに決め打ちしない。新規予測の乱造はしない。",
+   "regime_tags": [
+    "surprise_audit",
+    "policy_backstop",
+    "asia_market_stabilization",
+    "weekend_gap",
+    "全資産同時安",
+    "risk-off"
+   ],
+   "evidence": [
+    "Investing.com(Yahoo Finance掲載)『Asian countries take steps to aid stock markets after AI rout』2026-11-22 https://finance.yahoo.com/markets/stocks/articles/asian-countries-steps-aid-stock-154243324.html (本文確認:台湾=5措置・前日終値未満での空売り全面禁止・最低保証金率130%→150%、韓国=市場支援基金の準備と自社株買い制限の一時緩和、中国=両取引所が融資保証金率100%→80%。台湾株は週間で1990年8月以来の下げ、韓国総合株価指数は11/20に5%超安) 取得2026-11-23 04:4x JST",
+    "Bloomberg『China Lowers Margin Requirement to 80% to Boost Stock Liquidity』2026-11-22、Bloomberg『S. Korea Rolls Out Phased Measures to Stabilize Volatile Markets』2026-11-22、Yahoo Finance『South Korea prepares stock market stabilization fund after Kospi plunges 5.2%』2026-11-22、NNAアジア『金管会、株式市場安定へ5措置導入=23日から』2026-11-22、朝鮮日報『韓国政府、18年ぶり証券市場安定ファンド稼働準備』2026-11-22(Google News RSS・Bing News RSS経由で見出し確認、取得2026-11-23 04:4x JST)",
+    "同じ週末の内側の事象(見出し確認):CNN『Iranian attacks in the Strait of Hormuz are at the highest levels since the conflict began』2026-11-22、AFP『Bahrain says Iran struck industrial site as tankers hit in Hormuz』2026-11-22、Anadolu『Iran says 2 supertankers struck naval mines near Strait of Hormuz』2026-11-22、ABC News『Trump says \"we're blowing up the whole country\" if no Iran deal is reached in 48 hours』2026-11-22、Bloomberg『Bessent Warns Fed Risks Overtightening as US Markets Swoon』2026-11-22、CryptoSlate『Bitcoin reclaims $61,000 before giving back a third of the weekend rally』2026-11-22(週末に一時55,300ドル前後=2024年9月以来の安値との報道)、BBC『COP31 fails to reach major climate deal as talks expose deep divisions』2026-11-22 https://www.bbc.co.uk/news/articles/cqwy06zrd26lo (気候会議の決裂は対応するopen予測なし・市場への影響は未確認)",
+    "関連予測:P-E291(11/24の日経平均55,000円未満、open)・P-E293(11/23のナスダック100 +1%以上、open)・P-E292・P-E295・P-U53(open)。関連既存教訓:L181(発言だけで動く政策リスク)・L180(全資産同時安・連休をはさむ判定)・L176(緩和方向の材料の置き忘れ)",
+    "過去の同型:Bloomberg『台湾当局、株式市場鎮静へ空売り規制強化-金融安定基金投入も表明』2026-11-06 https://www.bloomberg.com/jp/news/articles/2026-11-06/TO2WIDKGZAJ300 (Bing News RSS経由で見出し・要約確認)"
+   ],
+   "status": "仮説",
+   "adoption_count": 0
   }
  ]
 }
